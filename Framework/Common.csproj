@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>GTASaveData.Common</AssemblyName>
+    <RootNamespace>GTASaveData.Common</RootNamespace>
+    <Authors>Wes Hampson</Authors>
+    <Company />
+    <Product>GtaSaveData</Product>
+    <Description>Supporting classes for the GTA savedata library.</Description>
+    <Copyright>(C) 2019 Wes Hampson</Copyright>
+    <AssemblyVersion>1.0.0.72</AssemblyVersion>
+    <FileVersion>1.0.0.72</FileVersion>
+  </PropertyGroup>
+
+</Project>
