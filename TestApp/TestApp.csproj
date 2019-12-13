@@ -48,7 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="TestData\PC\GTA3sf1.b" />
+    <None Include="TestData\PC\1_JM4" />
+    <None Include="TestData\PC\2_AS3" />
     <None Include="TestData\PS2AU\1 %27THE EXCHANGE%27" />
     <None Include="TestData\PS2AU\2 %27A RIDE IN THE PARK%27" />
     <None Include="TestData\PS2AU\3 %27SAM%27" />
