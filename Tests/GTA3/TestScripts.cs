@@ -16,18 +16,18 @@ namespace Tests.GTA3
             int numRunningScripts = faker.Random.Int(1, 100);
 
             Faker<Scripts> model = new Faker<Scripts>()
-                .RuleFor(x => x.GlobalVariables, f => TestHelper.CreateCollection(numGlobals, e => f.Random.UInt()))
+                .RuleFor(x => x.GlobalVariables, f => TestHelper.CreateValueCollection(numGlobals, e => f.Random.UInt()))
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
-                .RuleFor(x => x.Contacts, f => TestHelper.CreateStructCollection(Scripts.ContactCount, e => TestContactInfo.Generate()))
-                .RuleFor(x => x.Collectives, f => TestHelper.CreateStructCollection(Scripts.CollectiveCount, e => TestCollective.Generate()))
+                .RuleFor(x => x.Contacts, f => TestHelper.CreateObjectCollection(Scripts.ContactCount, e => TestContactInfo.Generate()))
+                .RuleFor(x => x.Collectives, f => TestHelper.CreateObjectCollection(Scripts.CollectiveCount, e => TestCollective.Generate()))
                 .RuleFor(x => x.NextFreeCollectiveIndex, f => f.Random.Int())
-                .RuleFor(x => x.BuildingSwaps, f => TestHelper.CreateStructCollection(Scripts.BuildingSwapCount, e => TestBuildingSwap.Generate()))
-                .RuleFor(x => x.InvisibilitySettings, f => TestHelper.CreateStructCollection(Scripts.InvisibilitySettingCount, e => TestInvisibilitySetting.Generate()))
+                .RuleFor(x => x.BuildingSwaps, f => TestHelper.CreateObjectCollection(Scripts.BuildingSwapCount, e => TestHelper.Generate<BuildingSwap, TestBuildingSwap>()))
+                .RuleFor(x => x.InvisibilitySettings, f => TestHelper.CreateObjectCollection(Scripts.InvisibilitySettingCount, e => TestInvisibilitySetting.Generate()))
                 .RuleFor(x => x.UsingAMultiScriptFile, f => f.Random.Bool())
                 .RuleFor(x => x.MainScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.LargestMissionScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.NumberOfMissionScripts, f => f.Random.Short())
-                .RuleFor(x => x.RunningScripts, f => TestHelper.CreateStructCollection(numRunningScripts, x => TestRunningScript.Generate(isPS2)));
+                .RuleFor(x => x.RunningScripts, f => TestHelper.CreateObjectCollection(numRunningScripts, x => TestRunningScript.Generate(isPS2)));
 
             return model.Generate();
         }
