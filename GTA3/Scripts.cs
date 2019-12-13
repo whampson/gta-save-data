@@ -171,16 +171,16 @@ namespace GTASaveData.GTA3
             }
 
             return m_globalVariables.SequenceEqual(other.m_globalVariables)
-                && m_onAMissionFlag == other.m_onAMissionFlag
+                && m_onAMissionFlag.Equals(other.m_onAMissionFlag)
                 && m_contacts.SequenceEqual(other.m_contacts)
                 && m_collectives.SequenceEqual(other.m_collectives)
-                && m_nextFreeCollectiveIndex == other.m_nextFreeCollectiveIndex
+                && m_nextFreeCollectiveIndex.Equals(other.m_nextFreeCollectiveIndex)
                 && m_buildingSwaps.SequenceEqual(other.m_buildingSwaps)
                 && m_invisibilitySettings.SequenceEqual(other.m_invisibilitySettings)
-                && m_usingAMultiScriptFile == other.m_usingAMultiScriptFile
-                && m_mainScriptSize == other.m_mainScriptSize
-                && m_largestMissionScriptSize == other.m_largestMissionScriptSize
-                && m_numberOfMissionScripts == other.m_numberOfMissionScripts
+                && m_usingAMultiScriptFile.Equals(other.m_usingAMultiScriptFile)
+                && m_mainScriptSize.Equals(other.m_mainScriptSize)
+                && m_largestMissionScriptSize.Equals(other.m_largestMissionScriptSize)
+                && m_numberOfMissionScripts.Equals(other.m_numberOfMissionScripts)
                 && m_runningScripts.SequenceEqual(other.m_runningScripts);
         }
 

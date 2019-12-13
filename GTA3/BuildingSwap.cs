@@ -74,10 +74,10 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_type == other.m_type
-                && m_staticIndex == other.m_staticIndex
-                && m_newModelId == other.m_newModelId
-                && m_oldModelId == other.m_oldModelId;
+            return m_type.Equals(other.m_type)
+                && m_staticIndex.Equals(other.m_staticIndex)
+                && m_newModelId.Equals(other.m_newModelId)
+                && m_oldModelId.Equals(other.m_oldModelId);
         }
 
         public override string ToString()

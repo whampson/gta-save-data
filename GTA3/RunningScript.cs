@@ -142,6 +142,7 @@ namespace GTASaveData.GTA3
 
         public RunningScript()
         {
+            m_name = string.Empty;
             m_stack = new ObservableCollection<uint>();
             m_localVariables = new ObservableCollection<uint>();
         }
@@ -222,24 +223,24 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_nextScript == other.m_nextScript
-                && m_prevScript == other.m_prevScript
-                && m_name == other.m_name
-                && m_instructionPointer == other.m_instructionPointer
+            return m_nextScript.Equals(other.m_nextScript)
+                && m_prevScript.Equals(other.m_prevScript)
+                && m_name.Equals(other.m_name)
+                && m_instructionPointer.Equals(other.m_instructionPointer)
                 && m_stack.SequenceEqual(other.m_stack)
-                && m_stackPointer == other.m_stackPointer
+                && m_stackPointer.Equals(other.m_stackPointer)
                 && m_localVariables.SequenceEqual(other.m_localVariables)
-                && m_timerA == other.m_timerA
-                && m_timerB == other.m_timerB
-                && m_ifResult == other.m_ifResult
-                && m_isMissionScript == other.m_isMissionScript
-                && m_isActive == other.m_isActive
-                && m_wakeTime == other.m_wakeTime
-                && m_ifNumber == other.m_ifNumber
-                && m_notFlag == other.m_notFlag
-                && m_isWastedOrBustedCheckEnabled == other.m_isWastedOrBustedCheckEnabled
-                && m_isWastedOrBusted == other.m_isWastedOrBusted
-                && m_isMission == other.m_isMission;
+                && m_timerA.Equals(other.m_timerA)
+                && m_timerB.Equals(other.m_timerB)
+                && m_ifResult.Equals(other.m_ifResult)
+                && m_isMissionScript.Equals(other.m_isMissionScript)
+                && m_isActive.Equals(other.m_isActive)
+                && m_wakeTime.Equals(other.m_wakeTime)
+                && m_ifNumber.Equals(other.m_ifNumber)
+                && m_notFlag.Equals(other.m_notFlag)
+                && m_isWastedOrBustedCheckEnabled.Equals(other.m_isWastedOrBustedCheckEnabled)
+                && m_isWastedOrBusted.Equals(other.m_isWastedOrBusted)
+                && m_isMission.Equals(other.m_isMission);
         }
 
         public override string ToString()

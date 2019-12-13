@@ -3,7 +3,8 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class SimpleVars : GTAObject
+    public sealed class SimpleVars : GTAObject,
+        IEquatable<SimpleVars>
     {
         public const int SizeAndroid = 0xB0;
         public const int SizeIOS = 0xB0;
@@ -280,6 +281,7 @@ namespace GTASaveData.GTA3
 
         public SimpleVars()
         {
+            m_lastMissionPassedName = string.Empty;
             m_saveTime = new SystemTime();
             m_cameraPosition = new Vector3d();
             m_compileDateAndTime = new Timestamp();
@@ -456,6 +458,104 @@ namespace GTASaveData.GTA3
             }
         }
 
-        // TODO: euqality, tostring
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public bool Equals(SimpleVars other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return m_lastMissionPassedName.Equals(other.m_lastMissionPassedName)
+                && m_fileId.Equals(other.m_fileId)
+                && m_saveTime.Equals(other.m_saveTime)
+                && m_currLevel.Equals(other.m_currLevel)
+                && m_cameraPosition.Equals(other.m_cameraPosition)
+                && m_millisecondsPerGameMinute.Equals(other.m_millisecondsPerGameMinute)
+                && m_lastClockTick.Equals(other.m_lastClockTick)
+                && m_gameClockHours.Equals(other.m_gameClockHours)
+                && m_gameClockMinutes.Equals(other.m_gameClockMinutes)
+                && m_timeInMilliseconds.Equals(other.m_timeInMilliseconds)
+                && m_timeScale.Equals(other.m_timeScale)
+                && m_timeScale2.Equals(other.m_timeScale2)
+                && m_timeStep.Equals(other.m_timeStep)
+                && m_timeStep2.Equals(other.m_timeStep2)
+                && m_timeStepNonClipped.Equals(other.m_timeStepNonClipped)
+                && m_framesPerUpdate.Equals(other.m_framesPerUpdate)
+                && m_frameCounter.Equals(other.m_frameCounter)
+                && m_oldWeatherType.Equals(other.m_oldWeatherType)
+                && m_newWeatherType.Equals(other.m_newWeatherType)
+                && m_forcedWeatherType.Equals(other.m_forcedWeatherType)
+                && m_interpolationValue.Equals(other.m_interpolationValue)
+                && m_prefsControllerConfig.Equals(other.m_prefsControllerConfig)
+                && m_prefsMusicVolume.Equals(other.m_prefsMusicVolume)
+                && m_prefsSfxVolume.Equals(other.m_prefsSfxVolume)
+                && m_prefsUseVibration.Equals(other.m_prefsUseVibration)
+                && m_prefsStereoMono.Equals(other.m_prefsStereoMono)
+                && m_prefsRadioStation.Equals(other.m_prefsRadioStation)
+                && m_prefsBrightness.Equals(other.m_prefsBrightness)
+                && m_prefsUseWideScreen.Equals(other.m_prefsUseWideScreen)
+                && m_prefsShowTrails.Equals(other.m_prefsShowTrails)
+                && m_prefsShowSubtitles.Equals(other.m_prefsShowSubtitles)
+                && m_prefsLanguage.Equals(other.m_prefsLanguage)
+                && m_compileDateAndTime.Equals(other.m_compileDateAndTime)
+                && m_weatherTypeInList.Equals(other.m_weatherTypeInList)
+                && m_inCarCameraMode.Equals(other.m_inCarCameraMode)
+                && m_onFootCameraMode.Equals(other.m_onFootCameraMode)
+                && m_isQuickSave.Equals(other.m_isQuickSave);
+        }
+
+        public override string ToString()
+        {
+            return BuildToString(new (string, object)[]
+            {
+                (nameof(LastMissionPassedName), LastMissionPassedName),
+                (nameof(FileId), FileId),
+                (nameof(SaveTime), SaveTime),
+                (nameof(CurrLevel), CurrLevel),
+                (nameof(CameraPosition), CameraPosition),
+                (nameof(MillisecondsPerGameMinute), MillisecondsPerGameMinute),
+                (nameof(LastClockTick), LastClockTick),
+                (nameof(GameClockHours), GameClockHours),
+                (nameof(GameClockMinutes), GameClockMinutes),
+                (nameof(TimeInMilliseconds), TimeInMilliseconds),
+                (nameof(TimeScale), TimeScale),
+                (nameof(TimeScale2), TimeScale2),
+                (nameof(TimeStep), TimeStep),
+                (nameof(TimeStep2), TimeStep2),
+                (nameof(TimeStepNonClipped), TimeStepNonClipped),
+                (nameof(FramesPerUpdate), FramesPerUpdate),
+                (nameof(FrameCounter), FrameCounter),
+                (nameof(OldWeatherType), OldWeatherType),
+                (nameof(NewWeatherType), NewWeatherType),
+                (nameof(ForcedWeatherType), ForcedWeatherType),
+                (nameof(InterpolationValue), InterpolationValue),
+                (nameof(PrefsControllerConfig), PrefsControllerConfig),
+                (nameof(PrefsMusicVolume), PrefsMusicVolume),
+                (nameof(PrefsSfxVolume), PrefsSfxVolume),
+                (nameof(PrefsUseVibration), PrefsUseVibration),
+                (nameof(PrefsStereoMono), PrefsStereoMono),
+                (nameof(PrefsRadioStation), PrefsRadioStation),
+                (nameof(PrefsBrightness), PrefsBrightness),
+                (nameof(PrefsUseWideScreen), PrefsUseWideScreen),
+                (nameof(PrefsShowTrails), PrefsShowTrails),
+                (nameof(PrefsShowSubtitles), PrefsShowSubtitles),
+                (nameof(PrefsLanguage), PrefsLanguage),
+                (nameof(CompileDateAndTime), CompileDateAndTime),
+                (nameof(WeatherTypeInList), WeatherTypeInList),
+                (nameof(InCarCameraMode), InCarCameraMode),
+                (nameof(OnFootCameraMode), OnFootCameraMode),
+                (nameof(IsQuickSave), IsQuickSave)
+            });
+        }
     }
 }

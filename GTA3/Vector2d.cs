@@ -53,8 +53,8 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_x == other.m_x
-                && m_y == other.m_y;
+            return m_x.Equals(other.m_x)
+                && m_y.Equals(other.m_y);
         }
 
         public override string ToString()

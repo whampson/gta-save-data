@@ -53,8 +53,8 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_onAMissionFlag == other.m_onAMissionFlag
-                && m_baseBriefId == other.m_baseBriefId;
+            return m_onAMissionFlag.Equals(other.m_onAMissionFlag)
+                && m_baseBriefId.Equals(other.m_baseBriefId);
         }
 
         public override string ToString()

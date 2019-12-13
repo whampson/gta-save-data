@@ -131,14 +131,14 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_year == other.m_year
-                && m_month == other.m_month
-                && m_dayOfWeek == other.m_dayOfWeek
-                && m_day == other.m_day
-                && m_hour == other.m_hour
-                && m_minute == other.m_minute
-                && m_second == other.m_second
-                && m_millisecond == other.m_millisecond;
+            return m_year.Equals(other.m_year)
+                && m_month.Equals(other.m_month)
+                && m_dayOfWeek.Equals(other.m_dayOfWeek)
+                && m_day.Equals(other.m_day)
+                && m_hour.Equals(other.m_hour)
+                && m_minute.Equals(other.m_minute)
+                && m_second.Equals(other.m_second)
+                && m_millisecond.Equals(other.m_millisecond);
         }
 
         public override string ToString()

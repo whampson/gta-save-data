@@ -14,15 +14,13 @@ namespace GTASaveData.GTA3
     /// block beginning with the number of bytes as a 32-bit integer
     /// which is sometimes preceded by a 4-byte ID string.
     /// </remarks>
-    public sealed class SaveData : GTAObject/*, IGTASaveData*/
+    public sealed class SaveData : GTAObject,
+        IEquatable<SaveData>
     {
         // TODO: padding manipulation
    
         // The number of bytes in all first-level blocks, excluding the size header.
         private const int TotalBlockSize = 201728;
-
-        private const int MaxPaddingBlockSize = 55000;
-        private const int MaxPaddingBlockSizePS2 = 50000;
 
         // Block IDs for select blocks.
         private const string ScrTag = "SCR";
@@ -44,8 +42,6 @@ namespace GTASaveData.GTA3
             SystemType.PS2JP,
             SystemType.Xbox
         };
-
-        private SystemType m_systemType;
 
         private SimpleVars m_simpleVars;
         private Scripts m_scripts;
@@ -69,28 +65,28 @@ namespace GTASaveData.GTA3
         private DummyObject m_streaming;
         private DummyObject m_pedTypeInfo;
 
-        private int MaxBlockSize
-        {
-            get
-            {
-                return m_systemType.HasFlag(SystemType.PS2) ? MaxPaddingBlockSizePS2 : MaxPaddingBlockSize;
-            }
-        }
+        //private int MaxBlockSize
+        //{
+        //    get
+        //    {
+        //        return m_systemType.HasFlag(SystemType.PS2) ? MaxPaddingBlockSizePS2 : MaxPaddingBlockSize;
+        //    }
+        //}
 
-        public SystemType SystemType
-        {
-            get { return m_systemType; }
-            set
-            {
-                if (!SupportedSystems.Contains(value))
-                {
-                    throw new ArgumentException(
-                        string.Format("'{0}' is not a valid system type for GTA3 save data.", value));
-                }
-                m_systemType = value;
-                OnPropertyChanged();
-            }
-        }
+        //public SystemType SystemType
+        //{
+        //    get { return m_systemType; }
+        //    set
+        //    {
+        //        if (!SupportedSystems.Contains(value))
+        //        {
+        //            throw new ArgumentException(
+        //                string.Format("'{0}' is not a valid system type for GTA3 save data.", value));
+        //        }
+        //        m_systemType = value;
+        //        OnPropertyChanged();
+        //    }
+        //}
 
         public SimpleVars SimpleVars
         {
@@ -218,18 +214,35 @@ namespace GTASaveData.GTA3
             set { m_pedTypeInfo = value; OnPropertyChanged(); }
         }
 
-        public SaveData(SystemType sysType)
+        public SaveData()
         {
-            SystemType = sysType;
-
             m_simpleVars = new SimpleVars();
             m_scripts = new Scripts();
+            m_pedPool = new DummyObject();
+            m_garages = new DummyObject();
+            m_vehicles = new DummyObject();
+            m_objects = new DummyObject();
+            m_pathFind = new DummyObject();
+            m_cranes = new DummyObject();
+            m_pickups = new DummyObject();
+            m_phoneInfo = new DummyObject();
+            m_restarts = new DummyObject();
+            m_radarBlips = new DummyObject();
+            m_zones = new DummyObject();
+            m_gangData = new DummyObject();
+            m_carGenerators = new DummyObject();
+            m_particles = new DummyObject();
+            m_audioScriptObjects = new DummyObject();
+            m_playerInfo = new DummyObject();
+            m_stats = new DummyObject();
+            m_streaming = new DummyObject();
+            m_pedTypeInfo = new DummyObject();
         }
 
         private SaveData(Serializer serializer, SystemType system)
-            : this(system)
+            : this()
         {
-            Deserialize(serializer);
+            Deserialize(serializer, system);
         }
 
         public static SaveData Load(string path, SystemType system)
@@ -238,13 +251,20 @@ namespace GTASaveData.GTA3
             return Serializer.Deserialize<SaveData>(data, system: system);
         }
 
-        public void Store(string path)
+        public void Store(string path, SystemType system)
         {
-            byte[] data = Serializer.Serialize(this, m_systemType);
+            if (!SupportedSystems.Contains(system))
+            {
+                throw new ArgumentException(
+                    string.Format("'{0}' is not a valid system type for GTA3 save data.", system),
+                    nameof(system));
+            }
+
+            byte[] data = Serializer.Serialize(this, system);
             File.WriteAllBytes(path, data);
         }
 
-        public void Deserialize(Serializer serializer)
+        private void Deserialize(Serializer serializer, SystemType system)
         {
             int outerBlockCount = 0;
             bool doneReading = false;
@@ -277,12 +297,12 @@ namespace GTASaveData.GTA3
                 tmp = ReadBlock(serializer, null);
                 using (Serializer blockStream = new Serializer(new MemoryStream(tmp)))
                 {
-                    if (m_systemType.HasFlag(SystemType.PS2))
+                    if (system.HasFlag(SystemType.PS2))
                     {
                         switch (outerBlockCount)
                         {
                             case 0:
-                                simpleVars = blockStream.ReadBytes(SimpleVars.GetSize(m_systemType));
+                                simpleVars = blockStream.ReadBytes(SimpleVars.GetSize(system));
                                 scripts = ReadBlock(blockStream, ScrTag);
                                 pedPool = ReadBlock(blockStream);
                                 garages = ReadBlock(blockStream);
@@ -316,7 +336,7 @@ namespace GTASaveData.GTA3
                         switch (outerBlockCount)
                         {
                             case 0:
-                                simpleVars = blockStream.ReadBytes(SimpleVars.GetSize(m_systemType));
+                                simpleVars = blockStream.ReadBytes(SimpleVars.GetSize(system));
                                 scripts = ReadBlock(blockStream, ScrTag);
                                 break;
                             case 1: pedPool = ReadBlock(blockStream); break;
@@ -348,8 +368,8 @@ namespace GTASaveData.GTA3
                 }
             }
 
-            m_simpleVars = Serializer.Deserialize<SimpleVars>(simpleVars, m_systemType);
-            m_scripts = Serializer.Deserialize<Scripts>(scripts, m_systemType);
+            m_simpleVars = Serializer.Deserialize<SimpleVars>(simpleVars, system);
+            m_scripts = Serializer.Deserialize<Scripts>(scripts, system);
             m_pedPool = new DummyObject(pedPool);
             m_garages = new DummyObject(garages);
             m_vehicles = new DummyObject(vehicles);
@@ -371,40 +391,40 @@ namespace GTASaveData.GTA3
             m_pedTypeInfo = new DummyObject(pedTypeInfo);
         }
 
-        private void Serialize(Serializer serializer)
+        private void Serialize(Serializer serializer, SystemType system)
         {
             int dataBytesWritten = 0;
             int blockCount = 0;
             int checksum = 0;
             
-            Payload simpleVars = Serializer.Serialize(m_simpleVars, m_systemType);
-            Payload scripts = CreateBlock(ScrTag, Serializer.Serialize(m_scripts, m_systemType));
-            Payload pedPool = CreateBlock(Serializer.Serialize(m_pedPool, m_systemType));
-            Payload garages = CreateBlock(Serializer.Serialize(m_garages, m_systemType));
-            Payload vehicles = CreateBlock(Serializer.Serialize(m_vehicles, m_systemType));
-            Payload objects = CreateBlock(Serializer.Serialize(m_objects, m_systemType));
-            Payload pathFind = CreateBlock(Serializer.Serialize(m_pathFind, m_systemType));
-            Payload cranes = CreateBlock(Serializer.Serialize(m_cranes, m_systemType));
-            Payload pickups = CreateBlock(Serializer.Serialize(m_pickups, m_systemType));
-            Payload phoneInfo = CreateBlock(Serializer.Serialize(m_phoneInfo, m_systemType));
-            Payload restarts = CreateBlock(RstTag, Serializer.Serialize(m_restarts, m_systemType));
-            Payload radarBlips = CreateBlock(RdrTag, Serializer.Serialize(m_radarBlips, m_systemType));
-            Payload zones = CreateBlock(ZnsTag, Serializer.Serialize(m_zones, m_systemType));
-            Payload gangData = CreateBlock(GngTag, Serializer.Serialize(m_gangData, m_systemType));
-            Payload carGenerators = CreateBlock(CgnTag, Serializer.Serialize(m_carGenerators, m_systemType));
-            Payload particles = CreateBlock(Serializer.Serialize(m_particles, m_systemType));
-            Payload audioScriptObjects = CreateBlock(AudTag, Serializer.Serialize(m_audioScriptObjects, m_systemType));
-            Payload playerInfo = CreateBlock(Serializer.Serialize(m_playerInfo, m_systemType));
-            Payload stats = CreateBlock(Serializer.Serialize(m_stats, m_systemType));
-            Payload streaming = CreateBlock(Serializer.Serialize(m_streaming, m_systemType));
-            Payload pedTypeInfo = CreateBlock(PtpTag, Serializer.Serialize(m_pedTypeInfo, m_systemType));
+            Payload simpleVars = Serializer.Serialize(m_simpleVars, system);
+            Payload scripts = CreateBlock(ScrTag, Serializer.Serialize(m_scripts, system));
+            Payload pedPool = CreateBlock(Serializer.Serialize(m_pedPool, system));
+            Payload garages = CreateBlock(Serializer.Serialize(m_garages, system));
+            Payload vehicles = CreateBlock(Serializer.Serialize(m_vehicles, system));
+            Payload objects = CreateBlock(Serializer.Serialize(m_objects, system));
+            Payload pathFind = CreateBlock(Serializer.Serialize(m_pathFind, system));
+            Payload cranes = CreateBlock(Serializer.Serialize(m_cranes, system));
+            Payload pickups = CreateBlock(Serializer.Serialize(m_pickups, system));
+            Payload phoneInfo = CreateBlock(Serializer.Serialize(m_phoneInfo, system));
+            Payload restarts = CreateBlock(RstTag, Serializer.Serialize(m_restarts, system));
+            Payload radarBlips = CreateBlock(RdrTag, Serializer.Serialize(m_radarBlips, system));
+            Payload zones = CreateBlock(ZnsTag, Serializer.Serialize(m_zones, system));
+            Payload gangData = CreateBlock(GngTag, Serializer.Serialize(m_gangData, system));
+            Payload carGenerators = CreateBlock(CgnTag, Serializer.Serialize(m_carGenerators, system));
+            Payload particles = CreateBlock(Serializer.Serialize(m_particles, system));
+            Payload audioScriptObjects = CreateBlock(AudTag, Serializer.Serialize(m_audioScriptObjects, system));
+            Payload playerInfo = CreateBlock(Serializer.Serialize(m_playerInfo, system));
+            Payload stats = CreateBlock(Serializer.Serialize(m_stats, system));
+            Payload streaming = CreateBlock(Serializer.Serialize(m_streaming, system));
+            Payload pedTypeInfo = CreateBlock(PtpTag, Serializer.Serialize(m_pedTypeInfo, system));
 
             while (dataBytesWritten < TotalBlockSize)
             {
                 Payload payload = new Payload(0);
                 bool padding = false;
 
-                if (m_systemType.HasFlag(SystemType.PS2))
+                if (system.HasFlag(SystemType.PS2))
                 {
                     switch (blockCount)
                     {
@@ -476,9 +496,10 @@ namespace GTASaveData.GTA3
                 if (padding)
                 {
                     int length = TotalBlockSize - dataBytesWritten;
-                    if (length > MaxBlockSize)
+                    int maxBlockSize = GetMaxBlockSize(system);
+                    if (length > maxBlockSize)
                     {
-                        length = MaxBlockSize;
+                        length = maxBlockSize;
                     }
                     payload = CreateBlock(new Payload(length));
                 }
@@ -516,7 +537,7 @@ namespace GTASaveData.GTA3
         private Payload ReadBlock(Serializer s, string tag = null)
         {
             int length = s.ReadInt32();
-            if (length > MaxBlockSize)
+            if (length > 55000)         // TODO: get based on platform
             {
                 throw new SerializationException("Invalid block size. Size read exceeds the maximum allowed block size.");
             }
@@ -556,6 +577,37 @@ namespace GTASaveData.GTA3
             return (int) (s.BaseStream.Position - mark);
         }
 
+        private static int GetMaxBlockSize(SystemType system)
+        {
+            return system.HasFlag(SystemType.PS2) ? 55000 : 50000;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public bool Equals(SaveData other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return m_simpleVars.Equals(other.m_simpleVars)
+                && m_scripts.Equals(other.m_scripts);
+            // TODO: the rest
+        }
+
+        // TODO: ToString
+
+
+        // TODO: Move to Common.ByteArray
         /// <summary>
         /// A byte array wrapper, made purely so byte[] can be
         /// manipulated as an object.
