@@ -8,9 +8,8 @@
         // === NOTE TO IMPLEMENTERS ===
         // You must create a deserialization constructor to populate your
         // object's fields when deserialization occurs. This constructor
-        // should be protected or private and must have one of the following
-        // signatures:
-        //     Ctor(SaveDataSerializer)
+        // should be protected or private and must have the following
+        // signature:
         //     Ctor(SaveDataSerializer, SystemType)
 
         /// <summary>
@@ -23,6 +22,6 @@
         /// <param name="system">
         /// The <see cref="SystemType"/> that data is being serialized for.
         /// </param>
-        void Serialize(SaveDataSerializer serializer, SystemType system);
+        void WriteObjectData(SaveDataSerializer serializer, SystemType system);
     }
 }

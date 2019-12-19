@@ -655,23 +655,21 @@ namespace GTASaveData
         /// <exception cref="SaveDataSerializationException">Thrown if an error occurs during serialization.</exception>
         public void WriteObject<T>(T value, SystemType systemType = SystemType.Unspecified)
         {
+            const string MethodName = nameof(ISaveDataSerializable.WriteObjectData);
             const BindingFlags MethodFlags = BindingFlags.Public
                 | BindingFlags.NonPublic
                 | BindingFlags.Instance
                 | BindingFlags.FlattenHierarchy;
-            string methodName = string.Format("{0}.{1}",
-                typeof(ISaveDataSerializable).FullName,
-                nameof(ISaveDataSerializable.Serialize));
 
             MethodInfo method0 = typeof(T).GetMethod(
-                methodName,
+                MethodName,
                 MethodFlags,
                 null,
                 new Type[] { typeof(SaveDataSerializer), typeof(SystemType) },
                 null
             );
             MethodInfo method1 = typeof(T).GetMethod(
-                methodName,
+                MethodName,
                 MethodFlags,
                 null,
                 new Type[] { typeof(SaveDataSerializer) },
