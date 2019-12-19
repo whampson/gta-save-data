@@ -257,7 +257,7 @@ namespace GTASaveData.GTA3
             File.WriteAllBytes(path, data);
         }
 
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
+        private SaveData(SaveDataSerializer serializer, SystemType system)
         {
             int outerBlockCount = 0;
             bool doneReading = false;
@@ -662,7 +662,7 @@ namespace GTASaveData.GTA3
             Data = data;
         }
 
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
+        private DummyObject(SaveDataSerializer serializer, SystemType system)
         {
             // nop
         }

@@ -77,7 +77,7 @@ namespace GTASaveData.GTA3
             m_millisecond = (ushort) dateTime.Millisecond;
         }
 
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
+        private SystemTime(SaveDataSerializer serializer, SystemType system)
         {
             m_year = serializer.ReadUInt16();
             m_month = serializer.ReadUInt16();

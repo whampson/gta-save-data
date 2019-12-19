@@ -286,7 +286,8 @@ namespace GTASaveData.GTA3
             m_compileDateAndTime = new Timestamp();
         }
 
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
+        private SimpleVars(SaveDataSerializer serializer, SystemType system)
+            : this()
         {
             if (!system.HasFlag(SystemType.PS2))
             {

@@ -30,7 +30,7 @@ namespace GTASaveData.GTA3
         public Vector3d()
         { }
 
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
+        private Vector3d(SaveDataSerializer serializer, SystemType system)
         {
             m_x = serializer.ReadSingle();
             m_y = serializer.ReadSingle();

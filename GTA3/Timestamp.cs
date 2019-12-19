@@ -61,7 +61,7 @@ namespace GTASaveData.GTA3
             m_year = dateTime.Year;
         }
 
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
+        private Timestamp(SaveDataSerializer serializer, SystemType system)
         {
             m_second = serializer.ReadInt32();
             m_minute = serializer.ReadInt32();

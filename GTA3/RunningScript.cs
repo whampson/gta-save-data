@@ -7,10 +7,10 @@ namespace GTASaveData.GTA3
     public sealed class RunningScript : SaveDataObject,
         IEquatable<RunningScript>
     {
-        private const int NameLength = 8;
         public const int StackSize = 6;
         public const int StackSizePS2 = 4;
         public const int LocalVariablesCount = 16;
+        private const int NameLength = 8;
 
         private uint m_nextScript;
         private uint m_prevScript;
@@ -146,7 +146,7 @@ namespace GTASaveData.GTA3
             m_localVariables = new ObservableCollection<uint>();
         }
 
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
+        private RunningScript(SaveDataSerializer serializer, SystemType system)
         {
             int stackSize = system.HasFlag(SystemType.PS2)
                 ? StackSizePS2

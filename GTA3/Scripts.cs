@@ -108,7 +108,7 @@ namespace GTASaveData.GTA3
             m_runningScripts = new FullyObservableCollection<RunningScript>();
         }
 
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
+        private Scripts(SaveDataSerializer serializer, SystemType system)
         {
             int sizeOfScriptSpace = serializer.ReadInt32();
             m_globalVariables = new ObservableCollection<uint>(serializer.ReadArray<uint>(sizeOfScriptSpace / 4));

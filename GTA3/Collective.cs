@@ -26,7 +26,7 @@ namespace GTASaveData.GTA3
             m_unknown0 = 0;
         }
 
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
+        private Collective(SaveDataSerializer serializer, SystemType system)
         {
             m_unknown0 = serializer.ReadInt32();
             m_unknown1 = serializer.ReadInt32();

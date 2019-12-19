@@ -23,7 +23,7 @@ namespace GTASaveData.GTA3
         public InvisibilitySetting()
         { }
 
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
+        private InvisibilitySetting(SaveDataSerializer serializer, SystemType system)
         {
             m_type = (ObjectType) serializer.ReadInt32();
             m_staticIndex = serializer.ReadInt32();

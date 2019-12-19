@@ -43,10 +43,6 @@ namespace GTASaveData.GTA3
         }
 
         private BuildingSwap(SaveDataSerializer serializer, SystemType system)
-            : base(serializer, system)
-        { }
-
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
         {
             m_type = (ObjectType) serializer.ReadInt32();
             m_staticIndex = serializer.ReadInt32();

@@ -23,7 +23,7 @@ namespace GTASaveData.GTA3
         public ContactInfo()
         { }
 
-        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
+        private ContactInfo(SaveDataSerializer serializer, SystemType system)
         {
             m_onAMissionFlag = serializer.ReadInt32();
             m_baseBriefId = serializer.ReadInt32();
