@@ -9,11 +9,6 @@ namespace Tests.GTA3
     public class TestRunningScript
         : SaveDataObjectTestBase<RunningScript>
     {
-        private const int SizePS2 = 0x80;
-        private const int SizeNonPS2 = 0x88;
-
-        // TODO: assert serialized size
-
         public override RunningScript GenerateTestVector(SystemType system)
         {
             int stackSize = system.HasFlag(SystemType.PS2) ? RunningScript.StackSizePS2 : RunningScript.StackSize;
@@ -42,25 +37,19 @@ namespace Tests.GTA3
             return model.Generate();
         }
 
-        [Fact]
-        public void Sanity()
+        [Theory]
+        [InlineData(SystemType.Android, 0x88)]
+        [InlineData(SystemType.IOS, 0x88)]
+        [InlineData(SystemType.PC, 0x88)]
+        [InlineData(SystemType.PS2, 0x80)]
+        [InlineData(SystemType.Xbox, 0x88)]
+        public void Serialization(SystemType system, int expectedSize)
         {
-            RunningScript x0 = GenerateTestVector();
-            RunningScript x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data);
+            RunningScript x0 = GenerateTestVector(system);
+            RunningScript x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data, system);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeNonPS2, data.Length);
-        }
-
-        [Fact]
-        public void SanityPS2()
-        {
-            RunningScript x0 = GenerateTestVector(SystemType.PS2);
-            RunningScript x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data, SystemType.PS2);
-            
-            Assert.Equal(x0, x1);
-            Assert.Equal(SizePS2, data.Length);
-
+            Assert.Equal(expectedSize, data.Length);
         }
     }
 }

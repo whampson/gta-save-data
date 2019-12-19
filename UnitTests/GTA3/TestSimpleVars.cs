@@ -22,24 +22,6 @@ namespace Tests.GTA3
 
         public override SimpleVars GenerateTestVector(SystemType system)
         {
-            //Faker f = new Faker();
-            //SimpleVars x = new SimpleVars();
-
-            //if (!system.HasFlag(SystemType.PS2))
-            //{
-            //    x.LastMissionPassedName = TestHelper.RandomString(f, 23);
-            //}
-            //if (system.HasFlag(SystemType.PC) || system.HasFlag(SystemType.Xbox))
-            //{
-            //    // x.SaveTime = TestHelper.GenerateTestVector<SystemTime>(system); // prepend 'Test' onto typename
-            //    x.SaveTime = TestSystemTime.Generate();
-            //}
-
-            //// TODO: finish this
-            ////  make TestBase object and make inheritors override GenerateTestVector(SystemType)
-
-            //return x;
-
             Faker<SimpleVars> model = new Faker<SimpleVars>()
                 .RuleFor(x => x.LastMissionPassedName, f => !system.HasFlag(SystemType.PS2) ? TestHelper.RandomString(f, 23) : string.Empty)
                 .RuleFor(x => x.SaveTime, (system.HasFlag(SystemType.PC) || system.HasFlag(SystemType.Xbox)) ? TestHelper.Generate<SystemTime, TestSystemTime>() : new SystemTime())
@@ -92,10 +74,11 @@ namespace Tests.GTA3
         [InlineData(SystemType.Xbox)]
         public void Serialization(SystemType system)
         {
-            SimpleVars a = GenerateTestVector(system);
-            SimpleVars b = TestHelper.CreateSerializedCopy(a, out byte[] _, system);    // TODO: check data size
+            SimpleVars x0 = GenerateTestVector(system);
+            SimpleVars x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data, system);
 
-            Assert.Equal(a, b);
+            Assert.Equal(x0, x1);
+            // TODO: size check?
         }
     }
 }

@@ -7,36 +7,34 @@ using Xunit;
 namespace Tests.GTA3
 {
     public class TestSaveData
+        : SaveDataObjectTestBase<SaveData>
     {
-        public static SaveData Generate(SystemType system)
+        public override SaveData GenerateTestVector(SystemType system)
         {
             Faker faker = new Faker();
 
             Faker<SaveData> model = new Faker<SaveData>()
                 .RuleFor(x => x.SimpleVars, f => TestHelper.Generate<SimpleVars, TestSimpleVars>(system))
-                .RuleFor(x => x.Scripts, TestHelper.Generate<Scripts, TestScripts>());
+                .RuleFor(x => x.Scripts, TestHelper.Generate<Scripts, TestScripts>(system));
 
             return model.Generate();
         }
 
-        [Fact]
-        public void SerializationPC()
+        [Theory]
+        [InlineData(SystemType.Android)]
+        [InlineData(SystemType.IOS)]
+        [InlineData(SystemType.PC)]
+        [InlineData(SystemType.PS2)]
+        [InlineData(SystemType.PS2AU)]
+        [InlineData(SystemType.PS2JP)]
+        [InlineData(SystemType.Xbox)]
+        public void Serialization(SystemType system)
         {
-            Serialization(SystemType.PC);
-        }
+            SaveData x0 = GenerateTestVector(system);
+            SaveData x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data, system);
 
-        [Fact]
-        public void SerializationPS2()
-        {
-            Serialization(SystemType.PS2);
-        }
-
-        private void Serialization(SystemType system)
-        {
-            SaveData data0 = Generate(system);
-            SaveData data1 = TestHelper.CreateSerializedCopy(data0, out byte[] _, system);
-
-            Assert.Equal(data0, data1);
+            Assert.Equal(x0, x1);
+            // TODO: data size check?
         }
     }
 }

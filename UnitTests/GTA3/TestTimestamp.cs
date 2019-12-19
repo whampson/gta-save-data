@@ -17,12 +17,13 @@ namespace Tests.GTA3
         }
 
         [Fact]
-        public void Sanity()
+        public void Serialization()
         {
-            Timestamp t0 = GenerateTestVector();
-            Timestamp t1 = TestHelper.CreateSerializedCopy(t0);
+            Timestamp x0 = GenerateTestVector();
+            Timestamp x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data);
 
-            Assert.Equal(t0, t1);
+            Assert.Equal(x0, x1);
+            Assert.Equal(24, data.Length);
         }
     }
 }

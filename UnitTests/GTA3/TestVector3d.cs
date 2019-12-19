@@ -21,12 +21,13 @@ namespace Tests.GTA3
         }
 
         [Fact]
-        public void Sanity()
+        public void Serialization()
         {
-            Vector3d v0 = GenerateTestVector();
-            Vector3d v1 = TestHelper.CreateSerializedCopy(v0);
+            Vector3d x0 = GenerateTestVector();
+            Vector3d x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data);
 
-            Assert.Equal(v0, v1);
+            Assert.Equal(x0, x1);
+            Assert.Equal(12, data.Length);
         }
     }
 }

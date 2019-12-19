@@ -19,12 +19,13 @@ namespace Tests.GTA3
         }
 
         [Fact]
-        public void Sanity()
+        public void Serialization()
         {
             InvisibilitySetting x0 = GenerateTestVector();
-            InvisibilitySetting x1 = TestHelper.CreateSerializedCopy(x0);
+            InvisibilitySetting x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0, x1);
+            Assert.Equal(8, data.Length);
         }
     }
 }

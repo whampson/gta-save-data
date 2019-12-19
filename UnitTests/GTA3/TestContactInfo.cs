@@ -19,12 +19,13 @@ namespace Tests.GTA3
         }
 
         [Fact]
-        public void Sanity()
+        public void Serialization()
         {
             ContactInfo c0 = GenerateTestVector();
-            ContactInfo c1 = TestHelper.CreateSerializedCopy(c0);
+            ContactInfo c1 = TestHelper.CreateSerializedCopy(c0, out byte[] data);
 
             Assert.Equal(c0, c1);
+            Assert.Equal(8, data.Length);
         }
     }
 }

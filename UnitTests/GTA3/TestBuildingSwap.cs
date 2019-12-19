@@ -21,12 +21,13 @@ namespace Tests.GTA3
         }
 
         [Fact]
-        public void Sanity()
+        public void Serialization()
         {
             BuildingSwap x0 = GenerateTestVector();
-            BuildingSwap x1 = TestHelper.CreateSerializedCopy(x0);
+            BuildingSwap x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0, x1);
+            Assert.Equal(16, data.Length);
         }
     }
 }

@@ -33,22 +33,19 @@ namespace Tests.GTA3
             return model.Generate();
         }
 
-        [Fact]
-        public void Sanity()
+        [Theory]
+        [InlineData(SystemType.Android)]
+        [InlineData(SystemType.IOS)]
+        [InlineData(SystemType.PC)]
+        [InlineData(SystemType.PS2)]
+        [InlineData(SystemType.Xbox)]
+        public void Serialization(SystemType system)
         {
-            Scripts scr0 = GenerateTestVector();
-            Scripts scr1 = TestHelper.CreateSerializedCopy(scr0);
+            Scripts x0 = GenerateTestVector(system);
+            Scripts x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data, system);
 
-            Assert.Equal(scr0, scr1);
-        }
-
-        [Fact]
-        public void SanityPS2()
-        {
-            Scripts scr0 = GenerateTestVector(SystemType.PS2);
-            Scripts scr1 = TestHelper.CreateSerializedCopy(scr0, SystemType.PS2);
-
-            Assert.Equal(scr0, scr1);
+            Assert.Equal(x0, x1);
+            // TODO: size check?
         }
     }
 }
