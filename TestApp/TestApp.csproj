@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
     <None Include="TestData\PC\1_JM4" />
     <None Include="TestData\PC\2_AS3" />
     <None Include="TestData\PS2AU\1 %27THE EXCHANGE%27" />
@@ -60,12 +64,12 @@
     <None Include="TestData\PS2\3 %27THE EXCHANGE%27" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Framework\Common.csproj">
+    <ProjectReference Include="..\Common\Common.csproj">
       <Project>{b12f8e99-e6dd-4e94-8d45-8d7b63990475}</Project>
       <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\GTA3\GTA3.csproj">
-      <Project>{1f301798-f654-4870-b3da-8df601f7f675}</Project>
+      <Project>{1F301798-F654-4870-B3DA-8DF601F7F675}</Project>
       <Name>GTA3</Name>
     </ProjectReference>
   </ItemGroup>

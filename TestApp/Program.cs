@@ -1,7 +1,8 @@
-﻿using GTASaveData.Common;
+﻿using GTASaveData;
 using GTASaveData.GTA3;
 using System;
-using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace TestApp
 {
@@ -27,16 +28,6 @@ namespace TestApp
             gta3Save.Store(outPath, system);
             Console.WriteLine("File saved.");
             Console.ReadKey();
-        }
-
-        private static void BuildingSwaps_ItemPropertyChanged(object sender, ItemPropertyChangedEventArgs e)
-        {
-            Console.WriteLine("Item changed!");
-        }
-
-        private static void BuildingSwaps_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            Console.WriteLine("Collection changed!");
         }
     }
 }

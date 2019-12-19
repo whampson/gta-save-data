@@ -1,10 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace GTASaveData.Common
+namespace GTASaveData
 {
+    /// <summary>
+    /// Game systems that can run GTA games.
+    /// </summary>
+    /// <remarks>
+    /// Bits 15:0 represent console types, bits 31:16 represent regions and other meta flags.
+    /// </remarks>
     [Flags]
-    public enum SystemType
+    public enum SystemType : int
     {
         [Description("(unspecified)")]
         Unspecified = 0,

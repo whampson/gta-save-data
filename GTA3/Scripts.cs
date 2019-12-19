@@ -1,12 +1,11 @@
-﻿using GTASaveData.Common;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Scripts : GTAObject,
+    public sealed class Scripts : SaveDataObject,
         IEquatable<Scripts>
     {
         public const int ContactCount = 16;
@@ -109,8 +108,7 @@ namespace GTASaveData.GTA3
             m_runningScripts = new FullyObservableCollection<RunningScript>();
         }
 
-        private Scripts(Serializer serializer, SystemType system)
-            : this()
+        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
         {
             int sizeOfScriptSpace = serializer.ReadInt32();
             m_globalVariables = new ObservableCollection<uint>(serializer.ReadArray<uint>(sizeOfScriptSpace / 4));
@@ -132,7 +130,7 @@ namespace GTASaveData.GTA3
             m_runningScripts = new FullyObservableCollection<RunningScript>(serializer.ReadArray<RunningScript>(numRunningScripts, system));
         }
 
-        private void Serialize(Serializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
         {
             serializer.Write(m_globalVariables.Count * 4);
             serializer.WriteArray(m_globalVariables);
@@ -182,25 +180,6 @@ namespace GTASaveData.GTA3
                 && m_largestMissionScriptSize.Equals(other.m_largestMissionScriptSize)
                 && m_numberOfMissionScripts.Equals(other.m_numberOfMissionScripts)
                 && m_runningScripts.SequenceEqual(other.m_runningScripts);
-        }
-
-        public override string ToString()
-        {
-            return BuildToString(new (string, object)[]
-            {
-                (nameof(GlobalVariables), GlobalVariables),
-                (nameof(OnAMissionFlag), OnAMissionFlag),
-                (nameof(Contacts), Contacts),
-                (nameof(Collectives), Collectives),
-                (nameof(NextFreeCollectiveIndex), NextFreeCollectiveIndex),
-                (nameof(BuildingSwaps), BuildingSwaps),
-                (nameof(InvisibilitySettings), InvisibilitySettings),
-                (nameof(UsingAMultiScriptFile), UsingAMultiScriptFile),
-                (nameof(MainScriptSize), MainScriptSize),
-                (nameof(LargestMissionScriptSize), LargestMissionScriptSize),
-                (nameof(NumberOfMissionScripts), NumberOfMissionScripts),
-                (nameof(RunningScripts), RunningScripts)
-            });
         }
     }
 }

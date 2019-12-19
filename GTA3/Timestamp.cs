@@ -1,9 +1,8 @@
-﻿using GTASaveData.Common;
-using System;
+﻿using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Timestamp : GTAObject,
+    public sealed class Timestamp : SaveDataObject,
         IEquatable<Timestamp>
     {
         private int m_year;
@@ -62,7 +61,7 @@ namespace GTASaveData.GTA3
             m_year = dateTime.Year;
         }
 
-        private Timestamp(Serializer serializer)
+        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
         {
             m_second = serializer.ReadInt32();
             m_minute = serializer.ReadInt32();
@@ -72,7 +71,7 @@ namespace GTASaveData.GTA3
             m_year = serializer.ReadInt32();
         }
 
-        private void Serialize(Serializer serializer)
+        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
         {
             serializer.Write(m_second);
             serializer.Write(m_minute);
@@ -116,11 +115,6 @@ namespace GTASaveData.GTA3
                 && m_hour.Equals(other.m_hour)
                 && m_minute.Equals(other.m_minute)
                 && m_second.Equals(other.m_second);
-        }
-
-        public override string ToString()
-        {
-            return ToDateTime().ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 }

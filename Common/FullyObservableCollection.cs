@@ -4,11 +4,11 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace GTASaveData.Common
+namespace GTASaveData
 {
     /// <summary>
-    /// An extension of <see cref="ObservableCollection{T}"/> that can monitor changes in item state,
-    /// as well as monitor changes in the collection itself.
+    /// An extension of <see cref="ObservableCollection{T}"/> that can monitor changes
+    /// both in each item's state and in the collection itself.
     /// </summary>
     /// <remarks>
     /// Adapted from http://code.i-harness.com/en/q/15c80f.

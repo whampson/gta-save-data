@@ -1,9 +1,8 @@
-﻿using GTASaveData.Common;
-using System;
+﻿using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Collective : GTAObject,
+    public sealed class Collective : SaveDataObject,
         IEquatable<Collective>
     {
         private int m_unknown0;
@@ -24,15 +23,16 @@ namespace GTASaveData.GTA3
         public Collective()
         {
             m_unknown0 = -1;
+            m_unknown0 = 0;
         }
 
-        private Collective(Serializer serializer)
+        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
         {
             m_unknown0 = serializer.ReadInt32();
             m_unknown1 = serializer.ReadInt32();
         }
 
-        private void Serialize(Serializer serializer)
+        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
         {
             serializer.Write(m_unknown0);
             serializer.Write(m_unknown1);
@@ -57,15 +57,6 @@ namespace GTASaveData.GTA3
 
             return m_unknown0.Equals(other.m_unknown0)
                 && m_unknown1.Equals(other.m_unknown1);
-        }
-
-        public override string ToString()
-        {
-            return BuildToString(new (string, object)[]
-            {
-                (nameof(Unknown0), Unknown0),
-                (nameof(Unknown1), Unknown1)
-            });
         }
     }
 }

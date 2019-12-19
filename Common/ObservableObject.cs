@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace GTASaveData.Common
+namespace GTASaveData
 {
     /// <summary>
-    /// Allows a WPF UI to detect changes in object state.
+    /// Allows changes in object state to propagate up to the view.
     /// </summary>
     /// <remarks>
     /// Adapted from Rachel Lim's ObservableObject class.

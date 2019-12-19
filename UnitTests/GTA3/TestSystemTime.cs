@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData;
 using GTASaveData.GTA3;
 using System;
 using Tests.Helpers;
@@ -7,8 +8,9 @@ using Xunit;
 namespace Tests.GTA3
 {
     public class TestSystemTime
+        : SaveDataObjectTestBase<SystemTime>
     {
-        public static SystemTime Generate()
+        public override SystemTime GenerateTestVector(SystemType system)
         {
             return new SystemTime(
                 new Faker().Date.Between(new DateTime(1970, 1, 1), DateTime.Now));
@@ -17,7 +19,7 @@ namespace Tests.GTA3
         [Fact]
         public void Sanity()
         {
-            SystemTime t0 = Generate();
+            SystemTime t0 = GenerateTestVector();
             SystemTime t1 = TestHelper.CreateSerializedCopy(t0);
 
             Assert.Equal(t0, t1);

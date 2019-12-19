@@ -1,21 +1,22 @@
 ﻿using Bogus;
-using GTASaveData.Common;
+using GTASaveData;
 using GTASaveData.GTA3;
-using System.Collections.ObjectModel;
-using System.Linq;
 using Tests.Helpers;
 using Xunit;
 
 namespace Tests.GTA3
 {
     public class TestRunningScript
+        : SaveDataObjectTestBase<RunningScript>
     {
         private const int SizePS2 = 0x80;
         private const int SizeNonPS2 = 0x88;
 
-        public static RunningScript Generate(bool isPS2 = false)
+        // TODO: assert serialized size
+
+        public override RunningScript GenerateTestVector(SystemType system)
         {
-            int stackSize = (isPS2) ? RunningScript.StackSizePS2 : RunningScript.StackSize;
+            int stackSize = system.HasFlag(SystemType.PS2) ? RunningScript.StackSizePS2 : RunningScript.StackSize;
             int numLocals = RunningScript.LocalVariablesCount;
 
             Faker<RunningScript> model = new Faker<RunningScript>()
@@ -44,7 +45,7 @@ namespace Tests.GTA3
         [Fact]
         public void Sanity()
         {
-            RunningScript x0 = Generate();
+            RunningScript x0 = GenerateTestVector();
             RunningScript x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0, x1);
@@ -54,7 +55,7 @@ namespace Tests.GTA3
         [Fact]
         public void SanityPS2()
         {
-            RunningScript x0 = Generate(isPS2: true);
+            RunningScript x0 = GenerateTestVector(SystemType.PS2);
             RunningScript x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data, SystemType.PS2);
             
             Assert.Equal(x0, x1);

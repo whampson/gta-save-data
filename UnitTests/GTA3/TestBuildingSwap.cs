@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData;
 using GTASaveData.GTA3;
 using Tests.Helpers;
 using Xunit;
@@ -6,8 +7,9 @@ using Xunit;
 namespace Tests.GTA3
 {
     public class TestBuildingSwap
+        : SaveDataObjectTestBase<BuildingSwap>
     {
-        public static BuildingSwap Generate()
+        public override BuildingSwap GenerateTestVector(SystemType system)
         {
             Faker<BuildingSwap> model = new Faker<BuildingSwap>()
                 .RuleFor(x => x.Type, f => f.PickRandom<ObjectType>())
@@ -21,7 +23,7 @@ namespace Tests.GTA3
         [Fact]
         public void Sanity()
         {
-            BuildingSwap x0 = Generate();
+            BuildingSwap x0 = GenerateTestVector();
             BuildingSwap x1 = TestHelper.CreateSerializedCopy(x0);
 
             Assert.Equal(x0, x1);

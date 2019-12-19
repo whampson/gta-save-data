@@ -1,9 +1,8 @@
-﻿using GTASaveData.Common;
-using System;
+﻿using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class SimpleVars : GTAObject,
+    public sealed class SimpleVars : SaveDataObject,
         IEquatable<SimpleVars>
     {
         public const int SizeAndroid = 0xB0;
@@ -287,8 +286,7 @@ namespace GTASaveData.GTA3
             m_compileDateAndTime = new Timestamp();
         }
 
-        private SimpleVars(Serializer serializer, SystemType system)
-            : this()
+        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
         {
             if (!system.HasFlag(SystemType.PS2))
             {
@@ -365,7 +363,7 @@ namespace GTASaveData.GTA3
             }
         }
 
-        private void Serialize(Serializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
         {
             if (!system.HasFlag(SystemType.PS2))
             {
@@ -512,50 +510,6 @@ namespace GTASaveData.GTA3
                 && m_inCarCameraMode.Equals(other.m_inCarCameraMode)
                 && m_onFootCameraMode.Equals(other.m_onFootCameraMode)
                 && m_isQuickSave.Equals(other.m_isQuickSave);
-        }
-
-        public override string ToString()
-        {
-            return BuildToString(new (string, object)[]
-            {
-                (nameof(LastMissionPassedName), LastMissionPassedName),
-                (nameof(FileId), FileId),
-                (nameof(SaveTime), SaveTime),
-                (nameof(CurrLevel), CurrLevel),
-                (nameof(CameraPosition), CameraPosition),
-                (nameof(MillisecondsPerGameMinute), MillisecondsPerGameMinute),
-                (nameof(LastClockTick), LastClockTick),
-                (nameof(GameClockHours), GameClockHours),
-                (nameof(GameClockMinutes), GameClockMinutes),
-                (nameof(TimeInMilliseconds), TimeInMilliseconds),
-                (nameof(TimeScale), TimeScale),
-                (nameof(TimeScale2), TimeScale2),
-                (nameof(TimeStep), TimeStep),
-                (nameof(TimeStep2), TimeStep2),
-                (nameof(TimeStepNonClipped), TimeStepNonClipped),
-                (nameof(FramesPerUpdate), FramesPerUpdate),
-                (nameof(FrameCounter), FrameCounter),
-                (nameof(OldWeatherType), OldWeatherType),
-                (nameof(NewWeatherType), NewWeatherType),
-                (nameof(ForcedWeatherType), ForcedWeatherType),
-                (nameof(InterpolationValue), InterpolationValue),
-                (nameof(PrefsControllerConfig), PrefsControllerConfig),
-                (nameof(PrefsMusicVolume), PrefsMusicVolume),
-                (nameof(PrefsSfxVolume), PrefsSfxVolume),
-                (nameof(PrefsUseVibration), PrefsUseVibration),
-                (nameof(PrefsStereoMono), PrefsStereoMono),
-                (nameof(PrefsRadioStation), PrefsRadioStation),
-                (nameof(PrefsBrightness), PrefsBrightness),
-                (nameof(PrefsUseWideScreen), PrefsUseWideScreen),
-                (nameof(PrefsShowTrails), PrefsShowTrails),
-                (nameof(PrefsShowSubtitles), PrefsShowSubtitles),
-                (nameof(PrefsLanguage), PrefsLanguage),
-                (nameof(CompileDateAndTime), CompileDateAndTime),
-                (nameof(WeatherTypeInList), WeatherTypeInList),
-                (nameof(InCarCameraMode), InCarCameraMode),
-                (nameof(OnFootCameraMode), OnFootCameraMode),
-                (nameof(IsQuickSave), IsQuickSave)
-            });
         }
     }
 }

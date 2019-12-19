@@ -1,9 +1,8 @@
-﻿using GTASaveData.Common;
-using System;
+﻿using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class BuildingSwap : GTAObject,
+    public sealed class BuildingSwap : SaveDataObject,
         IEquatable<BuildingSwap>
     {
         private ObjectType m_type;
@@ -37,11 +36,17 @@ namespace GTASaveData.GTA3
 
         public BuildingSwap()
         {
+            m_type = ObjectType.Static;
+            m_staticIndex = 0;
             m_newModelId = -1;
             m_oldModelId = -1;
         }
 
-        private BuildingSwap(Serializer serializer)
+        private BuildingSwap(SaveDataSerializer serializer, SystemType system)
+            : base(serializer, system)
+        { }
+
+        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
         {
             m_type = (ObjectType) serializer.ReadInt32();
             m_staticIndex = serializer.ReadInt32();
@@ -49,7 +54,7 @@ namespace GTASaveData.GTA3
             m_oldModelId = serializer.ReadInt32();
         }
 
-        private void Serialize(Serializer serializer)
+        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
         {
             serializer.Write((int) m_type);
             serializer.Write(m_staticIndex);
@@ -78,17 +83,6 @@ namespace GTASaveData.GTA3
                 && m_staticIndex.Equals(other.m_staticIndex)
                 && m_newModelId.Equals(other.m_newModelId)
                 && m_oldModelId.Equals(other.m_oldModelId);
-        }
-
-        public override string ToString()
-        {
-            return BuildToString(new (string, object)[]
-            {
-                (nameof(Type), Type),
-                (nameof(StaticIndex), StaticIndex),
-                (nameof(NewModelId), NewModelId),
-                (nameof(OldModelId), OldModelId)
-            });
         }
     }
 }

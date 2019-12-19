@@ -47,6 +47,7 @@
     <Compile Include="GTA3\TestContactInfo.cs" />
     <Compile Include="GTA3\TestInvisibilitySetting.cs" />
     <Compile Include="GTA3\TestRunningScript.cs" />
+    <Compile Include="GTA3\TestSaveData.cs" />
     <Compile Include="GTA3\TestScripts.cs" />
     <Compile Include="GTA3\TestSimpleVars.cs" />
     <Compile Include="GTA3\TestSystemTime.cs" />
@@ -56,9 +57,10 @@
     <Compile Include="Helpers\SerializationHelper.cs" />
     <Compile Include="Helpers\TestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SaveDataObjectTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Framework\Common.csproj">
+    <ProjectReference Include="..\Common\Common.csproj">
       <Project>{b12f8e99-e6dd-4e94-8d45-8d7b63990475}</Project>
       <Name>Common</Name>
     </ProjectReference>

@@ -1,9 +1,8 @@
-﻿using GTASaveData.Common;
-using System;
+﻿using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class InvisibilitySetting : GTAObject,
+    public sealed class InvisibilitySetting : SaveDataObject,
         IEquatable<InvisibilitySetting>
     {
         private ObjectType m_type;
@@ -24,13 +23,13 @@ namespace GTASaveData.GTA3
         public InvisibilitySetting()
         { }
 
-        private InvisibilitySetting(Serializer serializer)
+        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
         {
             m_type = (ObjectType) serializer.ReadInt32();
             m_staticIndex = serializer.ReadInt32();
         }
 
-        private void Serialize(Serializer serializer)
+        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
         {
             serializer.Write((int) m_type);
             serializer.Write(m_staticIndex);
@@ -55,15 +54,6 @@ namespace GTASaveData.GTA3
 
             return m_type.Equals(other.m_type)
                 && m_staticIndex.Equals(other.m_staticIndex);
-        }
-
-        public override string ToString()
-        {
-            return BuildToString(new (string, object)[]
-            {
-                (nameof(Type), Type),
-                (nameof(StaticIndex), StaticIndex)
-            });
         }
     }
 }

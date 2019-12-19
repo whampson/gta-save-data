@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData;
 using GTASaveData.GTA3;
 using Tests.Helpers;
 using Xunit;
@@ -6,8 +7,9 @@ using Xunit;
 namespace Tests.GTA3
 {
     public class TestContactInfo
+        : SaveDataObjectTestBase<ContactInfo>
     {
-        public static ContactInfo Generate()
+        public override ContactInfo GenerateTestVector(SystemType system)
         {
             Faker<ContactInfo> model = new Faker<ContactInfo>()
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
@@ -19,7 +21,7 @@ namespace Tests.GTA3
         [Fact]
         public void Sanity()
         {
-            ContactInfo c0 = Generate();
+            ContactInfo c0 = GenerateTestVector();
             ContactInfo c1 = TestHelper.CreateSerializedCopy(c0);
 
             Assert.Equal(c0, c1);

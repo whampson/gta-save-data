@@ -6,12 +6,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace GTASaveData.Common
+namespace GTASaveData
 {
     /// <summary>
-    /// 
+    /// Handles the reading and writing of binary data in a format suitable
+    /// for GTA savedata files.
     /// </summary>
-    public sealed class Serializer : IDisposable
+    public sealed class SaveDataSerializer : IDisposable
     {
         /// <summary>
         /// Aligns an address to the next multiple of the specified word size.
@@ -36,7 +37,7 @@ namespace GTASaveData.Common
         /// <typeparam name="T">The type of the object to create.</typeparam>
         /// <param name="buffer">The data to deserialize.</param>
         /// <returns>The deserialized object.</returns>
-        /// <exception cref="SerializationException">Thrown if something goes wrong during deserialization.</exception>
+        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during deserialization.</exception>
         public static T Deserialize<T>(byte[] buffer)
         {
             return Deserialize<T>(buffer, SystemType.Unspecified, 0, false);
@@ -49,7 +50,7 @@ namespace GTASaveData.Common
         /// <param name="buffer">The data to deserialize.</param>
         /// <param name="system">The system this data is formatted for.</param>
         /// <returns>The deserialized object.</returns>
-        /// <exception cref="SerializationException">Thrown if something goes wrong during deserialization.</exception>
+        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during deserialization.</exception>
         public static T Deserialize<T>(byte[] buffer, SystemType system)
         {
             return Deserialize<T>(buffer, system, 0, false);
@@ -63,7 +64,7 @@ namespace GTASaveData.Common
         /// <param name="system">The system this data is formatted for.</param>
         /// <param name="length">The length of the data to be deserialized. Note: only pertains to some types.</param>
         /// <returns>The deserialized object.</returns>
-        /// <exception cref="SerializationException">Thrown if something goes wrong during deserialization.</exception>
+        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during deserialization.</exception>
         public static T Deserialize<T>(byte[] buffer, SystemType system, int length)
         {
             return Deserialize<T>(buffer, system, length, false);
@@ -78,10 +79,10 @@ namespace GTASaveData.Common
         /// <param name="length">The length of the data to be deserialized. Note: only pertains to some types.</param>
         /// <param name="unicode">Indicates whether to decode characters as Unicode.</param>
         /// <returns>The deserialized object.</returns>
-        /// <exception cref="SerializationException">Thrown if something goes wrong during deserialization.</exception>
+        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during deserialization.</exception>
         public static T Deserialize<T>(byte[] buffer, SystemType system, int length, bool unicode)
         {
-            using (Serializer s = new Serializer(new MemoryStream(buffer)))
+            using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(buffer)))
             {
                 return s.GenericRead<T>(system, length, unicode);
             }
@@ -93,7 +94,7 @@ namespace GTASaveData.Common
         /// <typeparam name="T">The type of object to serialize.</typeparam>
         /// <param name="obj">The object to serialize.</param>
         /// <returns>The serialized object as a byte array.</returns>
-        /// <exception cref="SerializationException">Thrown if something goes wrong during serialization.</exception>
+        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during serialization.</exception>
         public static byte[] Serialize<T>(T obj)
         {
             return Serialize(obj, SystemType.Unspecified, 0, false);
@@ -106,7 +107,7 @@ namespace GTASaveData.Common
         /// <param name="obj">The object to serialize.</param>
         /// <param name="system">The system this data should be formatted for.</param>
         /// <returns>The serialized object as a byte array.</returns>
-        /// <exception cref="SerializationException">Thrown if something goes wrong during serialization.</exception>
+        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during serialization.</exception>
         public static byte[] Serialize<T>(T obj, SystemType system)
         {
             return Serialize(obj, system, 0, false);
@@ -120,7 +121,7 @@ namespace GTASaveData.Common
         /// <param name="system">The system this data should be formatted for.</param>
         /// <param name="length">The length of the data to be serialized. Note: only pertains to some types.</param>
         /// <returns>The serialized object as a byte array.</returns>
-        /// <exception cref="SerializationException">Thrown if something goes wrong during serialization.</exception>
+        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during serialization.</exception>
         public static byte[] Serialize<T>(T obj, SystemType system, int length)
         {
             return Serialize(obj, system, length, false);
@@ -135,12 +136,17 @@ namespace GTASaveData.Common
         /// <param name="length">The length of the data to be serialized. Note: only pertains to some types.</param>
         /// <param name="unicode">Indicates whether to encode characters as Unicode.</param>
         /// <returns>The serialized object as a byte array.</returns>
-        /// <exception cref="SerializationException">Thrown if something goes wrong during serialization.</exception>
+        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during serialization.</exception>
         public static byte[] Serialize<T>(T obj, SystemType system, int length, bool unicode)
         {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
             using (MemoryStream m = new MemoryStream())
             {
-                using (Serializer s = new Serializer(m))
+                using (SaveDataSerializer s = new SaveDataSerializer(m))
                 {
                     s.GenericWrite(obj, system, length, unicode);
                 }
@@ -154,11 +160,11 @@ namespace GTASaveData.Common
         private bool m_disposed;
 
         /// <summary>
-        /// Creates a new <see cref="GTAObject"/> using the specified
+        /// Creates a new <see cref="SaveDataSerializer"/> using the specified
         /// stream as the serialization endpoint.
         /// </summary>
         /// <param name="baseStream">A readable and writable data stream.</param>
-        public Serializer(Stream baseStream)
+        public SaveDataSerializer(Stream baseStream)
         {
             if (baseStream == null)
             {
@@ -198,7 +204,7 @@ namespace GTASaveData.Common
 
         /// <summary>
         /// Reads an n-byte Boolean value.
-        /// False is represented by all bits being 0.
+        /// 'False' is represented by all bits being 0.
         /// </summary>
         /// <param name="byteCount">The number of bytes to treat as a single Boolean.</param>
         /// <returns>A bool.</returns>
@@ -250,11 +256,11 @@ namespace GTASaveData.Common
         /// <returns>A char.</returns>
         public char ReadChar(bool unicode = false)
         {
-            // BinaryWriter::ReadChar() relies on the encoding specified in the constructor
+            // BinaryWriter#ReadChar() relies on the encoding specified in the constructor
             // to determine how many bytes to write for a character. Since GTA saves sometimes
             // have a mixture of Unicode and ASCII strings, and we can't change the encoding
             // once the writer is created, we're going to bypass the built-in encoding processing
-            // altogether. "Unicode" in this sense means UTF-16, or 16-bit characters.
+            // altogether. "Unicode" in this sense means UTF-16, i.e. 16-bit characters.
 
             return (unicode)
                 ? (char) ReadUInt16()
@@ -262,7 +268,7 @@ namespace GTASaveData.Common
         }
 
         /// <summary>
-        /// Reads a 32-bit single-precision floating-point number.
+        /// Reads a 32-bit single precision floating-point number.
         /// </summary>
         /// <returns>A float.</returns>
         public float ReadSingle()
@@ -271,7 +277,7 @@ namespace GTASaveData.Common
         }
 
         /// <summary>
-        /// Reads a 64-bit double-precision floating-point number.
+        /// Reads a 64-bit double precision floating-point number.
         /// </summary>
         /// <returns>A double.</returns>
         public double ReadDouble()
@@ -352,12 +358,15 @@ namespace GTASaveData.Common
         }
 
         /// <summary>
-        /// Reads a string of the specified length. If a zero character is found, the
-        /// string will be truncated at that point. If the specified length is
-        /// nonzero, the stream position will advance until the length is reached.
+        /// Reads a string of the specified length.
         /// </summary>
-        /// <param name="length">The number of characters to read. Specify 0 to read until the first zero character.</param>
-        /// <param name="unicode">A value indicating whether to read unicode characters.</param>
+        /// <remarks>
+        /// If a null character is found, the returned string will be terminated at
+        /// that point. If the specified length is nonzero, the stream position will
+        /// advance until the length is reached, even if a null character is seen.
+        /// </remarks>
+        /// <param name="length">The number of characters to read. Specify 0 to read until the first null character.</param>
+        /// <param name="unicode">A value indicating whether to read Unicode characters.</param>
         /// <returns>A string.</returns>
         public string ReadString(int length, bool unicode = false)
         {
@@ -387,25 +396,29 @@ namespace GTASaveData.Common
         }
 
         /// <summary>
-        /// Reads an object of the specified type. Object creation occurs by invoking that object's
-        /// deserialization constructor.
+        /// Reads an object.
         /// </summary>
         /// <typeparam name="T">The type of object to read.</typeparam>
         /// <param name="systemType">The system that the data is formatted for.</param>
         /// <returns>An object.</returns>
-        /// <exception cref="SerializationException">Thrown if something goes wrong during deserialization.</exception>
+        /// <exception cref="SaveDataSerializationException">Thrown if an error occurs during deserialization.</exception>
         public T ReadObject<T>(SystemType systemType = SystemType.Unspecified)
         {
+            const BindingFlags CtorFlags = BindingFlags.Public
+                | BindingFlags.NonPublic
+                | BindingFlags.Instance
+                | BindingFlags.CreateInstance;
+
             ConstructorInfo ctor0 = typeof(T).GetConstructor(
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.CreateInstance | BindingFlags.Instance,
+                CtorFlags,
                 null,
-                new[] { typeof(Serializer), typeof(SystemType) },
+                new[] { typeof(SaveDataSerializer), typeof(SystemType) },
                 null
             );
             ConstructorInfo ctor1 = typeof(T).GetConstructor(
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.CreateInstance | BindingFlags.Instance,
+                CtorFlags,
                 null,
-                new[] { typeof(Serializer) },
+                new[] { typeof(SaveDataSerializer) },
                 null
             );
 
@@ -413,15 +426,13 @@ namespace GTASaveData.Common
             {
                 return (T) ctor0.Invoke(new object[] { this, systemType });
             }
-            else if (ctor1 != null)
+            if (ctor1 != null)
             {
-                return (T) ctor1.Invoke(new object[] { this });
+                return (T) ctor0.Invoke(new object[] { this });
             }
 
-            throw new SerializationException(
+            throw new SaveDataSerializationException(
                    string.Format("The type '{0}' does not implement a de-serialization constructor.", typeof(T).Name));
-
-            
         }
 
         /// <summary>
@@ -444,6 +455,10 @@ namespace GTASaveData.Common
             return items.ToArray();
         }
 
+        /// <summary>
+        /// Writes an n-byte Boolean value.
+        /// </summary>
+        /// <param name="byteCount">The number of bytes to write.</param>
         public void Write(bool value, int byteCount = 1)
         {
             byte[] buffer = new byte[byteCount];
@@ -452,28 +467,45 @@ namespace GTASaveData.Common
             Write(buffer);
         }
 
+        /// <summary>
+        /// Writes an 8-bit unsigned integer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void Write(byte value)
         {
             m_writer.Write(value);
         }
 
+        /// <summary>
+        /// Writes an 8-bit integer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void Write(sbyte value)
         {
             m_writer.Write(value);
         }
 
+        /// <summary>
+        /// Writes a byte array.
+        /// </summary>
+        /// <param name="buffer">The byte array to write.</param>
         public void Write(byte[] buffer)
         {
             m_writer.Write(buffer);
         }
 
+        /// <summary>
+        /// Writes an ASCII or Unicode character. Note: Surrogate characters are not supported.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <param name="unicode">A value indicating whether to read a unicode character.</param>
         public void Write(char value, bool unicode = false)
         {
-            // BinaryWriter::Write(char) relies on the encoding specified in the constructor
+            // BinaryWriter#Write(char) relies on the encoding specified in the constructor
             // to determine how many bytes to write for a character. Since GTA saves sometimes
             // have a mixture of Unicode and ASCII strings, and we can't change the encoding
             // once the writer is created, we're going to bypass the encoding altogether.
-            // "Unicode" in this sense means UTF-16, or 16-bit characters.
+            // "Unicode" in this sense means UTF-16, i.e. 16-bit characters.
 
             if (char.IsSurrogate(value))
             {
@@ -490,46 +522,100 @@ namespace GTASaveData.Common
             }
         }
 
+        /// <summary>
+        /// Writes a 32-bit single precision floating-point value.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void Write(float value)
         {
             m_writer.Write(value);
         }
 
+        /// <summary>
+        /// Writes a 32-bit double precision floating-point value.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void Write(double value)
         {
             m_writer.Write(value);
         }
 
+        /// <summary>
+        /// Writes a 16-bit integer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void Write(short value)
         {
             m_writer.Write(value);
         }
 
+        /// <summary>
+        /// Writes a 32-bit integer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void Write(int value)
         {
             m_writer.Write(value);
         }
 
+        /// <summary>
+        /// Writes a 64-bit integer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void Write(long value)
         {
             m_writer.Write(value);
         }
 
+        /// <summary>
+        /// Writes a 16-bit unsigned integer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void Write(ushort value)
         {
             m_writer.Write(value);
         }
 
+        /// <summary>
+        /// Writes a 32-bit unsigned integer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void Write(uint value)
         {
             m_writer.Write(value);
         }
 
+        /// <summary>
+        /// Write an 64-bit integer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void Write(ulong value)
         {
             m_writer.Write(value);
         }
 
+        /// <summary>
+        /// Writes a string.
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        /// <param name="value">
+        /// The string to write.
+        /// </param>
+        /// <param name="length">
+        /// The number of characters to write. The string will be truncated if this value is less than
+        /// the string's length. The string will be zero-padded on the right side if this value exceeds
+        /// the string's length.
+        /// </param>
+        /// <param name="unicode">
+        /// A value indicating whether to write Unicode characters.
+        /// </param>
+        /// <param name="zeroTerminate">
+        /// A value indicating whether to terminate the string with a null character (C-style).
+        /// If the length is unspecified, the null character will be added to the end of the
+        /// string. Otherwise, the string will be truncated if necessary so as to not exceed
+        /// the specified length when the null character is written.
+        /// </param>
         public void Write(string value, int? length = null, bool unicode = false, bool zeroTerminate = true)
         {
             Encoding encoding = (unicode)
@@ -561,22 +647,34 @@ namespace GTASaveData.Common
             Write(encoding.GetBytes(value));
         }
 
+        /// <summary>
+        /// Writes an object.
+        /// </summary>
+        /// <typeparam name="T">The type of object to write.</typeparam>
+        /// <param name="systemType">The system that the data is formatted for.</param>
+        /// <exception cref="SaveDataSerializationException">Thrown if an error occurs during serialization.</exception>
         public void WriteObject<T>(T value, SystemType systemType = SystemType.Unspecified)
         {
-            const string SerializationMethodName = "Serialize";
+            const BindingFlags MethodFlags = BindingFlags.Public
+                | BindingFlags.NonPublic
+                | BindingFlags.Instance
+                | BindingFlags.FlattenHierarchy;
+            string methodName = string.Format("{0}.{1}",
+                typeof(ISaveDataSerializable).FullName,
+                nameof(ISaveDataSerializable.Serialize));
 
             MethodInfo method0 = typeof(T).GetMethod(
-                SerializationMethodName,
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+                methodName,
+                MethodFlags,
                 null,
-                new Type[] { typeof(Serializer), typeof(SystemType) },
+                new Type[] { typeof(SaveDataSerializer), typeof(SystemType) },
                 null
             );
             MethodInfo method1 = typeof(T).GetMethod(
-                SerializationMethodName,
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+                methodName,
+                MethodFlags,
                 null,
-                new Type[] { typeof(Serializer) },
+                new Type[] { typeof(SaveDataSerializer) },
                 null
             );
 
@@ -590,7 +688,7 @@ namespace GTASaveData.Common
             }
             else
             {
-                throw new SerializationException(
+                throw new SaveDataSerializationException(
                     string.Format("The type '{0}' does not implement a serialization function.", typeof(T).Name));
             }
         }

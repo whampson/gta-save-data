@@ -1,11 +1,10 @@
-﻿using GTASaveData.Common;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class RunningScript : GTAObject,
+    public sealed class RunningScript : SaveDataObject,
         IEquatable<RunningScript>
     {
         private const int NameLength = 8;
@@ -147,8 +146,7 @@ namespace GTASaveData.GTA3
             m_localVariables = new ObservableCollection<uint>();
         }
 
-        private RunningScript(Serializer serializer, SystemType system)
-            : this()
+        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
         {
             int stackSize = system.HasFlag(SystemType.PS2)
                 ? StackSizePS2
@@ -177,7 +175,7 @@ namespace GTASaveData.GTA3
             serializer.Align();
         }
 
-        private void Serialize(Serializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
         {
             int stackSize = system.HasFlag(SystemType.PS2)
                 ? StackSizePS2
@@ -241,31 +239,6 @@ namespace GTASaveData.GTA3
                 && m_isWastedOrBustedCheckEnabled.Equals(other.m_isWastedOrBustedCheckEnabled)
                 && m_isWastedOrBusted.Equals(other.m_isWastedOrBusted)
                 && m_isMission.Equals(other.m_isMission);
-        }
-
-        public override string ToString()
-        {
-            return BuildToString(new (string, object)[]
-            {
-                (nameof(NextScript), NextScript),
-                (nameof(PrevScript), PrevScript),
-                (nameof(Name), Name),
-                (nameof(InstructionPointer), InstructionPointer),
-                (nameof(Stack), Stack),
-                (nameof(StackPointer), StackPointer),
-                (nameof(LocalVariables), LocalVariables),
-                (nameof(TimerA), TimerA),
-                (nameof(TimerB), TimerB),
-                (nameof(IfResult), IfResult),
-                (nameof(IsMissionScript), IsMissionScript),
-                (nameof(IsActive), IsActive),
-                (nameof(WakeTime), WakeTime),
-                (nameof(IfNumber), IfNumber),
-                (nameof(NotFlag), NotFlag),
-                (nameof(IsWastedOrBustedCheckEnabled), IsWastedOrBustedCheckEnabled),
-                (nameof(IsWastedOrBusted), IsWastedOrBusted),
-                (nameof(IsMission), IsMission)
-            });
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData;
 using GTASaveData.GTA3;
 using Tests.Helpers;
 using Xunit;
@@ -6,8 +7,9 @@ using Xunit;
 namespace Tests.GTA3
 {
     public class TestCollective
+        : SaveDataObjectTestBase<Collective>
     {
-        public static Collective Generate()
+        public override Collective GenerateTestVector(SystemType system)
         {
             Faker<Collective> model = new Faker<Collective>()
                 .RuleFor(x => x.Unknown0, f => f.Random.Int())
@@ -19,7 +21,7 @@ namespace Tests.GTA3
         [Fact]
         public void Sanity()
         {
-            Collective c0 = Generate();
+            Collective c0 = GenerateTestVector();
             Collective c1 = TestHelper.CreateSerializedCopy(c0);
 
             Assert.Equal(c0, c1);

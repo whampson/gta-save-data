@@ -1,9 +1,8 @@
-﻿using GTASaveData.Common;
-using System;
+﻿using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Vector3d : GTAObject,
+    public sealed class Vector3d : SaveDataObject,
         IEquatable<Vector3d>
     {
         private float m_x;
@@ -31,14 +30,14 @@ namespace GTASaveData.GTA3
         public Vector3d()
         { }
 
-        private Vector3d(Serializer serializer)
+        protected override void ReadObjectData(SaveDataSerializer serializer, SystemType system)
         {
             m_x = serializer.ReadSingle();
             m_y = serializer.ReadSingle();
             m_z = serializer.ReadSingle();
         }
 
-        private void Serialize(Serializer serializer)
+        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
         {
             serializer.Write(m_x);
             serializer.Write(m_y);
@@ -65,11 +64,6 @@ namespace GTASaveData.GTA3
             return m_x.Equals(other.m_x)
                 && m_y.Equals(other.m_y)
                 && m_z.Equals(other.m_z);
-        }
-
-        public override string ToString()
-        {
-            return string.Format("<{0:0.###},{1:0.###},{2:0.###}>", m_x, m_y, m_z);
         }
     }
 }

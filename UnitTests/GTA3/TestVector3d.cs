@@ -1,13 +1,16 @@
 ﻿using Bogus;
+using GTASaveData;
 using GTASaveData.GTA3;
+using System;
 using Tests.Helpers;
 using Xunit;
 
 namespace Tests.GTA3
 {
     public class TestVector3d
+        : SaveDataObjectTestBase<Vector3d>
     {
-        public static Vector3d Generate()
+        public override Vector3d GenerateTestVector(SystemType system)
         {
             Faker<Vector3d> model = new Faker<Vector3d>()
                 .RuleFor(x => x.X, f => f.Random.Float(-4000, 4000))
@@ -20,7 +23,7 @@ namespace Tests.GTA3
         [Fact]
         public void Sanity()
         {
-            Vector3d v0 = Generate();
+            Vector3d v0 = GenerateTestVector();
             Vector3d v1 = TestHelper.CreateSerializedCopy(v0);
 
             Assert.Equal(v0, v1);
