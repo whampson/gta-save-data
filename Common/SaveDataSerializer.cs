@@ -399,10 +399,10 @@ namespace GTASaveData
         /// Reads an object.
         /// </summary>
         /// <typeparam name="T">The type of object to read.</typeparam>
-        /// <param name="systemType">The system that the data is formatted for.</param>
+        /// <param name="system">The system that the data is formatted for.</param>
         /// <returns>An object.</returns>
         /// <exception cref="SaveDataSerializationException">Thrown if an error occurs during deserialization.</exception>
-        public T ReadObject<T>(SystemType systemType = SystemType.Unspecified)
+        public T ReadObject<T>(SystemType system = SystemType.Unspecified)
         {
             const BindingFlags CtorFlags = BindingFlags.Public
                 | BindingFlags.NonPublic
@@ -424,7 +424,7 @@ namespace GTASaveData
 
             if (ctor0 != null)
             {
-                return (T) ctor0.Invoke(new object[] { this, systemType });
+                return (T) ctor0.Invoke(new object[] { this, system });
             }
             if (ctor1 != null)
             {
@@ -651,9 +651,9 @@ namespace GTASaveData
         /// Writes an object.
         /// </summary>
         /// <typeparam name="T">The type of object to write.</typeparam>
-        /// <param name="systemType">The system that the data is formatted for.</param>
+        /// <param name="system">The system that the data is formatted for.</param>
         /// <exception cref="SaveDataSerializationException">Thrown if an error occurs during serialization.</exception>
-        public void WriteObject<T>(T value, SystemType systemType = SystemType.Unspecified)
+        public void WriteObject<T>(T value, SystemType system = SystemType.Unspecified)
         {
             const string MethodName = nameof(ISaveDataSerializable.WriteObjectData);
             const BindingFlags MethodFlags = BindingFlags.Public
@@ -678,7 +678,7 @@ namespace GTASaveData
 
             if (method0 != null)
             {
-                method0.Invoke(value, new object[] { this, systemType });
+                method0.Invoke(value, new object[] { this, system });
             }
             else if (method1 != null)
             {
@@ -691,7 +691,7 @@ namespace GTASaveData
             }
         }
 
-        public void WriteArray<T>(ObservableCollection<T> items, int? count = null, SystemType systemType = SystemType.Unspecified, int? itemLength = null, bool unicode = false)
+        public void WriteArray<T>(ObservableCollection<T> items, int? count = null, SystemType system = SystemType.Unspecified, int? itemLength = null, bool unicode = false)
             where T : new()
         {
             int capacity = items.Count;
@@ -699,16 +699,16 @@ namespace GTASaveData
             {
                 if (i < capacity)
                 {
-                    GenericWrite(items.ElementAt(i), systemType, itemLength ?? 0, unicode);
+                    GenericWrite(items.ElementAt(i), system, itemLength ?? 0, unicode);
                 }
                 else
                 {
-                    GenericWrite(new T(), systemType, itemLength ?? 0, unicode);
+                    GenericWrite(new T(), system, itemLength ?? 0, unicode);
                 }
             }
         }
 
-        private T GenericRead<T>(SystemType systemType, int length, bool unicode)
+        private T GenericRead<T>(SystemType system, int length, bool unicode)
         {
             Type t = typeof(T);
             object ret;
@@ -769,13 +769,13 @@ namespace GTASaveData
             }
             else
             {
-                ret = ReadObject<T>(systemType);
+                ret = ReadObject<T>(system);
             }
 
             return (T) ret;
         }
 
-        private void GenericWrite<T>(T value, SystemType systemType, int length, bool unicode)
+        private void GenericWrite<T>(T value, SystemType system, int length, bool unicode)
         {
             Type t = typeof(T);
 
@@ -833,7 +833,7 @@ namespace GTASaveData
             }
             else
             {
-                WriteObject(value, systemType);
+                WriteObject(value, system);
             }
         }
 

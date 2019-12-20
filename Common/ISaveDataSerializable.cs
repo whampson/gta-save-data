@@ -1,7 +1,7 @@
 ﻿namespace GTASaveData
 {
     /// <summary>
-    /// Allows an object to be serialized for storage in a GTA savedata file.
+    /// Allows an object to control its own serialization for storage in a GTA savedata file.
     /// </summary>
     public interface ISaveDataSerializable
     {

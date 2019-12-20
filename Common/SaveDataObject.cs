@@ -7,20 +7,10 @@ namespace GTASaveData
     /// </summary>
     public abstract class SaveDataObject : ObservableObject, ISaveDataSerializable
     {
-        //protected SaveDataObject()
-        //{ }
-
-        //protected SaveDataObject(SaveDataSerializer serializer, SystemType system)
-        //{
-        //    ReadObjectData(serializer, system);
-        //}
-
         void ISaveDataSerializable.WriteObjectData(SaveDataSerializer serializer, SystemType system)
         {
             WriteObjectData(serializer, system);
         }
-
-        //protected abstract void ReadObjectData(SaveDataSerializer serializer, SystemType system);
 
         protected abstract void WriteObjectData(SaveDataSerializer serializer, SystemType system);
 
