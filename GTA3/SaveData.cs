@@ -297,7 +297,7 @@ namespace GTASaveData.GTA3
             while (!doneReading)
             {
                 tmp = ReadBlock(serializer, null);
-                using (SaveDataSerializer blockStream = new SaveDataSerializer(new MemoryStream(tmp)))
+                using (SaveDataSerializer blockStream = SaveDataSerializer.CreateNew(new MemoryStream(tmp)))
                 {
                     if (system.HasFlag(SystemType.PS2))
                     {
@@ -505,7 +505,8 @@ namespace GTASaveData.GTA3
                     {
                         length = maxBlockSize;
                     }
-                    payload = CreateBlock(new ByteBuffer(length));
+                    //payload = CreateBlock(new ByteBuffer(length));
+                    payload = CreatePaddingBlock(length);
                 }
 
                 serializer.Write(payload);
@@ -529,7 +530,7 @@ namespace GTASaveData.GTA3
         {
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (SaveDataSerializer s = SaveDataSerializer.CreateNew(m))
                 {
                     WriteBlock(s, tag, chunks);
                 }
@@ -537,6 +538,19 @@ namespace GTASaveData.GTA3
                 return m.ToArray();
             }
         }
+
+        private byte[] CreatePaddingBlock(int length)
+        {
+            using (MemoryStream m = new MemoryStream())
+            {
+                using (SaveDataSerializer s = SaveDataSerializer.CreateNew(m))
+                {
+                    s.WritePadding(length);
+                }
+
+                return CreateBlock(m.ToArray());
+            }
+       }
 
         private ByteBuffer ReadBlock(SaveDataSerializer s, string tag = null)
         {

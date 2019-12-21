@@ -14,7 +14,7 @@ namespace Tests.Helpers
         {
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (SaveDataSerializer s = SaveDataSerializer.CreateNew(m))
                 {
                     s.Write(x, length, unicode, zeroTerminate);
                 }
@@ -30,7 +30,7 @@ namespace Tests.Helpers
 
         public static string FromBytes(byte[] data, bool unicode = false)
         {
-            using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(data)))
+            using (SaveDataSerializer s = SaveDataSerializer.CreateNew(new MemoryStream(data)))
             {
                 return s.ReadString(unicode: unicode);
             }
@@ -38,7 +38,7 @@ namespace Tests.Helpers
 
         public static string FromBytes(byte[] data, int length, bool unicode = false)
         {
-            using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(data)))
+            using (SaveDataSerializer s = SaveDataSerializer.CreateNew(new MemoryStream(data)))
             {
                 return s.ReadString(length, unicode);
             }

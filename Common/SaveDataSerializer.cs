@@ -14,13 +14,48 @@ namespace GTASaveData
     /// </summary>
     public sealed class SaveDataSerializer : IDisposable
     {
+        public enum PaddingMode
+        {
+            Zeros,
+            Random,
+            Sequence
+        };
+
+        static SaveDataSerializer()
+        {
+            DefaultPadding = PaddingMode.Zeros;
+            DefaultPaddingSequence = new byte[1] { 0 };
+        }
+
+        public static PaddingMode DefaultPadding
+        {
+            get;
+            set;
+        }
+
+        public static byte[] DefaultPaddingSequence
+        {
+            get;
+            set;
+        }
+
+        public static SaveDataSerializer CreateNew(Stream baseStream)
+        {
+            return new SaveDataSerializer(baseStream)
+            {
+                Padding = DefaultPadding,
+                PaddingSequence = DefaultPaddingSequence
+            };
+        }
+
+        // TODO: why is this its own method? Why not include it in Align()?
         /// <summary>
         /// Aligns an address to the next multiple of the specified word size.
         /// </summary>
         /// <param name="address">The address to align.</param>
         /// <param name="wordSize">The word size to align to. Note: must be a power of 2.</param>
         /// <returns>The aligned address.</returns>
-        public static long Align(long address, int wordSize = 4)
+        public static long GetAlignedAddress(long address, int wordSize = 4)
         {
             if (wordSize < 1 || ((wordSize - 1) & wordSize) != 0)
             {
@@ -82,7 +117,7 @@ namespace GTASaveData
         /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during deserialization.</exception>
         public static T Deserialize<T>(byte[] buffer, SystemType system, int length, bool unicode)
         {
-            using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(buffer)))
+            using (SaveDataSerializer s = CreateNew(new MemoryStream(buffer)))
             {
                 return s.GenericRead<T>(system, length, unicode);
             }
@@ -146,7 +181,7 @@ namespace GTASaveData
 
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (SaveDataSerializer s = CreateNew(m))
                 {
                     s.GenericWrite(obj, system, length, unicode);
                 }
@@ -164,7 +199,7 @@ namespace GTASaveData
         /// stream as the serialization endpoint.
         /// </summary>
         /// <param name="baseStream">A readable and writable data stream.</param>
-        public SaveDataSerializer(Stream baseStream)
+        private SaveDataSerializer(Stream baseStream)
         {
             if (baseStream == null)
             {
@@ -189,6 +224,18 @@ namespace GTASaveData
             get { return m_reader.BaseStream; }
         }
 
+        public PaddingMode Padding
+        {
+            get;
+            set;
+        }
+
+        public byte[] PaddingSequence
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Aligns the current position in the serialization stream to a multiple
         /// of the specified word size.
@@ -197,9 +244,9 @@ namespace GTASaveData
         public void Align(int wordSize = 4)
         {
             long pos = BaseStream.Position;
-            long num = Align(pos, wordSize) - pos;
+            int num = (int) (GetAlignedAddress(pos, wordSize) - pos);
 
-            BaseStream.Write(new byte[num], 0, (int) num);
+            WritePadding(num);
         }
 
         /// <summary>
@@ -618,6 +665,8 @@ namespace GTASaveData
         /// </param>
         public void Write(string value, int? length = null, bool unicode = false, bool zeroTerminate = true)
         {
+            // TODO: rewrite/cleanup for new padding scheme
+
             Encoding encoding = (unicode)
                 ? Encoding.Unicode
                 : Encoding.ASCII;
@@ -636,15 +685,22 @@ namespace GTASaveData
             if (value.Length >= actualLength)
             {
                 value = (zeroTerminate)
-                    ? value.Substring(0, actualLength - 1).PadRight(actualLength, '\0')
+                    ? value.Substring(0, actualLength - 1) + '\0'
                     : value.Substring(0, actualLength);
             }
             else
             {
-                value = value.PadRight(actualLength, '\0');
+                value += '\0';
+            }
+
+            int numPadding = (actualLength - value.Length);
+            if (unicode)
+            {
+                numPadding *= 2;
             }
 
             Write(encoding.GetBytes(value));
+            WritePadding(numPadding);
         }
 
         /// <summary>
@@ -704,6 +760,41 @@ namespace GTASaveData
                 else
                 {
                     GenericWrite(new T(), system, itemLength ?? 0, unicode);
+                }
+            }
+        }
+
+        public void WritePadding(int length)
+        {
+            switch (Padding)
+            {
+                case PaddingMode.Zeros:
+                {
+                    Write(Enumerable.Repeat<byte>(0, length).ToArray());
+                    break;
+                }
+
+                case PaddingMode.Random:
+                {
+                    byte[] pad = new byte[length];
+                    Random rand = new Random();
+
+                    rand.NextBytes(pad);
+                    Write(pad);
+                    break;
+                }
+
+                case PaddingMode.Sequence:
+                {
+                    byte[] pad = new byte[length];
+                    byte[] seq = PaddingSequence ?? new byte[1] { 0 };
+
+                    for (int i = 0; i < length; i++)
+                    {
+                        pad[i] = seq[i % seq.Length];
+                    }
+                    Write(pad);
+                    break;
                 }
             }
         }
