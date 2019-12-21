@@ -1,25 +1,20 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
     public sealed class SimpleVars : SaveDataObject,
         IEquatable<SimpleVars>
     {
-        public const int SizeAndroid = 0xB0;
-        public const int SizeIOS = 0xB0;
-        public const int SizePC = 0xBC;
-        public const int SizePS2 = 0xB0;
-        public const int SizePS2AU = 0xA8;
-        public const int SizePS2JP = 0xB0;
-        public const int SizeXbox = 0xBC;
+        public const int LastMissionPassedNameLength = 24;
 
-        private const int NameLength = 24;
-
-        private const uint FileIdJP = 0x31400;
-        private const uint FileIdNonJP = 0x31401;
+        // This is the number of bytes in a GTA3 save excluding the 4-byte block size
+        // values that appear before each outer data block. It shows up in SimpleVars
+        // despite not being used at all by the game. Non-Japanese versions add 1 to
+        // this number for some reason.
+        private const uint TotalBlockDataSize = 0x31400;
 
         private string m_lastMissionPassedName;
-        private uint m_fileId;
         private SystemTime m_saveTime;
         private Level m_currLevel;
         private Vector3d m_cameraPosition;
@@ -60,12 +55,6 @@ namespace GTASaveData.GTA3
         {
             get { return m_lastMissionPassedName; }
             set { m_lastMissionPassedName = value; OnPropertyChanged(); }
-        }
-
-        public uint FileId
-        {
-            get { return m_fileId; }
-            set { m_fileId = value; OnPropertyChanged(); }
         }
 
         public SystemTime SaveTime
@@ -291,13 +280,14 @@ namespace GTASaveData.GTA3
         {
             if (!system.HasFlag(SystemType.PS2))
             {
-                m_lastMissionPassedName = serializer.ReadString(NameLength, unicode: true);
+                m_lastMissionPassedName = serializer.ReadString(LastMissionPassedNameLength, unicode: true);
                 if (system.HasFlag(SystemType.PC) || system.HasFlag(SystemType.Xbox))
                 {
                     m_saveTime = serializer.ReadObject<SystemTime>();
                 }
             }
-            m_fileId = serializer.ReadUInt32();
+            int constant = serializer.ReadInt32();
+            Debug.Assert(constant == TotalBlockDataSize || constant == (TotalBlockDataSize + 1));
             m_currLevel = (Level) serializer.ReadUInt32();
             m_cameraPosition = serializer.ReadObject<Vector3d>();
             m_millisecondsPerGameMinute = serializer.ReadUInt32();
@@ -368,13 +358,13 @@ namespace GTASaveData.GTA3
         {
             if (!system.HasFlag(SystemType.PS2))
             {
-                serializer.Write(m_lastMissionPassedName, NameLength, unicode: true);
+                serializer.Write(m_lastMissionPassedName, LastMissionPassedNameLength, unicode: true);
                 if (system.HasFlag(SystemType.PC) || system.HasFlag(SystemType.Xbox))
                 {
                     serializer.WriteObject(m_saveTime);
                 }
             }
-            serializer.Write(system.HasFlag(SystemType.PS2JP) ? FileIdJP : FileIdNonJP);
+            serializer.Write(system.HasFlag(SystemType.PS2JP) ? TotalBlockDataSize : TotalBlockDataSize + 1);
             serializer.Write((int) m_currLevel);
             serializer.WriteObject(m_cameraPosition);
             serializer.Write(m_millisecondsPerGameMinute);
@@ -441,22 +431,6 @@ namespace GTASaveData.GTA3
             }
         }
 
-        public static int GetSize(SystemType sys)
-        {
-            switch (sys)
-            {
-                case SystemType.Android: return SizeAndroid;
-                case SystemType.IOS:     return SizeIOS;
-                case SystemType.PC:      return SizePC;
-                case SystemType.PS2:     return SizePS2;
-                case SystemType.PS2AU:   return SizePS2AU;
-                case SystemType.PS2JP:   return SizePS2JP;
-                case SystemType.Xbox:    return SizeXbox;
-                default:
-                    throw new ArgumentException("Invalid system type.", nameof(sys));
-            }
-        }
-
         public override int GetHashCode()
         {
             return base.GetHashCode();
@@ -475,7 +449,6 @@ namespace GTASaveData.GTA3
             }
 
             return m_lastMissionPassedName.Equals(other.m_lastMissionPassedName)
-                && m_fileId.Equals(other.m_fileId)
                 && m_saveTime.Equals(other.m_saveTime)
                 && m_currLevel.Equals(other.m_currLevel)
                 && m_cameraPosition.Equals(other.m_cameraPosition)

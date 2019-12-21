@@ -12,6 +12,7 @@ namespace GTASaveData.GTA3
         public const int CollectiveCount = 32;
         public const int BuildingSwapCount = 25;
         public const int InvisibilitySettingCount = 20;
+        private const int UnknownConstant = 0x3C8;
 
         private ObservableCollection<uint> m_globalVariables;
         private int m_onAMissionFlag;
@@ -113,7 +114,7 @@ namespace GTASaveData.GTA3
             int sizeOfScriptSpace = serializer.ReadInt32();
             m_globalVariables = new ObservableCollection<uint>(serializer.ReadArray<uint>(sizeOfScriptSpace / 4));
             int constant = serializer.ReadInt32();
-            Debug.Assert(constant == 0x3C8);
+            Debug.Assert(constant == UnknownConstant);
             m_onAMissionFlag = serializer.ReadInt32();
             m_contacts = new FullyObservableCollection<ContactInfo>(serializer.ReadArray<ContactInfo>(ContactCount));
             m_collectives = new FullyObservableCollection<Collective>(serializer.ReadArray<Collective>(CollectiveCount));
@@ -134,7 +135,7 @@ namespace GTASaveData.GTA3
         {
             serializer.Write(m_globalVariables.Count * 4);
             serializer.WriteArray(m_globalVariables);
-            serializer.Write(0x3C8);
+            serializer.Write(UnknownConstant);
             serializer.Write(m_onAMissionFlag);
             serializer.WriteArray(m_contacts, ContactCount);
             serializer.WriteArray(m_collectives, CollectiveCount);
@@ -148,7 +149,7 @@ namespace GTASaveData.GTA3
             serializer.Write(m_numberOfMissionScripts);
             serializer.Align();
             serializer.Write(m_runningScripts.Count);
-            serializer.WriteArray(m_runningScripts, systemType: system);
+            serializer.WriteArray(m_runningScripts, system: system);
         }
 
         public override int GetHashCode()

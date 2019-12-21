@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3
         public const int StackSize = 6;
         public const int StackSizePS2 = 4;
         public const int LocalVariablesCount = 16;
-        private const int NameLength = 8;
+        public const int NameLength = 8;
 
         private uint m_nextScript;
         private uint m_prevScript;
