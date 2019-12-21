@@ -9,23 +9,11 @@ namespace Tests.GTA3
     public class TestSimpleVars
         : SaveDataObjectTestBase<SimpleVars>
     {
-        private const int SizeAndroid = 0xB0;
-        private const int SizeIOS = 0xB0;
-        private const int SizePC = 0xBC;
-        private const int SizePS2 = 0xB0;
-        private const int SizePS2AU = 0xA8;
-        private const int SizePS2JP = 0xB0;
-        private const int SizeXbox = 0xBC;
-
-        private const uint FileIdJP = 0x31400;
-        private const uint FileIdNonJP = 0x31401;
-
         public override SimpleVars GenerateTestVector(SystemType system)
         {
             Faker<SimpleVars> model = new Faker<SimpleVars>()
                 .RuleFor(x => x.LastMissionPassedName, f => !system.HasFlag(SystemType.PS2) ? TestHelper.RandomString(f, 23) : string.Empty)
                 .RuleFor(x => x.SaveTime, (system.HasFlag(SystemType.PC) || system.HasFlag(SystemType.Xbox)) ? TestHelper.Generate<SystemTime, TestSystemTime>() : new SystemTime())
-                .RuleFor(x => x.FileId, system.HasFlag(SystemType.PS2JP) ? 0x31400U : 0x31401U)
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => TestHelper.Generate<Vector3d, TestVector3d>())
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.UInt())
@@ -65,20 +53,20 @@ namespace Tests.GTA3
         }
 
         [Theory]
-        [InlineData(SystemType.Android)]
-        [InlineData(SystemType.IOS)]
-        [InlineData(SystemType.PC)]
-        [InlineData(SystemType.PS2)]
-        [InlineData(SystemType.PS2AU)]
-        [InlineData(SystemType.PS2JP)]
-        [InlineData(SystemType.Xbox)]
-        public void Serialization(SystemType system)
+        [InlineData(SystemType.Android, 0xB0)]
+        [InlineData(SystemType.IOS, 0xB0)]
+        [InlineData(SystemType.PC, 0xBC)]
+        [InlineData(SystemType.PS2, 0xB0)]
+        [InlineData(SystemType.PS2AU, 0xA8)]
+        [InlineData(SystemType.PS2JP, 0xB0)]
+        [InlineData(SystemType.Xbox, 0xBC)]
+        public void Serialization(SystemType system, int expectedSize)
         {
             SimpleVars x0 = GenerateTestVector(system);
             SimpleVars x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data, system);
 
             Assert.Equal(x0, x1);
-            // TODO: size check?
+            Assert.Equal(expectedSize, data.Length);
         }
     }
 }

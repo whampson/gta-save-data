@@ -38,14 +38,19 @@ namespace Tests.GTA3
         [InlineData(SystemType.IOS)]
         [InlineData(SystemType.PC)]
         [InlineData(SystemType.PS2)]
+        [InlineData(SystemType.PS2AU)]
+        [InlineData(SystemType.PS2JP)]
         [InlineData(SystemType.Xbox)]
         public void Serialization(SystemType system)
         {
             Scripts x0 = GenerateTestVector(system);
             Scripts x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data, system);
 
+            int runningScriptSize = system.HasFlag(SystemType.PS2) ? 0x80 : 0x88;
+            int expectedSize = 0x3D4 + (x0.GlobalVariables.Count * 4) + (x0.RunningScripts.Count * runningScriptSize);
+
             Assert.Equal(x0, x1);
-            // TODO: size check?
+            Assert.Equal(expectedSize, data.Length);
         }
     }
 }
