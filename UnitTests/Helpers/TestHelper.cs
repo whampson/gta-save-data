@@ -3,6 +3,7 @@ using GTASaveData;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -10,6 +11,33 @@ namespace Tests.Helpers
 {
     public static class TestHelper
     {
+        public static T Deserialize<T>(byte[] buffer,
+            SystemType system = SystemType.Unspecified,
+            int length = 0,
+            bool unicode = false)
+        {
+            using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(buffer)))
+            {
+                return s.GenericRead<T>(system, length, unicode);
+            }
+        }
+
+        public static byte[] Serialize<T>(T obj,
+            SystemType system = SystemType.Unspecified,
+            int length = 0,
+            bool unicode = false)
+        {
+            using (MemoryStream m = new MemoryStream())
+            {
+                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                {
+                    s.GenericWrite(obj, system, length, unicode);
+                }
+
+                return m.ToArray();
+            }
+        }
+
         public static T CreateSerializedCopy<T>(T x, SystemType system = SystemType.Unspecified)
         {
             return CreateSerializedCopy(x, out _, system);
@@ -17,8 +45,8 @@ namespace Tests.Helpers
 
         public static T CreateSerializedCopy<T>(T x, out byte[] bytes, SystemType system = SystemType.Unspecified)
         {
-            bytes = SaveDataSerializer.Serialize(x, system: system);
-            T obj = SaveDataSerializer.Deserialize<T>(bytes, system: system);
+            bytes = Serialize(x, system);
+            T obj = Deserialize<T>(bytes, system);
 
             return obj;
         }

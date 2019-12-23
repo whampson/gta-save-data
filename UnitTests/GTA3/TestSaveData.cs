@@ -7,13 +7,13 @@ using Xunit;
 namespace Tests.GTA3
 {
     public class TestSaveData
-        : SaveDataObjectTestBase<SaveData>
+        : SaveDataObjectTestBase<GTA3SaveData>
     {
-        public override SaveData GenerateTestVector(SystemType system)
+        public override GTA3SaveData GenerateTestVector(SystemType system)
         {
             Faker faker = new Faker();
 
-            Faker<SaveData> model = new Faker<SaveData>()
+            Faker<GTA3SaveData> model = new Faker<GTA3SaveData>()
                 .RuleFor(x => x.SimpleVars, f => TestHelper.Generate<SimpleVars, TestSimpleVars>(system))
                 .RuleFor(x => x.Scripts, TestHelper.Generate<Scripts, TestScripts>(system));
 
@@ -30,8 +30,8 @@ namespace Tests.GTA3
         [InlineData(SystemType.Xbox)]
         public void Serialization(SystemType system)
         {
-            SaveData x0 = GenerateTestVector(system);
-            SaveData x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data, system);
+            GTA3SaveData x0 = GenerateTestVector(system);
+            GTA3SaveData x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data, system);
 
             Assert.Equal(x0, x1);
             // TODO: data size check?

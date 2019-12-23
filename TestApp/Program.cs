@@ -17,11 +17,10 @@ namespace TestApp
             string outPath = homeDir + @"\Documents\GTA3 User Files\apitest.b";
             SystemType system = SystemType.PC;
 
-            SaveDataSerializer.DefaultPadding = SaveDataSerializer.PaddingMode.Sequence;
-            SaveDataSerializer.DefaultPaddingSequence = Encoding.ASCII.GetBytes("MODIFIED SAVE ");
-
             Console.WriteLine("Loading file...");
-            SaveData gta3Save = SaveData.Load(inPath, system);
+            GTA3SaveData gta3Save = GTA3SaveData.Load(inPath, system);
+            gta3Save.FilePaddingMode = PaddingMode.Sequence;
+            gta3Save.FilePaddingSequence = Encoding.ASCII.GetBytes("MODIFIED SAVE ");
             gta3Save.SimpleVars.LastMissionPassedName = "FUCKWIT";
             Console.WriteLine(gta3Save);
             Console.ReadKey();
