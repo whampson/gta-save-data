@@ -14,41 +14,6 @@ namespace GTASaveData
     /// </summary>
     public sealed class SaveDataSerializer : IDisposable
     {
-        public enum PaddingMode
-        {
-            Zeros,
-            Random,
-            Sequence
-        };
-
-        static SaveDataSerializer()
-        {
-            DefaultPadding = PaddingMode.Zeros;
-            DefaultPaddingSequence = new byte[1] { 0 };
-        }
-
-        public static PaddingMode DefaultPadding
-        {
-            get;
-            set;
-        }
-
-        public static byte[] DefaultPaddingSequence
-        {
-            get;
-            set;
-        }
-
-        public static SaveDataSerializer CreateNew(Stream baseStream)
-        {
-            return new SaveDataSerializer(baseStream)
-            {
-                Padding = DefaultPadding,
-                PaddingSequence = DefaultPaddingSequence
-            };
-        }
-
-        // TODO: why is this its own method? Why not include it in Align()?
         /// <summary>
         /// Aligns an address to the next multiple of the specified word size.
         /// </summary>
@@ -66,140 +31,18 @@ namespace GTASaveData
             return (address + wordSize) & ~wordSize;
         }
 
-        /// <summary>
-        /// Creates an object from the specifed data buffer.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to create.</typeparam>
-        /// <param name="buffer">The data to deserialize.</param>
-        /// <returns>The deserialized object.</returns>
-        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during deserialization.</exception>
-        public static T Deserialize<T>(byte[] buffer)
-        {
-            return Deserialize<T>(buffer, SystemType.Unspecified, 0, false);
-        }
-
-        /// <summary>
-        /// Creates an object from the specifed data buffer.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to create.</typeparam>
-        /// <param name="buffer">The data to deserialize.</param>
-        /// <param name="system">The system this data is formatted for.</param>
-        /// <returns>The deserialized object.</returns>
-        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during deserialization.</exception>
-        public static T Deserialize<T>(byte[] buffer, SystemType system)
-        {
-            return Deserialize<T>(buffer, system, 0, false);
-        }
-
-        /// <summary>
-        /// Creates an object from the specifed data buffer.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to create.</typeparam>
-        /// <param name="buffer">The data to deserialize.</param>
-        /// <param name="system">The system this data is formatted for.</param>
-        /// <param name="length">The length of the data to be deserialized. Note: only pertains to some types.</param>
-        /// <returns>The deserialized object.</returns>
-        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during deserialization.</exception>
-        public static T Deserialize<T>(byte[] buffer, SystemType system, int length)
-        {
-            return Deserialize<T>(buffer, system, length, false);
-        }
-
-        /// <summary>
-        /// Creates an object from the specifed data buffer.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to create.</typeparam>
-        /// <param name="buffer">The data to deserialize.</param>
-        /// <param name="system">The system this data is formatted for.</param>
-        /// <param name="length">The length of the data to be deserialized. Note: only pertains to some types.</param>
-        /// <param name="unicode">Indicates whether to decode characters as Unicode.</param>
-        /// <returns>The deserialized object.</returns>
-        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during deserialization.</exception>
-        public static T Deserialize<T>(byte[] buffer, SystemType system, int length, bool unicode)
-        {
-            using (SaveDataSerializer s = CreateNew(new MemoryStream(buffer)))
-            {
-                return s.GenericRead<T>(system, length, unicode);
-            }
-        }
-
-        /// <summary>
-        /// Encodes this object as a sequence of bytes.
-        /// </summary>
-        /// <typeparam name="T">The type of object to serialize.</typeparam>
-        /// <param name="obj">The object to serialize.</param>
-        /// <returns>The serialized object as a byte array.</returns>
-        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during serialization.</exception>
-        public static byte[] Serialize<T>(T obj)
-        {
-            return Serialize(obj, SystemType.Unspecified, 0, false);
-        }
-
-        /// <summary>
-        /// Encodes this object as a sequence of bytes.
-        /// </summary>
-        /// <typeparam name="T">The type of object to serialize.</typeparam>
-        /// <param name="obj">The object to serialize.</param>
-        /// <param name="system">The system this data should be formatted for.</param>
-        /// <returns>The serialized object as a byte array.</returns>
-        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during serialization.</exception>
-        public static byte[] Serialize<T>(T obj, SystemType system)
-        {
-            return Serialize(obj, system, 0, false);
-        }
-
-        /// <summary>
-        /// Encodes this object as a sequence of bytes.
-        /// </summary>
-        /// <typeparam name="T">The type of object to serialize.</typeparam>
-        /// <param name="obj">The object to serialize.</param>
-        /// <param name="system">The system this data should be formatted for.</param>
-        /// <param name="length">The length of the data to be serialized. Note: only pertains to some types.</param>
-        /// <returns>The serialized object as a byte array.</returns>
-        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during serialization.</exception>
-        public static byte[] Serialize<T>(T obj, SystemType system, int length)
-        {
-            return Serialize(obj, system, length, false);
-        }
-
-        /// <summary>
-        /// Encodes an object as a sequence of bytes.
-        /// </summary>
-        /// <typeparam name="T">The type of object to serialize.</typeparam>
-        /// <param name="obj">The object to serialize.</param>
-        /// <param name="system">The system this data should be formatted for.</param>
-        /// <param name="length">The length of the data to be serialized. Note: only pertains to some types.</param>
-        /// <param name="unicode">Indicates whether to encode characters as Unicode.</param>
-        /// <returns>The serialized object as a byte array.</returns>
-        /// <exception cref="SaveDataSerializationException">Thrown if something goes wrong during serialization.</exception>
-        public static byte[] Serialize<T>(T obj, SystemType system, int length, bool unicode)
-        {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
-
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (SaveDataSerializer s = CreateNew(m))
-                {
-                    s.GenericWrite(obj, system, length, unicode);
-                }
-
-                return m.ToArray();
-            }
-        }
-
         private readonly BinaryReader m_reader;
         private readonly BinaryWriter m_writer;
         private bool m_disposed;
+        private PaddingMode m_paddingMode;
+        private byte[] m_paddingSequence;
 
         /// <summary>
         /// Creates a new <see cref="SaveDataSerializer"/> using the specified
         /// stream as the serialization endpoint.
         /// </summary>
         /// <param name="baseStream">A readable and writable data stream.</param>
-        private SaveDataSerializer(Stream baseStream)
+        public SaveDataSerializer(Stream baseStream)
         {
             if (baseStream == null)
             {
@@ -224,16 +67,23 @@ namespace GTASaveData
             get { return m_reader.BaseStream; }
         }
 
-        public PaddingMode Padding
+        public PaddingMode PaddingMode
         {
-            get;
-            set;
+            get { return m_paddingMode; }
+            set { m_paddingMode = value; }
         }
 
         public byte[] PaddingSequence
         {
-            get;
-            set;
+            get { return m_paddingSequence; }
+            set
+            {
+                if (value == null)
+                {
+                    value = new byte[1] { 0 };
+                }
+                m_paddingSequence = value;
+            }
         }
 
         /// <summary>
@@ -505,6 +355,7 @@ namespace GTASaveData
         /// <summary>
         /// Writes an n-byte Boolean value.
         /// </summary>
+        /// <param name="value">The value to write.</param>
         /// <param name="byteCount">The number of bytes to write.</param>
         public void Write(bool value, int byteCount = 1)
         {
@@ -766,7 +617,7 @@ namespace GTASaveData
 
         public void WritePadding(int length)
         {
-            switch (Padding)
+            switch (m_paddingMode)
             {
                 case PaddingMode.Zeros:
                 {
@@ -787,7 +638,7 @@ namespace GTASaveData
                 case PaddingMode.Sequence:
                 {
                     byte[] pad = new byte[length];
-                    byte[] seq = PaddingSequence ?? new byte[1] { 0 };
+                    byte[] seq = m_paddingSequence;
 
                     for (int i = 0; i < length; i++)
                     {
@@ -799,7 +650,7 @@ namespace GTASaveData
             }
         }
 
-        private T GenericRead<T>(SystemType system, int length, bool unicode)
+        public T GenericRead<T>(SystemType system, int length, bool unicode)
         {
             Type t = typeof(T);
             object ret;
@@ -866,7 +717,7 @@ namespace GTASaveData
             return (T) ret;
         }
 
-        private void GenericWrite<T>(T value, SystemType system, int length, bool unicode)
+        public void GenericWrite<T>(T value, SystemType system, int length, bool unicode)
         {
             Type t = typeof(T);
 
