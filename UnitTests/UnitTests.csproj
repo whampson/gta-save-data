@@ -42,14 +42,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\TestGTASerializer.cs" />
+    <Compile Include="GTA3\TestBox3d.cs" />
     <Compile Include="GTA3\TestBuildingSwap.cs" />
     <Compile Include="GTA3\TestCollective.cs" />
     <Compile Include="GTA3\TestContactInfo.cs" />
+    <Compile Include="GTA3\TestGarage.cs" />
+    <Compile Include="GTA3\TestGarages.cs" />
     <Compile Include="GTA3\TestInvisibilitySetting.cs" />
     <Compile Include="GTA3\TestRunningScript.cs" />
-    <Compile Include="GTA3\TestSaveData.cs" />
+    <Compile Include="GTA3\TestGTA3SaveData.cs" />
     <Compile Include="GTA3\TestScripts.cs" />
     <Compile Include="GTA3\TestSimpleVars.cs" />
+    <Compile Include="GTA3\TestStoredCar.cs" />
+    <Compile Include="GTA3\TestStoredCarSlot.cs" />
     <Compile Include="GTA3\TestSystemTime.cs" />
     <Compile Include="GTA3\TestTimestamp.cs" />
     <Compile Include="GTA3\TestVector2d.cs" />

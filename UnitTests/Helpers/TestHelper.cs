@@ -87,7 +87,7 @@ namespace Tests.Helpers
         {
             var testGen = Activator.CreateInstance(typeof(U));
             MethodInfo m = typeof(U).GetMethod(
-                "GenerateTestVector",
+                nameof(SaveDataObjectTestBase<T>.GenerateTestVector),
                 BindingFlags.Public | BindingFlags.Instance,
                 null,
                 new Type[] { typeof(SystemType) },

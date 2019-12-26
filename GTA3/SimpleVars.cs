@@ -6,7 +6,10 @@ namespace GTASaveData.GTA3
     public sealed class SimpleVars : SaveDataObject,
         IEquatable<SimpleVars>
     {
-        public const int LastMissionPassedNameLength = 24;
+        public static class Limits
+        {
+            public const int LastMissionPassedNameLength = 24;
+        }
 
         // This is the number of bytes in a GTA3 save excluding the 4-byte block size
         // values that appear before each outer data block. It shows up in SimpleVars
@@ -30,16 +33,16 @@ namespace GTASaveData.GTA3
         private float m_timeStepNonClipped;
         private float m_framesPerUpdate;
         private uint m_frameCounter;
-        private Weather m_oldWeatherType;
-        private Weather m_newWeatherType;
-        private Weather m_forcedWeatherType;
+        private WeatherType m_oldWeatherType;
+        private WeatherType m_newWeatherType;
+        private WeatherType m_forcedWeatherType;
         private float m_interpolationValue;
         private PadMode m_prefsControllerConfig;
         private int m_prefsMusicVolume;
         private int m_prefsSfxVolume;
         private bool m_prefsUseVibration;
         private bool m_prefsStereoMono;
-        private Radio m_prefsRadioStation;
+        private RadioStation m_prefsRadioStation;
         private int m_prefsBrightness;
         private bool m_prefsUseWideScreen;
         private bool m_prefsShowTrails;
@@ -147,19 +150,19 @@ namespace GTASaveData.GTA3
             set { m_frameCounter = value; OnPropertyChanged(); }
         }
 
-        public Weather OldWeatherType
+        public WeatherType OldWeatherType
         {
             get { return m_oldWeatherType; }
             set { m_oldWeatherType = value; OnPropertyChanged(); }
         }
 
-        public Weather NewWeatherType
+        public WeatherType NewWeatherType
         {
             get { return m_newWeatherType; }
             set { m_newWeatherType = value; OnPropertyChanged(); }
         }
 
-        public Weather ForcedWeatherType
+        public WeatherType ForcedWeatherType
         {
             get { return m_forcedWeatherType; }
             set { m_forcedWeatherType = value; OnPropertyChanged(); }
@@ -201,7 +204,7 @@ namespace GTASaveData.GTA3
             set { m_prefsStereoMono = value; OnPropertyChanged(); }
         }
 
-        public Radio PrefsRadioStation
+        public RadioStation PrefsRadioStation
         {
             get { return m_prefsRadioStation; }
             set { m_prefsRadioStation = value; OnPropertyChanged(); }
@@ -280,7 +283,7 @@ namespace GTASaveData.GTA3
         {
             if (!system.HasFlag(SystemType.PS2))
             {
-                m_lastMissionPassedName = serializer.ReadString(LastMissionPassedNameLength, unicode: true);
+                m_lastMissionPassedName = serializer.ReadString(Limits.LastMissionPassedNameLength, unicode: true);
                 if (system.HasFlag(SystemType.PC) || system.HasFlag(SystemType.Xbox))
                 {
                     m_saveTime = serializer.ReadObject<SystemTime>();
@@ -315,11 +318,11 @@ namespace GTASaveData.GTA3
             m_timeStep2 = serializer.ReadSingle();
             m_framesPerUpdate = serializer.ReadSingle();
             m_timeScale2 = serializer.ReadSingle();
-            m_oldWeatherType = (Weather) serializer.ReadInt16();
+            m_oldWeatherType = (WeatherType) serializer.ReadInt16();
             serializer.Align();
-            m_newWeatherType = (Weather) serializer.ReadInt16();
+            m_newWeatherType = (WeatherType) serializer.ReadInt16();
             serializer.Align();
-            m_forcedWeatherType = (Weather) serializer.ReadInt16();
+            m_forcedWeatherType = (WeatherType) serializer.ReadInt16();
             serializer.Align();
             m_interpolationValue = serializer.ReadSingle();
             if (system.HasFlag(SystemType.PS2))
@@ -332,7 +335,7 @@ namespace GTASaveData.GTA3
                 }
                 m_prefsUseVibration = serializer.ReadBool(4);
                 m_prefsStereoMono = serializer.ReadBool(4);
-                m_prefsRadioStation = (Radio) serializer.ReadInt32();
+                m_prefsRadioStation = (RadioStation) serializer.ReadInt32();
                 m_prefsBrightness = serializer.ReadInt32();
                 if (!system.HasFlag(SystemType.Australian))
                 {
@@ -358,7 +361,7 @@ namespace GTASaveData.GTA3
         {
             if (!system.HasFlag(SystemType.PS2))
             {
-                serializer.Write(m_lastMissionPassedName, LastMissionPassedNameLength, unicode: true);
+                serializer.Write(m_lastMissionPassedName, Limits.LastMissionPassedNameLength, unicode: true);
                 if (system.HasFlag(SystemType.PC) || system.HasFlag(SystemType.Xbox))
                 {
                     serializer.WriteObject(m_saveTime);

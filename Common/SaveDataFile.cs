@@ -84,7 +84,6 @@ namespace GTASaveData
                 using (SaveDataSerializer s = CreateSerializer(m))
                 {
                     s.GenericWrite(obj, system, length, unicode);
-                    s.WriteObject<int>(4);
                 }
 
                 return m.ToArray();

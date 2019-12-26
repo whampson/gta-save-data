@@ -2,15 +2,15 @@
 
 namespace GTASaveData.GTA3
 {
-    public enum Radio
+    public enum RadioStation
     {
         [Description("Head Radio")]
         HeadRadio,
 
-        [Description("Double Clef FM")]
-        DoubleCleffFM,
+        [Description("Double Cleff FM")]
+        DoubleClefFM,
 
-        [Description("K-Jah")]
+        [Description("Jah Radio")]
         JahRadio,
 
         [Description("Rise FM")]
@@ -19,8 +19,8 @@ namespace GTASaveData.GTA3
         [Description("Lips 106")]
         Lips106,
 
-        [Description("Game Radio")]
-        GameFM,
+        [Description("Game FM")]
+        GameRadio,
 
         [Description("MSX FM")]
         MsxFM,
@@ -34,10 +34,10 @@ namespace GTASaveData.GTA3
         [Description("User Track Player")]
         UserTrackPlayer,
 
-        [Description("Police Radio")]
-        PoliceRadio,
+        [Description("Police Scanner")]
+        PoliceScanner,
 
-        [Description("Radio Off")]
-        Off
+        [Description("(radio off)")]
+        RadioOff
     }
 }

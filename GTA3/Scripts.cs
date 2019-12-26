@@ -8,10 +8,14 @@ namespace GTASaveData.GTA3
     public sealed class Scripts : SaveDataObject,
         IEquatable<Scripts>
     {
-        public const int ContactCount = 16;
-        public const int CollectiveCount = 32;
-        public const int BuildingSwapCount = 25;
-        public const int InvisibilitySettingCount = 20;
+        public static class Limits
+        {
+            public const int ContactsCount = 16;
+            public const int CollectivesCount = 32;
+            public const int BuildingSwapsCount = 25;
+            public const int InvisibilitySettingsCount = 20;
+        }
+
         private const int UnknownConstant = 0x3C8;
 
         private ObservableCollection<uint> m_globalVariables;
@@ -116,11 +120,11 @@ namespace GTASaveData.GTA3
             int constant = serializer.ReadInt32();
             Debug.Assert(constant == UnknownConstant);
             m_onAMissionFlag = serializer.ReadInt32();
-            m_contacts = new FullyObservableCollection<ContactInfo>(serializer.ReadArray<ContactInfo>(ContactCount));
-            m_collectives = new FullyObservableCollection<Collective>(serializer.ReadArray<Collective>(CollectiveCount));
+            m_contacts = new FullyObservableCollection<ContactInfo>(serializer.ReadArray<ContactInfo>(Limits.ContactsCount));
+            m_collectives = new FullyObservableCollection<Collective>(serializer.ReadArray<Collective>(Limits.CollectivesCount));
             m_nextFreeCollectiveIndex = serializer.ReadInt32();
-            m_buildingSwaps = new FullyObservableCollection<BuildingSwap>(serializer.ReadArray<BuildingSwap>(BuildingSwapCount));
-            m_invisibilitySettings = new FullyObservableCollection<InvisibilitySetting>(serializer.ReadArray<InvisibilitySetting>(InvisibilitySettingCount));
+            m_buildingSwaps = new FullyObservableCollection<BuildingSwap>(serializer.ReadArray<BuildingSwap>(Limits.BuildingSwapsCount));
+            m_invisibilitySettings = new FullyObservableCollection<InvisibilitySetting>(serializer.ReadArray<InvisibilitySetting>(Limits.InvisibilitySettingsCount));
             m_usingAMultiScriptFile = serializer.ReadBool();
             serializer.Align();
             m_mainScriptSize = serializer.ReadInt32();
@@ -137,11 +141,11 @@ namespace GTASaveData.GTA3
             serializer.WriteArray(m_globalVariables);
             serializer.Write(UnknownConstant);
             serializer.Write(m_onAMissionFlag);
-            serializer.WriteArray(m_contacts, ContactCount);
-            serializer.WriteArray(m_collectives, CollectiveCount);
+            serializer.WriteArray(m_contacts, Limits.ContactsCount);
+            serializer.WriteArray(m_collectives, Limits.CollectivesCount);
             serializer.Write(m_nextFreeCollectiveIndex);
-            serializer.WriteArray(m_buildingSwaps, BuildingSwapCount);
-            serializer.WriteArray(m_invisibilitySettings, InvisibilitySettingCount);
+            serializer.WriteArray(m_buildingSwaps, Limits.BuildingSwapsCount);
+            serializer.WriteArray(m_invisibilitySettings, Limits.InvisibilitySettingsCount);
             serializer.Write(m_usingAMultiScriptFile);
             serializer.Align();
             serializer.Write(m_mainScriptSize);

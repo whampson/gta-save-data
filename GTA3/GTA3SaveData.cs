@@ -66,7 +66,7 @@ namespace GTASaveData.GTA3
         private SimpleVars m_simpleVars;
         private Scripts m_scripts;
         private DummyObject m_pedPool;
-        private DummyObject m_garages;
+        private Garages m_garages;
         private DummyObject m_vehicles;
         private DummyObject m_objects;
         private DummyObject m_pathFind;
@@ -103,7 +103,7 @@ namespace GTASaveData.GTA3
             set { m_pedPool = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Garages
+        public Garages Garages
         {
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
@@ -216,7 +216,7 @@ namespace GTASaveData.GTA3
             m_simpleVars = new SimpleVars();
             m_scripts = new Scripts();
             m_pedPool = new DummyObject();
-            m_garages = new DummyObject();
+            m_garages = new Garages();
             m_vehicles = new DummyObject();
             m_objects = new DummyObject();
             m_pathFind = new DummyObject();
@@ -363,7 +363,7 @@ namespace GTASaveData.GTA3
             m_simpleVars = Deserialize<SimpleVars>(simpleVars, system);
             m_scripts = Deserialize<Scripts>(scripts, system);
             m_pedPool = new DummyObject(pedPool);
-            m_garages = new DummyObject(garages);
+            m_garages = Deserialize<Garages>(garages);
             m_vehicles = new DummyObject(vehicles);
             m_objects = new DummyObject(objects);
             m_pathFind = new DummyObject(pathFind);

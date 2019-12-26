@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Tests.GTA3
 {
-    public class TestSaveData
+    public class TestGTA3SaveData
         : SaveDataObjectTestBase<GTA3SaveData>
     {
         public override GTA3SaveData GenerateTestVector(SystemType system)
@@ -15,7 +15,9 @@ namespace Tests.GTA3
 
             Faker<GTA3SaveData> model = new Faker<GTA3SaveData>()
                 .RuleFor(x => x.SimpleVars, f => TestHelper.Generate<SimpleVars, TestSimpleVars>(system))
-                .RuleFor(x => x.Scripts, TestHelper.Generate<Scripts, TestScripts>(system));
+                .RuleFor(x => x.Scripts, TestHelper.Generate<Scripts, TestScripts>(system))
+                //.RuleFor(x => x.PedPool, TestHelper.Generate<PedPool, TestPedPool>(system))
+                .RuleFor(x => x.Garages, TestHelper.Generate<Garages, TestGarages>(system));
 
             return model.Generate();
         }
