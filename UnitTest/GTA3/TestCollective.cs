@@ -1,10 +1,10 @@
 ﻿using Bogus;
 using GTASaveData;
 using GTASaveData.GTA3;
-using Tests.Helpers;
+using UnitTest.Helpers;
 using Xunit;
 
-namespace Tests.GTA3
+namespace UnitTest.GTA3
 {
     public class TestCollective
         : SaveDataObjectTestBase<Collective>

@@ -1,8 +1,8 @@
 ﻿using Bogus;
-using Tests.Helpers;
+using UnitTest.Helpers;
 using Xunit;
 
-namespace Tests.Common
+namespace UnitTest.Common
 {
     public class TestGTASerializer
     {

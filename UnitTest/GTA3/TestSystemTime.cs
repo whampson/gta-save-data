@@ -2,10 +2,10 @@
 using GTASaveData;
 using GTASaveData.GTA3;
 using System;
-using Tests.Helpers;
+using UnitTest.Helpers;
 using Xunit;
 
-namespace Tests.GTA3
+namespace UnitTest.GTA3
 {
     public class TestSystemTime
         : SaveDataObjectTestBase<SystemTime>

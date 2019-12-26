@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Tests.Helpers
+namespace UnitTest.Helpers
 {
     public static class TestHelper
     {

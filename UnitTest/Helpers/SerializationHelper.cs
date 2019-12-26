@@ -1,7 +1,7 @@
 ﻿using GTASaveData;
 using System.IO;
 
-namespace Tests.Helpers
+namespace UnitTest.Helpers
 {
     public static class SerializationHelper
     {

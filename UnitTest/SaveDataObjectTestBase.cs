@@ -1,6 +1,6 @@
 ﻿using GTASaveData;
 
-namespace Tests
+namespace UnitTest
 {
     public abstract class SaveDataObjectTestBase<T>
     {
