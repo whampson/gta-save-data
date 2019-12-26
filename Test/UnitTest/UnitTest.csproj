@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\GTASaveData.csproj" />
-    <ProjectReference Include="..\GTA3\GTASaveData.GTA3.csproj" />
+    <ProjectReference Include="..\..\Core\GTASaveData.csproj" />
+    <ProjectReference Include="..\..\GTA3\GTASaveData.GTA3.csproj" />
   </ItemGroup>
 
 </Project>
