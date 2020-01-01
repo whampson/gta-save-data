@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using WpfEssentials;
 
 namespace GTASaveData.GTA3
 {

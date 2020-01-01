@@ -1,11 +1,13 @@
 ﻿using Newtonsoft.Json;
+using WpfEssentials;
 
 namespace GTASaveData
 {
     /// <summary>
     /// Represents an arbitrary data structure stored in a GTA savedata file.
     /// </summary>
-    public abstract class SaveDataObject : ObservableObject, ISaveDataSerializable
+    public abstract class SaveDataObject : ObservableObject,
+        ISaveDataSerializable
     {
         void ISaveDataSerializable.WriteObjectData(SaveDataSerializer serializer, SystemType system)
         {

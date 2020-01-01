@@ -6,4 +6,13 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="WpfEssentials.Win32" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\GTASaveData.csproj" />
+    <ProjectReference Include="..\..\GTA3\GTASaveData.GTA3.csproj" />
+  </ItemGroup>
+
 </Project>
