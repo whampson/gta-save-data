@@ -4,7 +4,7 @@ namespace GTASaveData.GTA3
 {
     public enum Weapon
     {
-        [Description("None")]
+        [Description("(none)")]
         None,
 
         [Description("Bat")]

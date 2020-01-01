@@ -8,7 +8,7 @@ namespace GTASaveData.GTA3
         HeadRadio,
 
         [Description("Double Cleff FM")]
-        DoubleClefFM,
+        DoubleCleffFM,
 
         [Description("Jah Radio")]
         JahRadio,
@@ -20,7 +20,7 @@ namespace GTASaveData.GTA3
         Lips106,
 
         [Description("Game FM")]
-        GameRadio,
+        GameFM,
 
         [Description("MSX FM")]
         MsxFM,
@@ -37,7 +37,7 @@ namespace GTASaveData.GTA3
         [Description("Police Scanner")]
         PoliceScanner,
 
-        [Description("(radio off)")]
-        RadioOff
+        [Description("(none)")]
+        None
     }
 }

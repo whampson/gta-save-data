@@ -1,11 +1,19 @@
-﻿namespace GTASaveData.GTA3
+﻿using System.ComponentModel;
+
+namespace GTASaveData.GTA3
 {
     public enum WeatherType
     {
-        Unspecified = -1,
+        [Description("Sunny")]
         Sunny,
+
+        [Description("Cloudy")]
         Cloudy,
+
+        [Description("Rainy")]
         Rainy,
+
+        [Description("Foggy")]
         Foggy
     }
 }
