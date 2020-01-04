@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace GTASaveData
+namespace GTASaveData.Serialization
 {
     /// <summary>
     /// Handles the reading and writing of binary data in a format suitable
@@ -67,12 +67,18 @@ namespace GTASaveData
             get { return m_reader.BaseStream; }
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="Serialization.PaddingMode"/> to use during serialization.
+        /// </summary>
         public PaddingMode PaddingMode
         {
             get { return m_paddingMode; }
             set { m_paddingMode = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the padding sequence to use if <see cref="PaddingMode.Sequence"/> is selected.
+        /// </summary>
         public byte[] PaddingSequence
         {
             get { return m_paddingSequence; }
@@ -296,10 +302,10 @@ namespace GTASaveData
         /// Reads an object.
         /// </summary>
         /// <typeparam name="T">The type of object to read.</typeparam>
-        /// <param name="system">The system that the data is formatted for.</param>
+        /// <param name="format">The data format.</param>
         /// <returns>An object.</returns>
         /// <exception cref="SaveDataSerializationException">Thrown if an error occurs during deserialization.</exception>
-        public T ReadObject<T>(SystemType system = SystemType.Unspecified)
+        public T ReadObject<T>(FileFormat format = null)
         {
             const BindingFlags CtorFlags = BindingFlags.Public
                 | BindingFlags.NonPublic
@@ -309,7 +315,7 @@ namespace GTASaveData
             ConstructorInfo ctor0 = typeof(T).GetConstructor(
                 CtorFlags,
                 null,
-                new[] { typeof(SaveDataSerializer), typeof(SystemType) },
+                new[] { typeof(SaveDataSerializer), typeof(FileFormat) },
                 null
             );
             ConstructorInfo ctor1 = typeof(T).GetConstructor(
@@ -321,7 +327,7 @@ namespace GTASaveData
 
             if (ctor0 != null)
             {
-                return (T) ctor0.Invoke(new object[] { this, system });
+                return (T) ctor0.Invoke(new object[] { this, format ?? FileFormat.Unknown });
             }
             if (ctor1 != null)
             {
@@ -337,16 +343,19 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The item type.</typeparam>
         /// <param name="count">The number of items to read.</param>
-        /// <param name="system">The system that the data is formatted for.</param>
+        /// <param name="format">The data format.</param>
         /// <param name="itemLength">The length of each item. Note: only applies to bool and string types.</param>
         /// <param name="unicode">A value indicating whether to read unicode characters.</param>
         /// <returns>An array of the specified type.</returns>
-        public T[] ReadArray<T>(int count, SystemType system = SystemType.Unspecified, int itemLength = 0, bool unicode = false)
+        public T[] ReadArray<T>(int count,
+            FileFormat format = null,
+            int itemLength = 0,
+            bool unicode = false)
         {
             List<T> items = new List<T>();
             for (int i = 0; i < count; i++)
             {
-                items.Add(GenericRead<T>(system, itemLength, unicode));
+                items.Add(GenericRead<T>(format, itemLength, unicode));
             }
 
             return items.ToArray();
@@ -514,7 +523,10 @@ namespace GTASaveData
         /// string. Otherwise, the string will be truncated if necessary so as to not exceed
         /// the specified length when the null character is written.
         /// </param>
-        public void Write(string value, int? length = null, bool unicode = false, bool zeroTerminate = true)
+        public void Write(string value,
+            int? length = null,
+            bool unicode = false,
+            bool zeroTerminate = true)
         {
             // TODO: rewrite/cleanup for new padding scheme
 
@@ -558,11 +570,11 @@ namespace GTASaveData
         /// Writes an object.
         /// </summary>
         /// <typeparam name="T">The type of object to write.</typeparam>
-        /// <param name="system">The system that the data is formatted for.</param>
+        /// <param name="format">The data format.</param>
         /// <exception cref="SaveDataSerializationException">Thrown if an error occurs during serialization.</exception>
-        public void WriteObject<T>(T value, SystemType system = SystemType.Unspecified)
+        public void WriteObject<T>(T value, FileFormat format = null)
         {
-            const string MethodName = nameof(ISaveDataSerializable.WriteObjectData);
+            const string MethodName = nameof(IGTASerializable.WriteObjectData);
             const BindingFlags MethodFlags = BindingFlags.Public
                 | BindingFlags.NonPublic
                 | BindingFlags.Instance
@@ -572,7 +584,7 @@ namespace GTASaveData
                 MethodName,
                 MethodFlags,
                 null,
-                new Type[] { typeof(SaveDataSerializer), typeof(SystemType) },
+                new Type[] { typeof(SaveDataSerializer), typeof(FileFormat) },
                 null
             );
             MethodInfo method1 = typeof(T).GetMethod(
@@ -585,7 +597,7 @@ namespace GTASaveData
 
             if (method0 != null)
             {
-                method0.Invoke(value, new object[] { this, system });
+                method0.Invoke(value, new object[] { this, format ?? FileFormat.Unknown });
             }
             else if (method1 != null)
             {
@@ -598,7 +610,33 @@ namespace GTASaveData
             }
         }
 
-        public void WriteArray<T>(ObservableCollection<T> items, int? count = null, SystemType system = SystemType.Unspecified, int? itemLength = null, bool unicode = false)
+        /// <summary>
+        /// Writes a collection as a contiguous sequence of bytes.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The element type.
+        /// </typeparam>
+        /// <param name="items">
+        /// The items to write.
+        /// </param>
+        /// <param name="count">
+        /// The number of items to write. Use null to write all elements. If the count is larger than
+        /// the collection length, default values will be written until 'count' elements are written.
+        /// </param>
+        /// <param name="format">
+        /// The data format.
+        /// </param>
+        /// <param name="itemLength">
+        /// The length of each item. Note: only applies to bool and string types.<
+        /// </param>
+        /// <param name="unicode">
+        /// A value indicating whether to write unicode characters.
+        /// </param>
+        public void WriteArray<T>(ObservableCollection<T> items,
+            int? count = null,
+            FileFormat format = null,
+            int? itemLength = null,
+            bool unicode = false)
             where T : new()
         {
             int capacity = items.Count;
@@ -606,15 +644,20 @@ namespace GTASaveData
             {
                 if (i < capacity)
                 {
-                    GenericWrite(items.ElementAt(i), system, itemLength ?? 0, unicode);
+                    GenericWrite(items.ElementAt(i), format, itemLength ?? 0, unicode);
                 }
                 else
                 {
-                    GenericWrite(new T(), system, itemLength ?? 0, unicode);
+                    GenericWrite(new T(), format, itemLength ?? 0, unicode);
                 }
             }
         }
 
+        /// <summary>
+        /// Writes the specified number of padding bytes.
+        /// The exact bytes written depends on the current <see cref="PaddingMode"/>.
+        /// </summary>
+        /// <param name="length">The number of bytes to write.</param>
         public void WritePadding(int length)
         {
             switch (m_paddingMode)
@@ -650,7 +693,7 @@ namespace GTASaveData
             }
         }
 
-        public T GenericRead<T>(SystemType system, int length, bool unicode)
+        internal T GenericRead<T>(FileFormat format, int length, bool unicode)
         {
             Type t = typeof(T);
             object ret;
@@ -711,13 +754,13 @@ namespace GTASaveData
             }
             else
             {
-                ret = ReadObject<T>(system);
+                ret = ReadObject<T>(format);
             }
 
             return (T) ret;
         }
 
-        public void GenericWrite<T>(T value, SystemType system, int length, bool unicode)
+        internal void GenericWrite<T>(T value, FileFormat format, int length, bool unicode)
         {
             Type t = typeof(T);
 
@@ -775,7 +818,7 @@ namespace GTASaveData
             }
             else
             {
-                WriteObject(value, system);
+                WriteObject(value, format);
             }
         }
 

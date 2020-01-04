@@ -1,7 +1,7 @@
-﻿namespace GTASaveData
+﻿namespace GTASaveData.Serialization
 {
     /// <summary>
-    /// Values for selecting what values to use for padding.
+    /// Rules for data structure padding.
     /// </summary>
     public enum PaddingMode
     {

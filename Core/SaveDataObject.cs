@@ -1,20 +1,28 @@
-﻿using Newtonsoft.Json;
+﻿using GTASaveData.Serialization;
+using Newtonsoft.Json;
 using WpfEssentials;
 
 namespace GTASaveData
 {
     /// <summary>
-    /// Represents an arbitrary data structure stored in a GTA savedata file.
+    /// Represents an arbitrary data structure stored in a Grand Theft Auto
+    /// save data file.
     /// </summary>
     public abstract class SaveDataObject : ObservableObject,
-        ISaveDataSerializable
+        IGTASerializable
     {
-        void ISaveDataSerializable.WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        void IGTASerializable.WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
-            WriteObjectData(serializer, system);
+            WriteObjectData(serializer, format);
         }
 
-        protected abstract void WriteObjectData(SaveDataSerializer serializer, SystemType system);
+        /// <summary>
+        /// Writes this object's data to the specified <see cref="SaveDataSerializer"/>
+        /// using the specified <see cref="FileFormat"/>.
+        /// </summary>
+        /// <param name="serializer"></param>
+        /// <param name="format"></param>
+        protected abstract void WriteObjectData(SaveDataSerializer serializer, FileFormat format);
 
         public override string ToString()
         {
