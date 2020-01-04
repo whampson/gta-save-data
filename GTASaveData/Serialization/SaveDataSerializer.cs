@@ -15,6 +15,63 @@ namespace GTASaveData.Serialization
     public sealed class SaveDataSerializer : IDisposable
     {
         /// <summary>
+        /// Creates an object from the data stored in a byte array.
+        /// </summary>
+        /// <typeparam name="T">The type of object to create.</typeparam>
+        /// <param name="buffer">The byte array containing serialized object data.</param>
+        /// <param name="format">The format of the data.</param>
+        /// <param name="length">The length of the data. Note: only applies to <see cref="string"/> and <see cref="bool"/> types.</param>
+        /// <param name="unicode">A value indicating whether to read Unicode characters.</param>
+        /// <returns>An object of type <typeparamref name="T"/>.</returns>
+        public static T Deserialize<T>(byte[] buffer,
+            FileFormat format = null,
+            int length = 0,
+            bool unicode = false)
+        {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
+            using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(buffer)))
+            {
+                return s.GenericRead<T>(format, length, unicode);
+            }
+        }
+
+        /// <summary>
+        /// Creates a byte array from data in the specified object.
+        /// </summary>
+        /// <typeparam name="T">The type of object to serialize.</typeparam>
+        /// <param name="obj">The object to serialize.</param>
+        /// <param name="format">The serialization format.</param>
+        /// <param name="length">The length of the data to serialize. Note: only applies to <see cref="string"/> and <see cref="bool"/> types.</param>
+        /// <param name="unicode">A value indicating whether to write Unicode characters.</param>
+        /// <returns>A byte array containing the serialized object data.</returns>
+        public static byte[] Serialize<T>(T obj,
+            FileFormat format = null,
+            int length = 0,
+            bool unicode = false,
+            PaddingMode padding = PaddingMode.Zeros,
+            byte[] paddingSequence = null)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            using (MemoryStream m = new MemoryStream())
+            {
+                using (SaveDataSerializer s = new SaveDataSerializer(m, padding, paddingSequence))
+                {
+                    s.GenericWrite(obj, format, length, unicode);
+                }
+
+                return m.ToArray();
+            }
+        }
+
+        /// <summary>
         /// Aligns an address to the next multiple of the specified word size.
         /// </summary>
         /// <param name="address">The address to align.</param>
@@ -57,6 +114,20 @@ namespace GTASaveData.Serialization
             m_reader = new BinaryReader(baseStream, Encoding.ASCII, true);
             m_writer = new BinaryWriter(baseStream, Encoding.ASCII, true);
             m_disposed = false;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SaveDataSerializer"/> using the specified
+        /// stream as the serialization endpoint.
+        /// </summary>
+        /// <param name="baseStream">A readable and writable data stream.</param>
+        /// <param name="paddingMode">The <see cref="Serialization.PaddingMode"/> to use for alignment.</param>
+        /// <param name="paddingSequence">The sequence of bytes to use if the padding mode is set to <see cref="PaddingMode.Sequence"/>.</param>
+        public SaveDataSerializer(Stream baseStream, PaddingMode paddingMode, byte[] paddingSequence = null)
+            : this(baseStream)
+        {
+            PaddingMode = paddingMode;
+            PaddingSequence = paddingSequence;
         }
 
         /// <summary>

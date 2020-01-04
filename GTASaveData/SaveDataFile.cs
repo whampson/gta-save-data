@@ -1,6 +1,5 @@
 ﻿using GTASaveData.Serialization;
 using Newtonsoft.Json;
-using System;
 using System.IO;
 
 namespace GTASaveData
@@ -70,75 +69,25 @@ namespace GTASaveData
             File.WriteAllBytes(path, data);
         }
 
-        /// <summary>
-        /// Creates a new <see cref="SaveDataSerializer"/> using the current
-        /// <see cref="FilePaddingMode"/> and <see cref="FilePaddingSequence"/>
-        /// values.
-        /// </summary>
-        /// <param name="baseStream">The source <see cref="Stream"/>.</param>
-        /// <returns>A <see cref="SaveDataSerializer"/> instance.</returns>
-        protected SaveDataSerializer CreateSerializer(Stream baseStream)
-        {
-            return new SaveDataSerializer(baseStream)
-            {
-                PaddingMode = m_paddingMode,
-                PaddingSequence = m_paddingSequence
-            };
-        }
-
-        /// <summary>
-        /// Creates an object from the data stored in a byte array.
-        /// </summary>
-        /// <typeparam name="T">The type of object to create.</typeparam>
-        /// <param name="buffer">The byte array containing serialized object data.</param>
-        /// <param name="format">The format of the data.</param>
-        /// <param name="length">The length of the data.</param>
-        /// <param name="unicode">A value indicating whether to read Unicode characters.</param>
-        /// <returns>An object of type <typeparamref name="T"/>.</returns>
         protected T Deserialize<T>(byte[] buffer,
             FileFormat format = null,
             int length = 0,
             bool unicode = false)
         {
-            if (buffer == null)
-            {
-                throw new ArgumentNullException(nameof(buffer));
-            }
-
-            using (SaveDataSerializer s = CreateSerializer(new MemoryStream(buffer)))
-            {
-                return s.GenericRead<T>(format, length, unicode);
-            }
+            return SaveDataSerializer.Deserialize<T>(buffer, format, length, unicode);
         }
 
-        /// <summary>
-        /// Creates a byte array from data in the specified object.
-        /// </summary>
-        /// <typeparam name="T">The type of object to serialize.</typeparam>
-        /// <param name="obj">The object to serialize.</param>
-        /// <param name="format">The serialization format.</param>
-        /// <param name="length">The length of the data to serialize.</param>
-        /// <param name="unicode">A value indicating whether to write Unicode characters.</param>
-        /// <returns>A byte array containing the serialized object data.</returns>
         protected byte[] Serialize<T>(T obj,
             FileFormat format = null,
             int length = 0,
             bool unicode = false)
         {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
+            return SaveDataSerializer.Serialize(obj, format, length, unicode, m_paddingMode, m_paddingSequence);
+        }
 
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (SaveDataSerializer s = CreateSerializer(m))
-                {
-                    s.GenericWrite(obj, format, length, unicode);
-                }
-
-                return m.ToArray();
-            }
+        protected SaveDataSerializer CreateSerializer(Stream baseStream)
+        {
+            return new SaveDataSerializer(baseStream, m_paddingMode, m_paddingSequence);
         }
     }
 }

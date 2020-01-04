@@ -19,19 +19,6 @@ namespace GTASaveData.GTA3
     public sealed class GTA3SaveData : SaveDataFile,
         IEquatable<GTA3SaveData>
     {
-        // The number of bytes in all first-level blocks, excluding the size header.
-        private const int TotalBlockDataSize = 0x31400;
-
-        // Block IDs for tagged blocks.
-        private const string ScrTag = "SCR";
-        private const string RstTag = "RST";
-        private const string RdrTag = "RDR";
-        private const string ZnsTag = "ZNS";
-        private const string GngTag = "GNG";
-        private const string CgnTag = "CGN";
-        private const string AudTag = "AUD";
-        private const string PtpTag = "PTP";
-
         public static class FileFormats
         {
             public static readonly FileFormat Android = new FileFormat(
@@ -64,7 +51,7 @@ namespace GTASaveData.GTA3
 
             public static FileFormat[] GetSupportedFileFormats()
             {
-                return new FileFormat[] { Android, IOS, PS2, PS2AU, PS2JP, Xbox };
+                return new FileFormat[] { Android, IOS, PC, PS2, PS2AU, PS2JP, Xbox };
             }
         }
 
@@ -89,6 +76,19 @@ namespace GTASaveData.GTA3
             { FileFormats.PS2JP, 0xC350 },
             { FileFormats.Xbox, 0xD6D8 }
         };
+
+        // The number of bytes in all first-level blocks, excluding the size header.
+        private const int TotalBlockDataSize = 0x31400;
+
+        // Block IDs for tagged blocks.
+        private const string ScrTag = "SCR";
+        private const string RstTag = "RST";
+        private const string RdrTag = "RDR";
+        private const string ZnsTag = "ZNS";
+        private const string GngTag = "GNG";
+        private const string CgnTag = "CGN";
+        private const string AudTag = "AUD";
+        private const string PtpTag = "PTP";
 
         private SimpleVars m_simpleVars;
         private Scripts m_scripts;
