@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 
 namespace GTASaveData.GTA3
 {
@@ -23,13 +24,13 @@ namespace GTASaveData.GTA3
         public ContactInfo()
         { }
 
-        private ContactInfo(SaveDataSerializer serializer, SystemType system)
+        private ContactInfo(SaveDataSerializer serializer, FileFormat format)
         {
             m_onAMissionFlag = serializer.ReadInt32();
             m_baseBriefId = serializer.ReadInt32();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.Write(m_onAMissionFlag);
             serializer.Write(m_baseBriefId);

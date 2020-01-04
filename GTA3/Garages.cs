@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 using System.Linq;
 using WpfEssentials;
 
@@ -104,7 +105,7 @@ namespace GTASaveData.GTA3
             m_garageObjects = new FullyObservableCollection<Garage>();
         }
 
-        private Garages(SaveDataSerializer serializer, SystemType system)
+        private Garages(SaveDataSerializer serializer, FileFormat format)
         {
             m_numberOfGarages = serializer.ReadInt32();
             m_freeBombs = serializer.ReadBool(4);
@@ -120,7 +121,7 @@ namespace GTASaveData.GTA3
             m_garageObjects = new FullyObservableCollection<Garage>(serializer.ReadArray<Garage>(Limits.GarageObjectsCount));
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.Write(m_numberOfGarages);
             serializer.Write(m_freeBombs, 4);

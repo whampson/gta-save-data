@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using GTASaveData.Serialization;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -98,7 +99,7 @@ namespace GTASaveData.GTA3
         public Box3d()
         { }
 
-        private Box3d(SaveDataSerializer serializer, SystemType system)
+        private Box3d(SaveDataSerializer serializer, FileFormat format)
         {
             m_xMin = serializer.ReadSingle();
             m_xMax = serializer.ReadSingle();
@@ -108,7 +109,7 @@ namespace GTASaveData.GTA3
             m_zMax = serializer.ReadSingle();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.Write(m_xMin);
             serializer.Write(m_xMax);

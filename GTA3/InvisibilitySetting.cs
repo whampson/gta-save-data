@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 
 namespace GTASaveData.GTA3
 {
@@ -23,13 +24,13 @@ namespace GTASaveData.GTA3
         public InvisibilitySetting()
         { }
 
-        private InvisibilitySetting(SaveDataSerializer serializer, SystemType system)
+        private InvisibilitySetting(SaveDataSerializer serializer, FileFormat format)
         {
             m_type = (ObjectType) serializer.ReadInt32();
             m_staticIndex = serializer.ReadInt32();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.Write((int) m_type);
             serializer.Write(m_staticIndex);

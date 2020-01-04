@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 
 namespace GTASaveData.GTA3
 {
@@ -83,7 +84,7 @@ namespace GTASaveData.GTA3
             m_rotation = new Vector3d();
         }
 
-        private StoredCar(SaveDataSerializer serializer, SystemType system)
+        private StoredCar(SaveDataSerializer serializer, FileFormat format)
         {
             m_modelId = serializer.ReadInt32();
             m_position = serializer.ReadObject<Vector3d>();
@@ -98,7 +99,7 @@ namespace GTASaveData.GTA3
             serializer.Align();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.Write((int) m_modelId);
             serializer.WriteObject(m_position);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -114,7 +115,7 @@ namespace GTASaveData.GTA3
             m_runningScripts = new FullyObservableCollection<RunningScript>();
         }
 
-        private Scripts(SaveDataSerializer serializer, SystemType system)
+        private Scripts(SaveDataSerializer serializer, FileFormat format)
         {
             int sizeOfScriptSpace = serializer.ReadInt32();
             m_globalVariables = new ObservableCollection<uint>(serializer.ReadArray<uint>(sizeOfScriptSpace / 4));
@@ -133,10 +134,10 @@ namespace GTASaveData.GTA3
             m_numberOfMissionScripts = serializer.ReadInt16();
             serializer.Align();
             int numRunningScripts = serializer.ReadInt32();
-            m_runningScripts = new FullyObservableCollection<RunningScript>(serializer.ReadArray<RunningScript>(numRunningScripts, system));
+            m_runningScripts = new FullyObservableCollection<RunningScript>(serializer.ReadArray<RunningScript>(numRunningScripts, format));
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.Write(m_globalVariables.Count * 4);
             serializer.WriteArray(m_globalVariables);
@@ -154,7 +155,7 @@ namespace GTASaveData.GTA3
             serializer.Write(m_numberOfMissionScripts);
             serializer.Align();
             serializer.Write(m_runningScripts.Count);
-            serializer.WriteArray(m_runningScripts, system: system);
+            serializer.WriteArray(m_runningScripts, format: format);
         }
 
         public override int GetHashCode()

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 
 namespace GTASaveData.GTA3
 {
@@ -34,14 +35,14 @@ namespace GTASaveData.GTA3
             m_shoreside = new StoredCar();
         }
 
-        private StoredCarSlot(SaveDataSerializer serializer, SystemType system)
+        private StoredCarSlot(SaveDataSerializer serializer, FileFormat format)
         {
             m_portland = serializer.ReadObject<StoredCar>();
             m_staunton = serializer.ReadObject<StoredCar>();
             m_shoreside = serializer.ReadObject<StoredCar>();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.WriteObject(m_portland);
             serializer.WriteObject(m_staunton);

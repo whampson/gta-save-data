@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 
 namespace GTASaveData.GTA3
 {
@@ -26,13 +27,13 @@ namespace GTASaveData.GTA3
             m_unknown0 = 0;
         }
 
-        private Collective(SaveDataSerializer serializer, SystemType system)
+        private Collective(SaveDataSerializer serializer, FileFormat format)
         {
             m_unknown0 = serializer.ReadInt32();
             m_unknown1 = serializer.ReadInt32();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.Write(m_unknown0);
             serializer.Write(m_unknown1);

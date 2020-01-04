@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -146,9 +147,9 @@ namespace GTASaveData.GTA3
             m_localVariables = new ObservableCollection<uint>();
         }
 
-        private RunningScript(SaveDataSerializer serializer, SystemType system)
+        private RunningScript(SaveDataSerializer serializer, FileFormat format)
         {
-            int stackSize = system.HasFlag(SystemType.PS2)
+            int stackSize = (format.TargetSystem == ConsoleType.PS2)
                 ? StackSizePS2
                 : StackSize;
 
@@ -175,9 +176,9 @@ namespace GTASaveData.GTA3
             serializer.Align();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
-            int stackSize = system.HasFlag(SystemType.PS2)
+            int stackSize = (format.TargetSystem == ConsoleType.PS2)
                 ? StackSizePS2
                 : StackSize;
 

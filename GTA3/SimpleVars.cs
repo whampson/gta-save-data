@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 using System.Diagnostics;
 
 namespace GTASaveData.GTA3
@@ -52,7 +53,7 @@ namespace GTASaveData.GTA3
         private int m_weatherTypeInList;
         private float m_inCarCameraMode;
         private float m_onFootCameraMode;
-        private bool m_isQuickSave;
+        private int m_isQuickSave;              // TODO: enum?
 
         public string LastMissionPassedName
         {
@@ -264,7 +265,7 @@ namespace GTASaveData.GTA3
             set { m_onFootCameraMode = value; OnPropertyChanged(); }
         }
 
-        public bool IsQuickSave
+        public int IsQuickSave
         {
             get { return m_isQuickSave; }
             set { m_isQuickSave = value; OnPropertyChanged(); }
@@ -278,13 +279,13 @@ namespace GTASaveData.GTA3
             m_compileDateAndTime = new Timestamp();
         }
 
-        private SimpleVars(SaveDataSerializer serializer, SystemType system)
+        private SimpleVars(SaveDataSerializer serializer, FileFormat format)
             : this()
         {
-            if (!system.HasFlag(SystemType.PS2))
+            if (!format.IsPS2)
             {
                 m_lastMissionPassedName = serializer.ReadString(Limits.LastMissionPassedNameLength, unicode: true);
-                if (system.HasFlag(SystemType.PC) || system.HasFlag(SystemType.Xbox))
+                if (format.IsPC || format.IsXbox)
                 {
                     m_saveTime = serializer.ReadObject<SystemTime>();
                 }
@@ -295,7 +296,7 @@ namespace GTASaveData.GTA3
             m_cameraPosition = serializer.ReadObject<Vector3d>();
             m_millisecondsPerGameMinute = serializer.ReadUInt32();
             m_lastClockTick = serializer.ReadUInt32();
-            if (system.HasFlag(SystemType.PS2))
+            if (format.IsPS2)
             {
                 m_gameClockHours = serializer.ReadInt32();
                 m_gameClockMinutes = serializer.ReadInt32();
@@ -325,11 +326,11 @@ namespace GTASaveData.GTA3
             m_forcedWeatherType = (WeatherType) serializer.ReadInt16();
             serializer.Align();
             m_interpolationValue = serializer.ReadSingle();
-            if (system.HasFlag(SystemType.PS2))
+            if (format.IsPS2)
             {
                 m_prefsMusicVolume = serializer.ReadInt32();
                 m_prefsSfxVolume = serializer.ReadInt32();
-                if (!system.HasFlag(SystemType.Australian))
+                if (!format.HasFlag(ConsoleFlags.Australia))
                 {
                     m_prefsControllerConfig = (PadMode) serializer.ReadInt32();
                 }
@@ -337,7 +338,7 @@ namespace GTASaveData.GTA3
                 m_prefsStereoMono = serializer.ReadBool(4);
                 m_prefsRadioStation = (RadioStation) serializer.ReadInt32();
                 m_prefsBrightness = serializer.ReadInt32();
-                if (!system.HasFlag(SystemType.Australian))
+                if (!format.HasFlag(ConsoleFlags.Australia))
                 {
                     m_prefsShowTrails = serializer.ReadBool(4);
                 }
@@ -351,28 +352,28 @@ namespace GTASaveData.GTA3
             m_weatherTypeInList = serializer.ReadInt32();
             m_inCarCameraMode = serializer.ReadSingle();
             m_onFootCameraMode = serializer.ReadSingle();
-            if (system.HasFlag(SystemType.Android) || system.HasFlag(SystemType.IOS))
+            if (format.IsMobile)
             {
-                m_isQuickSave = serializer.ReadBool(4);
+                m_isQuickSave = serializer.ReadInt32();
             }
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
-            if (!system.HasFlag(SystemType.PS2))
+            if (!format.IsPS2)
             {
                 serializer.Write(m_lastMissionPassedName, Limits.LastMissionPassedNameLength, unicode: true);
-                if (system.HasFlag(SystemType.PC) || system.HasFlag(SystemType.Xbox))
+                if (format.IsPC || format.IsXbox)
                 {
                     serializer.WriteObject(m_saveTime);
                 }
             }
-            serializer.Write(system.HasFlag(SystemType.PS2JP) ? TotalBlockDataSize : TotalBlockDataSize + 1);
+            serializer.Write(format.HasFlag(ConsoleFlags.Japan) ? TotalBlockDataSize : TotalBlockDataSize + 1);
             serializer.Write((int) m_currLevel);
             serializer.WriteObject(m_cameraPosition);
             serializer.Write(m_millisecondsPerGameMinute);
             serializer.Write(m_lastClockTick);
-            if (system.HasFlag(SystemType.PS2))
+            if (format.IsPS2)
             {
                 serializer.Write(m_gameClockHours);
                 serializer.Write(m_gameClockMinutes);
@@ -402,11 +403,11 @@ namespace GTASaveData.GTA3
             serializer.Write((short) m_forcedWeatherType);
             serializer.Align();
             serializer.Write(m_interpolationValue);
-            if (system.HasFlag(SystemType.PS2))
+            if (format.IsPS2)
             {
                 serializer.Write(m_prefsMusicVolume);
                 serializer.Write(m_prefsSfxVolume);
-                if (!system.HasFlag(SystemType.Australian))
+                if (!format.HasFlag(ConsoleFlags.Australia))
                 {
                     serializer.Write((int) m_prefsControllerConfig);
                 }
@@ -414,7 +415,7 @@ namespace GTASaveData.GTA3
                 serializer.Write(m_prefsStereoMono, 4);
                 serializer.Write((int) m_prefsRadioStation);
                 serializer.Write(m_prefsBrightness);
-                if (!system.HasFlag(SystemType.Australian))
+                if (!format.HasFlag(ConsoleFlags.Australia))
                 {
                     serializer.Write(m_prefsShowTrails, 4);
                 }
@@ -428,9 +429,9 @@ namespace GTASaveData.GTA3
             serializer.Write(m_weatherTypeInList);
             serializer.Write(m_inCarCameraMode);
             serializer.Write(m_onFootCameraMode);
-            if (system.HasFlag(SystemType.Android) || system.HasFlag(SystemType.IOS))
+            if (format.IsMobile)
             {
-                serializer.Write(m_isQuickSave, 4);
+                serializer.Write(m_isQuickSave);
             }
         }
 

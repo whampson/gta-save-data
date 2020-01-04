@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 
 namespace GTASaveData.GTA3
 {
@@ -77,7 +78,7 @@ namespace GTASaveData.GTA3
             m_millisecond = (ushort) dateTime.Millisecond;
         }
 
-        private SystemTime(SaveDataSerializer serializer, SystemType system)
+        private SystemTime(SaveDataSerializer serializer, FileFormat format)
         {
             m_year = serializer.ReadUInt16();
             m_month = serializer.ReadUInt16();
@@ -89,7 +90,7 @@ namespace GTASaveData.GTA3
             m_millisecond = serializer.ReadUInt16();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.Write(m_year);
             serializer.Write(m_month);

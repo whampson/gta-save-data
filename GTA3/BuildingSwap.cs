@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 
 namespace GTASaveData.GTA3
 {
@@ -42,7 +43,7 @@ namespace GTASaveData.GTA3
             m_oldModelId = -1;
         }
 
-        private BuildingSwap(SaveDataSerializer serializer, SystemType system)
+        private BuildingSwap(SaveDataSerializer serializer, FileFormat format)
         {
             m_type = (ObjectType) serializer.ReadInt32();
             m_staticIndex = serializer.ReadInt32();
@@ -50,7 +51,7 @@ namespace GTASaveData.GTA3
             m_oldModelId = serializer.ReadInt32();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.Write((int) m_type);
             serializer.Write(m_staticIndex);

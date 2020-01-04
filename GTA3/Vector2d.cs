@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Serialization;
+using System;
 
 namespace GTASaveData.GTA3
 {
@@ -23,13 +24,13 @@ namespace GTASaveData.GTA3
         public Vector2d()
         { }
 
-        private Vector2d(SaveDataSerializer serializer, SystemType system)
+        private Vector2d(SaveDataSerializer serializer, FileFormat format)
         {
             m_x = serializer.ReadSingle();
             m_y = serializer.ReadSingle();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, SystemType system)
+        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.Write(m_x);
             serializer.Write(m_y);
