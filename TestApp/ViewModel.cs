@@ -1,9 +1,9 @@
 ﻿using GTASaveData.GTA3;
+using GTASaveData.Serialization;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Markup;
+using System.Windows.Input;
 using WpfEssentials;
+using WpfEssentials.Win32;
 
 namespace TestApp
 {
@@ -43,6 +43,21 @@ namespace TestApp
         {
             get { return m_weapon; }
             set { m_weapon = value; OnPropertyChanged(); }
+        }
+
+        public ICommand LoadFileCommand
+        {
+            get { return new RelayCommand(Load); }
+        }
+
+        public void Load()
+        {
+            FileFormat fmt = GTA3SaveData.FileFormats.PC;
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            path += @"\GTA3 User Files\GTA3SF1.b";
+
+            GTA3SaveData saveData = GTA3SaveData.Load(path, fmt);
+            MessageBoxEx.Show(saveData.SimpleVars.ToString());
         }
     }
 }

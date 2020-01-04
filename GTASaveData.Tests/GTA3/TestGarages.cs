@@ -1,15 +1,14 @@
 ﻿using Bogus;
-using GTASaveData;
 using GTASaveData.GTA3;
-using UnitTest.Helpers;
+using GTASaveData.Serialization;
+using GTASaveData.Tests.TestFramework;
 using Xunit;
 
-namespace UnitTest.GTA3
+namespace GTASaveData.Tests.GTA3
 {
-    public class TestGarages
-        : SaveDataObjectTestBase<Garages>
+    public class TestGarages : SaveDataObjectTestBase<Garages>
     {
-        public override Garages GenerateTestVector(SystemType system)
+        public override Garages GenerateTestVector(FileFormat format)
         {
             Faker<Garages> model = new Faker<Garages>()
                 .RuleFor(x => x.NumberOfGarages, f => f.Random.Int())
@@ -22,8 +21,8 @@ namespace UnitTest.GTA3
                 .RuleFor(x => x.CarTypesCollected2, f => f.PickRandom<CollectCars2>())
                 .RuleFor(x => x.CarTypesCollected3, f => f.PickRandom<CollectCars3>())
                 .RuleFor(x => x.LastTimeHelpMessage, f => f.Random.Int())
-                .RuleFor(x => x.StoredCarSlots, f => TestHelper.CreateObjectCollection(Garages.Limits.StoredCarSlotsCount, e => TestHelper.Generate<StoredCarSlot, TestStoredCarSlot>()))
-                .RuleFor(x => x.GarageObjects, f => TestHelper.CreateObjectCollection(Garages.Limits.GarageObjectsCount, e => TestHelper.Generate<Garage, TestGarage>()));
+                .RuleFor(x => x.StoredCarSlots, f => Generator.CreateObjectCollection(Garages.Limits.StoredCarSlotsCount, g => Generator.Generate<StoredCarSlot, TestStoredCarSlot>()))
+                .RuleFor(x => x.GarageObjects, f => Generator.CreateObjectCollection(Garages.Limits.GarageObjectsCount, g => Generator.Generate<Garage, TestGarage>()));
 
             return model.Generate();
         }
@@ -32,23 +31,10 @@ namespace UnitTest.GTA3
         public void Serialization()
         {
             Garages x0 = GenerateTestVector();
-            Garages x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data);
+            Garages x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(5240, data.Length);
-
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
         }
     }
 }

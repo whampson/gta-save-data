@@ -1,15 +1,14 @@
 ﻿using Bogus;
-using GTASaveData;
 using GTASaveData.GTA3;
-using UnitTest.Helpers;
+using GTASaveData.Serialization;
+using GTASaveData.Tests.TestFramework;
 using Xunit;
 
-namespace UnitTest.GTA3
+namespace GTASaveData.Tests.GTA3
 {
-    public class TestContactInfo
-        : SaveDataObjectTestBase<ContactInfo>
+    public class TestContactInfo : SaveDataObjectTestBase<ContactInfo>
     {
-        public override ContactInfo GenerateTestVector(SystemType system)
+        public override ContactInfo GenerateTestVector(FileFormat format)
         {
             Faker<ContactInfo> model = new Faker<ContactInfo>()
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
@@ -22,7 +21,7 @@ namespace UnitTest.GTA3
         public void Serialization()
         {
             ContactInfo c0 = GenerateTestVector();
-            ContactInfo c1 = TestHelper.CreateSerializedCopy(c0, out byte[] data);
+            ContactInfo c1 = CreateSerializedCopy(c0, out byte[] data);
 
             Assert.Equal(c0, c1);
             Assert.Equal(8, data.Length);

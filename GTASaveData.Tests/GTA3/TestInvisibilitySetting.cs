@@ -1,15 +1,14 @@
 ﻿using Bogus;
-using GTASaveData;
 using GTASaveData.GTA3;
-using UnitTest.Helpers;
+using GTASaveData.Serialization;
+using GTASaveData.Tests.TestFramework;
 using Xunit;
 
-namespace UnitTest.GTA3
+namespace GTASaveData.Tests.GTA3
 {
-    public class TestInvisibilitySetting
-        : SaveDataObjectTestBase<InvisibilitySetting>
+    public class TestInvisibilitySetting : SaveDataObjectTestBase<InvisibilitySetting>
     {
-        public override InvisibilitySetting GenerateTestVector(SystemType system)
+        public override InvisibilitySetting GenerateTestVector(FileFormat format)
         {
             Faker<InvisibilitySetting> model = new Faker<InvisibilitySetting>()
                 .RuleFor(x => x.Type, f => f.PickRandom<ObjectType>())
@@ -22,7 +21,7 @@ namespace UnitTest.GTA3
         public void Serialization()
         {
             InvisibilitySetting x0 = GenerateTestVector();
-            InvisibilitySetting x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data);
+            InvisibilitySetting x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(8, data.Length);

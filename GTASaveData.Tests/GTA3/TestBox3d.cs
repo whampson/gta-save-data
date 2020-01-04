@@ -1,15 +1,14 @@
 ﻿using Bogus;
-using GTASaveData;
 using GTASaveData.GTA3;
-using UnitTest.Helpers;
+using GTASaveData.Serialization;
+using GTASaveData.Tests.TestFramework;
 using Xunit;
 
-namespace UnitTest.GTA3
+namespace GTASaveData.Tests.GTA3
 {
-    public class TestBox3d
-        : SaveDataObjectTestBase<Box3d>
+    public class TestBox3d : SaveDataObjectTestBase<Box3d>
     {
-        public override Box3d GenerateTestVector(SystemType system)
+        public override Box3d GenerateTestVector(FileFormat format)
         {
             Faker<Box3d> model = new Faker<Box3d>()
                 .RuleFor(x => x.XMin, f => f.Random.Float(-4000, 4000))
@@ -26,7 +25,7 @@ namespace UnitTest.GTA3
         public void Serialization()
         {
             Box3d x0 = GenerateTestVector();
-            Box3d x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data);
+            Box3d x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(24, data.Length);

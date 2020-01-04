@@ -1,15 +1,14 @@
 ﻿using Bogus;
-using GTASaveData;
 using GTASaveData.GTA3;
-using UnitTest.Helpers;
+using GTASaveData.Serialization;
+using GTASaveData.Tests.TestFramework;
 using Xunit;
 
-namespace UnitTest.GTA3
+namespace GTASaveData.Tests.GTA3
 {
-    public class TestBuildingSwap
-        : SaveDataObjectTestBase<BuildingSwap>
+    public class TestBuildingSwap : SaveDataObjectTestBase<BuildingSwap>
     {
-        public override BuildingSwap GenerateTestVector(SystemType system)
+        public override BuildingSwap GenerateTestVector(FileFormat format)
         {
             Faker<BuildingSwap> model = new Faker<BuildingSwap>()
                 .RuleFor(x => x.Type, f => f.PickRandom<ObjectType>())
@@ -24,7 +23,7 @@ namespace UnitTest.GTA3
         public void Serialization()
         {
             BuildingSwap x0 = GenerateTestVector();
-            BuildingSwap x1 = TestHelper.CreateSerializedCopy(x0, out byte[] data);
+            BuildingSwap x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(16, data.Length);

@@ -39,7 +39,8 @@
                 <ColumnDefinition Width="80"/>
                 <ColumnDefinition Width="80"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Margin="5" Content="Open File..."/>
+            <Button Grid.Column="0" Margin="5" Content="Open File..."
+                    Command="{Binding LoadFileCommand}"/>
             <!--<Button Grid.Column="1" Margin="5" Content="Bar"/>-->
         </Grid>
         
