@@ -203,7 +203,6 @@ namespace GTASaveData.GTA3
             set { m_unknown4 = value; OnPropertyChanged(); }
         }
 
-
         public Garage()
         {
             m_position = new Box3d();

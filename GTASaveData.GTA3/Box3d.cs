@@ -1,15 +1,12 @@
 ﻿using GTASaveData.Serialization;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GTASaveData.GTA3
 {
     public sealed class Box3d : SaveDataObject,
         IEquatable<Box3d>
     {
-
         private float m_xMin;
         private float m_xMax;
         private float m_yMin;

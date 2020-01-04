@@ -49,7 +49,7 @@ namespace GTASaveData.GTA3
                 "Xbox", ConsoleType.Xbox
             );
 
-            public static FileFormat[] GetSupportedFileFormats()
+            public static FileFormat[] GetAll()
             {
                 return new FileFormat[] { Android, IOS, PC, PS2, PS2AU, PS2JP, Xbox };
             }
@@ -277,7 +277,7 @@ namespace GTASaveData.GTA3
 
         private GTA3SaveData(SaveDataSerializer serializer, FileFormat format)
         {
-            if (!FileFormats.GetSupportedFileFormats().Contains(format))
+            if (!FileFormats.GetAll().Contains(format))
             {
                 throw new SaveDataSerializationException(
                     string.Format("'{0}' is not a valid file format for GTA3 save data.", format));

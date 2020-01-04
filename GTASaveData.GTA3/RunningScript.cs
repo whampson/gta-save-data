@@ -8,10 +8,13 @@ namespace GTASaveData.GTA3
     public sealed class RunningScript : SaveDataObject,
         IEquatable<RunningScript>
     {
-        public const int StackSize = 6;
-        public const int StackSizePS2 = 4;
-        public const int LocalVariablesCount = 16;
-        public const int NameLength = 8;
+        public static class Limits
+        {
+            public const int NameLength = 6;
+            public const int StackSize = 6;
+            public const int StackSizePS2 = 4;
+            public const int LocalVariablesCount = 16;
+        }
 
         private uint m_nextScript;
         private uint m_prevScript;
@@ -149,18 +152,18 @@ namespace GTASaveData.GTA3
 
         private RunningScript(SaveDataSerializer serializer, FileFormat format)
         {
-            int stackSize = (format.TargetSystem == ConsoleType.PS2)
-                ? StackSizePS2
-                : StackSize;
+            int stackSize = format.IsPS2
+                ? Limits.StackSizePS2
+                : Limits.StackSize;
 
             m_nextScript = serializer.ReadUInt32();
             m_prevScript = serializer.ReadUInt32();
-            m_name = serializer.ReadString(NameLength);
+            m_name = serializer.ReadString(Limits.NameLength);
             m_instructionPointer = serializer.ReadUInt32();
             m_stack = new ObservableCollection<uint>(serializer.ReadArray<uint>(stackSize));
             m_stackPointer = serializer.ReadUInt16();
             serializer.Align();
-            m_localVariables = new ObservableCollection<uint>(serializer.ReadArray<uint>(LocalVariablesCount));
+            m_localVariables = new ObservableCollection<uint>(serializer.ReadArray<uint>(Limits.LocalVariablesCount));
             m_timerA = serializer.ReadUInt32();
             m_timerB = serializer.ReadUInt32();
             m_ifResult = serializer.ReadBool();
@@ -178,18 +181,18 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
-            int stackSize = (format.TargetSystem == ConsoleType.PS2)
-                ? StackSizePS2
-                : StackSize;
+            int stackSize = format.IsPS2
+                ? Limits.StackSizePS2
+                : Limits.StackSize;
 
             serializer.Write(m_nextScript);
             serializer.Write(m_prevScript);
-            serializer.Write(m_name, NameLength);
+            serializer.Write(m_name, Limits.NameLength);
             serializer.Write(m_instructionPointer);
             serializer.WriteArray(m_stack, stackSize);
             serializer.Write(m_stackPointer);
             serializer.Align();
-            serializer.WriteArray(m_localVariables, LocalVariablesCount);
+            serializer.WriteArray(m_localVariables, Limits.LocalVariablesCount);
             serializer.Write(m_timerA);
             serializer.Write(m_timerB);
             serializer.Write(m_ifResult);
