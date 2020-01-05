@@ -613,6 +613,34 @@ namespace GTASaveData.GTA3
         }
         // End TODO
 
+        public override IList<SaveDataObject> GetAllBlocks()
+        {
+            return new SaveDataObject[]
+            {
+                m_simpleVars,
+                m_scripts,
+                m_pedPool,
+                m_garages,
+                m_vehicles,
+                m_objects,
+                m_pathFind,
+                m_cranes,
+                m_pickups,
+                m_phoneInfo,
+                m_restarts,
+                m_radarBlips,
+                m_zones,
+                m_gangData,
+                m_carGenerators,
+                m_particles,
+                m_audioScriptObjects,
+                m_playerInfo,
+                m_stats,
+                m_streaming,
+                m_pedTypeInfo
+            };
+        }
+
         public override int GetHashCode()
         {
             return base.GetHashCode();

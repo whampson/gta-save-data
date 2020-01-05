@@ -1,5 +1,6 @@
 ﻿using GTASaveData.Serialization;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
 
 namespace GTASaveData
@@ -68,6 +69,8 @@ namespace GTASaveData
             byte[] data = Serialize(this, format);
             File.WriteAllBytes(path, data);
         }
+
+        public abstract IList<SaveDataObject> GetAllBlocks();
 
         protected T Deserialize<T>(byte[] buffer, FileFormat format = null)
         {
