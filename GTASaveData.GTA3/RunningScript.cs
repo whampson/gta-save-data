@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int NameLength = 6;
+            public const int NameLength = 8;
             public const int StackSize = 6;
             public const int StackSizePS2 = 4;
             public const int LocalVariablesCount = 16;
@@ -189,10 +189,10 @@ namespace GTASaveData.GTA3
             serializer.Write(m_prevScript);
             serializer.Write(m_name, Limits.NameLength);
             serializer.Write(m_instructionPointer);
-            serializer.WriteArray(m_stack, stackSize);
+            serializer.WriteArray(m_stack.ToArray(), stackSize);
             serializer.Write(m_stackPointer);
             serializer.Align();
-            serializer.WriteArray(m_localVariables, Limits.LocalVariablesCount);
+            serializer.WriteArray(m_localVariables.ToArray(), Limits.LocalVariablesCount);
             serializer.Write(m_timerA);
             serializer.Write(m_timerB);
             serializer.Write(m_ifResult);

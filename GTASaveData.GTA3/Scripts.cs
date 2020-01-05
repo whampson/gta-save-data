@@ -140,14 +140,14 @@ namespace GTASaveData.GTA3
         protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
             serializer.Write(m_globalVariables.Count * 4);
-            serializer.WriteArray(m_globalVariables);
+            serializer.WriteArray(m_globalVariables.ToArray());
             serializer.Write(UnknownConstant);
             serializer.Write(m_onAMissionFlag);
-            serializer.WriteArray(m_contacts, Limits.ContactsCount);
-            serializer.WriteArray(m_collectives, Limits.CollectivesCount);
+            serializer.WriteArray(m_contacts.ToArray(), Limits.ContactsCount);
+            serializer.WriteArray(m_collectives.ToArray(), Limits.CollectivesCount);
             serializer.Write(m_nextFreeCollectiveIndex);
-            serializer.WriteArray(m_buildingSwaps, Limits.BuildingSwapsCount);
-            serializer.WriteArray(m_invisibilitySettings, Limits.InvisibilitySettingsCount);
+            serializer.WriteArray(m_buildingSwaps.ToArray(), Limits.BuildingSwapsCount);
+            serializer.WriteArray(m_invisibilitySettings.ToArray(), Limits.InvisibilitySettingsCount);
             serializer.Write(m_usingAMultiScriptFile);
             serializer.Align();
             serializer.Write(m_mainScriptSize);
@@ -155,7 +155,7 @@ namespace GTASaveData.GTA3
             serializer.Write(m_numberOfMissionScripts);
             serializer.Align();
             serializer.Write(m_runningScripts.Count);
-            serializer.WriteArray(m_runningScripts, format: format);
+            serializer.WriteArray(m_runningScripts.ToArray(), format: format);
         }
 
         public override int GetHashCode()

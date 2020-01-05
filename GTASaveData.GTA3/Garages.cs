@@ -133,8 +133,8 @@ namespace GTASaveData.GTA3
             serializer.Write((int) m_carTypesCollected2);
             serializer.Write((int) m_carTypesCollected3);
             serializer.Write(m_lastTimeHelpMessage);
-            serializer.WriteArray(m_storedCarSlots, Limits.StoredCarSlotsCount);
-            serializer.WriteArray(m_garageObjects, Limits.GarageObjectsCount);
+            serializer.WriteArray(m_storedCarSlots.ToArray(), Limits.StoredCarSlotsCount);
+            serializer.WriteArray(m_garageObjects.ToArray(), Limits.GarageObjectsCount);
         }
 
         public override int GetHashCode()
