@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -20,13 +19,8 @@ namespace GTASaveData.Serialization
         /// <typeparam name="T">The type of object to create.</typeparam>
         /// <param name="buffer">The byte array containing serialized object data.</param>
         /// <param name="format">The format of the data.</param>
-        /// <param name="length">The length of the data. Note: only applies to <see cref="string"/> and <see cref="bool"/> types.</param>
-        /// <param name="unicode">A value indicating whether to read Unicode characters.</param>
         /// <returns>An object of type <typeparamref name="T"/>.</returns>
-        public static T Deserialize<T>(byte[] buffer,
-            FileFormat format = null,
-            int length = 0,
-            bool unicode = false)
+        public static T Deserialize<T>(byte[] buffer, FileFormat format = null)
         {
             if (buffer == null)
             {
@@ -35,7 +29,7 @@ namespace GTASaveData.Serialization
 
             using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(buffer)))
             {
-                return s.GenericRead<T>(format, length, unicode);
+                return s.GenericRead<T>(format, 0, false);
             }
         }
 
@@ -45,13 +39,11 @@ namespace GTASaveData.Serialization
         /// <typeparam name="T">The type of object to serialize.</typeparam>
         /// <param name="obj">The object to serialize.</param>
         /// <param name="format">The serialization format.</param>
-        /// <param name="length">The length of the data to serialize. Note: only applies to <see cref="string"/> and <see cref="bool"/> types.</param>
-        /// <param name="unicode">A value indicating whether to write Unicode characters.</param>
+        /// <param name="padding">The <see cref="Serialization.PaddingMode"/> to use for alignment.</param>
+        /// <param name="paddingSequence">The sequence of bytes to use when the padding mode is <see cref="PaddingMode.Sequence"/>.</param>
         /// <returns>A byte array containing the serialized object data.</returns>
         public static byte[] Serialize<T>(T obj,
             FileFormat format = null,
-            int length = 0,
-            bool unicode = false,
             PaddingMode padding = PaddingMode.Zeros,
             byte[] paddingSequence = null)
         {
@@ -64,7 +56,7 @@ namespace GTASaveData.Serialization
             {
                 using (SaveDataSerializer s = new SaveDataSerializer(m, padding, paddingSequence))
                 {
-                    s.GenericWrite(obj, format, length, unicode);
+                    s.GenericWrite(obj, format, 0, false);
                 }
 
                 return m.ToArray();
@@ -184,6 +176,11 @@ namespace GTASaveData.Serialization
         /// <returns>A bool.</returns>
         public bool ReadBool(int byteCount = 1)
         {
+            if (byteCount < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(byteCount));
+            }
+
             byte[] buffer = ReadBytes(byteCount);
             byte value = 0;
 
@@ -402,7 +399,7 @@ namespace GTASaveData.Serialization
             }
             if (ctor1 != null)
             {
-                return (T) ctor0.Invoke(new object[] { this });
+                return (T) ctor1.Invoke(new object[] { this });
             }
 
             throw new SaveDataSerializationException(
@@ -412,12 +409,24 @@ namespace GTASaveData.Serialization
         /// <summary>
         /// Reads an array of the specified type.
         /// </summary>
-        /// <typeparam name="T">The item type.</typeparam>
-        /// <param name="count">The number of items to read.</param>
-        /// <param name="format">The data format.</param>
-        /// <param name="itemLength">The length of each item. Note: only applies to bool and string types.</param>
-        /// <param name="unicode">A value indicating whether to read unicode characters.</param>
-        /// <returns>An array of the specified type.</returns>
+        /// <typeparam name="T">
+        /// The item type.
+        /// </typeparam>
+        /// <param name="count">
+        /// The number of items to read.
+        /// </param>
+        /// <param name="format">
+        /// The data format.
+        /// </param>
+        /// <param name="itemLength">
+        /// The length of each item. Note: only applies to <see cref="bool"/> and <see cref="string"/> types.
+        /// </param>
+        /// <param name="unicode">
+        /// A value indicating whether to read unicode characters.
+        /// </param>
+        /// <returns>
+        /// An array of the specified type.
+        /// </returns>
         public T[] ReadArray<T>(int count,
             FileFormat format = null,
             int itemLength = 0,
@@ -439,6 +448,11 @@ namespace GTASaveData.Serialization
         /// <param name="byteCount">The number of bytes to write.</param>
         public void Write(bool value, int byteCount = 1)
         {
+            if (byteCount < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(byteCount));
+            }
+
             byte[] buffer = new byte[byteCount];
             buffer[0] = (value) ? (byte) 1 : (byte) 0;      // little endian
 
@@ -583,7 +597,8 @@ namespace GTASaveData.Serialization
         /// <param name="length">
         /// The number of characters to write. The string will be truncated if this value is less than
         /// the string's length. The string will be zero-padded on the right side if this value exceeds
-        /// the string's length.
+        /// the string's length. If this value is null, the string will be written in its entirety and
+        /// a null teminator will be appended.
         /// </param>
         /// <param name="unicode">
         /// A value indicating whether to write Unicode characters.
@@ -591,8 +606,8 @@ namespace GTASaveData.Serialization
         /// <param name="zeroTerminate">
         /// A value indicating whether to terminate the string with a null character (C-style).
         /// If the length is unspecified, the null character will be added to the end of the
-        /// string. Otherwise, the string will be truncated if necessary so as to not exceed
-        /// the specified length when the null character is written.
+        /// string regardless. Otherwise, the string will be truncated if necessary so as to
+        /// not exceed the specified length when the null character is written.
         /// </param>
         public void Write(string value,
             int? length = null,
@@ -698,28 +713,28 @@ namespace GTASaveData.Serialization
         /// The data format.
         /// </param>
         /// <param name="itemLength">
-        /// The length of each item. Note: only applies to bool and string types.<
+        /// The length of each item. Note: only applies to <see cref="bool"/> and <see cref="string"/> types.
         /// </param>
         /// <param name="unicode">
         /// A value indicating whether to write unicode characters.
         /// </param>
-        public void WriteArray<T>(ObservableCollection<T> items,
+        public void WriteArray<T>(T[] items,
             int? count = null,
             FileFormat format = null,
-            int? itemLength = null,
+            int itemLength = 0,
             bool unicode = false)
             where T : new()
         {
-            int capacity = items.Count;
+            int capacity = items.Length;
             for (int i = 0; i < (count ?? capacity); i++)
             {
                 if (i < capacity)
                 {
-                    GenericWrite(items.ElementAt(i), format, itemLength ?? 0, unicode);
+                    GenericWrite(items.ElementAt(i), format, itemLength, unicode);
                 }
                 else
                 {
-                    GenericWrite(new T(), format, itemLength ?? 0, unicode);
+                    GenericWrite(new T(), format, itemLength, unicode);
                 }
             }
         }
@@ -764,14 +779,19 @@ namespace GTASaveData.Serialization
             }
         }
 
-        internal T GenericRead<T>(FileFormat format, int length, bool unicode)
+        private T GenericRead<T>(FileFormat format, int length, bool unicode)
         {
-            Type t = typeof(T);
             object ret;
 
+            if (length < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length));
+            }
+
+            Type t = typeof(T);
             if (t == typeof(bool))
             {
-                ret = ReadBool(length);
+                ret = ReadBool((length == 0) ? 1 : length);
             }
             else if (t == typeof(byte))
             {
@@ -781,9 +801,13 @@ namespace GTASaveData.Serialization
             {
                 ret = ReadSByte();
             }
+            else if (t == typeof(byte[]))
+            {
+                ret = ReadBytes(length);
+            }
             else if (t == typeof(char))
             {
-                ret = ReadChar();
+                ret = ReadChar(unicode);
             }
             else if (t == typeof(double))
             {
@@ -831,13 +855,17 @@ namespace GTASaveData.Serialization
             return (T) ret;
         }
 
-        internal void GenericWrite<T>(T value, FileFormat format, int length, bool unicode)
+        private void GenericWrite<T>(T value, FileFormat format, int length, bool unicode)
         {
-            Type t = typeof(T);
+            if (length < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length));
+            }
 
+            Type t = typeof(T);
             if (t == typeof(bool))
             {
-                Write(Convert.ToBoolean(value), length);
+                Write(Convert.ToBoolean(value), (length == 0) ? 1 : length);
             }
             else if (t == typeof(byte))
             {
@@ -847,9 +875,13 @@ namespace GTASaveData.Serialization
             {
                 Write(Convert.ToSByte(value));
             }
+            else if (t == typeof(byte[]))
+            {
+                Write((byte[]) (object) value);
+            }
             else if (t == typeof(char))
             {
-                Write(Convert.ToChar(value));
+                Write(Convert.ToChar(value), unicode);
             }
             else if (t == typeof(double))
             {

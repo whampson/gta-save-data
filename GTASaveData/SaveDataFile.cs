@@ -69,20 +69,14 @@ namespace GTASaveData
             File.WriteAllBytes(path, data);
         }
 
-        protected T Deserialize<T>(byte[] buffer,
-            FileFormat format = null,
-            int length = 0,
-            bool unicode = false)
+        protected T Deserialize<T>(byte[] buffer, FileFormat format = null)
         {
-            return SaveDataSerializer.Deserialize<T>(buffer, format, length, unicode);
+            return SaveDataSerializer.Deserialize<T>(buffer, format);
         }
 
-        protected byte[] Serialize<T>(T obj,
-            FileFormat format = null,
-            int length = 0,
-            bool unicode = false)
+        protected byte[] Serialize<T>(T obj, FileFormat format = null)
         {
-            return SaveDataSerializer.Serialize(obj, format, length, unicode, m_paddingMode, m_paddingSequence);
+            return SaveDataSerializer.Serialize(obj, format, m_paddingMode, m_paddingSequence);
         }
 
         protected SaveDataSerializer CreateSerializer(Stream baseStream)
