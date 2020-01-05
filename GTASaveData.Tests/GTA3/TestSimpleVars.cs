@@ -12,7 +12,7 @@ namespace GTASaveData.Tests.GTA3
         public override SimpleVars GenerateTestVector(FileFormat format)
         {
             Faker<SimpleVars> model = new Faker<SimpleVars>()
-                .RuleFor(x => x.LastMissionPassedName, f => !format.IsPS2 ? Generator.RandomString(f, 23) : string.Empty)
+                .RuleFor(x => x.LastMissionPassedName, f => !format.IsPS2 ? Generator.RandomWords(f, 23) : string.Empty)
                 .RuleFor(x => x.SaveTime, (format.IsPC || format.IsXbox) ? Generator.Generate<SystemTime, TestSystemTime>() : new SystemTime())
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector3d, TestVector3d>())

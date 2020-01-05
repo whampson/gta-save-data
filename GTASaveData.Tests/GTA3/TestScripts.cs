@@ -13,8 +13,8 @@ namespace GTASaveData.Tests.GTA3
         {
             Faker faker = new Faker();
 
-            int numGlobals = faker.Random.Int(100, 5000);
-            int numRunningScripts = faker.Random.Int(1, 100);
+            int numGlobals = faker.Random.Int(1, 10);
+            int numRunningScripts = faker.Random.Int(1, 10);
 
             Faker<Scripts> model = new Faker<Scripts>()
                 .RuleFor(x => x.GlobalVariables, f => Generator.CreateValueCollection(numGlobals, g => f.Random.UInt()))

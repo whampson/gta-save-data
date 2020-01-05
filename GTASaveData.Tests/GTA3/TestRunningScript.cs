@@ -19,7 +19,7 @@ namespace GTASaveData.Tests.GTA3
             Faker<RunningScript> model = new Faker<RunningScript>()
                 .RuleFor(x => x.NextScript, f => f.Random.UInt())
                 .RuleFor(x => x.PrevScript, f => f.Random.UInt())
-                .RuleFor(x => x.Name, f => Generator.RandomString(f, 7))
+                .RuleFor(x => x.Name, f => Generator.RandomWords(f, 7))
                 .RuleFor(x => x.InstructionPointer, f => f.Random.UInt())
                 .RuleFor(x => x.Stack, f => Generator.CreateValueCollection(stackSize, g => f.Random.UInt()))
                 .RuleFor(x => x.StackPointer, f => f.Random.UShort())
