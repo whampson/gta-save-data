@@ -3,6 +3,7 @@
     public enum GarageType
     {
         Invalid,
+
         Mission,
         BombShop1,
         BombShop2,
