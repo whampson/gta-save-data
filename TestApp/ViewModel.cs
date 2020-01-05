@@ -1,63 +1,116 @@
-﻿using GTASaveData.GTA3;
+﻿using GTASaveData;
+using GTASaveData.GTA3;
 using GTASaveData.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 using WpfEssentials;
 using WpfEssentials.Win32;
 
 namespace TestApp
 {
+    public enum BlockType
+    {
+        SimpleVars,
+        Scripts,
+        PedPool,
+        Garages,
+        Vehicles,
+        Objects,
+        PathFind,
+        Cranes,
+        Pickups,
+        PhoneInfo,
+        Restarts,
+        RadarBlips,
+        Zones,
+        GangData,
+        CarGenerators,
+        Particles,
+        AudioScriptObjects,
+        PlayerInfo,
+        Stats,
+        Streaming,
+        PedTypeInfo
+    }
+
     public class ViewModel : ObservableObject
     {
-        private WeatherType m_weather;
-        private BombType m_bomb;
-        private GarageState m_state;
-        private RadioStation m_radio;
-        private Weapon m_weapon;
+        public EventHandler<FileDialogEventArgs> FileDialogRequested;
 
-        public WeatherType Weather
+        private FileFormat m_fileFormat;
+        private GTA3SaveData m_currentFile;
+        private BlockType m_selectedBlock;
+        private string m_text;
+
+        public FileFormat[] FileFormats
         {
-            get { return m_weather; }
-            set { m_weather = value; OnPropertyChanged(); }
+            get { return GTA3SaveData.FileFormats.GetAll(); }
         }
 
-        public BombType Bomb
+        public FileFormat FileFormat
         {
-            get { return m_bomb; }
-            set { m_bomb = value; OnPropertyChanged(); }
+            get { return m_fileFormat; }
+            set { m_fileFormat = value; OnPropertyChanged(); }
         }
 
-        public GarageState State
+        public GTA3SaveData CurrentFile
         {
-            get { return m_state; }
-            set { m_state = value; OnPropertyChanged(); }
+            get { return m_currentFile; }
+            set { m_currentFile = value; OnPropertyChanged(); }
         }
 
-        public RadioStation Radio
+        public BlockType SelectedBlock
         {
-            get { return m_radio; }
-            set { m_radio = value; OnPropertyChanged(); }
+            get { return m_selectedBlock; }
+            set { m_selectedBlock = value; OnPropertyChanged(); }
         }
 
-        public Weapon Weapon
+        public string Text
         {
-            get { return m_weapon; }
-            set { m_weapon = value; OnPropertyChanged(); }
+            get { return m_text; }
+            set { m_text = value; OnPropertyChanged(); }
         }
 
         public ICommand LoadFileCommand
         {
-            get { return new RelayCommand(Load); }
+            get
+            {
+                return new RelayCommand(
+                    () => FileDialogRequested?.Invoke(this, new FileDialogEventArgs(FileDialogType.OpenFileDialog, FileDialogRequested_Callback)),
+                    () => FileFormat != null
+                );
+            }
         }
 
-        public void Load()
+        private void FileDialogRequested_Callback(bool? result, FileDialogEventArgs e)
         {
-            FileFormat fmt = GTA3SaveData.FileFormats.PC;
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            path += @"\GTA3 User Files\GTA3SF1.b";
+            if (result != true)
+            {
+                return;
+            }
 
-            GTA3SaveData saveData = GTA3SaveData.Load(path, fmt);
-            MessageBoxEx.Show(saveData.SimpleVars.ToString());
+            LoadFile(e.FileName);
+        }
+
+        public void LoadFile(string path)
+        {
+            CurrentFile = GTA3SaveData.Load(path, FileFormat);
+            SelectedBlock = BlockType.SimpleVars;
+            UpdateText();
+        }
+
+        public void UpdateText()
+        {
+            if (CurrentFile == null)
+            {
+                Text = "";
+                return;
+            }
+
+            IList<SaveDataObject> blocks = CurrentFile.GetAllBlocks();
+            SaveDataObject block = blocks[(int) SelectedBlock];
+            Text = block.ToString();
         }
     }
 }

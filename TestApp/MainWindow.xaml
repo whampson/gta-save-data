@@ -27,38 +27,49 @@
             </Setter>
         </Style>
     </Window.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
             <RowDefinition Height="35"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="80"/>
-                <ColumnDefinition Width="80"/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Margin="5" Content="Open File..."
-                    Command="{Binding LoadFileCommand}"/>
-            <!--<Button Grid.Column="1" Margin="5" Content="Bar"/>-->
-        </Grid>
-        
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20*"/>
-                <ColumnDefinition Width="20*"/>
-                <ColumnDefinition Width="20*"/>
-                <ColumnDefinition Width="20*"/>
-                <ColumnDefinition Width="20*"/>
-            </Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="75"/>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="125"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-            <ComboBox Grid.Column="0" Style="{StaticResource EnumComboBoxStyle}" ItemsSource="{eext:EnumValueCollection EnumType=m:BombType}" SelectedItem="{Binding Bomb}"/>
-            <ComboBox Grid.Column="1" Style="{StaticResource EnumComboBoxStyle}" ItemsSource="{eext:EnumValueCollection EnumType=m:WeatherType}" SelectedItem="{Binding Weather}"/>
-            <ComboBox Grid.Column="2" Style="{StaticResource EnumComboBoxStyle}" ItemsSource="{eext:EnumValueCollection EnumType=m:GarageState}" SelectedItem="{Binding State}"/>
-            <ComboBox Grid.Column="3" Style="{StaticResource EnumComboBoxStyle}" ItemsSource="{eext:EnumValueCollection EnumType=m:RadioStation}" SelectedItem="{Binding Radio}"/>
-            <ComboBox Grid.Column="4" Style="{StaticResource EnumComboBoxStyle}" ItemsSource="{eext:EnumValueCollection EnumType=m:Weapon}" SelectedItem="{Binding Weapon}"/>
-        </Grid>
+        <Label Grid.Row="0" Grid.Column="0"
+               HorizontalAlignment="Right"
+               VerticalAlignment="Center"
+               Content="File Type:"/>
+        <ComboBox Grid.Row="0" Grid.Column="1"
+                  Margin="5"
+                  ItemsSource="{Binding FileFormats}"
+                  SelectedItem="{Binding FileFormat}"/>
+        <Button Grid.Row="0" Grid.Column="2"
+                Margin="5"
+                Content="Open File..."
+                Command="{Binding LoadFileCommand}"/>
 
+        <Label Grid.Row="1" Grid.Column="0"
+               HorizontalAlignment="Right"
+               VerticalAlignment="Center"
+               Content="Block:"/>
+        <ComboBox Grid.Row="1" Grid.Column="1"
+                  Style="{StaticResource EnumComboBoxStyle}"
+                  ItemsSource="{eext:EnumValueCollection EnumType=local:BlockType}"
+                  SelectedItem="{Binding SelectedBlock}"
+                  SelectionChanged="BlockComboBox_SelectionChanged"/>
+
+        <TextBox Grid.Row="2" Grid.ColumnSpan="4"
+                 IsReadOnly="True"
+                 FontFamily="Consolas"
+                 VerticalScrollBarVisibility="Auto"
+                 TextWrapping="WrapWithOverflow"
+                 Text="{Binding Text}"/>
     </Grid>
 </Window>
