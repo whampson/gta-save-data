@@ -169,6 +169,15 @@ namespace GTASaveData.Serialization
         }
 
         /// <summary>
+        /// Skips ahead or beind the specified number of bytes.
+        /// </summary>
+        /// <param name="amount">The number of bytes by which to skip ahead or back.</param>
+        public void Skip(int amount)
+        {
+            BaseStream.Position += amount;
+        }
+
+        /// <summary>
         /// Reads an n-byte Boolean value.
         /// 'False' is represented by all bits being 0.
         /// </summary>
