@@ -1,4 +1,5 @@
-﻿using GTASaveData.Helpers;
+﻿using GTASaveData.Extensions;
+using GTASaveData.Helpers;
 using GTASaveData.Serialization;
 using System;
 using System.Collections.Generic;
@@ -263,8 +264,98 @@ namespace GTASaveData.GTA3
             m_pedTypeInfo = new DummyObject();
         }
 
+        public static FileFormat GetFileFormat(string path)
+        {
+            if (path == null)
+            {
+                return null;
+            }
+
+            bool isMobile = false;
+            bool isPcOrXbox = false;
+
+            byte[] data = File.ReadAllBytes(path);
+
+            int fileId = data.FindFirst(BitConverter.GetBytes(0x31401));
+            int fileIdJP = data.FindFirst(BitConverter.GetBytes(0x31400));
+            int scr = data.FindFirst("SCR\0".GetAsciiBytes());
+
+            int blk1Size;
+            using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(data)))
+            {
+                s.Skip(s.ReadInt32());
+                blk1Size = s.ReadInt32();
+            }
+
+            if (scr == 0xB0 && fileId == 0x04)
+            {
+                // PS2, Austra
+                return FileFormats.PS2AU;
+            }
+            else if (scr == 0xB8)
+            {
+                if (fileIdJP == 0x04)
+                {
+                    // PS2, Japan
+                    return FileFormats.PS2JP;
+                }
+                else if (fileId == 0x04)
+                {
+                    // PS2, North America/Europe
+                    return FileFormats.PS2;
+                }
+                else if (fileId == 0x34)
+                {
+                    isMobile = true;
+                }
+            }
+            else if (scr == 0xC4 && fileId == 0x44)
+            {
+                isPcOrXbox = true;
+            }
+
+            if (isMobile)
+            {
+                if (blk1Size == 0x648)
+                {
+                    // iOS
+                    return FileFormats.IOS;
+                }
+                else if (blk1Size == 0x64C)
+                {
+                    // Android
+                    return FileFormats.Android;
+                }
+            }
+            else if (isPcOrXbox)
+            {
+                if (blk1Size == 0x624)
+                {
+                    // PC (Windows, macOS)
+                    return FileFormats.PC;
+                }
+                else if (blk1Size == 0x628)
+                {
+                    // Xbox
+                    return FileFormats.Xbox;
+                }
+            }
+
+            return null;
+        }
+
+        public static GTA3SaveData Load(string path)
+        {
+            return Load(path, GetFileFormat(path));
+        }
+
         public static GTA3SaveData Load(string path, FileFormat format)
         {
+            if (path == null || format == null)
+            {
+                return null;
+            }
+
             byte[] data = File.ReadAllBytes(path);
             using (MemoryStream m = new MemoryStream(data))
             {

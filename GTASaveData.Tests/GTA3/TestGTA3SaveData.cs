@@ -33,6 +33,29 @@ namespace GTASaveData.Tests.GTA3
             // TODO: data size check?
         }
 
+        [Theory]
+        [MemberData(nameof(FileFormatData))]
+        public void FileTypeDetection(FileFormat expectedFileFormat, string filePath)
+        {
+            FileFormat detected = GTA3SaveData.GetFileFormat(filePath);
+
+            Assert.Equal(expectedFileFormat, detected);
+        }
+
+        public static IEnumerable<object[]> FileFormatData => new[]
+        {
+            new object[] { GTA3SaveData.FileFormats.PC, "./TestData/GTA3/PC/1_JM4" },
+            new object[] { GTA3SaveData.FileFormats.PC, "./TestData/GTA3/PC/2_AS3" },
+            new object[] { GTA3SaveData.FileFormats.PS2, "./TestData/GTA3/PS2/1_T4X4_1" },
+            new object[] { GTA3SaveData.FileFormats.PS2, "./TestData/GTA3/PS2/2_LM1" },
+            new object[] { GTA3SaveData.FileFormats.PS2, "./TestData/GTA3/PS2/3_CAT2" },
+            new object[] { GTA3SaveData.FileFormats.PS2AU, "./TestData/GTA3/PS2AU/1_T4X4_2" },
+            new object[] { GTA3SaveData.FileFormats.PS2AU, "./TestData/GTA3/PS2AU/2_AS3" },
+            new object[] { GTA3SaveData.FileFormats.PS2AU, "./TestData/GTA3/PS2AU/3_CAT2" },
+            new object[] { GTA3SaveData.FileFormats.PS2JP, "./TestData/GTA3/PS2JP/1_LM1" },
+            new object[] { GTA3SaveData.FileFormats.PS2JP, "./TestData/GTA3/PS2JP/2_LM2" },
+        };
+
         public static IEnumerable<object[]> SerializationData => new[]
         {
             new object[] { GTA3SaveData.FileFormats.Android },
