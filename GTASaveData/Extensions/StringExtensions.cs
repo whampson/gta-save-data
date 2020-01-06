@@ -8,5 +8,10 @@ namespace GTASaveData.Extensions
         {
             return Encoding.ASCII.GetBytes(s);
         }
+
+        public static byte[] GetUnicodeBytes(this string s)
+        {
+            return Encoding.Unicode.GetBytes(s);
+        }
     }
 }
