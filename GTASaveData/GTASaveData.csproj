@@ -9,10 +9,10 @@
     <Product>GTASaveData</Product>
     <Description>Shared objects and APIs for the GTA save data library.</Description>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
-    <AssemblyVersion>0.1.0.120</AssemblyVersion>
-    <FileVersion>0.1.0.120</FileVersion>
+    <AssemblyVersion>0.1.0.123</AssemblyVersion>
+    <FileVersion>0.1.0.123</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0-alpha-120</Version>
+    <Version>0.1.0-alpha-123</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

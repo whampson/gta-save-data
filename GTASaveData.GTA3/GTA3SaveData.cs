@@ -31,11 +31,7 @@ namespace GTASaveData.GTA3
             );
 
             public static readonly FileFormat PC = new FileFormat(
-                "PC (Windows, macOS)", ConsoleType.PC
-            );
-
-            public static readonly FileFormat PS2 = new FileFormat(
-                "PS2", ConsoleType.PS2
+                "PC (Windows/macOS)", ConsoleType.PC
             );
 
             public static readonly FileFormat PS2AU = new FileFormat(
@@ -46,13 +42,17 @@ namespace GTASaveData.GTA3
                 "PS2 (Japan)", ConsoleType.PS2, ConsoleFlags.Japan
             );
 
+            public static readonly FileFormat PS2NAEU = new FileFormat(
+                "PS2 (North America/Europe)", ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe
+            );
+
             public static readonly FileFormat Xbox = new FileFormat(
                 "Xbox", ConsoleType.Xbox
             );
 
             public static FileFormat[] GetAll()
             {
-                return new FileFormat[] { Android, IOS, PC, PS2, PS2AU, PS2JP, Xbox };
+                return new FileFormat[] { Android, IOS, PC, PS2AU, PS2JP, PS2NAEU, Xbox };
             }
         }
 
@@ -61,9 +61,9 @@ namespace GTASaveData.GTA3
             { FileFormats.Android, 0xB0 },
             { FileFormats.IOS, 0xB0 },
             { FileFormats.PC, 0xBC },
-            { FileFormats.PS2, 0xB0 },
             { FileFormats.PS2AU, 0xA8 },
             { FileFormats.PS2JP, 0xB0 },
+            { FileFormats.PS2NAEU, 0xB0 },
             { FileFormats.Xbox, 0xBC }
         };
 
@@ -72,9 +72,9 @@ namespace GTASaveData.GTA3
             { FileFormats.Android, 0xD6D8 },
             { FileFormats.IOS, 0xD6D8 },
             { FileFormats.PC, 0xD6D8 },
-            { FileFormats.PS2, 0xC350 },
             { FileFormats.PS2AU, 0xC350 },
             { FileFormats.PS2JP, 0xC350 },
+            { FileFormats.PS2NAEU, 0xC350 },
             { FileFormats.Xbox, 0xD6D8 }
         };
 
@@ -302,7 +302,7 @@ namespace GTASaveData.GTA3
                 else if (fileId == 0x04)
                 {
                     // PS2, North America/Europe
-                    return FileFormats.PS2;
+                    return FileFormats.PS2NAEU;
                 }
                 else if (fileId == 0x34)
                 {

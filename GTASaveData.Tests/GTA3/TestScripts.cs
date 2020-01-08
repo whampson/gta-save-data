@@ -52,7 +52,7 @@ namespace GTASaveData.Tests.GTA3
             new object[] { GTA3SaveData.FileFormats.Android },
             new object[] { GTA3SaveData.FileFormats.IOS },
             new object[] { GTA3SaveData.FileFormats.PC },
-            new object[] { GTA3SaveData.FileFormats.PS2 },
+            new object[] { GTA3SaveData.FileFormats.PS2NAEU },
             new object[] { GTA3SaveData.FileFormats.PS2AU },
             new object[] { GTA3SaveData.FileFormats.PS2JP },
             new object[] { GTA3SaveData.FileFormats.Xbox },

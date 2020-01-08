@@ -68,13 +68,13 @@
     <None Update="TestData\GTA3\PS2JP\2_LM2">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\GTA3\PS2\1_T4X4_1">
+    <None Update="TestData\GTA3\PS2NAEU\1_T4X4_1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\GTA3\PS2\2_LM1">
+    <None Update="TestData\GTA3\PS2NAEU\2_LM1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\GTA3\PS2\3_CAT2">
+    <None Update="TestData\GTA3\PS2NAEU\3_CAT2">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

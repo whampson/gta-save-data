@@ -25,9 +25,11 @@ namespace GTASaveData.Serialization
     [Flags]
     public enum ConsoleFlags
     {
-        None        = 0,
-        Steam       = 0b_0000_0001,
-        Japan       = 0b_0000_0010,
-        Australia   = 0b_0000_0100,
+        None            = 0,
+        NorthAmerica    = 0b_0000_0001,
+        Europe          = 0b_0000_0010,
+        Japan           = 0b_0000_0100,
+        Australia       = 0b_0000_1000,
+        Steam           = 0b_0001_0000,
     }
 }

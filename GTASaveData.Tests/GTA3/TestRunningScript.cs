@@ -55,7 +55,7 @@ namespace GTASaveData.Tests.GTA3
             new object[] { GTA3SaveData.FileFormats.Android, 0x88 },
             new object[] { GTA3SaveData.FileFormats.IOS, 0x88 },
             new object[] { GTA3SaveData.FileFormats.PC, 0x88 },
-            new object[] { GTA3SaveData.FileFormats.PS2, 0x80 },
+            new object[] { GTA3SaveData.FileFormats.PS2NAEU, 0x80 },
             new object[] { GTA3SaveData.FileFormats.PS2AU, 0x80 },
             new object[] { GTA3SaveData.FileFormats.PS2JP, 0x80 },
             new object[] { GTA3SaveData.FileFormats.Xbox, 0x88 },
