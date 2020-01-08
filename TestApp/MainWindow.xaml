@@ -1,14 +1,15 @@
 ﻿<Window x:Class="TestApp.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TestApp"
-        xmlns:m="clr-namespace:GTASaveData.GTA3;assembly=GTASaveData.GTA3"
-        xmlns:econv="clr-namespace:WpfEssentials.Win32.Converters;assembly=WpfEssentials.Win32"
-        xmlns:eext="clr-namespace:WpfEssentials.Win32.Extensions;assembly=WpfEssentials.Win32"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:TestApp"
+    xmlns:m="clr-namespace:GTASaveData.GTA3;assembly=GTASaveData.GTA3"
+    xmlns:econv="clr-namespace:WpfEssentials.Win32.Converters;assembly=WpfEssentials.Win32"
+    xmlns:eext="clr-namespace:WpfEssentials.Win32.Extensions;assembly=WpfEssentials.Win32"
+    mc:Ignorable="d"
+    Title="MainWindow"
+    Height="550" Width="800">
 
     <Window.DataContext>
         <local:ViewModel/>
@@ -16,8 +17,14 @@
 
     <Window.Resources>
         <econv:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
-        <Style TargetType="ComboBox" x:Key="EnumComboBoxStyle">
+        <local:EnumBooleanConverter x:Key="EnumBooleanConverter"/>
+        <local:NullBooleanConverter x:Key="NullBooleanConverter"/>
+
+        <Style TargetType="ComboBox" x:Key="ComboBoxStyle">
             <Setter Property="Margin" Value="5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="ComboBox" x:Key="EnumComboBoxStyle" BasedOn="{StaticResource ComboBoxStyle}">
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate>
@@ -28,48 +35,96 @@
         </Style>
     </Window.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="35"/>
-            <RowDefinition Height="35"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open..." 
+                    Command="{Binding FileOpenCommand}"/>
+                <MenuItem Header="_Close"
+                    Command="{Binding FileCloseCommand}"/>
+                <MenuItem Header="_Save As..."
+                    Command="{Binding FileSaveAsCommand}"/>
+                <Separator/>
+                <MenuItem Header="E_xit"
+                    Command="{Binding FileExitCommand}"/>
+            </MenuItem>
+        </Menu>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="75"/>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="125"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <Grid DockPanel.Dock="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="25"/>
+            </Grid.RowDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="0"
-               HorizontalAlignment="Right"
-               VerticalAlignment="Center"
-               Content="File Type:"/>
-        <ComboBox Grid.Row="0" Grid.Column="1"
-                  Margin="5"
-                  ItemsSource="{Binding FileFormats}"
-                  SelectedItem="{Binding FileFormat}"/>
-        <Button Grid.Row="0" Grid.Column="2"
-                Margin="5"
-                Content="Open File..."
-                Command="{Binding LoadFileCommand}"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="175"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="1" Grid.Column="0"
-               HorizontalAlignment="Right"
-               VerticalAlignment="Center"
-               Content="Block:"/>
-        <ComboBox Grid.Row="1" Grid.Column="1"
-                  Style="{StaticResource EnumComboBoxStyle}"
-                  ItemsSource="{eext:EnumValueCollection EnumType=local:BlockType}"
-                  SelectedItem="{Binding SelectedBlock}"
-                  SelectionChanged="BlockComboBox_SelectionChanged"/>
+            <Label Grid.Row="0" Grid.Column="0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Content="Block:"
+                IsEnabled="{Binding CurrentSaveDataFile, Converter={StaticResource NullBooleanConverter}}"/>
 
-        <TextBox Grid.Row="2" Grid.ColumnSpan="4"
-                 IsReadOnly="True"
-                 FontFamily="Consolas"
-                 VerticalScrollBarVisibility="Auto"
-                 TextWrapping="WrapWithOverflow"
-                 Text="{Binding Text}"/>
-    </Grid>
+            <ComboBox Grid.Row="0" Grid.Column="1"
+                Style="{StaticResource ComboBoxStyle}"
+                ItemsSource="{Binding BlockNameForCurrentGame, Mode=OneWay}"
+                SelectedIndex="{Binding SelectedBlockIndex}"
+                SelectionChanged="BlockComboBox_SelectionChanged"
+                IsEnabled="{Binding CurrentSaveDataFile, Converter={StaticResource NullBooleanConverter}}"/>
+
+            <TextBox Grid.Row="1" Grid.ColumnSpan="3"
+                IsReadOnly="True"
+                FontFamily="Consolas"
+                VerticalScrollBarVisibility="Auto"
+                TextWrapping="Wrap"
+                Text="{Binding Text}"/>
+
+            <StatusBar Grid.Row="2" Grid.ColumnSpan="3">
+                <StatusBar.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="9*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </ItemsPanelTemplate>
+                </StatusBar.ItemsPanel>
+
+                <StatusBarItem Grid.Column="0">
+                    <TextBlock Text="{Binding StatusText}"/>
+                </StatusBarItem>
+
+                <Separator Grid.Column="1"/>
+
+                <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Center">
+                    <TextBlock Text="{Binding CurrentFileFormat}"/>
+                </StatusBarItem>
+
+                <Separator Grid.Column="3"/>
+
+                <StatusBarItem Grid.Column="4" HorizontalContentAlignment="Center">
+                    <TextBlock Text="{Binding SelectedGame, Converter={StaticResource EnumDescriptionConverter}}">
+                        <TextBlock.ContextMenu>
+                            <ContextMenu ItemsSource="{eext:EnumValueCollection EnumType=local:Game}">
+                                <ContextMenu.ItemContainerStyle>
+                                    <Style TargetType="MenuItem">
+                                        <EventSetter Event="Click" Handler="GameMenuItem_Click"/>
+                                    </Style>
+                                </ContextMenu.ItemContainerStyle>
+                            </ContextMenu>
+                        </TextBlock.ContextMenu>
+                    </TextBlock>
+                </StatusBarItem>
+
+            </StatusBar>
+        </Grid>
+    </DockPanel>
 </Window>

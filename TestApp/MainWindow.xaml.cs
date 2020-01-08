@@ -14,6 +14,7 @@ namespace TestApp
             InitializeComponent();
 
             ViewModel.FileDialogRequested += ViewModel_FileDialogRequested;
+            ViewModel.MessageBoxRequested += ViewModel_MessageBoxRequested;
         }
 
         public ViewModel ViewModel
@@ -22,14 +23,30 @@ namespace TestApp
             set { DataContext = value; }
         }
 
-        private void BlockComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ViewModel.UpdateText();
-        }
-
         private void ViewModel_FileDialogRequested(object sender, FileDialogEventArgs e)
         {
             e.ShowDialog(this);
+        }
+
+        private void ViewModel_MessageBoxRequested(object sender, MessageBoxEventArgs e)
+        {
+            e.Show(this);
+        }
+
+        private void BlockComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ViewModel.UpdateTextBox();
+        }
+
+        private void GameMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem mi)
+            {
+                if (mi.DataContext is Game game)
+                {
+                    ViewModel.SelectedGame = game;
+                }
+            }
         }
     }
 }
