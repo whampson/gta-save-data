@@ -9,10 +9,11 @@
     <Product>GTASaveData</Product>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
     <Description>A .NET library for manipulating GTA3 save data files.</Description>
-    <AssemblyVersion>0.1.0.174</AssemblyVersion>
-    <FileVersion>0.1.0.174</FileVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0-alpha-174</Version>
+    <AssemblyVersion>0.1.0.175</AssemblyVersion>
+    <FileVersion>0.1.0.175</FileVersion>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>0.1.0-alpha-175</Version>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
