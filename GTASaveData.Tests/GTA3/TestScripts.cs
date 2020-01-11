@@ -49,13 +49,13 @@ namespace GTASaveData.Tests.GTA3
 
         public static IEnumerable<object[]> SerializationData => new[]
         {
-            new object[] { GTA3SaveData.FileFormats.Android },
-            new object[] { GTA3SaveData.FileFormats.IOS },
-            new object[] { GTA3SaveData.FileFormats.PC },
-            new object[] { GTA3SaveData.FileFormats.PS2NAEU },
-            new object[] { GTA3SaveData.FileFormats.PS2AU },
-            new object[] { GTA3SaveData.FileFormats.PS2JP },
-            new object[] { GTA3SaveData.FileFormats.Xbox },
+            new object[] { GTA3Save.FileFormats.Android },
+            new object[] { GTA3Save.FileFormats.IOS },
+            new object[] { GTA3Save.FileFormats.PC },
+            new object[] { GTA3Save.FileFormats.PS2NAEU },
+            new object[] { GTA3Save.FileFormats.PS2AU },
+            new object[] { GTA3Save.FileFormats.PS2JP },
+            new object[] { GTA3Save.FileFormats.Xbox },
         };
     }
 }

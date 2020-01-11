@@ -147,8 +147,8 @@ namespace TestApp
             switch (m_selectedGame)
             {
                 case Game.GTA3:
-                    CurrentFileFormat = GTA3SaveData.GetFileFormat(path);
-                    CurrentSaveDataFile = GTA3SaveData.Load(path, CurrentFileFormat);
+                    CurrentFileFormat = GTA3Save.GetFileFormat(path);
+                    CurrentSaveDataFile = GTA3Save.Load(path, CurrentFileFormat);
                     break;
                 default:
                     RequestMessageBoxError("Selected game not yet supported!");

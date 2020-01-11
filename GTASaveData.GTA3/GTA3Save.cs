@@ -17,8 +17,8 @@ namespace GTASaveData.GTA3
     /// block beginning with the number of bytes as a 32-bit integer
     /// which is sometimes preceded by a 4-byte ID string.
     /// </remarks>
-    public sealed class GTA3SaveData : SaveDataFile,
-        IEquatable<GTA3SaveData>
+    public sealed class GTA3Save : SaveDataFile,
+        IEquatable<GTA3Save>
     {
         public static class FileFormats
         {
@@ -99,7 +99,7 @@ namespace GTASaveData.GTA3
         private DummyObject m_objects;
         private DummyObject m_pathFind;
         private DummyObject m_cranes;
-        private DummyObject m_pickups;
+        private Pickups m_pickups;
         private DummyObject m_phoneInfo;
         private DummyObject m_restarts;
         private DummyObject m_radarBlips;
@@ -161,7 +161,7 @@ namespace GTASaveData.GTA3
             set { m_cranes = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Pickups
+        public Pickups Pickups
         {
             get { return m_pickups; }
             set { m_pickups = value; OnPropertyChanged(); }
@@ -239,7 +239,7 @@ namespace GTASaveData.GTA3
             set { m_pedTypeInfo = value; OnPropertyChanged(); }
         }
 
-        public GTA3SaveData()
+        public GTA3Save()
         {
             m_simpleVars = new SimpleVars();
             m_scripts = new Scripts();
@@ -249,7 +249,7 @@ namespace GTASaveData.GTA3
             m_objects = new DummyObject();
             m_pathFind = new DummyObject();
             m_cranes = new DummyObject();
-            m_pickups = new DummyObject();
+            m_pickups = new Pickups();
             m_phoneInfo = new DummyObject();
             m_restarts = new DummyObject();
             m_radarBlips = new DummyObject();
@@ -344,12 +344,12 @@ namespace GTASaveData.GTA3
             return null;
         }
 
-        public static GTA3SaveData Load(string path)
+        public static GTA3Save Load(string path)
         {
             return Load(path, GetFileFormat(path));
         }
 
-        public static GTA3SaveData Load(string path, FileFormat format)
+        public static GTA3Save Load(string path, FileFormat format)
         {
             if (path == null || format == null)
             {
@@ -361,12 +361,12 @@ namespace GTASaveData.GTA3
             {
                 using (SaveDataSerializer s = new SaveDataSerializer(m))
                 {
-                    return s.ReadObject<GTA3SaveData>(format);
+                    return s.ReadObject<GTA3Save>(format);
                 }
             }
         }
 
-        private GTA3SaveData(SaveDataSerializer serializer, FileFormat format)
+        private GTA3Save(SaveDataSerializer serializer, FileFormat format)
         {
             if (!FileFormats.GetAll().Contains(format))
             {
@@ -486,7 +486,7 @@ namespace GTASaveData.GTA3
             m_objects = new DummyObject(objects);
             m_pathFind = new DummyObject(pathFind);
             m_cranes = new DummyObject(cranes);
-            m_pickups = new DummyObject(pickups);
+            m_pickups = Deserialize<Pickups>(pickups);
             m_phoneInfo = new DummyObject(phoneInfo);
             m_restarts = new DummyObject(restarts);
             m_radarBlips = new DummyObject(radarBlips);
@@ -742,7 +742,7 @@ namespace GTASaveData.GTA3
             return base.Equals(obj);
         }
 
-        public bool Equals(GTA3SaveData other)
+        public bool Equals(GTA3Save other)
         {
             if (other == null)
             {
