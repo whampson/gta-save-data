@@ -35,6 +35,14 @@ namespace TestApp
 
     public class ViewModel : ObservableObject
     {
+        public void OnLoadSaveData()
+        {
+            GTA3Save g = (GTA3Save) CurrentSaveDataFile;
+
+            g.Vehicles.VehiclesArray.Clear();
+        }
+
+        #region Events, Variables, and Properties
         public EventHandler<FileDialogEventArgs> FileDialogRequested;
         public EventHandler<MessageBoxEventArgs> MessageBoxRequested;
 
@@ -81,16 +89,12 @@ namespace TestApp
             set { m_statusText = value; OnPropertyChanged(); }
         }
 
-        //public bool IsFileLoaded
-        //{
-        //    get { return CurrentSaveDataFile != null; }
-        //}
-
         public string[] BlockNameForCurrentGame
         {
             get { return BlockNames[SelectedGame]; }
         }
-
+        #endregion
+        #region Commands
         public ICommand FileOpenCommand
         {
             get
@@ -164,6 +168,8 @@ namespace TestApp
             SelectedBlockIndex = 0;
             UpdateTextBox();
             StatusText = "Loaded " + path + ".";
+
+            OnLoadSaveData();
         }
 
         public void CloseSaveData()
@@ -230,7 +236,8 @@ namespace TestApp
             MessageBoxRequested?.Invoke(this, new MessageBoxEventArgs(
                 text, "Error", icon: MessageBoxImage.Error));
         }
-
+        #endregion
+        #region Misc
         public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
         {
             { Game.GTA3, GTA3BlockNames }
@@ -261,4 +268,5 @@ namespace TestApp
             "20: PedTypeInfo"
         };
     }
+    #endregion
 }
