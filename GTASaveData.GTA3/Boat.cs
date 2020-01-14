@@ -1,80 +1,54 @@
 ﻿using GTASaveData.Serialization;
-using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Boat : SaveDataObject,
-        IEquatable<Boat>
+    public sealed class Boat : Vehicle
     {
-        private int m_unknown0;
-        private int m_modelId;  // TODO: enum
-        private int m_unknown1;
-        private byte[] m_unknownArray0;
-        private Vector3d m_position;
-        private byte[] m_unknownArray1;
-
-        public int ModelId
+        public static new class Limits
         {
-            get { return m_modelId; }
-            set { m_modelId = value; OnPropertyChanged(); }
-        }
+            public static int GetUnknownArray0Size(FileFormat fmt)
+            {
+                return (fmt.IsPS2) ? 48 : 52;
+            }
 
-        public Vector3d Position
-        {
-            get { return m_position; }
-            set { m_position = value; OnPropertyChanged(); }
+            public static int GetUnknownArray1Size(FileFormat fmt)
+            {
+                int size = 0;
+                if (fmt.IsPS2)
+                {
+                    size = 1140;
+                }
+                else if (fmt.IsPC || fmt.IsXbox)
+                {
+                    size = 1092;
+                }
+                else if (fmt.IsMobile)
+                {
+                    size = 1096;
+                }
+
+                return size;
+            }
         }
 
         public Boat()
-        {
-            m_unknownArray0 = null;  // Lazy creation below
-            m_unknownArray1 = null;  // Lazy creation below
-            m_position = new Vector3d();
-        }
+            : base()
+        { }
 
         private Boat(SaveDataSerializer serializer, FileFormat format)
         {
-            if (m_unknownArray0 == null || m_unknownArray1 == null)
-            {
-                CreateUnknowns(format);
-            }
-
-            m_unknown0 = serializer.ReadInt32();
-            m_modelId = serializer.ReadInt16();
-            m_unknown1 = serializer.ReadInt32();
-            m_unknownArray0 = serializer.ReadBytes(m_unknownArray0.Length);
+            m_unknownArray0 = new ObservableCollection<byte>(serializer.ReadBytes(Limits.GetUnknownArray0Size(format)));
             m_position = serializer.ReadObject<Vector3d>();
-            m_unknownArray1 = serializer.ReadBytes(m_unknownArray1.Length);
+            m_unknownArray1 = new ObservableCollection<byte>(serializer.ReadBytes(Limits.GetUnknownArray1Size(format)));
         }
 
         protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
-            if (m_unknownArray0 == null || m_unknownArray1 == null)
-            {
-                CreateUnknowns(format);
-            }
-
-            serializer.Write(m_unknown0);
-            serializer.Write((short) m_modelId);
-            serializer.Write(m_unknown1);
-            serializer.Write(m_unknownArray0);
+            serializer.WriteArray(m_unknownArray0.ToArray(), Limits.GetUnknownArray0Size(format));
             serializer.WriteObject(m_position);
-            serializer.Write(m_unknownArray1);
-        }
-
-        private void CreateUnknowns(FileFormat fmt)
-        {
-            if (fmt.IsPS2)
-            {
-                m_unknownArray0 = new byte[48];
-                m_unknownArray1 = new byte[1140];
-            }
-            else
-            {
-                m_unknownArray0 = new byte[52];
-                m_unknownArray1 = new byte[1092];
-            }
+            serializer.WriteArray(m_unknownArray1.ToArray(), Limits.GetUnknownArray1Size(format));
         }
 
         public override int GetHashCode()
@@ -94,10 +68,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_unknown0.Equals(other.m_unknown0)
-                && m_modelId.Equals(other.m_modelId)
-                && m_unknown1.Equals(other.m_unknown1)
-                && m_unknownArray0.SequenceEqual(other.m_unknownArray0)
+            return m_unknownArray0.SequenceEqual(other.m_unknownArray0)
                 && m_position.Equals(other.m_position)
                 && m_unknownArray1.SequenceEqual(other.m_unknownArray1);
         }

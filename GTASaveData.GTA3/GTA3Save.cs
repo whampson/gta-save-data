@@ -95,7 +95,7 @@ namespace GTASaveData.GTA3
         private Scripts m_scripts;
         private DummyObject m_pedPool;
         private Garages m_garages;
-        private Vehicles m_vehicles;
+        private VehiclePool m_vehicles;
         private DummyObject m_objects;
         private DummyObject m_pathFind;
         private DummyObject m_cranes;
@@ -137,7 +137,7 @@ namespace GTASaveData.GTA3
             set { m_garages = value; OnPropertyChanged(); }
         }
 
-        public Vehicles Vehicles
+        public VehiclePool Vehicles
         {
             get { return m_vehicles; }
             set { m_vehicles = value; OnPropertyChanged(); }
@@ -245,7 +245,7 @@ namespace GTASaveData.GTA3
             m_scripts = new Scripts();
             m_pedPool = new DummyObject();
             m_garages = new Garages();
-            m_vehicles = new Vehicles();
+            m_vehicles = new VehiclePool();
             m_objects = new DummyObject();
             m_pathFind = new DummyObject();
             m_cranes = new DummyObject();
@@ -482,7 +482,7 @@ namespace GTASaveData.GTA3
             m_scripts = Deserialize<Scripts>(scripts, format);
             m_pedPool = new DummyObject(pedPool);
             m_garages = Deserialize<Garages>(garages);
-            m_vehicles = Deserialize<Vehicles>(vehicles);
+            m_vehicles = Deserialize<VehiclePool>(vehicles);
             m_objects = new DummyObject(objects);
             m_pathFind = new DummyObject(pathFind);
             m_cranes = new DummyObject(cranes);
@@ -770,6 +770,11 @@ namespace GTASaveData.GTA3
                 && m_stats.Equals(other.m_stats)
                 && m_streaming.Equals(other.m_streaming)
                 && m_pedTypeInfo.Equals(other.m_pedTypeInfo);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("GTA3Save: [ SaveName = {0} ]", SimpleVars.LastMissionPassedName);
         }
 
         public sealed class DummyObject : SaveDataObject,

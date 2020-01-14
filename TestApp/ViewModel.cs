@@ -37,9 +37,7 @@ namespace TestApp
     {
         public void OnLoadSaveData()
         {
-            GTA3Save g = (GTA3Save) CurrentSaveDataFile;
-
-            g.Vehicles.VehiclesArray.Clear();
+            // TODO: stuff
         }
 
         #region Events, Variables, and Properties

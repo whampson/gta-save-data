@@ -665,6 +665,7 @@ namespace GTASaveData.Serialization
         /// Writes an object.
         /// </summary>
         /// <typeparam name="T">The type of object to write.</typeparam>
+        /// <param name="value">The object to write</param>
         /// <param name="format">The data format.</param>
         /// <exception cref="SaveDataSerializationException">Thrown if an error occurs during serialization.</exception>
         public void WriteObject<T>(T value, FileFormat format = null)
