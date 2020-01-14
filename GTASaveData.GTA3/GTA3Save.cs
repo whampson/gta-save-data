@@ -481,12 +481,12 @@ namespace GTASaveData.GTA3
             m_simpleVars = Deserialize<SimpleVars>(simpleVars, format);
             m_scripts = Deserialize<Scripts>(scripts, format);
             m_pedPool = new DummyObject(pedPool);
-            m_garages = Deserialize<Garages>(garages);
-            m_vehicles = Deserialize<VehiclePool>(vehicles);
+            m_garages = Deserialize<Garages>(garages, format);
+            m_vehicles = Deserialize<VehiclePool>(vehicles, format);
             m_objects = new DummyObject(objects);
             m_pathFind = new DummyObject(pathFind);
             m_cranes = new DummyObject(cranes);
-            m_pickups = Deserialize<Pickups>(pickups);
+            m_pickups = Deserialize<Pickups>(pickups, format);
             m_phoneInfo = new DummyObject(phoneInfo);
             m_restarts = new DummyObject(restarts);
             m_radarBlips = new DummyObject(radarBlips);

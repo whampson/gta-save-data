@@ -7,7 +7,7 @@ using Xunit;
 
 namespace GTASaveData.Tests.GTA3
 {
-    public class TestVehicles : SaveDataObjectTestBase<VehiclePool>
+    public class TestVehiclePool : SaveDataObjectTestBase<VehiclePool>
     {
         public override VehiclePool GenerateTestVector(FileFormat format)
         {

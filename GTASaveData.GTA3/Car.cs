@@ -5,8 +5,8 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Boat : Vehicle,
-        IEquatable<Boat>
+    public sealed class Car : Vehicle,
+        IEquatable<Car>
     {
         public static class Limits
         {
@@ -20,26 +20,26 @@ namespace GTASaveData.GTA3
                 int size = 0;
                 if (fmt.IsPS2)
                 {
-                    size = 1140;
+                    size = 1556;
                 }
                 else if (fmt.IsPC || fmt.IsXbox)
                 {
-                    size = 1092;
+                    size = 1384;
                 }
                 else if (fmt.IsMobile)
                 {
-                    size = 1096;
+                    size = 1388;
                 }
 
                 return size;
             }
         }
 
-        public Boat()
+        public Car()
             : base()
         { }
 
-        private Boat(SaveDataSerializer serializer, FileFormat format)
+        private Car(SaveDataSerializer serializer, FileFormat format)
         {
             m_unknownArray0 = new ObservableCollection<byte>(serializer.ReadBytes(Limits.GetUnknownArray0Size(format)));
             m_position = serializer.ReadObject<Vector3d>();
@@ -60,10 +60,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Boat);
+            return Equals(obj as Car);
         }
 
-        public bool Equals(Boat other)
+        public bool Equals(Car other)
         {
             if (other == null)
             {

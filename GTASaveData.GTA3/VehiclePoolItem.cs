@@ -41,7 +41,14 @@ namespace GTASaveData.GTA3
         public VehiclePoolItem(bool isBoat)
         {
             m_isBoat = isBoat;
-            m_vehicle = (isBoat) ? new Boat() : new Vehicle();
+            if (isBoat)
+            {
+                m_vehicle = new Boat();
+            }
+            else
+            {
+                m_vehicle = new Car();
+            }
         }
 
         private VehiclePoolItem(SaveDataSerializer serializer, FileFormat format)
@@ -49,9 +56,14 @@ namespace GTASaveData.GTA3
             m_isBoat = serializer.ReadBool(4);
             m_modelId = serializer.ReadUInt16();
             m_vehicleRef = serializer.ReadUInt32();
-            m_vehicle = (m_isBoat)
-                ? serializer.ReadObject<Boat>(format)
-                : serializer.ReadObject<Vehicle>(format);
+            if (m_isBoat)
+            {
+                m_vehicle = serializer.ReadObject<Boat>(format);
+            }
+            else
+            {
+                m_vehicle = serializer.ReadObject<Car>(format);
+            }
         }
 
         protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)

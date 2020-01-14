@@ -12,10 +12,10 @@ namespace GTASaveData.Tests.GTA3
         public VehiclePoolItem GenerateVehicleTestVector(FileFormat format)
         {
             Faker<VehiclePoolItem> model = new Faker<VehiclePoolItem>()
-                .RuleFor(x => x.IsBoat, f => false)
+                .CustomInstantiator(f => new VehiclePoolItem(false))
                 .RuleFor(x => x.ModelId, f => f.Random.UShort())
                 .RuleFor(x => x.VehicleRef, f => f.Random.UInt())
-                .RuleFor(x => x.Vehicle, f => Generator.Generate<Vehicle, TestVehicle>(format));
+                .RuleFor(x => x.Vehicle, f => Generator.Generate<Car, TestCar>(format));
 
             return model.Generate();
         }
@@ -23,7 +23,7 @@ namespace GTASaveData.Tests.GTA3
         public VehiclePoolItem GenerateBoatTestVector(FileFormat format)
         {
             Faker<VehiclePoolItem> model = new Faker<VehiclePoolItem>()
-                .RuleFor(x => x.IsBoat, f => true)
+                .CustomInstantiator(f => new VehiclePoolItem(true))
                 .RuleFor(x => x.ModelId, f => f.Random.UShort())
                 .RuleFor(x => x.VehicleRef, f => f.Random.UInt())
                 .RuleFor(x => x.Vehicle, f => Generator.Generate<Boat, TestBoat>(format));
