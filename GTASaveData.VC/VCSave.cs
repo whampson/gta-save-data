@@ -57,7 +57,7 @@ namespace GTASaveData.VC
         private const string AudTag = "AUD";
         private const string PtpTag = "PTP";
 
-        private DummyObject m_simpleVars;
+        private SimpleVars m_simpleVars;
         private DummyObject m_scripts;
         private DummyObject m_pedPool;
         private DummyObject m_garages;
@@ -82,7 +82,7 @@ namespace GTASaveData.VC
         private DummyObject m_streaming;
         private DummyObject m_pedTypeInfo;
 
-        public DummyObject SimpleVars
+        public SimpleVars SimpleVars
         {
             get { return m_simpleVars; }
             set { m_simpleVars = value; OnPropertyChanged(); }
@@ -228,7 +228,7 @@ namespace GTASaveData.VC
 
         public VCSave()
         {
-            m_simpleVars = new DummyObject();
+            m_simpleVars = new SimpleVars();
             m_scripts = new DummyObject();
             m_pedPool = new DummyObject();
             m_garages = new DummyObject();
@@ -437,7 +437,7 @@ namespace GTASaveData.VC
                 outerBlockCount++;
             }
 
-            m_simpleVars = new DummyObject(simpleVars);
+            m_simpleVars = Deserialize<SimpleVars>(simpleVars, format);
             m_scripts = new DummyObject(scripts);
             m_pedPool = new DummyObject(pedPool);
             m_garages = new DummyObject(garages);
@@ -706,7 +706,7 @@ namespace GTASaveData.VC
 
         public override string ToString()
         {
-            return string.Format("VCSave: [ SaveName = {0} ]", /*SimpleVars.LastMissionPassedName*/"");
+            return string.Format("VCSave: [ SaveName = {0} ]", SimpleVars.LastMissionPassedName);
         }
 
         public sealed class DummyObject : SaveDataObject,
