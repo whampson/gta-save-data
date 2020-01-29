@@ -1,16 +1,10 @@
-﻿using System.ComponentModel;
-
-namespace GTASaveData.GTA3
+﻿namespace GTASaveData.GTA3
 {
     public enum Level
     {
-        [Description("Portland")]
-        Industrial = 1,
-
-        [Description("Staunton Island")]
+        None,
+        Industrial,
         Commercial,
-
-        [Description("Shoreside Vale")]
         Suburban
     }
 }
