@@ -2,10 +2,10 @@
 using Newtonsoft.Json;
 using System;
 
-namespace GTASaveData.GTA3
+namespace GTASaveData.Common
 {
-    public sealed class Box3d : SaveDataObject,
-        IEquatable<Box3d>
+    public sealed class Rect3d : SaveDataObject,
+        IEquatable<Rect3d>
     {
         private float m_xMin;
         private float m_xMax;
@@ -93,10 +93,10 @@ namespace GTASaveData.GTA3
         }
 
 
-        public Box3d()
+        public Rect3d()
         { }
 
-        private Box3d(SaveDataSerializer serializer, FileFormat format)
+        private Rect3d(SaveDataSerializer serializer, FileFormat format)
         {
             m_xMin = serializer.ReadSingle();
             m_xMax = serializer.ReadSingle();
@@ -123,10 +123,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Box3d);
+            return Equals(obj as Rect3d);
         }
 
-        public bool Equals(Box3d other)
+        public bool Equals(Rect3d other)
         {
             if (other == null)
             {

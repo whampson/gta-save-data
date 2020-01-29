@@ -1,4 +1,5 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Common;
+using GTASaveData.Serialization;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;

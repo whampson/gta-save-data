@@ -1,4 +1,5 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Common;
+using GTASaveData.Serialization;
 using System;
 
 namespace GTASaveData.GTA3
@@ -22,7 +23,7 @@ namespace GTASaveData.GTA3
         private byte m_unknown1;
         private bool m_isRotatedDoor;
         private bool m_cameraFollowsPlayer;
-        private Box3d m_position;
+        private Rect3d m_position;
         private float m_doorOpenMinZOffset;
         private float m_doorOpenMaxZOffset;
         private Vector2d m_door1XY;
@@ -131,7 +132,7 @@ namespace GTASaveData.GTA3
             set { m_cameraFollowsPlayer = value; OnPropertyChanged(); }
         }
 
-        public Box3d Position
+        public Rect3d Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -205,7 +206,7 @@ namespace GTASaveData.GTA3
 
         public Garage()
         {
-            m_position = new Box3d();
+            m_position = new Rect3d();
             m_door1XY = new Vector2d();
             m_door2XY = new Vector2d();
             m_unknown4 = new StoredCar();
@@ -231,7 +232,7 @@ namespace GTASaveData.GTA3
             m_isRotatedDoor = serializer.ReadBool();
             m_cameraFollowsPlayer = serializer.ReadBool();
             serializer.Align();
-            m_position = serializer.ReadObject<Box3d>();
+            m_position = serializer.ReadObject<Rect3d>();
             m_doorOpenMinZOffset = serializer.ReadSingle();
             m_doorOpenMaxZOffset = serializer.ReadSingle();
             m_door1XY = serializer.ReadObject<Vector2d>();

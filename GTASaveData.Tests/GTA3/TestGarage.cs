@@ -1,6 +1,8 @@
 ﻿using Bogus;
+using GTASaveData.Common;
 using GTASaveData.GTA3;
 using GTASaveData.Serialization;
+using GTASaveData.Tests.Common;
 using GTASaveData.Tests.TestFramework;
 using Xunit;
 
@@ -26,7 +28,7 @@ namespace GTASaveData.Tests.GTA3
                 .RuleFor(x => x.Unknown1, f => f.Random.Byte())
                 .RuleFor(x => x.IsRotatedDoor, f => f.Random.Bool())
                 .RuleFor(x => x.CameraFollowsPlayer, f => f.Random.Bool())
-                .RuleFor(x => x.Position, f => Generator.Generate<Box3d, TestBox3d>())
+                .RuleFor(x => x.Position, f => Generator.Generate<Rect3d, TestRect3d>())
                 .RuleFor(x => x.DoorOpenMinZOffset, f => f.Random.Float())
                 .RuleFor(x => x.DoorOpenMaxZOffset, f => f.Random.Float())
                 .RuleFor(x => x.Door1XY, f => Generator.Generate<Vector2d, TestVector2d>())

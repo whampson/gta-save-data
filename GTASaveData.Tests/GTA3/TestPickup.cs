@@ -1,6 +1,8 @@
 ﻿using Bogus;
+using GTASaveData.Common;
 using GTASaveData.GTA3;
 using GTASaveData.Serialization;
+using GTASaveData.Tests.Common;
 using GTASaveData.Tests.TestFramework;
 using Xunit;
 

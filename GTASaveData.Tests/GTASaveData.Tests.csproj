@@ -43,6 +43,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GTASaveData.GTA3\GTASaveData.GTA3.csproj" />
+    <ProjectReference Include="..\GTASaveData.VC\GTASaveData.VC.csproj" />
     <ProjectReference Include="..\GTASaveData\GTASaveData.csproj" />
   </ItemGroup>
 
@@ -75,6 +76,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\GTA3\PS2NAEU\3_CAT2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\VC\PCRetail\StarterSave.b">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -1,10 +1,10 @@
 ﻿using Bogus;
-using GTASaveData.GTA3;
+using GTASaveData.Common;
 using GTASaveData.Serialization;
 using GTASaveData.Tests.TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.GTA3
+namespace GTASaveData.Tests.Common
 {
     public class TestVector2d : SaveDataObjectTestBase<Vector2d>
     {

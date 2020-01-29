@@ -1,7 +1,7 @@
 ﻿using GTASaveData.Serialization;
 using System;
 
-namespace GTASaveData.GTA3
+namespace GTASaveData.Common
 {
     public sealed class Timestamp : SaveDataObject,
         IEquatable<Timestamp>

@@ -1,4 +1,5 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Common;
+using GTASaveData.Serialization;
 using System;
 
 namespace GTASaveData.GTA3

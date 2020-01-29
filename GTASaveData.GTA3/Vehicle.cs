@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using GTASaveData.Common;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 
 namespace GTASaveData.GTA3
