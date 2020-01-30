@@ -1,4 +1,5 @@
 ﻿using GTASaveData;
+using GTASaveData.Common;
 using GTASaveData.GTA3;
 using GTASaveData.Serialization;
 using System;
@@ -38,6 +39,26 @@ namespace TestApp
         public void OnLoadSaveData()
         {
             // TODO: stuff
+
+            StaticArray<BuildingSwap> testArray = new StaticArray<BuildingSwap>(10);
+            testArray.CollectionChanged += TestArray_CollectionChanged;
+            testArray.ItemStateChanged += TestArray_ItemStateChanged;
+
+
+            testArray[5] = new BuildingSwap();
+
+            testArray[7].NewModelId = 453;
+
+        }
+
+        private void TestArray_ItemStateChanged(object sender, ItemPropertyChangedEventArgs e)
+        {
+            RequestMessageBoxError("Item State Changed: Index = " + e.ItemIndex + ", PropertyName = " + e.PropertyName);
+        }
+
+        private void TestArray_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            RequestMessageBoxError("Collection Changed: Action = " + e.Action + ", NewStartingIndex = " + e.NewStartingIndex);
         }
 
         #region Events, Variables, and Properties
