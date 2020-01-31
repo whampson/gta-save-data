@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Extensions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -9,17 +10,18 @@ namespace GTASaveData.Common
 {
     public delegate void NotifyItemStateChangedEventHandler(object sender, ItemPropertyChangedEventArgs e);
 
-    public abstract class ArrayBase<T> : IEnumerable, IEnumerable<T>, IList, IList<T>, INotifyCollectionChanged
+    public abstract class Array<T> : IEnumerable, IEnumerable<T>, IList, IList<T>, INotifyCollectionChanged
         where T : new()
     {
+        const string NotSupportedFixedSizeMessage = "Collection is of a fixed size.";
+
         public event NotifyCollectionChangedEventHandler CollectionChanged;
         public event NotifyItemStateChangedEventHandler ItemStateChanged;
 
         private readonly List<T> m_items;
         private readonly bool m_itemsAreObservable;
-        private int m_count;
 
-        public int Count => m_count;
+        public int Count => m_items.Count;
         public bool IsReadOnly => false;
         public bool IsSynchronized => false;
         public object SyncRoot => this;
@@ -38,20 +40,40 @@ namespace GTASaveData.Common
             set { this[index] = (T) value; }
         }
 
-        protected ArrayBase(int count)
+        protected Array(int count)
         {
-            m_count = count;
             m_items = new List<T>(count);
-            m_itemsAreObservable = typeof(T).GetInterface(nameof(INotifyPropertyChanged)) != null;
+            m_itemsAreObservable = typeof(T).IsObservable();
 
-            Preallocate();
+            Populate(count);
         }
 
-        private void Preallocate()
+        protected Array(IEnumerable<T> items)
         {
-            for (int i = 0; i < m_count; i++)
+            m_items = new List<T>(items);
+            m_itemsAreObservable = typeof(T).IsObservable();
+
+            Populate(items);
+        }
+
+        protected Array(List<T> items)
+            : this((IEnumerable<T>) items)
+        { }
+
+        private void Populate(int count)
+        {
+            for (int i = 0; i < count; i++)
             {
                 T item = new T();
+                RegisterStateChangedHandler(item);
+                m_items.Add(item);
+            }
+        }
+
+        private void Populate(IEnumerable<T> items)
+        {
+            foreach (T item in items)
+            {
                 RegisterStateChangedHandler(item);
                 m_items.Add(item);
             }
@@ -65,19 +87,18 @@ namespace GTASaveData.Common
             }
 
             Add((T) value);
-            return m_count - 1;
+            return m_items.Count - 1;
         }
 
         public void Add(T item)
         {
             if (IsFixedSize)
             {
-                throw new NotSupportedException("Collection is of a fixed size.");
+                throw new NotSupportedException(NotSupportedFixedSizeMessage);
             }
 
             RegisterStateChangedHandler(item);
             m_items.Add(item);
-            m_count++;
 
             OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
         }
@@ -87,7 +108,7 @@ namespace GTASaveData.Common
             if (IsFixedSize)
             {
                 // Set all items to default value
-                for (int i = 0; i < m_count; i++)
+                for (int i = 0; i < m_items.Count; i++)
                 {
                     if (i < m_items.Count)
                     {
@@ -106,7 +127,6 @@ namespace GTASaveData.Common
                 foreach (T item in m_items)
                 {
                     m_items.Remove(item);
-                    m_count--;
                     UnregisterStateChangedHandler(item);
                 }
             }
@@ -126,7 +146,7 @@ namespace GTASaveData.Common
 
         public void CopyTo(Array array, int index)
         {
-            for (int i = 0; i < m_count; i++)
+            for (int i = 0; i < m_items.Count; i++)
             {
                 array.SetValue(this[i], index + i);
             }
@@ -134,10 +154,7 @@ namespace GTASaveData.Common
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            for (int i = 0; i < m_count; i++)
-            {
-                array[arrayIndex + i] = this[i];
-            }
+            m_items.CopyTo(array, arrayIndex);
         }
 
         public int IndexOf(object value)
@@ -159,11 +176,10 @@ namespace GTASaveData.Common
         {
             if (IsFixedSize)
             {
-                throw new NotSupportedException("Collection is of a fixed size.");
+                throw new NotSupportedException(NotSupportedFixedSizeMessage);
             }
 
             m_items.Insert(index, item);
-            m_count++;
 
             RegisterStateChangedHandler(item);
             OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
@@ -192,13 +208,12 @@ namespace GTASaveData.Common
         {
             if (IsFixedSize)
             {
-                throw new NotSupportedException("Collection is of a fixed size.");
+                throw new NotSupportedException(NotSupportedFixedSizeMessage);
             }
 
             bool found = m_items.Remove(item);
             if (found)
             {
-                m_count--;
                 UnregisterStateChangedHandler(item);
                 OnCollectionChanged(NotifyCollectionChangedAction.Remove, item);
             }
@@ -210,12 +225,11 @@ namespace GTASaveData.Common
         {
             if (IsFixedSize)
             {
-                throw new NotSupportedException("Collection is of a fixed size.");
+                throw new NotSupportedException(NotSupportedFixedSizeMessage);
             }
 
             T item = this[index];
             m_items.RemoveAt(index);
-            m_count--;
 
             UnregisterStateChangedHandler(item);
             OnCollectionChanged(NotifyCollectionChangedAction.Remove, item);

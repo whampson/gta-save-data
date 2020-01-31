@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 
 namespace GTASaveData.Common
 {
-    public class DynamicArray<T> : ArrayBase<T>
+    /// <summary>
+    /// A variable-length array.
+    /// </summary>
+    /// <typeparam name="T">The item type.</typeparam>
+    public class DynamicArray<T> : Array<T>
         where T : new()
     {
         public override bool IsFixedSize => false;
@@ -16,6 +17,14 @@ namespace GTASaveData.Common
 
         public DynamicArray(int initialCount)
             : base(initialCount)
+        { }
+
+        public DynamicArray(IEnumerable<T> items)
+            : base(items)
+        { }
+
+        public DynamicArray(List<T> items)
+            : base(items)
         { }
     }
 }
