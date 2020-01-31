@@ -5,7 +5,7 @@ using GTASaveData.Tests.TestFramework;
 using System;
 using Xunit;
 
-namespace GTASaveData.Tests.Comon
+namespace GTASaveData.Tests.Common
 {
     public class TestSystemTime : SaveDataObjectTestBase<SystemTime>
     {
