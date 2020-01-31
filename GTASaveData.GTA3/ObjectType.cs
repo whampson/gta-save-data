@@ -2,7 +2,8 @@
 {
     public enum ObjectType
     {
-        Path = 1,
+        None,
+        Path,
         Static,
         DynamicLoaded,
         DynamicUnloaded

@@ -37,7 +37,7 @@ namespace GTASaveData.GTA3
 
         public BuildingSwap()
         {
-            m_type = ObjectType.Static;
+            m_type = ObjectType.None;
             m_staticIndex = 0;
             m_newModelId = -1;
             m_oldModelId = -1;
