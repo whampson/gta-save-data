@@ -22,5 +22,10 @@ namespace GTASaveData.Common
         public StaticArray(List<T> items)
             : base(items)
         { }
+
+        public static implicit operator StaticArray<T>(T[] array)
+        {
+            return new StaticArray<T>(array);
+        }
     }
 }

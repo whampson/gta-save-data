@@ -26,5 +26,10 @@ namespace GTASaveData.Common
         public DynamicArray(List<T> items)
             : base(items)
         { }
+
+        public static implicit operator DynamicArray<T>(List<T> array)
+        {
+            return new DynamicArray<T>(array);
+        }
     }
 }
