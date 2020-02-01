@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3
     /// block beginning with the number of bytes as a 32-bit integer
     /// which is sometimes preceded by a 4-byte ID string.
     /// </remarks>
-    public sealed class GTA3Save : SaveDataFile,
+    public sealed class GTA3Save : SaveData,
         IEquatable<GTA3Save>
     {
         public static class FileFormats

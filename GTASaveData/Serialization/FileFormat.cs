@@ -3,7 +3,7 @@
 namespace GTASaveData.Serialization
 {
     /// <summary>
-    /// Represents a standard way that a <see cref="SaveDataFile"/> can be encoded.
+    /// Represents a standard way that a <see cref="SaveData"/> file can be encoded.
     /// </summary>
     public sealed class FileFormat
         : IEquatable<FileFormat>

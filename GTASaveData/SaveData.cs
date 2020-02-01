@@ -1,6 +1,8 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Helpers;
+using GTASaveData.Serialization;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace GTASaveData
@@ -8,7 +10,7 @@ namespace GTASaveData
     /// <summary>
     /// Represents a saved Grand Theft Auto game.
     /// </summary>
-    public abstract class SaveDataFile : SaveDataObject
+    public abstract class SaveData : SaveDataObject
     {
         private PaddingMode m_paddingMode;
         private byte[] m_paddingSequence;
@@ -52,7 +54,7 @@ namespace GTASaveData
         /// <summary>
         /// Creates a new <see cref="SaveDataSerializer"/> object.
         /// </summary>
-        protected SaveDataFile()
+        protected SaveData()
         {
             m_paddingMode = PaddingMode.Zeros;
             m_paddingSequence = null;
@@ -85,6 +87,39 @@ namespace GTASaveData
         protected SaveDataSerializer CreateSerializer(Stream baseStream)
         {
             return new SaveDataSerializer(baseStream, m_paddingMode, m_paddingSequence);
+        }
+
+        public static int CountBlocks(string path)
+        {
+            return CountBlocks(File.ReadAllBytes(path));
+        }
+
+        public static int CountBlocks(byte[] data)
+        {
+            if (data == null)
+            {
+                return -1;
+            }
+
+            using (MemoryStream m = new MemoryStream(data))
+            {
+                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                {
+                    int count = 0;
+                    do
+                    {
+                        int blockSize = s.ReadInt32();
+                        if (blockSize < m.Length - m.Position)
+                        {
+                            Debug.WriteLine("Block size: {0}", blockSize);
+                            s.Skip(blockSize);
+                            count++;
+                        }
+                    } while (m.Position < m.Length);
+
+                    return count;
+                }
+            }
         }
     }
 }
