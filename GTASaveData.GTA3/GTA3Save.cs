@@ -105,7 +105,7 @@ namespace GTASaveData.GTA3
         private DummyObject m_radarBlips;
         private DummyObject m_zones;
         private DummyObject m_gangData;
-        private DummyObject m_carGenerators;
+        private CarGeneratorsBlock m_carGenerators;
         private DummyObject m_particles;
         private DummyObject m_audioScriptObjects;
         private DummyObject m_playerInfo;
@@ -197,7 +197,7 @@ namespace GTASaveData.GTA3
             set { m_gangData = value; OnPropertyChanged(); }
         }
 
-        public DummyObject CarGenerators
+        public CarGeneratorsBlock CarGenerators
         {
             get { return m_carGenerators; }
             set { m_carGenerators = value; OnPropertyChanged(); }
@@ -255,7 +255,7 @@ namespace GTASaveData.GTA3
             m_radarBlips = new DummyObject();
             m_zones = new DummyObject();
             m_gangData = new DummyObject();
-            m_carGenerators = new DummyObject();
+            m_carGenerators = new CarGeneratorsBlock();
             m_particles = new DummyObject();
             m_audioScriptObjects = new DummyObject();
             m_playerInfo = new DummyObject();
@@ -492,7 +492,7 @@ namespace GTASaveData.GTA3
             m_radarBlips = new DummyObject(radarBlips);
             m_zones = new DummyObject(zones);
             m_gangData = new DummyObject(gangData);
-            m_carGenerators = new DummyObject(carGenerators);
+            m_carGenerators = Deserialize<CarGeneratorsBlock>(carGenerators);
             m_particles = new DummyObject(particles);
             m_audioScriptObjects = new DummyObject(audioScriptObjects);
             m_playerInfo = new DummyObject(playerInfo);

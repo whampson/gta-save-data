@@ -2,14 +2,14 @@
 using System;
 using System.Linq;
 
-namespace GTASaveData.VC
+namespace GTASaveData.GTA3
 {
     public sealed class CarGeneratorsBlock : SaveDataObject,
         IEquatable<CarGeneratorsBlock>
     {
         public static class Limits
         {
-            public const int CarGeneratorsCount = 185;
+            public const int CarGeneratorsCount = 160;
         }
 
         private int m_numberOfCarGenerators;
@@ -73,8 +73,8 @@ namespace GTASaveData.VC
             w.Write((byte) m_processCounter);
             w.Write((byte) m_generateEvenIfPlayerIsCloseCounter);
             w.Align();
-            w.Write(0x1FCC);
-            w.WriteArray(m_carGenerators.ToArray(), Limits.CarGeneratorsCount);
+            w.Write(0x2D00);
+            w.WriteArray(m_carGenerators.ToArray());
         }
 
         public override int GetHashCode()
