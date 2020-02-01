@@ -37,7 +37,7 @@ namespace GTASaveData.Common
         object IList.this[int index]
         {
             get { return this[index]; }
-            set { this[index] = (T) value; }
+            set { this[index] = (T)value; }
         }
 
         protected Array(int count)
@@ -50,14 +50,14 @@ namespace GTASaveData.Common
 
         protected Array(IEnumerable<T> items)
         {
-            m_items = new List<T>(items);
+            m_items = new List<T>();
             m_itemsAreObservable = typeof(T).IsObservable();
 
             Populate(items);
         }
 
         protected Array(List<T> items)
-            : this((IEnumerable<T>) items)
+            : this((IEnumerable<T>)items)
         { }
 
         private void Populate(int count)
@@ -112,23 +112,20 @@ namespace GTASaveData.Common
                 {
                     if (i < m_items.Count)
                     {
-                        T oldItem = this[i];
+                        T oldItem = m_items[i];
                         UnregisterStateChangedHandler(oldItem);
                     }
 
                     T newItem = new T();
                     RegisterStateChangedHandler(newItem);
-                    m_items.Add(newItem);
+                    m_items[i] = newItem;
                 }
             }
             else
             {
                 // Empty-out the list
-                foreach (T item in m_items)
-                {
-                    m_items.Remove(item);
-                    UnregisterStateChangedHandler(item);
-                }
+                m_items.ForEach(item => UnregisterStateChangedHandler(item));
+                m_items.Clear();
             }
 
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
@@ -148,7 +145,7 @@ namespace GTASaveData.Common
         {
             for (int i = 0; i < m_items.Count; i++)
             {
-                array.SetValue(this[i], index + i);
+                array.SetValue(m_items[i], index + i);
             }
         }
 
@@ -187,16 +184,7 @@ namespace GTASaveData.Common
 
         public T ItemAt(int index)
         {
-            return this[index];
-        }
-
-        public void Move(int oldIndex, int newIndex)
-        {
-            T item = this[oldIndex];
-            m_items.RemoveAt(oldIndex);
-            m_items.Insert(newIndex, item);
-
-            OnCollectionChanged(NotifyCollectionChangedAction.Move, item, newIndex, oldIndex);
+            return m_items[index];
         }
 
         public void Remove(object value)
@@ -228,21 +216,21 @@ namespace GTASaveData.Common
                 throw new NotSupportedException(NotSupportedFixedSizeMessage);
             }
 
-            T item = this[index];
+            T item = m_items[index];
             m_items.RemoveAt(index);
 
             UnregisterStateChangedHandler(item);
-            OnCollectionChanged(NotifyCollectionChangedAction.Remove, item);
+            OnCollectionChanged(NotifyCollectionChangedAction.Remove, item, index);
         }
 
         public void Replace(T item, int index)
         {
-            T oldItem = this[index];
-            this[index] = item;
+            T oldItem = m_items[index];
+            m_items[index] = item;
 
             UnregisterStateChangedHandler(oldItem);
             RegisterStateChangedHandler(item);
-            OnCollectionChanged(NotifyCollectionChangedAction.Replace, oldItem, item, index);
+            OnCollectionChanged(NotifyCollectionChangedAction.Replace, item, oldItem, index);
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -303,9 +291,9 @@ namespace GTASaveData.Common
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, item, index, oldIndex));
         }
 
-        protected void OnCollectionChanged(NotifyCollectionChangedAction action, object oldItem, object newItem, int index)
+        protected void OnCollectionChanged(NotifyCollectionChangedAction action, object newItem, object oldItem, int index)
         {
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, oldItem, newItem, index));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItem, oldItem, index));
         }
     }
 }
