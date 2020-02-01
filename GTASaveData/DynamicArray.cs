@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GTASaveData.Common
+namespace GTASaveData
 {
     /// <summary>
     /// A variable-length array.

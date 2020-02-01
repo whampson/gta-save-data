@@ -20,9 +20,9 @@ namespace GTASaveData
         /// Writes this object's data to the specified <see cref="SaveDataSerializer"/>
         /// using the specified <see cref="FileFormat"/>.
         /// </summary>
-        /// <param name="serializer"></param>
-        /// <param name="format"></param>
-        protected abstract void WriteObjectData(SaveDataSerializer serializer, FileFormat format);
+        /// <param name="w">Output stream.</param>
+        /// <param name="fmt">File format.</param>
+        protected abstract void WriteObjectData(SaveDataSerializer w, FileFormat fmt);
 
         public override string ToString()
         {

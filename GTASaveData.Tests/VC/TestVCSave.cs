@@ -15,7 +15,7 @@ namespace GTASaveData.Tests.VC
             Faker faker = new Faker();
 
             Faker<VCSave> model = new Faker<VCSave>()
-                //.RuleFor(x => x.SimpleVars, f => Generator.Generate<SimpleVars, TestSimpleVars>(format))
+                .RuleFor(x => x.SimpleVars, f => Generator.Generate<SimpleVars, TestSimpleVars>(format))
                 //.RuleFor(x => x.Scripts, Generator.Generate<Scripts, TestScripts>(format))
                 //.RuleFor(x => x.PedPool, TestHelper.Generate<PedPool, TestPedPool>(format))
                 //.RuleFor(x => x.Garages, Generator.Generate<Garages, TestGarages>(format))
@@ -29,7 +29,7 @@ namespace GTASaveData.Tests.VC
                 //.RuleFor(x => x.RadarBlips, Generator.Generate<RadarBlips, TestRadarBlips>(format))
                 //.RuleFor(x => x.Zones, Generator.Generate<Zones, TestZones>(format))
                 //.RuleFor(x => x.GangData, Generator.Generate<GangData, TestGangData>(format))
-                //.RuleFor(x => x.CarGenerators, Generator.Generate<CarGenerators, TestCarGenerators>(format))
+                .RuleFor(x => x.CarGenerators, Generator.Generate<CarGeneratorsBlock, TestCarGeneratorsBlock>(format))
                 //.RuleFor(x => x.Particles, Generator.Generate<Particles, TestParticles>(format))
                 //.RuleFor(x => x.AudioScriptObjects, Generator.Generate<AudioScriptObjects, TestAudioScriptObjects>(format))
                 //.RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))

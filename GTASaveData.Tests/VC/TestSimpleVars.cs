@@ -1,11 +1,12 @@
 ﻿using Bogus;
-using GTASaveData.Common;
+using GTASaveData;
 using GTASaveData.VC;
 using GTASaveData.Serialization;
 using GTASaveData.Tests.Common;
 using GTASaveData.Tests.TestFramework;
 using System.Collections.Generic;
 using Xunit;
+using GTASaveData.Common;
 
 namespace GTASaveData.Tests.VC
 {

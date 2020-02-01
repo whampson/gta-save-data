@@ -344,9 +344,9 @@ namespace GTASaveData.VC
         private SimpleVars(SaveDataSerializer serializer, FileFormat format)
             : this()
         {
+            m_lastMissionPassedName = serializer.ReadString(Limits.LastMissionPassedNameLength, unicode: true);
             if (!format.IsPS2)  // TODO: confirm
             {
-                m_lastMissionPassedName = serializer.ReadString(Limits.LastMissionPassedNameLength, unicode: true);
                 if (format.IsPC || format.IsXbox)   // TODO: confirm
                 {
                     m_saveTime = serializer.ReadObject<SystemTime>();
@@ -392,28 +392,28 @@ namespace GTASaveData.VC
             m_forcedWeatherType = (WeatherType) serializer.ReadInt16();
             serializer.Align();
             m_interpolationValue = serializer.ReadSingle();
-            //if (format.IsPS2)   // TODO: confirm
-            //{
-            //    m_prefsMusicVolume = serializer.ReadInt32();
-            //    m_prefsSfxVolume = serializer.ReadInt32();
-            //    if (!format.HasFlag(ConsoleFlags.Australia))
-            //    {
-            //        m_prefsControllerConfig = serializer.ReadInt32();
-            //    }
-            //    m_prefsUseVibration = serializer.ReadBool(4);
-            //    m_prefsStereoMono = serializer.ReadBool(4);
-            //    m_prefsRadioStation = (RadioStation) serializer.ReadInt32();
-            //    m_prefsBrightness = serializer.ReadInt32();
-            //    if (!format.HasFlag(ConsoleFlags.Australia))
-            //    {
-            //        m_prefsShowTrails = serializer.ReadBool(4);
-            //    }
-            //    m_prefsShowSubtitles = serializer.ReadBool(4);
-            //    m_prefsLanguage =  serializer.ReadInt32();
-            //    m_prefsUseWideScreen = serializer.ReadBool(4);
-            //    m_prefsControllerConfig = serializer.ReadInt32();
-            //    m_prefsShowTrails = serializer.ReadBool(4);
-            //}
+            if (format.IsPS2)   // TODO: confirm
+            {
+                m_prefsMusicVolume = serializer.ReadInt32();
+                m_prefsSfxVolume = serializer.ReadInt32();
+                if (!format.HasFlag(ConsoleFlags.Australia))
+                {
+                    m_prefsControllerConfig = serializer.ReadInt32();
+                }
+                m_prefsUseVibration = serializer.ReadBool(4);
+                m_prefsStereoMono = serializer.ReadBool(4);
+                m_prefsRadioStation = (RadioStation) serializer.ReadInt32();
+                m_prefsBrightness = serializer.ReadInt32();
+                if (!format.HasFlag(ConsoleFlags.Australia))
+                {
+                    m_prefsShowTrails = serializer.ReadBool(4);
+                }
+                m_prefsShowSubtitles = serializer.ReadBool(4);
+                m_prefsLanguage = serializer.ReadInt32();
+                m_prefsUseWideScreen = serializer.ReadBool(4);
+                m_prefsControllerConfig = serializer.ReadInt32();
+                m_prefsShowTrails = serializer.ReadBool(4);
+            }
             //m_compileDateAndTime = serializer.ReadObject<Timestamp>();
             m_weatherTypeInList = serializer.ReadInt32();
             m_inCarCameraMode = serializer.ReadSingle();
@@ -435,9 +435,9 @@ namespace GTASaveData.VC
 
         protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
+            serializer.Write(m_lastMissionPassedName, Limits.LastMissionPassedNameLength, unicode: true);
             if (!format.IsPS2)
             {
-                serializer.Write(m_lastMissionPassedName, Limits.LastMissionPassedNameLength, unicode: true);
                 if (format.IsPC || format.IsXbox)
                 {
                     serializer.WriteObject(m_saveTime);
@@ -448,7 +448,7 @@ namespace GTASaveData.VC
             serializer.WriteObject(m_cameraPosition);
             if (format.HasFlag(ConsoleFlags.Steam)) // TODO: distinguish between Windows Steam and macOS Steam
             {
-                serializer.Write(m_unknownSteamOnly);
+                serializer.Write(m_unknownSteamOnly);   // 0x3DF5C2FD
             }
             serializer.Write(m_millisecondsPerGameMinute);
             serializer.Write(m_lastClockTick);
@@ -482,28 +482,28 @@ namespace GTASaveData.VC
             serializer.Write((short) m_forcedWeatherType);
             serializer.Align();
             serializer.Write(m_interpolationValue);
-            //if (format.IsPS2)
-            //{
-            //    serializer.Write(m_prefsMusicVolume);
-            //    serializer.Write(m_prefsSfxVolume);
-            //    if (!format.HasFlag(ConsoleFlags.Australia))
-            //    {
-            //        serializer.Write((int) m_prefsControllerConfig);
-            //    }
-            //    serializer.Write(m_prefsUseVibration, 4);
-            //    serializer.Write(m_prefsStereoMono, 4);
-            //    serializer.Write((int) m_prefsRadioStation);
-            //    serializer.Write(m_prefsBrightness);
-            //    if (!format.HasFlag(ConsoleFlags.Australia))
-            //    {
-            //        serializer.Write(m_prefsShowTrails, 4);
-            //    }
-            //    serializer.Write(m_prefsShowSubtitles, 4);
-            //    serializer.Write((int) m_prefsLanguage);
-            //    serializer.Write(m_prefsUseWideScreen, 4);
-            //    serializer.Write((int) m_prefsControllerConfig);
-            //    serializer.Write(m_prefsShowTrails, 4);
-            //}
+            if (format.IsPS2)
+            {
+                serializer.Write(m_prefsMusicVolume);
+                serializer.Write(m_prefsSfxVolume);
+                if (!format.HasFlag(ConsoleFlags.Australia))
+                {
+                    serializer.Write((int) m_prefsControllerConfig);
+                }
+                serializer.Write(m_prefsUseVibration, 4);
+                serializer.Write(m_prefsStereoMono, 4);
+                serializer.Write((int) m_prefsRadioStation);
+                serializer.Write(m_prefsBrightness);
+                if (!format.HasFlag(ConsoleFlags.Australia))
+                {
+                    serializer.Write(m_prefsShowTrails, 4);
+                }
+                serializer.Write(m_prefsShowSubtitles, 4);
+                serializer.Write((int) m_prefsLanguage);
+                serializer.Write(m_prefsUseWideScreen, 4);
+                serializer.Write((int) m_prefsControllerConfig);
+                serializer.Write(m_prefsShowTrails, 4);
+            }
             //serializer.WriteObject(m_compileDateAndTime);
             serializer.Write(m_weatherTypeInList);
             serializer.Write(m_inCarCameraMode);

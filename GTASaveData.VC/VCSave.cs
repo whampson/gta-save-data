@@ -1,4 +1,5 @@
-﻿using GTASaveData.Helpers;
+﻿using GTASaveData.Extensions;
+using GTASaveData.Helpers;
 using GTASaveData.Serialization;
 using System;
 using System.Collections.Generic;
@@ -11,23 +12,27 @@ namespace GTASaveData.VC
     /// <summary>
     /// Represents a Grand Theft Auto Vice City save data file.
     /// </summary>
-    public sealed class VCSave : SaveDataFile,
+    public sealed class VCSave : SaveData,
         IEquatable<VCSave>
     {
         public static class FileFormats
         {
             // TODO: revamp this a bit
             public static readonly FileFormat PCRetail = new FileFormat(
-                "Retail (Windows) or Steam (macOS)", ConsoleType.PC
+                "PC (Retail)", ConsoleType.PC
             );
 
             public static readonly FileFormat PCSteam = new FileFormat(
-                "Retail (Windows) or Steam (macOS)", ConsoleType.PC, ConsoleFlags.Steam
+                "PC (Steam)", ConsoleType.PC, ConsoleFlags.Steam
+            );
+
+            public static readonly FileFormat PS2 = new FileFormat(
+                "PS2", ConsoleType.PS2
             );
 
             public static FileFormat[] GetAll()
             {
-                return new FileFormat[] { PCRetail, PCSteam };
+                return new FileFormat[] { PCRetail, PCSteam, PS2 };
             }
         }
 
@@ -35,6 +40,7 @@ namespace GTASaveData.VC
         {
             { FileFormats.PCRetail, 0xE4 },
             { FileFormats.PCSteam, 0xE8 },
+            { FileFormats.PS2, 0x1C0 },
         };
 
         private static readonly Dictionary<FileFormat, int> MaxBlockSize = new Dictionary<FileFormat, int>
@@ -42,6 +48,7 @@ namespace GTASaveData.VC
             // TODO: verify
             { FileFormats.PCRetail, 0xD6D8 },
             { FileFormats.PCSteam, 0xD6D8 },
+            //{ FileFormats.PS2, 0xD6D8 },
         };
 
         // The number of bytes in all first-level blocks, excluding the size header.
@@ -72,7 +79,7 @@ namespace GTASaveData.VC
         private DummyObject m_radarBlips;
         private DummyObject m_zones;
         private DummyObject m_gangData;
-        private DummyObject m_carGenerators;
+        private CarGeneratorsBlock m_carGenerators;
         private DummyObject m_particles;        // maybe
         private DummyObject m_audioScriptObjects;
         private DummyObject m_scriptPaths;
@@ -108,8 +115,8 @@ namespace GTASaveData.VC
 
         public DummyObject GameLogic
         {
-            get { return m_garages; }
-            set { m_garages = value; OnPropertyChanged(); }
+            get { return m_gameLogic; }
+            set { m_gameLogic = value; OnPropertyChanged(); }
         }
 
         public DummyObject Vehicles
@@ -172,7 +179,7 @@ namespace GTASaveData.VC
             set { m_gangData = value; OnPropertyChanged(); }
         }
 
-        public DummyObject CarGenerators
+        public CarGeneratorsBlock CarGenerators
         {
             get { return m_carGenerators; }
             set { m_carGenerators = value; OnPropertyChanged(); }
@@ -243,7 +250,7 @@ namespace GTASaveData.VC
             m_radarBlips = new DummyObject();
             m_zones = new DummyObject();
             m_gangData = new DummyObject();
-            m_carGenerators = new DummyObject();
+            m_carGenerators = new CarGeneratorsBlock();
             m_particles = new DummyObject();
             m_audioScriptObjects = new DummyObject();
             m_scriptPaths = new DummyObject();
@@ -254,90 +261,41 @@ namespace GTASaveData.VC
             m_pedTypeInfo = new DummyObject();
         }
 
-        //public static FileFormat GetFileFormat(string path)
-        //{
-        //    if (path == null)
-        //    {
-        //        return null;
-        //    }
+        public static FileFormat GetFileFormat(string path)
+        {
+            if (path == null)
+            {
+                return null;
+            }
 
-        //    bool isMobile = false;
-        //    bool isPcOrXbox = false;
+            byte[] data = File.ReadAllBytes(path);
+            int blockCount = CountBlocks(data);
 
-        //    byte[] data = File.ReadAllBytes(path);
+            int fileId = data.FindFirst(BitConverter.GetBytes(0x31401));
+            int scr = data.FindFirst("SCR\0".GetAsciiBytes());
 
-        //    int fileId = data.FindFirst(BitConverter.GetBytes(0x31401));
-        //    int fileIdJP = data.FindFirst(BitConverter.GetBytes(0x31400));
-        //    int scr = data.FindFirst("SCR\0".GetAsciiBytes());
+            // Likely PS2 if block count is 8
 
-        //    int blk1Size;
-        //    using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(data)))
-        //    {
-        //        s.Skip(s.ReadInt32());
-        //        blk1Size = s.ReadInt32();
-        //    }
+            if (fileId == 0x44)
+            {
+                if (scr == 0xEC)
+                {
+                    return FileFormats.PCRetail;
+                }
+                else if (scr == 0xF0)
+                {
+                    return FileFormats.PCSteam;
+                }
+            }
+            
 
-        //    if (scr == 0xB0 && fileId == 0x04)
-        //    {
-        //        // PS2, Austra
-        //        return FileFormats.PS2AU;
-        //    }
-        //    else if (scr == 0xB8)
-        //    {
-        //        if (fileIdJP == 0x04)
-        //        {
-        //            // PS2, Japan
-        //            return FileFormats.PS2JP;
-        //        }
-        //        else if (fileId == 0x04)
-        //        {
-        //            // PS2, North America/Europe
-        //            return FileFormats.PS2NAEU;
-        //        }
-        //        else if (fileId == 0x34)
-        //        {
-        //            isMobile = true;
-        //        }
-        //    }
-        //    else if (scr == 0xC4 && fileId == 0x44)
-        //    {
-        //        isPcOrXbox = true;
-        //    }
+            return null;
+        }
 
-        //    if (isMobile)
-        //    {
-        //        if (blk1Size == 0x648)
-        //        {
-        //            // iOS
-        //            return FileFormats.IOS;
-        //        }
-        //        else if (blk1Size == 0x64C)
-        //        {
-        //            // Android
-        //            return FileFormats.Android;
-        //        }
-        //    }
-        //    else if (isPcOrXbox)
-        //    {
-        //        if (blk1Size == 0x624)
-        //        {
-        //            // PC (Windows, macOS)
-        //            return FileFormats.PC;
-        //        }
-        //        else if (blk1Size == 0x628)
-        //        {
-        //            // Xbox
-        //            return FileFormats.Xbox;
-        //        }
-        //    }
-
-        //    return null;
-        //}
-
-        //public static VCSave Load(string path)
-        //{
-        //    return Load(path, GetFileFormat(path));
-        //}
+        public static VCSave Load(string path)
+        {
+            return Load(path, GetFileFormat(path));
+        }
 
         public static VCSave Load(string path, FileFormat format)
         {
@@ -345,6 +303,8 @@ namespace GTASaveData.VC
             {
                 return null;
             }
+
+            Debug.WriteLine("File has {0} blocks.", CountBlocks(path));
 
             byte[] data = File.ReadAllBytes(path);
             using (MemoryStream m = new MemoryStream(data))
@@ -361,7 +321,7 @@ namespace GTASaveData.VC
             if (!FileFormats.GetAll().Contains(format))
             {
                 throw new SaveDataSerializationException(
-                    string.Format("'{0}' is not a valid file format for GTA3 save data.", format));
+                    string.Format("'{0}' is not a valid file format for GTA VC save data.", format));
             }
 
             CurrentFormat = format;
@@ -452,7 +412,7 @@ namespace GTASaveData.VC
             m_radarBlips = new DummyObject(radarBlips);
             m_zones = new DummyObject(zones);
             m_gangData = new DummyObject(gangData);
-            m_carGenerators = new DummyObject(carGenerators);
+            m_carGenerators = Deserialize<CarGeneratorsBlock>(carGenerators);
             m_particles = new DummyObject(particles);
             m_audioScriptObjects = new DummyObject(audioScriptObjects);
             m_scriptPaths = new DummyObject(scriptPaths);
@@ -589,7 +549,7 @@ namespace GTASaveData.VC
         private ByteBuffer ReadBlock(SaveDataSerializer s, string tag = null)
         {
             int length = s.ReadInt32();
-            Debug.WriteLineIf(length > MaxBlockSize[CurrentFormat], "Maximum allowed block size exceeded!");
+            //Debug.WriteLineIf(length > MaxBlockSize[CurrentFormat], "Maximum allowed block size exceeded!");
 
             if (tag != null)
             {

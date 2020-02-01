@@ -1,7 +1,7 @@
 ﻿using GTASaveData;
-using GTASaveData.Common;
 using GTASaveData.GTA3;
 using GTASaveData.Serialization;
+using GTASaveData.VC;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -39,40 +39,20 @@ namespace TestApp
         public void OnLoadSaveData()
         {
             // TODO: stuff
-
-            StaticArray<BuildingSwap> testArray = new StaticArray<BuildingSwap>(10);
-            testArray.CollectionChanged += TestArray_CollectionChanged;
-            testArray.ItemStateChanged += TestArray_ItemStateChanged;
-
-
-            testArray[5] = new BuildingSwap();
-
-            testArray[7].NewModelId = 453;
-
-        }
-
-        private void TestArray_ItemStateChanged(object sender, ItemPropertyChangedEventArgs e)
-        {
-            RequestMessageBoxError("Item State Changed: Index = " + e.ItemIndex + ", PropertyName = " + e.PropertyName);
-        }
-
-        private void TestArray_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            RequestMessageBoxError("Collection Changed: Action = " + e.Action + ", NewStartingIndex = " + e.NewStartingIndex);
         }
 
         #region Events, Variables, and Properties
         public EventHandler<FileDialogEventArgs> FileDialogRequested;
         public EventHandler<MessageBoxEventArgs> MessageBoxRequested;
 
-        private SaveDataFile m_currentSaveDataFile;
+        private SaveData m_currentSaveDataFile;
         private FileFormat m_currentFileFormat;
         private Game m_selectedGame;
         private int m_selectedBlockIndex;
         private string m_text;
         private string m_statusText;
 
-        public SaveDataFile CurrentSaveDataFile
+        public SaveData CurrentSaveDataFile
         {
             get { return m_currentSaveDataFile; }
             set { m_currentSaveDataFile = value; OnPropertyChanged(); }
@@ -173,6 +153,10 @@ namespace TestApp
                     CurrentFileFormat = GTA3Save.GetFileFormat(path);
                     CurrentSaveDataFile = GTA3Save.Load(path, CurrentFileFormat);
                     break;
+                case Game.VC:
+                    CurrentFileFormat = VCSave.GetFileFormat(path);
+                    CurrentSaveDataFile = VCSave.Load(path, CurrentFileFormat);
+                    break;
                 default:
                     RequestMessageBoxError("Selected game not yet supported!");
                     return;
@@ -189,6 +173,7 @@ namespace TestApp
             StatusText = "Loaded " + path + ".";
 
             OnLoadSaveData();
+            OnPropertyChanged(nameof(BlockNameForCurrentGame));
         }
 
         public void CloseSaveData()
@@ -259,7 +244,8 @@ namespace TestApp
         #region Misc
         public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
         {
-            { Game.GTA3, GTA3BlockNames }
+            { Game.GTA3, GTA3BlockNames },
+            { Game.VC, VCBlockNames }
         };
 
         public static string[] GTA3BlockNames => new[]
@@ -285,6 +271,34 @@ namespace TestApp
             "18: Stats",
             "19: Streaming",
             "20: PedTypeInfo"
+        };
+
+        public static string[] VCBlockNames => new[]
+        {
+            "0: SimpleVars",
+            "1: Scripts",
+            "2: PedPool",
+            "3: Garages",
+            "4: GameLogic",
+            "5: Vehicles",
+            "6: Objects",
+            "7: PathFind",
+            "8: Cranes",
+            "9: Pickups",
+            "10: PhoneInfo",
+            "11: Restarts",
+            "12: RadarBlips",
+            "13: Zones",
+            "14: GangData",
+            "15: CarGenerators",
+            "16: Particles",
+            "17: AudioScriptObjects",
+            "18: ScriptPaths",
+            "19: PlayerInfo",
+            "20: Stats",
+            "21: SetPieces",
+            "22: Streaming",
+            "23: PedTypeInfo"
         };
     }
     #endregion

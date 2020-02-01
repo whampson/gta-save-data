@@ -6,7 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using WpfEssentials;
 
-namespace GTASaveData.Common
+namespace GTASaveData
 {
     public delegate void NotifyItemStateChangedEventHandler(object sender, ItemPropertyChangedEventArgs e);
 
@@ -231,6 +231,11 @@ namespace GTASaveData.Common
             UnregisterStateChangedHandler(oldItem);
             RegisterStateChangedHandler(item);
             OnCollectionChanged(NotifyCollectionChangedAction.Replace, item, oldItem, index);
+        }
+
+        public T[] ToArray()
+        {
+            return m_items.ToArray();
         }
 
         public IEnumerator<T> GetEnumerator()
