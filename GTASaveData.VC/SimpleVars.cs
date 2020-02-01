@@ -14,9 +14,10 @@ namespace GTASaveData.VC
         public static class Limits
         {
             public const int LastMissionPassedNameLength = 24;
+            public const int RadioListenTimeCount = 10;
         }
 
-        // This is the number of bytes in a GTA3 save excluding the 4-byte block size
+        // This is the number of bytes in a GTA:VC save excluding the 4-byte block size
         // values that appear before each outer data block. It shows up in SimpleVars
         // despite not being used at all by the game. Non-Japanese versions add 1 to
         // this number for some reason.
@@ -65,7 +66,7 @@ namespace GTASaveData.VC
         private int m_extraColor;
         private bool m_isExtraColorOn;
         private float m_extraColorInterpolation;
-        private ObservableCollection<uint> m_radioListenTime;
+        private StaticArray<uint> m_radioListenTime;
 
         public string LastMissionPassedName
         {
@@ -325,7 +326,7 @@ namespace GTASaveData.VC
             set { m_extraColorInterpolation = value; OnPropertyChanged(); }
         }
 
-        public ObservableCollection<uint> RadioListenTime
+        public StaticArray<uint> RadioListenTime
         {
             get { return m_radioListenTime; }
             set { m_radioListenTime = value; OnPropertyChanged(); }
@@ -337,7 +338,7 @@ namespace GTASaveData.VC
             m_saveTime = new SystemTime();
             m_cameraPosition = new Vector3d();
             //m_compileDateAndTime = new Timestamp();
-            m_radioListenTime = new ObservableCollection<uint>();
+            m_radioListenTime = new StaticArray<uint>(Limits.RadioListenTimeCount);
         }
 
         private SimpleVars(SaveDataSerializer serializer, FileFormat format)
@@ -429,7 +430,7 @@ namespace GTASaveData.VC
             m_extraColor = serializer.ReadInt32();
             m_isExtraColorOn = serializer.ReadBool(4);
             m_extraColorInterpolation = serializer.ReadSingle();
-            m_radioListenTime = new ObservableCollection<uint>(serializer.ReadArray<uint>(10));
+            m_radioListenTime = new StaticArray<uint>(serializer.ReadArray<uint>(10));
         }
 
         protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)

@@ -57,7 +57,7 @@ namespace GTASaveData.Tests.VC
                 .RuleFor(x => x.ExtraColor, f => f.Random.Int())
                 .RuleFor(x => x.IsExtraColorOn, f => f.Random.Bool())
                 .RuleFor(x => x.ExtraColorInterpolation, f => f.Random.Float())
-                .RuleFor(x => x.RadioListenTime, f => Generator.CreateValueCollection<uint>(10, g => f.Random.UInt()));
+                .RuleFor(x => x.RadioListenTime, f => Generator.CreateArray(SimpleVars.Limits.RadioListenTimeCount, g => f.Random.UInt()));
 
             return model.Generate();
         }
