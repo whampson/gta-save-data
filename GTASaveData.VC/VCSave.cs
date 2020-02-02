@@ -15,42 +15,6 @@ namespace GTASaveData.VC
     public sealed class VCSave : SaveData,
         IEquatable<VCSave>
     {
-        public static class FileFormats
-        {
-            // TODO: revamp this a bit
-            public static readonly FileFormat PCRetail = new FileFormat(
-                "PC (Retail)", ConsoleType.PC
-            );
-
-            public static readonly FileFormat PCSteam = new FileFormat(
-                "PC (Steam)", ConsoleType.PC, ConsoleFlags.Steam
-            );
-
-            public static readonly FileFormat PS2 = new FileFormat(
-                "PS2", ConsoleType.PS2
-            );
-
-            public static FileFormat[] GetAll()
-            {
-                return new FileFormat[] { PCRetail, PCSteam, PS2 };
-            }
-        }
-
-        private static readonly Dictionary<FileFormat, int> SimpleVarsSize = new Dictionary<FileFormat, int>
-        {
-            { FileFormats.PCRetail, 0xE4 },
-            { FileFormats.PCSteam, 0xE8 },
-            { FileFormats.PS2, 0x1C0 },
-        };
-
-        private static readonly Dictionary<FileFormat, int> MaxBlockSize = new Dictionary<FileFormat, int>
-        {
-            // TODO: verify
-            { FileFormats.PCRetail, 0xD6D8 },
-            { FileFormats.PCSteam, 0xD6D8 },
-            //{ FileFormats.PS2, 0xD6D8 },
-        };
-
         // The number of bytes in all first-level blocks, excluding the size header.
         private const int TotalBlockDataSize = 0x31400;
 
@@ -65,29 +29,29 @@ namespace GTASaveData.VC
         private const string PtpTag = "PTP";
 
         private SimpleVars m_simpleVars;
-        private DummyObject m_scripts;
-        private DummyObject m_pedPool;
-        private DummyObject m_garages;
-        private DummyObject m_gameLogic;
-        private DummyObject m_vehiclePool;
-        private DummyObject m_objectPool;
-        private DummyObject m_pathFind;         // maybe
-        private DummyObject m_cranes;
-        private DummyObject m_pickups;
-        private DummyObject m_phoneInfo;
-        private DummyObject m_restartPoints;
-        private DummyObject m_radarBlips;
-        private DummyObject m_zones;
-        private DummyObject m_gangData;
+        private GenericBlock m_scripts;
+        private GenericBlock m_pedPool;
+        private GenericBlock m_garages;
+        private GenericBlock m_gameLogic;
+        private GenericBlock m_vehiclePool;
+        private GenericBlock m_objectPool;
+        private GenericBlock m_pathFind;         // maybe
+        private GenericBlock m_cranes;
+        private GenericBlock m_pickups;
+        private GenericBlock m_phoneInfo;
+        private GenericBlock m_restartPoints;
+        private GenericBlock m_radarBlips;
+        private GenericBlock m_zones;
+        private GenericBlock m_gangData;
         private CarGeneratorsBlock m_carGenerators;
-        private DummyObject m_particles;        // maybe
-        private DummyObject m_audioScriptObjects;
-        private DummyObject m_scriptPaths;
-        private DummyObject m_playerInfo;
-        private DummyObject m_stats;
-        private DummyObject m_setPieces;
-        private DummyObject m_streaming;
-        private DummyObject m_pedTypeInfo;
+        private GenericBlock m_particles;        // maybe
+        private GenericBlock m_audioScriptObjects;
+        private GenericBlock m_scriptPaths;
+        private GenericBlock m_playerInfo;
+        private GenericBlock m_stats;
+        private GenericBlock m_setPieces;
+        private GenericBlock m_streaming;
+        private GenericBlock m_pedTypeInfo;
 
         public SimpleVars SimpleVars
         {
@@ -95,85 +59,85 @@ namespace GTASaveData.VC
             set { m_simpleVars = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Scripts
+        public GenericBlock Scripts
         {
             get { return m_scripts; }
             set { m_scripts = value; OnPropertyChanged(); }
         }
 
-        public DummyObject PedPool
+        public GenericBlock PedPool
         {
             get { return m_pedPool; }
             set { m_pedPool = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Garages
+        public GenericBlock Garages
         {
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
         }
 
-        public DummyObject GameLogic
+        public GenericBlock GameLogic
         {
             get { return m_gameLogic; }
             set { m_gameLogic = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Vehicles
+        public GenericBlock Vehicles
         {
             get { return m_vehiclePool; }
             set { m_vehiclePool = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Objects
+        public GenericBlock Objects
         {
             get { return m_objectPool; }
             set { m_objectPool = value; OnPropertyChanged(); }
         }
 
-        public DummyObject PathFind
+        public GenericBlock PathFind
         {
             get { return m_pathFind; }
             set { m_pathFind = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Cranes
+        public GenericBlock Cranes
         {
             get { return m_cranes; }
             set { m_cranes = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Pickups
+        public GenericBlock Pickups
         {
             get { return m_pickups; }
             set { m_pickups = value; OnPropertyChanged(); }
         }
 
-        public DummyObject PhoneInfo
+        public GenericBlock PhoneInfo
         {
             get { return m_phoneInfo; }
             set { m_phoneInfo = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Restarts
+        public GenericBlock Restarts
         {
             get { return m_restartPoints; }
             set { m_restartPoints = value; OnPropertyChanged(); }
         }
 
-        public DummyObject RadarBlips
+        public GenericBlock RadarBlips
         {
             get { return m_radarBlips; }
             set { m_radarBlips = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Zones
+        public GenericBlock Zones
         {
             get { return m_zones; }
             set { m_zones = value; OnPropertyChanged(); }
         }
 
-        public DummyObject GangData
+        public GenericBlock GangData
         {
             get { return m_gangData; }
             set { m_gangData = value; OnPropertyChanged(); }
@@ -185,135 +149,125 @@ namespace GTASaveData.VC
             set { m_carGenerators = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Particles
+        public GenericBlock Particles
         {
             get { return m_particles; }
             set { m_particles = value; OnPropertyChanged(); }
         }
 
-        public DummyObject AudioScriptObjects
+        public GenericBlock AudioScriptObjects
         {
             get { return m_audioScriptObjects; }
             set { m_audioScriptObjects = value; OnPropertyChanged(); }
         }
 
-        public DummyObject ScriptPaths
+        public GenericBlock ScriptPaths
         {
             get { return m_scriptPaths; }
             set { m_scriptPaths = value; OnPropertyChanged(); }
         }
 
-        public DummyObject PlayerInfo
+        public GenericBlock PlayerInfo
         {
             get { return m_playerInfo; }
             set { m_playerInfo = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Stats
+        public GenericBlock Stats
         {
             get { return m_stats; }
             set { m_stats = value; OnPropertyChanged(); }
         }
 
-        public DummyObject SetPieces
+        public GenericBlock SetPieces
         {
             get { return m_setPieces; }
             set { m_setPieces = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Streaming
+        public GenericBlock Streaming
         {
             get { return m_streaming; }
             set { m_streaming = value; OnPropertyChanged(); }
         }
 
-        public DummyObject PedTypeInfo
+        public GenericBlock PedTypeInfo
         {
             get { return m_pedTypeInfo; }
             set { m_pedTypeInfo = value; OnPropertyChanged(); }
         }
 
+        public override string Name => SimpleVars.LastMissionPassedName;
+
+        public override IReadOnlyList<Chunk> Blocks => new List<Chunk>
+        {
+            m_simpleVars,
+            m_scripts,
+            m_pedPool,
+            m_garages,
+            m_gameLogic,
+            m_vehiclePool,
+            m_objectPool,
+            m_pathFind,
+            m_cranes,
+            m_pickups,
+            m_phoneInfo,
+            m_restartPoints,
+            m_radarBlips,
+            m_zones,
+            m_gangData,
+            m_carGenerators,
+            m_particles,
+            m_audioScriptObjects,
+            m_scriptPaths,
+            m_playerInfo,
+            m_stats,
+            m_setPieces,
+            m_streaming,
+            m_pedTypeInfo
+        }.AsReadOnly();
+
+        protected override Dictionary<FileFormat, int> MaxBlockSize => new Dictionary<FileFormat, int>
+        {
+            // TODO: verify
+            { FileFormats.PCRetail, 0xD6D8 },
+            { FileFormats.PCSteam, 0xD6D8 },
+            //{ FileFormats.PS2, 0xD6D8 },
+        };
+
+        protected override Dictionary<FileFormat, int> SimpleVarsSize => new Dictionary<FileFormat, int>
+        {
+            { FileFormats.PCRetail, 0xE4 },
+            { FileFormats.PCSteam, 0xE8 },
+            //{ FileFormats.PS2, 0x1C0 },
+        };
+
         public VCSave()
         {
             m_simpleVars = new SimpleVars();
-            m_scripts = new DummyObject();
-            m_pedPool = new DummyObject();
-            m_garages = new DummyObject();
-            m_gameLogic = new DummyObject();
-            m_vehiclePool = new DummyObject();
-            m_objectPool = new DummyObject();
-            m_pathFind = new DummyObject();
-            m_cranes = new DummyObject();
-            m_pickups = new DummyObject();
-            m_phoneInfo = new DummyObject();
-            m_restartPoints = new DummyObject();
-            m_radarBlips = new DummyObject();
-            m_zones = new DummyObject();
-            m_gangData = new DummyObject();
+            m_scripts = new GenericBlock();
+            m_pedPool = new GenericBlock();
+            m_garages = new GenericBlock();
+            m_gameLogic = new GenericBlock();
+            m_vehiclePool = new GenericBlock();
+            m_objectPool = new GenericBlock();
+            m_pathFind = new GenericBlock();
+            m_cranes = new GenericBlock();
+            m_pickups = new GenericBlock();
+            m_phoneInfo = new GenericBlock();
+            m_restartPoints = new GenericBlock();
+            m_radarBlips = new GenericBlock();
+            m_zones = new GenericBlock();
+            m_gangData = new GenericBlock();
             m_carGenerators = new CarGeneratorsBlock();
-            m_particles = new DummyObject();
-            m_audioScriptObjects = new DummyObject();
-            m_scriptPaths = new DummyObject();
-            m_playerInfo = new DummyObject();
-            m_stats = new DummyObject();
-            m_setPieces = new DummyObject();
-            m_streaming = new DummyObject();
-            m_pedTypeInfo = new DummyObject();
-        }
-
-        public static FileFormat GetFileFormat(string path)
-        {
-            if (path == null)
-            {
-                return null;
-            }
-
-            byte[] data = File.ReadAllBytes(path);
-            int blockCount = CountBlocks(data);
-
-            int fileId = data.FindFirst(BitConverter.GetBytes(0x31401));
-            int scr = data.FindFirst("SCR\0".GetAsciiBytes());
-
-            // Likely PS2 if block count is 8
-
-            if (fileId == 0x44)
-            {
-                if (scr == 0xEC)
-                {
-                    return FileFormats.PCRetail;
-                }
-                else if (scr == 0xF0)
-                {
-                    return FileFormats.PCSteam;
-                }
-            }
-            
-
-            return null;
-        }
-
-        public static VCSave Load(string path)
-        {
-            return Load(path, GetFileFormat(path));
-        }
-
-        public static VCSave Load(string path, FileFormat format)
-        {
-            if (path == null || format == null)
-            {
-                return null;
-            }
-
-            Debug.WriteLine("File has {0} blocks.", CountBlocks(path));
-
-            byte[] data = File.ReadAllBytes(path);
-            using (MemoryStream m = new MemoryStream(data))
-            {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
-                {
-                    return s.ReadObject<VCSave>(format);
-                }
-            }
+            m_particles = new GenericBlock();
+            m_audioScriptObjects = new GenericBlock();
+            m_scriptPaths = new GenericBlock();
+            m_playerInfo = new GenericBlock();
+            m_stats = new GenericBlock();
+            m_setPieces = new GenericBlock();
+            m_streaming = new GenericBlock();
+            m_pedTypeInfo = new GenericBlock();
         }
 
         private VCSave(SaveDataSerializer serializer, FileFormat format)
@@ -324,7 +278,7 @@ namespace GTASaveData.VC
                     string.Format("'{0}' is not a valid file format for GTA VC save data.", format));
             }
 
-            CurrentFormat = format;
+            FileFormat = format;
 
             int outerBlockCount = 0;
             bool doneReading = false;
@@ -398,34 +352,34 @@ namespace GTASaveData.VC
             }
 
             m_simpleVars = Deserialize<SimpleVars>(simpleVars, format);
-            m_scripts = new DummyObject(scripts);
-            m_pedPool = new DummyObject(pedPool);
-            m_garages = new DummyObject(garages);
-            m_gameLogic = new DummyObject(gameLogic);
-            m_vehiclePool  = new DummyObject(vehiclePool);
-            m_objectPool = new DummyObject(objectPool);
-            m_pathFind = new DummyObject(pathFind);
-            m_cranes = new DummyObject(cranes);
-            m_pickups = new DummyObject(pickups);
-            m_phoneInfo = new DummyObject(phoneInfo);
-            m_restartPoints = new DummyObject(restartPoints);
-            m_radarBlips = new DummyObject(radarBlips);
-            m_zones = new DummyObject(zones);
-            m_gangData = new DummyObject(gangData);
+            m_scripts = new GenericBlock(scripts);
+            m_pedPool = new GenericBlock(pedPool);
+            m_garages = new GenericBlock(garages);
+            m_gameLogic = new GenericBlock(gameLogic);
+            m_vehiclePool  = new GenericBlock(vehiclePool);
+            m_objectPool = new GenericBlock(objectPool);
+            m_pathFind = new GenericBlock(pathFind);
+            m_cranes = new GenericBlock(cranes);
+            m_pickups = new GenericBlock(pickups);
+            m_phoneInfo = new GenericBlock(phoneInfo);
+            m_restartPoints = new GenericBlock(restartPoints);
+            m_radarBlips = new GenericBlock(radarBlips);
+            m_zones = new GenericBlock(zones);
+            m_gangData = new GenericBlock(gangData);
             m_carGenerators = Deserialize<CarGeneratorsBlock>(carGenerators);
-            m_particles = new DummyObject(particles);
-            m_audioScriptObjects = new DummyObject(audioScriptObjects);
-            m_scriptPaths = new DummyObject(scriptPaths);
-            m_playerInfo = new DummyObject(playerInfo);
-            m_stats = new DummyObject(stats);
-            m_setPieces = new DummyObject(setPieces);
-            m_streaming = new DummyObject(streaming);
-            m_pedTypeInfo = new DummyObject(pedTypeInfo);
+            m_particles = new GenericBlock(particles);
+            m_audioScriptObjects = new GenericBlock(audioScriptObjects);
+            m_scriptPaths = new GenericBlock(scriptPaths);
+            m_playerInfo = new GenericBlock(playerInfo);
+            m_stats = new GenericBlock(stats);
+            m_setPieces = new GenericBlock(setPieces);
+            m_streaming = new GenericBlock(streaming);
+            m_pedTypeInfo = new GenericBlock(pedTypeInfo);
         }
 
         protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
-            CurrentFormat = format;
+            FileFormat = format;
 
             int dataBytesWritten = 0;
             int blockCount = 0;
@@ -514,113 +468,6 @@ namespace GTASaveData.VC
             Debug.Assert(serializer.BaseStream.Position == TotalBlockDataSize + (blockCount * 4) + 4);
         }
 
-        // TODO: move to base class 
-        private byte[] CreateBlock(params ByteBuffer[] chunks)
-        {
-            return CreateBlock(null, chunks);
-        }
-
-        private byte[] CreateBlock(string tag, params ByteBuffer[] chunks)
-        {
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (SaveDataSerializer s = CreateSerializer(m))
-                {
-                    WriteBlock(s, tag, chunks);
-                }
-
-                return m.ToArray();
-            }
-        }
-
-        private byte[] CreatePaddingBlock(int length)
-        {
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (SaveDataSerializer s = CreateSerializer(m))
-                {
-                    s.WritePadding(length);
-                }
-
-                return CreateBlock(m.ToArray());
-            }
-        }
-
-        private ByteBuffer ReadBlock(SaveDataSerializer s, string tag = null)
-        {
-            int length = s.ReadInt32();
-            //Debug.WriteLineIf(length > MaxBlockSize[CurrentFormat], "Maximum allowed block size exceeded!");
-
-            if (tag != null)
-            {
-                string str = s.ReadString(4);
-                int dataLength = s.ReadInt32();
-                Debug.Assert(str == tag, "Invalid block tag!", "Expected: {0}, Actual: {1}", tag, str);
-                Debug.Assert(dataLength == length - 8);
-                length = dataLength;
-            }
-
-            byte[] data = s.ReadBytes(length);
-            s.Align();
-
-            return data;
-        }
-
-        private int WriteBlock(SaveDataSerializer s, string tag, params ByteBuffer[] chunks)
-        {
-            long mark = s.BaseStream.Position;
-
-            int payloadSize = chunks.Sum(x => x.Length);
-            int totalSize = (tag != null) ? (payloadSize + 8) : payloadSize;
-            Debug.WriteLineIf(totalSize > MaxBlockSize[CurrentFormat], "Maximum allowed block size exceeded!");
-
-            if (tag != null)
-            {
-                s.Write(payloadSize + 8);
-                s.Write(tag, 4);
-            }
-            s.Write(payloadSize);
-            foreach (ByteBuffer chunk in chunks)
-            {
-                s.Write((byte[]) chunk);
-            }
-            s.Align();
-
-            return (int) (s.BaseStream.Position - mark);
-        }
-        // End TODO
-
-        public override IList<SaveDataObject> GetAllBlocks()
-        {
-            return new SaveDataObject[]
-            {
-                m_simpleVars,
-                m_scripts,
-                m_pedPool,
-                m_garages,
-                m_gameLogic,
-                m_vehiclePool,
-                m_objectPool,
-                m_pathFind,
-                m_cranes,
-                m_pickups,
-                m_phoneInfo,
-                m_restartPoints,
-                m_radarBlips,
-                m_zones,
-                m_gangData,
-                m_carGenerators,
-                m_particles,
-                m_audioScriptObjects,
-                m_scriptPaths,
-                m_playerInfo,
-                m_stats,
-                m_setPieces,
-                m_streaming,
-                m_pedTypeInfo
-            };
-        }
-
         public override int GetHashCode()
         {
             return base.GetHashCode();
@@ -664,57 +511,54 @@ namespace GTASaveData.VC
                 && m_pedTypeInfo.Equals(other.m_pedTypeInfo);
         }
 
-        public override string ToString()
+        protected override FileFormat DetectFileFormat(string path)
         {
-            return string.Format("VCSave: [ SaveName = {0} ]", SimpleVars.LastMissionPassedName);
+            if (path == null)
+            {
+                return null;
+            }
+
+            byte[] data = File.ReadAllBytes(path);
+            int blockCount = GetBlockCount(data);
+
+            int fileId = data.FindFirst(BitConverter.GetBytes(0x31401));
+            int scr = data.FindFirst("SCR\0".GetAsciiBytes());
+
+            // Likely PS2 if block count is 8
+
+            if (fileId == 0x44)
+            {
+                if (scr == 0xEC)
+                {
+                    return FileFormats.PCRetail;
+                }
+                else if (scr == 0xF0)
+                {
+                    return FileFormats.PCSteam;
+                }
+            }
+
+            return null;
         }
 
-        public sealed class DummyObject : SaveDataObject,
-            IEquatable<DummyObject>
+        public static class FileFormats
         {
-            public byte[] Data
+            // TODO: revamp this a bit
+            public static readonly FileFormat PCRetail = new FileFormat(
+                "PC (Retail)", ConsoleType.PC
+            );
+
+            public static readonly FileFormat PCSteam = new FileFormat(
+                "PC (Steam)", ConsoleType.PC, ConsoleFlags.Steam
+            );
+
+            public static readonly FileFormat PS2 = new FileFormat(
+                "PS2", ConsoleType.PS2
+            );
+
+            public static FileFormat[] GetAll()
             {
-                get;
-                set;
-            }
-
-            public DummyObject()
-                : this(new byte[0])
-            { }
-
-            public DummyObject(byte[] data)
-            {
-                Data = data;
-            }
-
-            private DummyObject(SaveDataSerializer serializer, FileFormat format)
-            {
-                // nop
-            }
-
-            protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
-            {
-                serializer.Write(Data);
-            }
-
-            public override int GetHashCode()
-            {
-                return base.GetHashCode();
-            }
-
-            public override bool Equals(object obj)
-            {
-                return Equals(obj as DummyObject);
-            }
-
-            public bool Equals(DummyObject other)
-            {
-                if (other == null)
-                {
-                    return false;
-                }
-
-                return Data.SequenceEqual(other.Data);
+                return new FileFormat[] { PCRetail, PCSteam, PS2 };
             }
         }
     }

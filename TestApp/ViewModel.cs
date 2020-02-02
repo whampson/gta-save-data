@@ -150,12 +150,12 @@ namespace TestApp
             switch (m_selectedGame)
             {
                 case Game.GTA3:
-                    CurrentFileFormat = GTA3Save.GetFileFormat(path);
-                    CurrentSaveDataFile = GTA3Save.Load(path, CurrentFileFormat);
+                    CurrentFileFormat = SaveData.GetFileFormat<GTA3Save>(path);
+                    CurrentSaveDataFile = SaveData.LoadFromFile<GTA3Save>(path, CurrentFileFormat);
                     break;
                 case Game.VC:
-                    CurrentFileFormat = VCSave.GetFileFormat(path);
-                    CurrentSaveDataFile = VCSave.Load(path, CurrentFileFormat);
+                    CurrentFileFormat = SaveData.GetFileFormat<VCSave>(path);
+                    CurrentSaveDataFile = SaveData.LoadFromFile<VCSave>(path, CurrentFileFormat);
                     break;
                 default:
                     RequestMessageBoxError("Selected game not yet supported!");
@@ -194,7 +194,7 @@ namespace TestApp
                 return;
             }
 
-            CurrentSaveDataFile.Store(path, CurrentFileFormat);
+            CurrentSaveDataFile.Write(path, CurrentFileFormat);
             StatusText = "File saved.";
         }
 
@@ -206,8 +206,8 @@ namespace TestApp
                 return;
             }
 
-            IList<SaveDataObject> blocks = CurrentSaveDataFile.GetAllBlocks();
-            Debug.Assert(blocks.Count == BlockNames[SelectedGame].Length);
+            IReadOnlyList<Chunk> blocks = CurrentSaveDataFile.Blocks;
+            Debug.Assert(CurrentSaveDataFile.Blocks.Count == BlockNames[SelectedGame].Length);
 
             Text = blocks[SelectedBlockIndex].ToString();
         }

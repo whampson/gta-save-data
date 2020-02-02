@@ -51,14 +51,14 @@ namespace GTASaveData.Tests.TestFramework
         }
 
         public static T Generate<T, U>()
-            where T : SaveDataObject
+            where T : Chunk
             where U : SaveDataObjectTestBase<T>
         {
             return Generate<T, U>(FileFormat.Unknown);
         }
 
         public static T Generate<T, U>(FileFormat format)
-            where T : SaveDataObject
+            where T : Chunk
             where U : SaveDataObjectTestBase<T>
         {
             var testGen = Activator.CreateInstance(typeof(U));

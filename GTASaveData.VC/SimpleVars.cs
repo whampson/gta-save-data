@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace GTASaveData.VC
 {
-    public sealed class SimpleVars : SaveDataObject,
+    public sealed class SimpleVars : Chunk,
         IEquatable<SimpleVars>
     {
         public static class Limits

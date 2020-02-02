@@ -183,7 +183,7 @@ namespace GTASaveData.GTA3
 
         public override string Name => SimpleVars.LastMissionPassedName;
 
-        public override IEnumerable<Chunk> Blocks => new Chunk[]
+        public override IReadOnlyList<Chunk> Blocks => new List<Chunk>
         {
             m_simpleVars,
             m_scripts,
@@ -206,7 +206,7 @@ namespace GTASaveData.GTA3
             m_stats,
             m_streaming,
             m_pedTypeInfo
-        };
+        }.AsReadOnly();
 
         protected override Dictionary<FileFormat, int> MaxBlockSize => new Dictionary<FileFormat, int>
         {
@@ -517,6 +517,46 @@ namespace GTASaveData.GTA3
             Debug.Assert(serializer.BaseStream.Position == TotalBlockDataSize + (blockCount * 4) + 4);
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public bool Equals(GTA3Save other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return m_simpleVars.Equals(other.m_simpleVars)
+                && m_scripts.Equals(other.m_scripts)
+                && m_pedPool.Equals(other.m_pedPool)
+                && m_garages.Equals(other.m_garages)
+                && m_vehicles.Equals(other.m_vehicles)
+                && m_objects.Equals(other.m_objects)
+                && m_pathFind.Equals(other.m_pathFind)
+                && m_cranes.Equals(other.m_cranes)
+                && m_pickups.Equals(other.m_pickups)
+                && m_phoneInfo.Equals(other.m_phoneInfo)
+                && m_restarts.Equals(other.m_restarts)
+                && m_radarBlips.Equals(other.m_radarBlips)
+                && m_zones.Equals(other.m_zones)
+                && m_gangData.Equals(other.m_gangData)
+                && m_carGenerators.Equals(other.m_carGenerators)
+                && m_particles.Equals(other.m_particles)
+                && m_audioScriptObjects.Equals(other.m_audioScriptObjects)
+                && m_playerInfo.Equals(other.m_playerInfo)
+                && m_stats.Equals(other.m_stats)
+                && m_streaming.Equals(other.m_streaming)
+                && m_pedTypeInfo.Equals(other.m_pedTypeInfo);
+        }
+
         protected override FileFormat DetectFileFormat(string path)
         {
             if (path == null)
@@ -597,80 +637,40 @@ namespace GTASaveData.GTA3
             return null;
         }
 
-        public override int GetHashCode()
+        public static class FileFormats
         {
-            return base.GetHashCode();
-        }
+            public static readonly FileFormat Android = new FileFormat(
+                "Android", ConsoleType.Android
+            );
 
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
-        }
+            public static readonly FileFormat IOS = new FileFormat(
+                "iOS", ConsoleType.IOS
+            );
 
-        public bool Equals(GTA3Save other)
-        {
-            if (other == null)
+            public static readonly FileFormat PC = new FileFormat(
+                "PC (Windows/macOS)", ConsoleType.PC
+            );
+
+            public static readonly FileFormat PS2AU = new FileFormat(
+                "PS2 (Australia)", ConsoleType.PS2, ConsoleFlags.Australia
+            );
+
+            public static readonly FileFormat PS2JP = new FileFormat(
+                "PS2 (Japan)", ConsoleType.PS2, ConsoleFlags.Japan
+            );
+
+            public static readonly FileFormat PS2NAEU = new FileFormat(
+                "PS2 (North America/Europe)", ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe
+            );
+
+            public static readonly FileFormat Xbox = new FileFormat(
+                "Xbox", ConsoleType.Xbox
+            );
+
+            public static FileFormat[] GetAll()
             {
-                return false;
+                return new FileFormat[] { Android, IOS, PC, PS2AU, PS2JP, PS2NAEU, Xbox };
             }
-
-            return m_simpleVars.Equals(other.m_simpleVars)
-                && m_scripts.Equals(other.m_scripts)
-                && m_pedPool.Equals(other.m_pedPool)
-                && m_garages.Equals(other.m_garages)
-                && m_vehicles.Equals(other.m_vehicles)
-                && m_objects.Equals(other.m_objects)
-                && m_pathFind.Equals(other.m_pathFind)
-                && m_cranes.Equals(other.m_cranes)
-                && m_pickups.Equals(other.m_pickups)
-                && m_phoneInfo.Equals(other.m_phoneInfo)
-                && m_restarts.Equals(other.m_restarts)
-                && m_radarBlips.Equals(other.m_radarBlips)
-                && m_zones.Equals(other.m_zones)
-                && m_gangData.Equals(other.m_gangData)
-                && m_carGenerators.Equals(other.m_carGenerators)
-                && m_particles.Equals(other.m_particles)
-                && m_audioScriptObjects.Equals(other.m_audioScriptObjects)
-                && m_playerInfo.Equals(other.m_playerInfo)
-                && m_stats.Equals(other.m_stats)
-                && m_streaming.Equals(other.m_streaming)
-                && m_pedTypeInfo.Equals(other.m_pedTypeInfo);
-        }
-    }
-
-    public static class FileFormats
-    {
-        public static readonly FileFormat Android = new FileFormat(
-            "Android", ConsoleType.Android
-        );
-
-        public static readonly FileFormat IOS = new FileFormat(
-            "iOS", ConsoleType.IOS
-        );
-
-        public static readonly FileFormat PC = new FileFormat(
-            "PC (Windows/macOS)", ConsoleType.PC
-        );
-
-        public static readonly FileFormat PS2AU = new FileFormat(
-            "PS2 (Australia)", ConsoleType.PS2, ConsoleFlags.Australia
-        );
-
-        public static readonly FileFormat PS2JP = new FileFormat(
-            "PS2 (Japan)", ConsoleType.PS2, ConsoleFlags.Japan
-        );
-
-        public static readonly FileFormat PS2NAEU = new FileFormat(
-            "PS2 (North America/Europe)", ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe
-        );
-
-        public static readonly FileFormat Xbox = new FileFormat(
-            "Xbox", ConsoleType.Xbox
-        );
-
-        public static FileFormat[] GetAll()
-        {
-            return new FileFormat[] { Android, IOS, PC, PS2AU, PS2JP, PS2NAEU, Xbox };
         }
     }
 }

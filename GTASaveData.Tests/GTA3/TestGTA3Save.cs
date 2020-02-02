@@ -55,7 +55,7 @@ namespace GTASaveData.Tests.GTA3
         [MemberData(nameof(FileFormatData))]
         public void FileTypeDetection(FileFormat expectedFileFormat, string filePath)
         {
-            FileFormat detected = GTA3Save.GetFileFormat(filePath);
+            FileFormat detected = SaveData.GetFileFormat<GTA3Save>(filePath);
 
             Assert.Equal(expectedFileFormat, detected);
         }

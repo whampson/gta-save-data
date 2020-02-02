@@ -51,7 +51,7 @@ namespace GTASaveData
 
         public abstract string Name { get; }
 
-        public abstract IEnumerable<Chunk> Blocks { get; }
+        public abstract IReadOnlyList<Chunk> Blocks { get; }
 
         protected abstract Dictionary<FileFormat, int> MaxBlockSize { get; }
 

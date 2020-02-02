@@ -4,7 +4,7 @@ using System;
 
 namespace GTASaveData.VC
 {
-    public sealed class CarGenerator : SaveDataObject,
+    public sealed class CarGenerator : Chunk,
         IEquatable<CarGenerator>
     {
         private int m_model;
