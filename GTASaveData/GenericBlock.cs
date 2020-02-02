@@ -1,4 +1,5 @@
 ﻿using GTASaveData.Serialization;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 
@@ -8,10 +9,16 @@ namespace GTASaveData
     {
         private DynamicArray<byte> m_data;
 
+        [JsonIgnore]
         public DynamicArray<byte> Data
         {
             get { return m_data; }
             set { m_data = value; OnPropertyChanged(); }
+        }
+
+        public byte[] Bytes
+        {
+            get { return m_data.ToArray(); }
         }
 
         public GenericBlock()
