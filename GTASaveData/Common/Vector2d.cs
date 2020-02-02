@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.Common
 {
-    public sealed class Vector2d : SaveDataObject,
+    public sealed class Vector2d : Chunk,
         IEquatable<Vector2d>
     {
         private float m_x;

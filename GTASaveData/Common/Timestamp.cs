@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.Common
 {
-    public sealed class Timestamp : SaveDataObject,
+    public sealed class Timestamp : Chunk,
         IEquatable<Timestamp>
     {
         private int m_year;

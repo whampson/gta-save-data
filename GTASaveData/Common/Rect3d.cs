@@ -4,7 +4,7 @@ using System;
 
 namespace GTASaveData.Common
 {
-    public sealed class Rect3d : SaveDataObject,
+    public sealed class Rect3d : Chunk,
         IEquatable<Rect3d>
     {
         private float m_xMin;

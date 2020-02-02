@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.Common
 {
-    public sealed class SystemTime : SaveDataObject,
+    public sealed class SystemTime : Chunk,
         IEquatable<SystemTime>
     {
         private ushort m_year;

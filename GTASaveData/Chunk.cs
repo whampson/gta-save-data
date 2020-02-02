@@ -8,8 +8,7 @@ namespace GTASaveData
     /// Represents an arbitrary data structure stored in a Grand Theft Auto
     /// save data file.
     /// </summary>
-    public abstract class SaveDataObject : ObservableObject,
-        IGTASerializable
+    public abstract class Chunk : ObservableObject, IGTASerializable
     {
         void IGTASerializable.WriteObjectData(SaveDataSerializer serializer, FileFormat format)
         {
