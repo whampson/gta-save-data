@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class ContactInfo : SaveDataObject,
+    public sealed class ContactInfo : Chunk,
         IEquatable<ContactInfo>
     {
         private int m_onAMissionFlag;

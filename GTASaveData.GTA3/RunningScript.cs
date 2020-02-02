@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class RunningScript : SaveDataObject,
+    public sealed class RunningScript : Chunk,
         IEquatable<RunningScript>
     {
         public static class Limits

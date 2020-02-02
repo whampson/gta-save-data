@@ -7,7 +7,7 @@ using WpfEssentials;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Scripts : SaveDataObject,
+    public sealed class Scripts : Chunk,
         IEquatable<Scripts>
     {
         public static class Limits

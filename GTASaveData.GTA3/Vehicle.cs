@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace GTASaveData.GTA3
 {
-    public abstract class Vehicle : SaveDataObject
+    public abstract class Vehicle : Chunk
     {
         protected ObservableCollection<byte> m_unknownArray0;
         protected Vector3d m_position;

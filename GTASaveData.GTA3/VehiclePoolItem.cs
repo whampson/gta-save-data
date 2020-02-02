@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class VehiclePoolItem : SaveDataObject,
+    public sealed class VehiclePoolItem : Chunk,
         IEquatable<VehiclePoolItem>
     {
         private bool m_isBoat;

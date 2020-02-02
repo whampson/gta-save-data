@@ -4,7 +4,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Pickup : SaveDataObject,
+    public sealed class Pickup : Chunk,
         IEquatable<Pickup>
     {
         private PickupType m_type;

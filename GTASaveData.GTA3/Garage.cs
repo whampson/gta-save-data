@@ -4,7 +4,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Garage : SaveDataObject,
+    public sealed class Garage : Chunk,
         IEquatable<Garage>
     {
         private GarageType m_type;

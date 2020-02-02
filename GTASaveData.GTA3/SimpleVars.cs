@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class SimpleVars : SaveDataObject,
+    public sealed class SimpleVars : Chunk,
         IEquatable<SimpleVars>
     {
         public static class Limits

@@ -5,7 +5,7 @@ using WpfEssentials;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class VehiclePool : SaveDataObject,
+    public sealed class VehiclePool : Chunk,
         IEquatable<VehiclePool>
     {
         private FullyObservableCollection<VehiclePoolItem> m_pool;

@@ -4,7 +4,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class StoredCar : SaveDataObject,
+    public sealed class StoredCar : Chunk,
         IEquatable<StoredCar>
     {
         private int m_modelId;          // TODO: enum

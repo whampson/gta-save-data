@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class InvisibilitySetting : SaveDataObject,
+    public sealed class InvisibilitySetting : Chunk,
         IEquatable<InvisibilitySetting>
     {
         private ObjectType m_type;

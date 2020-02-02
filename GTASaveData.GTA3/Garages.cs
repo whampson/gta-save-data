@@ -5,7 +5,7 @@ using WpfEssentials;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Garages : SaveDataObject,
+    public sealed class Garages : Chunk,
         IEquatable<Garages>
     {
         public static class Limits

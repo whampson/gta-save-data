@@ -9,7 +9,7 @@ using WpfEssentials;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Pickups : SaveDataObject,
+    public sealed class Pickups : Chunk,
         IEquatable<Pickups>
     {
         public static class Limits

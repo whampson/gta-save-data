@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class StoredCarSlot : SaveDataObject,
+    public sealed class StoredCarSlot : Chunk,
         IEquatable<StoredCarSlot>
     {
         private StoredCar m_portland;

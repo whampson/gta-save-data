@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class BuildingSwap : SaveDataObject,
+    public sealed class BuildingSwap : Chunk,
         IEquatable<BuildingSwap>
     {
         private ObjectType m_type;

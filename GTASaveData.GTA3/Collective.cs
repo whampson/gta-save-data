@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Collective : SaveDataObject,
+    public sealed class Collective : Chunk,
         IEquatable<Collective>
     {
         private int m_unknown0;
