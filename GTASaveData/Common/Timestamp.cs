@@ -3,8 +3,7 @@ using System;
 
 namespace GTASaveData.Common
 {
-    public sealed class Timestamp : Chunk,
-        IEquatable<Timestamp>
+    public class Timestamp : Chunk, IEquatable<Timestamp>
     {
         private int m_year;
         private int m_month;
@@ -91,11 +90,6 @@ namespace GTASaveData.Common
                 m_hour,
                 m_minute,
                 m_second);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
 
         public override bool Equals(object obj)

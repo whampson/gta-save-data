@@ -40,11 +40,6 @@ namespace GTASaveData
             serializer.Write(m_data.ToArray());
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         public override bool Equals(object obj)
         {
             return Equals(obj as GenericBlock);

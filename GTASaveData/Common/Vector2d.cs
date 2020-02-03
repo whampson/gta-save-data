@@ -1,10 +1,10 @@
 ﻿using GTASaveData.Serialization;
+using Newtonsoft.Json;
 using System;
 
 namespace GTASaveData.Common
 {
-    public sealed class Vector2d : Chunk,
-        IEquatable<Vector2d>
+    public class Vector2d : Chunk, IEquatable<Vector2d>
     {
         private float m_x;
         private float m_y;
@@ -21,6 +21,12 @@ namespace GTASaveData.Common
             set { m_y = value; OnPropertyChanged(); }
         }
 
+        [JsonIgnore]
+        public double Magnitude
+        {
+            get { return Math.Sqrt((m_x * m_x) + (m_y * m_y)); }
+        }
+
         public Vector2d()
         { }
 
@@ -34,11 +40,6 @@ namespace GTASaveData.Common
         {
             serializer.Write(m_x);
             serializer.Write(m_y);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
 
         public override bool Equals(object obj)

@@ -4,8 +4,7 @@ using System;
 
 namespace GTASaveData.Common
 {
-    public sealed class Rect3d : Chunk,
-        IEquatable<Rect3d>
+    public class Rect3d : Chunk, IEquatable<Rect3d>
     {
         private float m_xMin;
         private float m_xMax;
@@ -92,7 +91,6 @@ namespace GTASaveData.Common
             }
         }
 
-
         public Rect3d()
         { }
 
@@ -114,11 +112,6 @@ namespace GTASaveData.Common
             serializer.Write(m_yMax);
             serializer.Write(m_zMin);
             serializer.Write(m_zMax);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
 
         public override bool Equals(object obj)

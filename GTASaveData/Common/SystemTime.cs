@@ -3,8 +3,7 @@ using System;
 
 namespace GTASaveData.Common
 {
-    public sealed class SystemTime : Chunk,
-        IEquatable<SystemTime>
+    public class SystemTime : Chunk, IEquatable<SystemTime>
     {
         private ushort m_year;
         private ushort m_month;
@@ -112,11 +111,6 @@ namespace GTASaveData.Common
                 m_minute,
                 m_second,
                 m_millisecond);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
 
         public override bool Equals(object obj)
