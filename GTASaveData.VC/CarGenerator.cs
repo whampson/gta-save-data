@@ -168,20 +168,20 @@ namespace GTASaveData.VC
                 return false;
             }
 
-            return m_model.Equals(m_model)
-                && m_position.Equals(m_position)
-                && m_heading.Equals(m_heading)
-                && m_color1.Equals(m_color1)
-                && m_color2.Equals(m_color2)
-                && m_forceSpawn.Equals(m_forceSpawn)
-                && m_alarmChance.Equals(m_alarmChance)
-                && m_lockChance.Equals(m_lockChance)
-                && m_minDelay.Equals(m_minDelay)
-                && m_maxDelay.Equals(m_maxDelay)
-                && m_timer.Equals(m_timer)
-                && m_vehiclePoolIndex.Equals(m_vehiclePoolIndex)
-                && m_generate.Equals(m_generate)
-                && m_hasRecentlyBeenStolen.Equals(m_hasRecentlyBeenStolen);
+            return m_model.Equals(other.m_model)
+                && m_position.Equals(other.m_position)
+                && m_heading.Equals(other.m_heading)
+                && m_color1.Equals(other.m_color1)
+                && m_color2.Equals(other.m_color2)
+                && m_forceSpawn.Equals(other.m_forceSpawn)
+                && m_alarmChance.Equals(other.m_alarmChance)
+                && m_lockChance.Equals(other.m_lockChance)
+                && m_minDelay.Equals(other.m_minDelay)
+                && m_maxDelay.Equals(other.m_maxDelay)
+                && m_timer.Equals(other.m_timer)
+                && m_vehiclePoolIndex.Equals(other.m_vehiclePoolIndex)
+                && m_generate.Equals(other.m_generate)
+                && m_hasRecentlyBeenStolen.Equals(other.m_hasRecentlyBeenStolen);
         }
 
     }
