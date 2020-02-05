@@ -122,8 +122,8 @@ namespace GTASaveData.VC
             m_alarmChance = r.ReadByte();
             m_lockChance = r.ReadByte();
             r.Align();
-            m_minDelay = r.ReadInt16();
-            m_maxDelay = r.ReadInt16();
+            m_minDelay = r.ReadUInt16();
+            m_maxDelay = r.ReadUInt16();
             m_timer = r.ReadInt32();
             m_vehiclePoolIndex = r.ReadInt32();
             m_generate = r.ReadBool(2);
@@ -149,11 +149,6 @@ namespace GTASaveData.VC
             w.Write(m_generate, 2);
             w.Write(m_hasRecentlyBeenStolen);
             w.Align();
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
 
         public override bool Equals(object obj)

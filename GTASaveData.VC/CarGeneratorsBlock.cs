@@ -77,11 +77,6 @@ namespace GTASaveData.VC
             w.WriteArray(m_carGenerators.ToArray(), Limits.CarGeneratorsCount);
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         public override bool Equals(object obj)
         {
             return Equals(obj as CarGeneratorsBlock);

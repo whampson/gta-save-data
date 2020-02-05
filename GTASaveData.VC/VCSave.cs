@@ -468,11 +468,6 @@ namespace GTASaveData.VC
             Debug.Assert(serializer.BaseStream.Position == TotalBlockDataSize + (blockCount * 4) + 4);
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         public override bool Equals(object obj)
         {
             return base.Equals(obj);
