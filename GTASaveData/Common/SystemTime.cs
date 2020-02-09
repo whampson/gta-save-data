@@ -77,28 +77,28 @@ namespace GTASaveData.Common
             m_millisecond = (ushort) dateTime.Millisecond;
         }
 
-        private SystemTime(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_year = serializer.ReadUInt16();
-            m_month = serializer.ReadUInt16();
-            m_dayOfWeek = serializer.ReadUInt16();
-            m_day = serializer.ReadUInt16();
-            m_hour = serializer.ReadUInt16();
-            m_minute = serializer.ReadUInt16();
-            m_second = serializer.ReadUInt16();
-            m_millisecond = serializer.ReadUInt16();
+            m_year = r.ReadUInt16();
+            m_month = r.ReadUInt16();
+            m_dayOfWeek = r.ReadUInt16();
+            m_day = r.ReadUInt16();
+            m_hour = r.ReadUInt16();
+            m_minute = r.ReadUInt16();
+            m_second = r.ReadUInt16();
+            m_millisecond = r.ReadUInt16();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write(m_year);
-            serializer.Write(m_month);
-            serializer.Write(m_dayOfWeek);
-            serializer.Write(m_day);
-            serializer.Write(m_hour);
-            serializer.Write(m_minute);
-            serializer.Write(m_second);
-            serializer.Write(m_millisecond);
+            w.Write(m_year);
+            w.Write(m_month);
+            w.Write(m_dayOfWeek);
+            w.Write(m_day);
+            w.Write(m_hour);
+            w.Write(m_minute);
+            w.Write(m_second);
+            w.Write(m_millisecond);
         }
 
         public DateTime ToDateTime()

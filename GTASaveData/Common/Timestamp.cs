@@ -61,24 +61,24 @@ namespace GTASaveData.Common
             m_year = dateTime.Year;
         }
 
-        private Timestamp(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_second = serializer.ReadInt32();
-            m_minute = serializer.ReadInt32();
-            m_hour = serializer.ReadInt32();
-            m_day = serializer.ReadInt32();
-            m_month = serializer.ReadInt32();
-            m_year = serializer.ReadInt32();
+            m_second = r.ReadInt32();
+            m_minute = r.ReadInt32();
+            m_hour = r.ReadInt32();
+            m_day = r.ReadInt32();
+            m_month = r.ReadInt32();
+            m_year = r.ReadInt32();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write(m_second);
-            serializer.Write(m_minute);
-            serializer.Write(m_hour);
-            serializer.Write(m_day);
-            serializer.Write(m_month);
-            serializer.Write(m_year);
+            w.Write(m_second);
+            w.Write(m_minute);
+            w.Write(m_hour);
+            w.Write(m_day);
+            w.Write(m_month);
+            w.Write(m_year);
         }
 
         public DateTime ToDateTime()

@@ -3,32 +3,32 @@
 namespace GTASaveData.Serialization
 {
     /// <summary>
-    /// Represents an error that occurs during object serialization.
+    /// Represents an error that occurs during save data serialization.
     /// </summary>
-    public class SaveDataSerializationException : Exception
+    public class SerializationException : Exception
     {
         /// <summary>
-        /// Creates a new <see cref="SaveDataSerializationException"/> instance.
+        /// Creates a new <see cref="SerializationException"/> instance.
         /// </summary>
-        public SaveDataSerializationException()
+        public SerializationException()
         { }
 
         /// <summary>
-        /// Creates a new <see cref="SaveDataSerializationException"/> instance
+        /// Creates a new <see cref="SerializationException"/> instance
         /// with the specified message.
         /// </summary>
         /// <param name="message">A message describing the error.</param>
-        public SaveDataSerializationException(string message)
+        public SerializationException(string message)
             : base(message)
         { }
 
         /// <summary>
-        /// Creates a new <see cref="SaveDataSerializationException"/> instance
+        /// Creates a new <see cref="SerializationException"/> instance
         /// with the specified message.
         /// </summary>
         /// <param name="message">A message describing the error.</param>
         /// <param name="innerException">The <see cref="Exception"/> that caused the error.</param>
-        public SaveDataSerializationException(string message, Exception innerException)
+        public SerializationException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

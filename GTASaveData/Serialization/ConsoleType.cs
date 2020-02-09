@@ -16,7 +16,11 @@ namespace GTASaveData.Serialization
         PS3,
         PSP,
         Xbox,
-        Xbox360
+        Xbox360,
+
+
+        //MacOS,
+        //Windows
     }
 
     /// <summary>

@@ -1,5 +1,4 @@
 ﻿using GTASaveData.Serialization;
-using Newtonsoft.Json;
 using System;
 
 namespace GTASaveData.Common
@@ -49,69 +48,27 @@ namespace GTASaveData.Common
             set { m_zMax = value; OnPropertyChanged(); }
         }
 
-        [JsonIgnore]
-        public Vector3d MinCoord
-        {
-            get
-            { 
-                return new Vector3d() { X = m_xMin, Y = m_yMin, Z = m_zMin };
-            }
-            
-            set
-            {
-                if (value == null)
-                {
-                    value = new Vector3d();
-                }
-
-                m_xMin = value.X;
-                m_yMin = value.Y;
-                m_zMin = value.Z;
-            }
-        }
-
-        [JsonIgnore]
-        public Vector3d MaxCoord
-        {
-            get
-            {
-                return new Vector3d() { X = m_xMax, Y = m_yMax, Z = m_zMax };
-            }
-
-            set
-            {
-                if (value == null)
-                {
-                    value = new Vector3d();
-                }
-
-                m_xMax = value.X;
-                m_yMax = value.Y;
-                m_zMax = value.Z;
-            }
-        }
-
         public Rect3d()
         { }
 
-        private Rect3d(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_xMin = serializer.ReadSingle();
-            m_xMax = serializer.ReadSingle();
-            m_yMin = serializer.ReadSingle();
-            m_yMax = serializer.ReadSingle();
-            m_zMin = serializer.ReadSingle();
-            m_zMax = serializer.ReadSingle();
+            m_xMin = r.ReadSingle();
+            m_xMax = r.ReadSingle();
+            m_yMin = r.ReadSingle();
+            m_yMax = r.ReadSingle();
+            m_zMin = r.ReadSingle();
+            m_zMax = r.ReadSingle();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write(m_xMin);
-            serializer.Write(m_xMax);
-            serializer.Write(m_yMin);
-            serializer.Write(m_yMax);
-            serializer.Write(m_zMin);
-            serializer.Write(m_zMax);
+            w.Write(m_xMin);
+            w.Write(m_xMax);
+            w.Write(m_yMin);
+            w.Write(m_yMax);
+            w.Write(m_zMin);
+            w.Write(m_zMax);
         }
 
         public override bool Equals(object obj)

@@ -57,7 +57,7 @@ namespace GTASaveData
         }
 
         protected Array(List<T> items)
-            : this((IEnumerable<T>)items)
+            : this((IEnumerable<T>) items)
         { }
 
         private void Populate(int count)

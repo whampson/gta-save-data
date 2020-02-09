@@ -1,4 +1,4 @@
-﻿namespace GTASaveData.Helpers
+﻿namespace GTASaveData
 {
     /// <summary>
     /// A byte array wrapper, made purely so byte[] can be manipulated as an object.

@@ -30,16 +30,16 @@ namespace GTASaveData.Common
         public Vector2d()
         { }
 
-        private Vector2d(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_x = serializer.ReadSingle();
-            m_y = serializer.ReadSingle();
+            m_x = r.ReadSingle();
+            m_y = r.ReadSingle();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write(m_x);
-            serializer.Write(m_y);
+            w.Write(m_x);
+            w.Write(m_y);
         }
 
         public override bool Equals(object obj)

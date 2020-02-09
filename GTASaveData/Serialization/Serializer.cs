@@ -8,26 +8,25 @@ using System.Text;
 namespace GTASaveData.Serialization
 {
     /// <summary>
-    /// Handles the reading and writing of binary data in a format suitable
-    /// for GTA savedata files.
+    /// Handles the reading and writing of the binary data stored within Grand Theft Auto save data files.
     /// </summary>
-    public sealed class SaveDataSerializer : IDisposable
+    public sealed class Serializer : IDisposable
     {
         /// <summary>
         /// Creates an object from the data stored in a byte array.
         /// </summary>
         /// <typeparam name="T">The type of object to create.</typeparam>
         /// <param name="buffer">The byte array containing serialized object data.</param>
-        /// <param name="format">The format of the data.</param>
+        /// <param name="format">The format of the data, if applicable</param>
         /// <returns>An object of type <typeparamref name="T"/>.</returns>
-        public static T Deserialize<T>(byte[] buffer, FileFormat format = null)
+        public static T Read<T>(byte[] buffer, FileFormat format = null)
         {
             if (buffer == null)
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
 
-            using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(buffer)))
+            using (Serializer s = new Serializer(new MemoryStream(buffer)))
             {
                 return s.GenericRead<T>(format, 0, false);
             }
@@ -38,14 +37,11 @@ namespace GTASaveData.Serialization
         /// </summary>
         /// <typeparam name="T">The type of object to serialize.</typeparam>
         /// <param name="obj">The object to serialize.</param>
-        /// <param name="format">The serialization format.</param>
+        /// <param name="format">The serialization format, if applicable.</param>
         /// <param name="padding">The <see cref="Serialization.PaddingMode"/> to use for alignment.</param>
         /// <param name="paddingSequence">The sequence of bytes to use when the padding mode is <see cref="PaddingMode.Sequence"/>.</param>
         /// <returns>A byte array containing the serialized object data.</returns>
-        public static byte[] Serialize<T>(T obj,
-            FileFormat format = null,
-            PaddingMode padding = PaddingMode.Zeros,
-            byte[] paddingSequence = null)
+        public static byte[] Write<T>(T obj, FileFormat format = null, PaddingMode padding = PaddingMode.Zeros, byte[] paddingSequence = null)
         {
             if (obj == null)
             {
@@ -54,7 +50,7 @@ namespace GTASaveData.Serialization
 
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m, padding, paddingSequence))
+                using (Serializer s = new Serializer(m, padding, paddingSequence))
                 {
                     s.GenericWrite(obj, format, 0, false);
                 }
@@ -63,6 +59,7 @@ namespace GTASaveData.Serialization
             }
         }
 
+        // TODO: test method
         /// <summary>
         /// Aligns an address to the next multiple of the specified word size.
         /// </summary>
@@ -87,11 +84,10 @@ namespace GTASaveData.Serialization
         private byte[] m_paddingSequence;
 
         /// <summary>
-        /// Creates a new <see cref="SaveDataSerializer"/> using the specified
-        /// stream as the serialization endpoint.
+        /// Creates a new <see cref="Serializer"/> using the specified stream as the serialization endpoint.
         /// </summary>
         /// <param name="baseStream">A readable and writable data stream.</param>
-        public SaveDataSerializer(Stream baseStream)
+        public Serializer(Stream baseStream)
         {
             if (baseStream == null)
             {
@@ -109,17 +105,16 @@ namespace GTASaveData.Serialization
         }
 
         /// <summary>
-        /// Creates a new <see cref="SaveDataSerializer"/> using the specified
-        /// stream as the serialization endpoint.
+        /// Creates a new <see cref="Serializer"/> using the specified stream as the serialization endpoint.
         /// </summary>
         /// <param name="baseStream">A readable and writable data stream.</param>
         /// <param name="paddingMode">The <see cref="Serialization.PaddingMode"/> to use for alignment.</param>
         /// <param name="paddingSequence">The sequence of bytes to use if the padding mode is set to <see cref="PaddingMode.Sequence"/>.</param>
-        public SaveDataSerializer(Stream baseStream, PaddingMode paddingMode, byte[] paddingSequence = null)
+        public Serializer(Stream baseStream, PaddingMode paddingMode, byte[] paddingSequence = null)
             : this(baseStream)
         {
-            PaddingMode = paddingMode;
-            PaddingSequence = paddingSequence;
+            m_paddingMode = paddingMode;
+            PaddingSequence = paddingSequence;      // use setter to handle null case
         }
 
         /// <summary>
@@ -156,8 +151,7 @@ namespace GTASaveData.Serialization
         }
 
         /// <summary>
-        /// Aligns the current position in the serialization stream to a multiple
-        /// of the specified word size.
+        /// Aligns the current position in the serialization stream to a multiple of the specified word size.
         /// </summary>
         /// <param name="wordSize">The word size to align to. Note: must be a power of 2.</param>
         public void Align(int wordSize = 4)
@@ -381,38 +375,13 @@ namespace GTASaveData.Serialization
         /// <typeparam name="T">The type of object to read.</typeparam>
         /// <param name="format">The data format.</param>
         /// <returns>An object.</returns>
-        /// <exception cref="SaveDataSerializationException">Thrown if an error occurs during deserialization.</exception>
-        public T ReadObject<T>(FileFormat format = null)
+        /// <exception cref="SerializationException">Thrown if an error occurs during deserialization.</exception>
+        public T ReadChunk<T>(FileFormat format = null) where T : IChunk, new()
         {
-            const BindingFlags CtorFlags = BindingFlags.Public
-                | BindingFlags.NonPublic
-                | BindingFlags.Instance
-                | BindingFlags.CreateInstance;
+            T obj = new T();
+            obj.ReadObjectData(this, format ?? FileFormat.Unknown);
 
-            ConstructorInfo ctor0 = typeof(T).GetConstructor(
-                CtorFlags,
-                null,
-                new[] { typeof(SaveDataSerializer), typeof(FileFormat) },
-                null
-            );
-            ConstructorInfo ctor1 = typeof(T).GetConstructor(
-                CtorFlags,
-                null,
-                new[] { typeof(SaveDataSerializer) },
-                null
-            );
-
-            if (ctor0 != null)
-            {
-                return (T) ctor0.Invoke(new object[] { this, format ?? FileFormat.Unknown });
-            }
-            if (ctor1 != null)
-            {
-                return (T) ctor1.Invoke(new object[] { this });
-            }
-
-            throw new SaveDataSerializationException(
-                   string.Format("The type '{0}' does not implement a de-serialization constructor.", typeof(T).Name));
+            return obj;
         }
 
         /// <summary>
@@ -598,20 +567,14 @@ namespace GTASaveData.Serialization
         /// <summary>
         /// Writes a string.
         /// </summary>
-        /// <remarks>
-        /// </remarks>
-        /// <param name="value">
-        /// The string to write.
-        /// </param>
+        /// <param name="value">The string to write.</param>
         /// <param name="length">
         /// The number of characters to write. The string will be truncated if this value is less than
         /// the string's length. The string will be zero-padded on the right side if this value exceeds
         /// the string's length. If this value is null, the string will be written in its entirety and
         /// a null teminator will be appended.
         /// </param>
-        /// <param name="unicode">
-        /// A value indicating whether to write Unicode characters.
-        /// </param>
+        /// <param name="unicode">A value indicating whether to write Unicode characters.</param>
         /// <param name="zeroTerminate">
         /// A value indicating whether to terminate the string with a null character (C-style).
         /// If the length is unspecified, the null character will be added to the end of the
@@ -623,8 +586,6 @@ namespace GTASaveData.Serialization
             bool unicode = false,
             bool zeroTerminate = true)
         {
-            // TODO: rewrite/cleanup for new padding scheme
-
             Encoding encoding = (unicode)
                 ? Encoding.Unicode
                 : Encoding.ASCII;
@@ -664,71 +625,34 @@ namespace GTASaveData.Serialization
         /// <summary>
         /// Writes an object.
         /// </summary>
+        /// <remarks>
+        /// The object type must implement the <see cref="IChunk"/> interface
+        /// and specify its serialization.
+        /// </remarks>
         /// <typeparam name="T">The type of object to write.</typeparam>
         /// <param name="value">The object to write</param>
         /// <param name="format">The data format.</param>
-        /// <exception cref="SaveDataSerializationException">Thrown if an error occurs during serialization.</exception>
-        public void WriteObject<T>(T value, FileFormat format = null)
+        /// <exception cref="SerializationException">Thrown if an error occurs during serialization.</exception>
+        public void Write<T>(T value, FileFormat format = null) where T : IChunk
         {
-            const string MethodName = nameof(IGTASerializable.WriteObjectData);
-            const BindingFlags MethodFlags = BindingFlags.Public
-                | BindingFlags.NonPublic
-                | BindingFlags.Instance
-                | BindingFlags.FlattenHierarchy;
-
-            MethodInfo method0 = typeof(T).GetMethod(
-                MethodName,
-                MethodFlags,
-                null,
-                new Type[] { typeof(SaveDataSerializer), typeof(FileFormat) },
-                null
-            );
-            MethodInfo method1 = typeof(T).GetMethod(
-                MethodName,
-                MethodFlags,
-                null,
-                new Type[] { typeof(SaveDataSerializer) },
-                null
-            );
-
-            if (method0 != null)
-            {
-                method0.Invoke(value, new object[] { this, format ?? FileFormat.Unknown });
-            }
-            else if (method1 != null)
-            {
-                method1.Invoke(value, new object[] { this });
-            }
-            else
-            {
-                throw new SaveDataSerializationException(
-                    string.Format("The type '{0}' does not implement a serialization function.", typeof(T).Name));
-            }
+            value.WriteObjectData(this, format ?? FileFormat.Unknown);
         }
 
         /// <summary>
         /// Writes a collection as a contiguous sequence of bytes.
         /// </summary>
-        /// <typeparam name="T">
-        /// The element type.
-        /// </typeparam>
-        /// <param name="items">
-        /// The items to write.
-        /// </param>
+        /// <typeparam name="T">The element type.</typeparam>
+        /// <param name="items">The items to write.</param>
         /// <param name="count">
         /// The number of items to write. Use null to write all elements. If the count is larger than
         /// the collection length, default values will be written until 'count' elements are written.
         /// </param>
-        /// <param name="format">
-        /// The data format.
-        /// </param>
+        /// <param name="format">The data format.</param>
         /// <param name="itemLength">
         /// The length of each item. Note: only applies to <see cref="bool"/> and <see cref="string"/> types.
         /// </param>
-        /// <param name="unicode">
-        /// A value indicating whether to write unicode characters.
-        /// </param>
-        public void WriteArray<T>(T[] items,
+        /// <param name="unicode">A value indicating whether to write unicode characters.</param>
+        public void Write<T>(T[] items,
             int? count = null,
             FileFormat format = null,
             int itemLength = 0,
@@ -853,13 +777,18 @@ namespace GTASaveData.Serialization
             }
             else if (t == typeof(string))
             {
-                ret = (length == 0)
-                    ? ReadString(unicode)
-                    : ReadString(length, unicode);
+                ret = (length == 0) ? ReadString(unicode) : ReadString(length, unicode);
+            }
+            else if (t.GetInterface(nameof(IChunk)) != null)
+            {
+                // TODO: test
+                MethodInfo readChunk = GetType().GetMethod(nameof(ReadChunk)).MakeGenericMethod(t);
+                ret = readChunk.Invoke(this, new object[] { format });
             }
             else
             {
-                ret = ReadObject<T>(format);
+                // TODO: exception
+                throw new InvalidOperationException();
             }
 
             return (T) ret;
@@ -929,9 +858,14 @@ namespace GTASaveData.Serialization
             {
                 Write(Convert.ToString(value), length, unicode);
             }
+            else if (t.GetInterface(nameof(IChunk)) != null)
+            {
+                Write((IChunk) value, format);
+            }
             else
             {
-                WriteObject(value, format);
+                // TODO: exception
+                throw new InvalidOperationException();
             }
         }
 

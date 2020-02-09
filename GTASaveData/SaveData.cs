@@ -1,5 +1,4 @@
-﻿using GTASaveData.Helpers;
-using GTASaveData.Serialization;
+﻿using GTASaveData.Serialization;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,7 +28,7 @@ namespace GTASaveData
 
         /// <summary>
         /// Gets or sets the padding sequence used when storing this
-        /// file's data to disk. Note that the <see cref="FilePaddingMode"/>
+        /// file's data to disk. Note that <see cref="FilePaddingMode"/>
         /// must be set to <see cref="PaddingMode.Sequence"/> for this
         /// property to have an effect.
         /// </summary>
@@ -39,39 +38,64 @@ namespace GTASaveData
             set { m_paddingSequence = value; OnPropertyChanged(); }
         }
 
+        // TODO: elaborate on conversion limitations
         /// <summary>
-        /// Gets or sets the current <see cref="Serialization.FileFormat"/>.
+        /// Gets or sets the current <see cref="Serialization.FileFormat"/>. This controls
+        /// which game system a save file is formatted for. NOTE: this will not necessarily
+        /// allow you to convert saves from one platform to another.
         /// </summary>
         [JsonIgnore]
         public FileFormat FileFormat
         {
             get { return m_fileFormat; }
-            protected set { m_fileFormat = value; OnPropertyChanged(); }
+            set { m_fileFormat = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Gets the name of this save.
+        /// </summary>
         public abstract string Name { get; }
 
+        /// <summary>
+        /// Gets a collection containing each section of the save.
+        /// </summary>
         public abstract IReadOnlyList<Chunk> Blocks { get; }
 
+        /// <summary>
+        /// Gets a dictionary associating file formats with their maximum-allowed block sizes.
+        /// </summary>
         protected abstract Dictionary<FileFormat, int> MaxBlockSize { get; }
 
+        /// <summary>
+        /// Gets a dictionary associating file formats with their SimpleVars sizes.
+        /// </summary>
         protected abstract Dictionary<FileFormat, int> SimpleVarsSize { get; }
 
         /// <summary>
-        /// Creates a new <see cref="SaveDataSerializer"/> object.
+        /// Creates a new <see cref="Serializer"/> object.
         /// </summary>
         protected SaveData()
         {
             m_paddingMode = PaddingMode.Zeros;
             m_paddingSequence = null;
-            m_fileFormat = FileFormat.Unknown;
+            m_fileFormat = null;
         }
 
+        /// <summary>
+        /// Gets the number of blocks in a save file.
+        /// </summary>
+        /// <param name="path">The path to the save file.</param>
+        /// <returns>The number of data blocks, should be nonzero if the file is valid.</returns>
         public static int GetBlockCount(string path)
         {
             return GetBlockCount(File.ReadAllBytes(path));
         }
 
+        /// <summary>
+        /// Gets the number of blocks in a save file.
+        /// </summary>
+        /// <param name="data">The save file data.</param>
+        /// <returns>The number of data blocks, should be nonzero if the file is valid.</returns>
         public static int GetBlockCount(byte[] data)
         {
             if (data == null)
@@ -81,7 +105,7 @@ namespace GTASaveData
 
             using (MemoryStream m = new MemoryStream(data))
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
                     int count = 0;
                     do
@@ -105,55 +129,63 @@ namespace GTASaveData
             return new T().DetectFileFormat(path);
         }
 
-        public static T LoadFromFile<T>(string path) where T : SaveData, new()
+        public static T Load<T>(string path) where T : SaveData, new()
         {
-            return LoadFromFile<T>(path, GetFileFormat<T>(path));
+            return Load<T>(path, GetFileFormat<T>(path));
         }
 
-        public static T LoadFromFile<T>(string path, FileFormat format) where T : SaveData, new()
+        public static T Load<T>(string path, FileFormat format) where T : SaveData, new()
         {
-            if (path == null || format == null)
+            if (path == null)
             {
                 return null;
             }
 
-            Debug.WriteLine("Loading {0}, format {1}", typeof(T).Name, format.DisplayName);
-            Debug.WriteLine("File has {0} blocks.", GetBlockCount(path));
+            return Load<T>(File.ReadAllBytes(path), format);
+        }
 
-            byte[] data = File.ReadAllBytes(path);
+        public static T Load<T>(byte[] data, FileFormat format) where T : SaveData, new()
+        {
+            if (data == null || format == null)
+            {
+                return null;
+            }
+
+            Debug.WriteLine("Loading {0}, format: {1}", typeof(T).Name, format.DisplayName);
+            Debug.WriteLine("Save data has {0} blocks.", GetBlockCount(data));
+
             using (MemoryStream m = new MemoryStream(data))
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
-                    return s.ReadObject<T>(format);
+                    return s.ReadChunk<T>(format);
                 }
             }
         }
 
         /// <summary>
-        /// Writes all data to a file on disk using the specified <see cref="Serialization.FileFormat"/>.
+        /// Writes all data to a file on disk according to the current <see cref="FileFormat"/>.
         /// </summary>
-        /// <param name="path">The path to the file to write.</param>
-        /// <param name="format">The file format to write.</param>
-        public void Write(string path, FileFormat format)
+        /// <param name="path">The path to the file to write. The file will be overwritten if it exists.</param>
+        public void Store(string path)
         {
-            byte[] data = Serialize(this, format);
+            byte[] data = Serialize(this, m_fileFormat);
             File.WriteAllBytes(path, data);
         }
 
         protected T Deserialize<T>(byte[] buffer, FileFormat format = null)
         {
-            return SaveDataSerializer.Deserialize<T>(buffer, format);
+            return Serializer.Read<T>(buffer, format);
         }
 
         protected byte[] Serialize<T>(T obj, FileFormat format = null)
         {
-            return SaveDataSerializer.Serialize(obj, format, m_paddingMode, m_paddingSequence);
+            return Serializer.Write(obj, format, m_paddingMode, m_paddingSequence);
         }
 
-        protected SaveDataSerializer CreateSerializer(Stream baseStream)
+        protected Serializer CreateSerializer(Stream baseStream)
         {
-            return new SaveDataSerializer(baseStream, m_paddingMode, m_paddingSequence);
+            return new Serializer(baseStream, m_paddingMode, m_paddingSequence);
         }
  
         protected virtual byte[] CreateBlock(params ByteBuffer[] chunks)
@@ -165,7 +197,7 @@ namespace GTASaveData
         {
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = CreateSerializer(m))
+                using (Serializer s = CreateSerializer(m))
                 {
                     WriteBlock(s, tag, chunks);
                 }
@@ -178,7 +210,7 @@ namespace GTASaveData
         {
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = CreateSerializer(m))
+                using (Serializer s = CreateSerializer(m))
                 {
                     s.WritePadding(length);
                 }
@@ -187,7 +219,7 @@ namespace GTASaveData
             }
         }
 
-        protected virtual ByteBuffer ReadBlock(SaveDataSerializer s, string tag = null)
+        protected virtual ByteBuffer ReadBlock(Serializer s, string tag = null)
         {
             int length = s.ReadInt32();
             Debug.WriteLineIf(length > MaxBlockSize[FileFormat], "Maximum allowed block size exceeded!");
@@ -207,7 +239,7 @@ namespace GTASaveData
             return data;
         }
 
-        protected virtual int WriteBlock(SaveDataSerializer s, string tag, params ByteBuffer[] chunks)
+        protected virtual int WriteBlock(Serializer s, string tag, params ByteBuffer[] chunks)
         {
             long mark = s.BaseStream.Position;
 
