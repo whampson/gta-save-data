@@ -3,20 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GTASaveData", "GTASaveData\GTASaveData.csproj", "{B12F8E99-E6DD-4E94-8D45-8D7B63990475}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GTASaveData.GTA3", "GTASaveData.GTA3\GTASaveData.GTA3.csproj", "{1F301798-F654-4870-B3DA-8DF601F7F675}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GTASaveData.Tests", "GTASaveData.Tests\GTASaveData.Tests.csproj", "{9F026C01-44B2-4E83-88B8-0A070A906D92}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "TestApp\TestApp.csproj", "{F492A697-1B83-4562-9C9E-3579272EDDDA}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D7C6EF9E-F2BD-49AE-BE4D-AF27F36FFE39}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTASaveData.VC", "GTASaveData.VC\GTASaveData.VC.csproj", "{954F96C9-71B3-4C64-837C-A156F05D40E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GTASaveData.Core", "GTASaveData.Core\GTASaveData.Core.csproj", "{B12F8E99-E6DD-4E94-8D45-8D7B63990475}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GTASaveData.Core.Tests", "Tests\GTASaveData.Core.Tests\GTASaveData.Core.Tests.csproj", "{212B2E3C-3C9D-47F9-B7D8-DD06D43A9B90}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GTASaveData.GTA3", "GTASaveData.GTA3\GTASaveData.GTA3.csproj", "{1F301798-F654-4870-B3DA-8DF601F7F675}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GTASaveData.GTA3.Tests", "Tests\GTASaveData.GTA3.Tests\GTASaveData.GTA3.Tests.csproj", "{7BB615EE-5D10-4F32-A047-453595B427A7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GTASaveData.VC", "GTASaveData.VC\GTASaveData.VC.csproj", "{954F96C9-71B3-4C64-837C-A156F05D40E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTASaveData.VC.Tests", "Tests\GTASaveData.VC.Tests\GTASaveData.VC.Tests.csproj", "{7D1F9BCF-FAA9-4359-96A1-31733EE1CE86}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "Tests\TestApp\TestApp.csproj", "{F492A697-1B83-4562-9C9E-3579272EDDDA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestFramework", "Tests\TestFramework\TestFramework.csproj", "{A66EF29A-3F17-4B30-B9DB-D44CCDA08F40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,18 +38,30 @@ Global
 		{1F301798-F654-4870-B3DA-8DF601F7F675}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F301798-F654-4870-B3DA-8DF601F7F675}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F301798-F654-4870-B3DA-8DF601F7F675}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9F026C01-44B2-4E83-88B8-0A070A906D92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9F026C01-44B2-4E83-88B8-0A070A906D92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9F026C01-44B2-4E83-88B8-0A070A906D92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9F026C01-44B2-4E83-88B8-0A070A906D92}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F492A697-1B83-4562-9C9E-3579272EDDDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F492A697-1B83-4562-9C9E-3579272EDDDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F492A697-1B83-4562-9C9E-3579272EDDDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F492A697-1B83-4562-9C9E-3579272EDDDA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{954F96C9-71B3-4C64-837C-A156F05D40E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{954F96C9-71B3-4C64-837C-A156F05D40E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{954F96C9-71B3-4C64-837C-A156F05D40E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{954F96C9-71B3-4C64-837C-A156F05D40E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{212B2E3C-3C9D-47F9-B7D8-DD06D43A9B90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{212B2E3C-3C9D-47F9-B7D8-DD06D43A9B90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{212B2E3C-3C9D-47F9-B7D8-DD06D43A9B90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{212B2E3C-3C9D-47F9-B7D8-DD06D43A9B90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F492A697-1B83-4562-9C9E-3579272EDDDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F492A697-1B83-4562-9C9E-3579272EDDDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F492A697-1B83-4562-9C9E-3579272EDDDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F492A697-1B83-4562-9C9E-3579272EDDDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A66EF29A-3F17-4B30-B9DB-D44CCDA08F40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A66EF29A-3F17-4B30-B9DB-D44CCDA08F40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A66EF29A-3F17-4B30-B9DB-D44CCDA08F40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A66EF29A-3F17-4B30-B9DB-D44CCDA08F40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BB615EE-5D10-4F32-A047-453595B427A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BB615EE-5D10-4F32-A047-453595B427A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BB615EE-5D10-4F32-A047-453595B427A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BB615EE-5D10-4F32-A047-453595B427A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D1F9BCF-FAA9-4359-96A1-31733EE1CE86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D1F9BCF-FAA9-4359-96A1-31733EE1CE86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D1F9BCF-FAA9-4359-96A1-31733EE1CE86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D1F9BCF-FAA9-4359-96A1-31733EE1CE86}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
