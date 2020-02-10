@@ -4,6 +4,9 @@ using System;
 
 namespace GTASaveData.Common
 {
+    /// <summary>
+    /// A 3-dimensional vector.
+    /// </summary>
     public class Vector3d : Chunk, IEquatable<Vector3d>
     {
         private float m_x;

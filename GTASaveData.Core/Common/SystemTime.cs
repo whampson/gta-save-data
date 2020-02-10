@@ -3,6 +3,9 @@ using System;
 
 namespace GTASaveData.Common
 {
+    /// <summary>
+    /// Represents a date and time. This is the .NET equivalent of the Win32 <c>SYSTEMTIME</c> structure.
+    /// </summary>
     public class SystemTime : Chunk, IEquatable<SystemTime>
     {
         private ushort m_year;
@@ -133,6 +136,16 @@ namespace GTASaveData.Common
                 && m_minute.Equals(other.m_minute)
                 && m_second.Equals(other.m_second)
                 && m_millisecond.Equals(other.m_millisecond);
+        }
+
+        public static explicit operator DateTime(SystemTime t)
+        {
+            return t.ToDateTime();
+        }
+
+        public static explicit operator SystemTime(DateTime t)
+        {
+            return new SystemTime(t);
         }
     }
 }

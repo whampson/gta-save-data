@@ -3,6 +3,9 @@ using System;
 
 namespace GTASaveData.Common
 {
+    /// <summary>
+    /// Represents a date and time.
+    /// </summary>
     public class Timestamp : Chunk, IEquatable<Timestamp>
     {
         private int m_year;
@@ -110,6 +113,16 @@ namespace GTASaveData.Common
                 && m_hour.Equals(other.m_hour)
                 && m_minute.Equals(other.m_minute)
                 && m_second.Equals(other.m_second);
+        }
+
+        public static explicit operator DateTime(Timestamp t)
+        {
+            return t.ToDateTime();
+        }
+
+        public static explicit operator Timestamp(DateTime t)
+        {
+            return new Timestamp(t);
         }
     }
 }

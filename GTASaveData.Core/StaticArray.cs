@@ -3,9 +3,13 @@
 namespace GTASaveData
 {
     /// <summary>
-    /// A fixed-length array.
+    /// A fixed-length collection of objects with sequential and contiguous storage.
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
+    /// <remarks>
+    /// This collection is WPF-ready. Changes to items in the collection and to the collection itself
+    /// are observable by WPF UIs via the CollectionChanged and ItemStateChanged events.
+    /// </remarks>
     public class StaticArray<T> : Array<T>
         where T : new()
     {

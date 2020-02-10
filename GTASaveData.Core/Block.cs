@@ -32,13 +32,11 @@ namespace GTASaveData
 
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            //int count = r.ReadInt32();
-            //m_data = r.ReadBytes(count);
+            // nop
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            //w.Write(m_data.Count);          // TODO: !! THIS WILL BREAK EVERYTHING, TEST IT!
             w.Write(m_data.ToArray());
         }
 

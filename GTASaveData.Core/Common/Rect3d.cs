@@ -3,6 +3,9 @@ using System;
 
 namespace GTASaveData.Common
 {
+    /// <summary>
+    /// Represents a rectangle in 3-space.
+    /// </summary>
     public class Rect3d : Chunk, IEquatable<Rect3d>
     {
         private float m_xMin;

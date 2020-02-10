@@ -175,12 +175,12 @@ namespace GTASaveData
 
         protected T Deserialize<T>(byte[] buffer, FileFormat format = null)
         {
-            return Serializer.Read<T>(buffer, format);
+            return Serializer.Deserialize<T>(buffer, format);
         }
 
         protected byte[] Serialize<T>(T obj, FileFormat format = null)
         {
-            return Serializer.Write(obj, format, m_paddingMode, m_paddingSequence);
+            return Serializer.Serialize(obj, format, m_paddingMode, m_paddingSequence);
         }
 
         protected Serializer CreateSerializer(Stream baseStream)

@@ -5,7 +5,7 @@ using WpfEssentials;
 namespace GTASaveData
 {
     /// <summary>
-    /// Represents an arbitrary data structure stored in a Grand Theft Auto save data file.
+    /// Represents an arbitrary data structure stored in a Grand Theft Auto save file.
     /// </summary>
     public abstract class Chunk : ObservableObject, IChunk
     {

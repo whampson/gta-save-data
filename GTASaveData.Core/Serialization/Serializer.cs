@@ -19,7 +19,8 @@ namespace GTASaveData.Serialization
         /// <param name="buffer">The byte array containing serialized object data.</param>
         /// <param name="format">The format of the data, if applicable</param>
         /// <returns>An object of type <typeparamref name="T"/>.</returns>
-        public static T Read<T>(byte[] buffer, FileFormat format = null)
+        /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
+        public static T Deserialize<T>(byte[] buffer, FileFormat format = null)
         {
             if (buffer == null)
             {
@@ -41,7 +42,8 @@ namespace GTASaveData.Serialization
         /// <param name="padding">The <see cref="Serialization.PaddingMode"/> to use for alignment.</param>
         /// <param name="paddingSequence">The sequence of bytes to use when the padding mode is <see cref="PaddingMode.Sequence"/>.</param>
         /// <returns>A byte array containing the serialized object data.</returns>
-        public static byte[] Write<T>(T obj, FileFormat format = null, PaddingMode padding = PaddingMode.Zeros, byte[] paddingSequence = null)
+        /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
+        public static byte[] Serialize<T>(T obj, FileFormat format = null, PaddingMode padding = PaddingMode.Zeros, byte[] paddingSequence = null)
         {
             if (obj == null)
             {
@@ -387,24 +389,13 @@ namespace GTASaveData.Serialization
         /// <summary>
         /// Reads an array of the specified type.
         /// </summary>
-        /// <typeparam name="T">
-        /// The item type.
-        /// </typeparam>
-        /// <param name="count">
-        /// The number of items to read.
-        /// </param>
-        /// <param name="format">
-        /// The data format.
-        /// </param>
-        /// <param name="itemLength">
-        /// The length of each item. Note: only applies to <see cref="bool"/> and <see cref="string"/> types.
-        /// </param>
-        /// <param name="unicode">
-        /// A value indicating whether to read unicode characters.
-        /// </param>
-        /// <returns>
-        /// An array of the specified type.
-        /// </returns>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="count">The number of items to read.</param>
+        /// <param name="format">The data format, if applicable.</param>
+        /// <param name="itemLength">The length of each item. Note: only applies to <see cref="bool"/> and <see cref="string"/> types.</param>
+        /// <param name="unicode">A value indicating whether to read unicode characters.</param>
+        /// <returns>An array of the specified type.</returns>
+        /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
         public T[] ReadArray<T>(int count,
             FileFormat format = null,
             int itemLength = 0,
@@ -652,6 +643,7 @@ namespace GTASaveData.Serialization
         /// The length of each item. Note: only applies to <see cref="bool"/> and <see cref="string"/> types.
         /// </param>
         /// <param name="unicode">A value indicating whether to write unicode characters.</param>
+        /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
         public void Write<T>(T[] items,
             int? count = null,
             FileFormat format = null,
@@ -787,8 +779,7 @@ namespace GTASaveData.Serialization
             }
             else
             {
-                // TODO: exception
-                throw new InvalidOperationException();
+                throw NewSerializationException();
             }
 
             return (T) ret;
@@ -864,9 +855,13 @@ namespace GTASaveData.Serialization
             }
             else
             {
-                // TODO: exception
-                throw new InvalidOperationException();
+                throw NewSerializationException();
             }
+        }
+
+        SerializationException NewSerializationException()
+        {
+            return new SerializationException("The object does not support serialization.");
         }
 
         #region IDisposable
