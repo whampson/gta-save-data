@@ -29,29 +29,29 @@ namespace GTASaveData.VC
         private const string PtpTag = "PTP";
 
         private SimpleVars m_simpleVars;
-        private GenericBlock m_scripts;
-        private GenericBlock m_pedPool;
-        private GenericBlock m_garages;
-        private GenericBlock m_gameLogic;
-        private GenericBlock m_vehiclePool;
-        private GenericBlock m_objectPool;
-        private GenericBlock m_pathFind;         // maybe
-        private GenericBlock m_cranes;
-        private GenericBlock m_pickups;
-        private GenericBlock m_phoneInfo;
-        private GenericBlock m_restartPoints;
-        private GenericBlock m_radarBlips;
-        private GenericBlock m_zones;
-        private GenericBlock m_gangData;
+        private Block m_scripts;
+        private Block m_pedPool;
+        private Block m_garages;
+        private Block m_gameLogic;
+        private Block m_vehiclePool;
+        private Block m_objectPool;
+        private Block m_pathFind;         // maybe
+        private Block m_cranes;
+        private Block m_pickups;
+        private Block m_phoneInfo;
+        private Block m_restartPoints;
+        private Block m_radarBlips;
+        private Block m_zones;
+        private Block m_gangData;
         private CarGeneratorsBlock m_carGenerators;
-        private GenericBlock m_particles;        // maybe
-        private GenericBlock m_audioScriptObjects;
-        private GenericBlock m_scriptPaths;
-        private GenericBlock m_playerInfo;
-        private GenericBlock m_stats;
-        private GenericBlock m_setPieces;
-        private GenericBlock m_streaming;
-        private GenericBlock m_pedTypeInfo;
+        private Block m_particles;        // maybe
+        private Block m_audioScriptObjects;
+        private Block m_scriptPaths;
+        private Block m_playerInfo;
+        private Block m_stats;
+        private Block m_setPieces;
+        private Block m_streaming;
+        private Block m_pedTypeInfo;
 
         public SimpleVars SimpleVars
         {
@@ -59,85 +59,85 @@ namespace GTASaveData.VC
             set { m_simpleVars = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock Scripts
+        public Block Scripts
         {
             get { return m_scripts; }
             set { m_scripts = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock PedPool
+        public Block PedPool
         {
             get { return m_pedPool; }
             set { m_pedPool = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock Garages
+        public Block Garages
         {
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock GameLogic
+        public Block GameLogic
         {
             get { return m_gameLogic; }
             set { m_gameLogic = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock Vehicles
+        public Block Vehicles
         {
             get { return m_vehiclePool; }
             set { m_vehiclePool = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock Objects
+        public Block Objects
         {
             get { return m_objectPool; }
             set { m_objectPool = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock PathFind
+        public Block PathFind
         {
             get { return m_pathFind; }
             set { m_pathFind = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock Cranes
+        public Block Cranes
         {
             get { return m_cranes; }
             set { m_cranes = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock Pickups
+        public Block Pickups
         {
             get { return m_pickups; }
             set { m_pickups = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock PhoneInfo
+        public Block PhoneInfo
         {
             get { return m_phoneInfo; }
             set { m_phoneInfo = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock Restarts
+        public Block Restarts
         {
             get { return m_restartPoints; }
             set { m_restartPoints = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock RadarBlips
+        public Block RadarBlips
         {
             get { return m_radarBlips; }
             set { m_radarBlips = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock Zones
+        public Block Zones
         {
             get { return m_zones; }
             set { m_zones = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock GangData
+        public Block GangData
         {
             get { return m_gangData; }
             set { m_gangData = value; OnPropertyChanged(); }
@@ -149,49 +149,49 @@ namespace GTASaveData.VC
             set { m_carGenerators = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock Particles
+        public Block Particles
         {
             get { return m_particles; }
             set { m_particles = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock AudioScriptObjects
+        public Block AudioScriptObjects
         {
             get { return m_audioScriptObjects; }
             set { m_audioScriptObjects = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock ScriptPaths
+        public Block ScriptPaths
         {
             get { return m_scriptPaths; }
             set { m_scriptPaths = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock PlayerInfo
+        public Block PlayerInfo
         {
             get { return m_playerInfo; }
             set { m_playerInfo = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock Stats
+        public Block Stats
         {
             get { return m_stats; }
             set { m_stats = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock SetPieces
+        public Block SetPieces
         {
             get { return m_setPieces; }
             set { m_setPieces = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock Streaming
+        public Block Streaming
         {
             get { return m_streaming; }
             set { m_streaming = value; OnPropertyChanged(); }
         }
 
-        public GenericBlock PedTypeInfo
+        public Block PedTypeInfo
         {
             get { return m_pedTypeInfo; }
             set { m_pedTypeInfo = value; OnPropertyChanged(); }
@@ -245,36 +245,36 @@ namespace GTASaveData.VC
         public VCSave()
         {
             m_simpleVars = new SimpleVars();
-            m_scripts = new GenericBlock();
-            m_pedPool = new GenericBlock();
-            m_garages = new GenericBlock();
-            m_gameLogic = new GenericBlock();
-            m_vehiclePool = new GenericBlock();
-            m_objectPool = new GenericBlock();
-            m_pathFind = new GenericBlock();
-            m_cranes = new GenericBlock();
-            m_pickups = new GenericBlock();
-            m_phoneInfo = new GenericBlock();
-            m_restartPoints = new GenericBlock();
-            m_radarBlips = new GenericBlock();
-            m_zones = new GenericBlock();
-            m_gangData = new GenericBlock();
+            m_scripts = new Block();
+            m_pedPool = new Block();
+            m_garages = new Block();
+            m_gameLogic = new Block();
+            m_vehiclePool = new Block();
+            m_objectPool = new Block();
+            m_pathFind = new Block();
+            m_cranes = new Block();
+            m_pickups = new Block();
+            m_phoneInfo = new Block();
+            m_restartPoints = new Block();
+            m_radarBlips = new Block();
+            m_zones = new Block();
+            m_gangData = new Block();
             m_carGenerators = new CarGeneratorsBlock();
-            m_particles = new GenericBlock();
-            m_audioScriptObjects = new GenericBlock();
-            m_scriptPaths = new GenericBlock();
-            m_playerInfo = new GenericBlock();
-            m_stats = new GenericBlock();
-            m_setPieces = new GenericBlock();
-            m_streaming = new GenericBlock();
-            m_pedTypeInfo = new GenericBlock();
+            m_particles = new Block();
+            m_audioScriptObjects = new Block();
+            m_scriptPaths = new Block();
+            m_playerInfo = new Block();
+            m_stats = new Block();
+            m_setPieces = new Block();
+            m_streaming = new Block();
+            m_pedTypeInfo = new Block();
         }
 
-        private VCSave(SaveDataSerializer serializer, FileFormat format)
+        private VCSave(Serializer serializer, FileFormat format)
         {
             if (!FileFormats.GetAll().Contains(format))
             {
-                throw new SaveDataSerializationException(
+                throw new SerializationException(
                     string.Format("'{0}' is not a valid file format for GTA VC save data.", format));
             }
 
@@ -312,7 +312,7 @@ namespace GTASaveData.VC
             while (!doneReading)
             {
                 tmp = ReadBlock(serializer, null);
-                using (SaveDataSerializer blockStream = CreateSerializer(new MemoryStream(tmp)))
+                using (Serializer blockStream = CreateSerializer(new MemoryStream(tmp)))
                 {
                     switch (outerBlockCount)
                     {
@@ -351,33 +351,33 @@ namespace GTASaveData.VC
                 outerBlockCount++;
             }
 
-            m_simpleVars = Deserialize<SimpleVars>(simpleVars, format);
-            m_scripts = new GenericBlock(scripts);
-            m_pedPool = new GenericBlock(pedPool);
-            m_garages = new GenericBlock(garages);
-            m_gameLogic = new GenericBlock(gameLogic);
-            m_vehiclePool  = new GenericBlock(vehiclePool);
-            m_objectPool = new GenericBlock(objectPool);
-            m_pathFind = new GenericBlock(pathFind);
-            m_cranes = new GenericBlock(cranes);
-            m_pickups = new GenericBlock(pickups);
-            m_phoneInfo = new GenericBlock(phoneInfo);
-            m_restartPoints = new GenericBlock(restartPoints);
-            m_radarBlips = new GenericBlock(radarBlips);
-            m_zones = new GenericBlock(zones);
-            m_gangData = new GenericBlock(gangData);
-            m_carGenerators = Deserialize<CarGeneratorsBlock>(carGenerators);
-            m_particles = new GenericBlock(particles);
-            m_audioScriptObjects = new GenericBlock(audioScriptObjects);
-            m_scriptPaths = new GenericBlock(scriptPaths);
-            m_playerInfo = new GenericBlock(playerInfo);
-            m_stats = new GenericBlock(stats);
-            m_setPieces = new GenericBlock(setPieces);
-            m_streaming = new GenericBlock(streaming);
-            m_pedTypeInfo = new GenericBlock(pedTypeInfo);
+            m_simpleVars = ReadData<SimpleVars>(simpleVars, format);
+            m_scripts = new Block(scripts);
+            m_pedPool = new Block(pedPool);
+            m_garages = new Block(garages);
+            m_gameLogic = new Block(gameLogic);
+            m_vehiclePool  = new Block(vehiclePool);
+            m_objectPool = new Block(objectPool);
+            m_pathFind = new Block(pathFind);
+            m_cranes = new Block(cranes);
+            m_pickups = new Block(pickups);
+            m_phoneInfo = new Block(phoneInfo);
+            m_restartPoints = new Block(restartPoints);
+            m_radarBlips = new Block(radarBlips);
+            m_zones = new Block(zones);
+            m_gangData = new Block(gangData);
+            m_carGenerators = ReadData<CarGeneratorsBlock>(carGenerators);
+            m_particles = new Block(particles);
+            m_audioScriptObjects = new Block(audioScriptObjects);
+            m_scriptPaths = new Block(scriptPaths);
+            m_playerInfo = new Block(playerInfo);
+            m_stats = new Block(stats);
+            m_setPieces = new Block(setPieces);
+            m_streaming = new Block(streaming);
+            m_pedTypeInfo = new Block(pedTypeInfo);
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer serializer, FileFormat format)
         {
             FileFormat = format;
 
@@ -385,30 +385,30 @@ namespace GTASaveData.VC
             int blockCount = 0;
             int checksum = 0;
 
-            ByteBuffer simpleVars = Serialize(m_simpleVars, format);
-            ByteBuffer scripts = CreateBlock(ScrTag, Serialize(m_scripts, format));
-            ByteBuffer pedPool = CreateBlock(Serialize(m_pedPool, format));
-            ByteBuffer garages = CreateBlock(Serialize(m_garages, format));
-            ByteBuffer gameLogic = CreateBlock(Serialize(m_gameLogic, format));
-            ByteBuffer vehiclePool = CreateBlock(Serialize(m_vehiclePool, format));
-            ByteBuffer objectPool = CreateBlock(Serialize(m_objectPool, format));
-            ByteBuffer pathFind = CreateBlock(Serialize(m_pathFind, format));
-            ByteBuffer cranes = CreateBlock(Serialize(m_cranes, format));
-            ByteBuffer pickups = CreateBlock(Serialize(m_pickups, format));
-            ByteBuffer phoneInfo = CreateBlock(Serialize(m_phoneInfo, format));
-            ByteBuffer restartPoints = CreateBlock(RstTag, Serialize(m_restartPoints, format));
-            ByteBuffer radarBlips = CreateBlock(RdrTag, Serialize(m_radarBlips, format));
-            ByteBuffer zones = CreateBlock(ZnsTag, Serialize(m_zones, format));
-            ByteBuffer gangData = CreateBlock(GngTag, Serialize(m_gangData, format));
-            ByteBuffer carGenerators = CreateBlock(CgnTag, Serialize(m_carGenerators, format));
-            ByteBuffer particles = CreateBlock(Serialize(m_particles, format));
-            ByteBuffer audioScriptObjects = CreateBlock(AudTag, Serialize(m_audioScriptObjects, format));
-            ByteBuffer scriptPaths = CreateBlock(Serialize(m_scriptPaths, format));
-            ByteBuffer playerInfo = CreateBlock(Serialize(m_playerInfo, format));
-            ByteBuffer stats = CreateBlock(Serialize(m_stats, format));
-            ByteBuffer setPieces = CreateBlock(Serialize(m_setPieces, format));
-            ByteBuffer streaming = CreateBlock(Serialize(m_streaming, format));
-            ByteBuffer pedTypeInfo = CreateBlock(PtpTag, Serialize(m_pedTypeInfo, format));
+            ByteBuffer simpleVars = WriteData(m_simpleVars, format);
+            ByteBuffer scripts = CreateBlock(ScrTag, WriteData(m_scripts, format));
+            ByteBuffer pedPool = CreateBlock(WriteData(m_pedPool, format));
+            ByteBuffer garages = CreateBlock(WriteData(m_garages, format));
+            ByteBuffer gameLogic = CreateBlock(WriteData(m_gameLogic, format));
+            ByteBuffer vehiclePool = CreateBlock(WriteData(m_vehiclePool, format));
+            ByteBuffer objectPool = CreateBlock(WriteData(m_objectPool, format));
+            ByteBuffer pathFind = CreateBlock(WriteData(m_pathFind, format));
+            ByteBuffer cranes = CreateBlock(WriteData(m_cranes, format));
+            ByteBuffer pickups = CreateBlock(WriteData(m_pickups, format));
+            ByteBuffer phoneInfo = CreateBlock(WriteData(m_phoneInfo, format));
+            ByteBuffer restartPoints = CreateBlock(RstTag, WriteData(m_restartPoints, format));
+            ByteBuffer radarBlips = CreateBlock(RdrTag, WriteData(m_radarBlips, format));
+            ByteBuffer zones = CreateBlock(ZnsTag, WriteData(m_zones, format));
+            ByteBuffer gangData = CreateBlock(GngTag, WriteData(m_gangData, format));
+            ByteBuffer carGenerators = CreateBlock(CgnTag, WriteData(m_carGenerators, format));
+            ByteBuffer particles = CreateBlock(WriteData(m_particles, format));
+            ByteBuffer audioScriptObjects = CreateBlock(AudTag, WriteData(m_audioScriptObjects, format));
+            ByteBuffer scriptPaths = CreateBlock(WriteData(m_scriptPaths, format));
+            ByteBuffer playerInfo = CreateBlock(WriteData(m_playerInfo, format));
+            ByteBuffer stats = CreateBlock(WriteData(m_stats, format));
+            ByteBuffer setPieces = CreateBlock(WriteData(m_setPieces, format));
+            ByteBuffer streaming = CreateBlock(WriteData(m_streaming, format));
+            ByteBuffer pedTypeInfo = CreateBlock(PtpTag, WriteData(m_pedTypeInfo, format));
 
             while (dataBytesWritten < TotalBlockDataSize)
             {
@@ -456,7 +456,7 @@ namespace GTASaveData.VC
                     payload = CreatePaddingBlock(length);
                 }
 
-                serializer.Write(payload);
+                serializer.Write((byte[]) payload);
                 dataBytesWritten += payload.Length - 4; // Block sizes are not counted 
                 checksum += payload.ToArray().Sum(x => x);
                 blockCount++;

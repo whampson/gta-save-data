@@ -53,7 +53,7 @@ namespace GTASaveData.VC
             m_carGenerators = new StaticArray<CarGenerator>(Limits.CarGeneratorsCount);
         }
 
-        private CarGeneratorsBlock(SaveDataSerializer r, FileFormat fmt)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
             r.ReadInt32();
             m_numberOfCarGenerators = r.ReadInt32();
@@ -65,7 +65,7 @@ namespace GTASaveData.VC
             m_carGenerators = r.ReadArray<CarGenerator>(Limits.CarGeneratorsCount);
         }
 
-        protected override void WriteObjectData(SaveDataSerializer w, FileFormat fmt)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
             w.Write(0x0C);
             w.Write(m_numberOfCarGenerators);
@@ -74,7 +74,7 @@ namespace GTASaveData.VC
             w.Write((byte) m_generateEvenIfPlayerIsCloseCounter);
             w.Align();
             w.Write(0x1FCC);
-            w.WriteArray(m_carGenerators.ToArray(), Limits.CarGeneratorsCount);
+            w.Write(m_carGenerators.ToArray(), Limits.CarGeneratorsCount);
         }
 
         public override bool Equals(object obj)

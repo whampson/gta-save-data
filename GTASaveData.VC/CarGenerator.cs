@@ -111,10 +111,10 @@ namespace GTASaveData.VC
             m_position = new Vector3d();
         }
 
-        private CarGenerator(SaveDataSerializer r, FileFormat fmt)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
             m_model = r.ReadInt32();
-            m_position = r.ReadObject<Vector3d>();
+            m_position = r.ReadChunk<Vector3d>();
             m_heading = r.ReadSingle();
             m_color1 = r.ReadInt16();
             m_color2 = r.ReadInt16();
@@ -131,10 +131,10 @@ namespace GTASaveData.VC
             r.Align();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer w, FileFormat fmt)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
             w.Write(m_model);
-            w.WriteObject(m_position);
+            w.Write(m_position);
             w.Write(m_heading);
             w.Write((ushort) m_color1);
             w.Write((ushort) m_color2);

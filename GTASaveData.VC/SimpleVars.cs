@@ -341,182 +341,181 @@ namespace GTASaveData.VC
             m_radioListenTime = new StaticArray<uint>(Limits.RadioListenTimeCount);
         }
 
-        private SimpleVars(SaveDataSerializer serializer, FileFormat format)
-            : this()
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_lastMissionPassedName = serializer.ReadString(Limits.LastMissionPassedNameLength, unicode: true);
-            if (!format.IsPS2)  // TODO: confirm
+            m_lastMissionPassedName = r.ReadString(Limits.LastMissionPassedNameLength, unicode: true);
+            if (!fmt.IsPS2)  // TODO: confirm
             {
-                if (format.IsPC || format.IsXbox)   // TODO: confirm
+                if (fmt.IsPC || fmt.IsXbox)   // TODO: confirm
                 {
-                    m_saveTime = serializer.ReadObject<SystemTime>();
+                    m_saveTime = r.ReadChunk<SystemTime>();
                 }
             }
-            int constant = serializer.ReadInt32();
-            Debug.Assert(constant == TotalBlockDataSize || constant == (TotalBlockDataSize + 1));
-            m_currLevel = (Level) serializer.ReadUInt32();
-            m_cameraPosition = serializer.ReadObject<Vector3d>();
-            if (format.HasFlag(ConsoleFlags.Steam)) // TODO: distinguish between Windows Steam and macOS Steam
+            int constant = r.ReadInt32();
+            Debug.Assert(/*constant == TotalBlockDataSize || */constant == (TotalBlockDataSize + 1));
+            m_currLevel = (Level) r.ReadUInt32();
+            m_cameraPosition = r.ReadChunk<Vector3d>();
+            if (fmt.HasFlag(ConsoleFlags.Steam)) // TODO: distinguish between Windows Steam and macOS Steam
             {
-                m_unknownSteamOnly = serializer.ReadInt32();
+                m_unknownSteamOnly = r.ReadInt32();
             }
-            m_millisecondsPerGameMinute = serializer.ReadUInt32();
-            m_lastClockTick = serializer.ReadUInt32();
-            if (format.IsPS2)   // TODO: confirm
+            m_millisecondsPerGameMinute = r.ReadUInt32();
+            m_lastClockTick = r.ReadUInt32();
+            if (fmt.IsPS2)   // TODO: confirm
             {
-                m_gameClockHours = serializer.ReadInt32();
-                m_gameClockMinutes = serializer.ReadInt32();
-                m_prefsControllerConfig = serializer.ReadInt32();
+                m_gameClockHours = r.ReadInt32();
+                m_gameClockMinutes = r.ReadInt32();
+                m_prefsControllerConfig = r.ReadInt32();
             }
             else
             {
-                m_gameClockHours = serializer.ReadByte();
-                serializer.Align();
-                m_gameClockMinutes = serializer.ReadByte();
-                serializer.Align();
-                m_prefsControllerConfig = serializer.ReadInt16();
-                serializer.Align();
+                m_gameClockHours = r.ReadByte();
+                r.Align();
+                m_gameClockMinutes = r.ReadByte();
+                r.Align();
+                m_prefsControllerConfig = r.ReadInt16();
+                r.Align();
             }
-            m_timeInMilliseconds = serializer.ReadUInt32();
-            m_timeScale = serializer.ReadSingle();
-            m_timeStep = serializer.ReadSingle();
-            m_timeStepNonClipped = serializer.ReadSingle();
-            m_frameCounter = serializer.ReadUInt32();
-            m_timeStep2 = serializer.ReadSingle();
-            m_framesPerUpdate = serializer.ReadSingle();
-            m_timeScale2 = serializer.ReadSingle();
-            m_oldWeatherType = (WeatherType) serializer.ReadInt16();
-            serializer.Align();
-            m_newWeatherType = (WeatherType) serializer.ReadInt16();
-            serializer.Align();
-            m_forcedWeatherType = (WeatherType) serializer.ReadInt16();
-            serializer.Align();
-            m_interpolationValue = serializer.ReadSingle();
-            if (format.IsPS2)   // TODO: confirm
+            m_timeInMilliseconds = r.ReadUInt32();
+            m_timeScale = r.ReadSingle();
+            m_timeStep = r.ReadSingle();
+            m_timeStepNonClipped = r.ReadSingle();
+            m_frameCounter = r.ReadUInt32();
+            m_timeStep2 = r.ReadSingle();
+            m_framesPerUpdate = r.ReadSingle();
+            m_timeScale2 = r.ReadSingle();
+            m_oldWeatherType = (WeatherType) r.ReadInt16();
+            r.Align();
+            m_newWeatherType = (WeatherType) r.ReadInt16();
+            r.Align();
+            m_forcedWeatherType = (WeatherType) r.ReadInt16();
+            r.Align();
+            m_interpolationValue = r.ReadSingle();
+            if (fmt.IsPS2)   // TODO: confirm
             {
-                m_prefsMusicVolume = serializer.ReadInt32();
-                m_prefsSfxVolume = serializer.ReadInt32();
-                if (!format.HasFlag(ConsoleFlags.Australia))
+                m_prefsMusicVolume = r.ReadInt32();
+                m_prefsSfxVolume = r.ReadInt32();
+                if (!fmt.HasFlag(ConsoleFlags.Australia))
                 {
-                    m_prefsControllerConfig = serializer.ReadInt32();
+                    m_prefsControllerConfig = r.ReadInt32();
                 }
-                m_prefsUseVibration = serializer.ReadBool(4);
-                m_prefsStereoMono = serializer.ReadBool(4);
-                m_prefsRadioStation = (RadioStation) serializer.ReadInt32();
-                m_prefsBrightness = serializer.ReadInt32();
-                if (!format.HasFlag(ConsoleFlags.Australia))
+                m_prefsUseVibration = r.ReadBool(4);
+                m_prefsStereoMono = r.ReadBool(4);
+                m_prefsRadioStation = (RadioStation) r.ReadInt32();
+                m_prefsBrightness = r.ReadInt32();
+                if (!fmt.HasFlag(ConsoleFlags.Australia))
                 {
-                    m_prefsShowTrails = serializer.ReadBool(4);
+                    m_prefsShowTrails = r.ReadBool(4);
                 }
-                m_prefsShowSubtitles = serializer.ReadBool(4);
-                m_prefsLanguage = serializer.ReadInt32();
-                m_prefsUseWideScreen = serializer.ReadBool(4);
-                m_prefsControllerConfig = serializer.ReadInt32();
-                m_prefsShowTrails = serializer.ReadBool(4);
+                m_prefsShowSubtitles = r.ReadBool(4);
+                m_prefsLanguage = r.ReadInt32();
+                m_prefsUseWideScreen = r.ReadBool(4);
+                m_prefsControllerConfig = r.ReadInt32();
+                m_prefsShowTrails = r.ReadBool(4);
             }
             //m_compileDateAndTime = serializer.ReadObject<Timestamp>();
-            m_weatherTypeInList = serializer.ReadInt32();
-            m_inCarCameraMode = serializer.ReadSingle();
-            m_onFootCameraMode = serializer.ReadSingle();
+            m_weatherTypeInList = r.ReadInt32();
+            m_inCarCameraMode = r.ReadSingle();
+            m_onFootCameraMode = r.ReadSingle();
             //if (format.IsMobile)
             //{
             //    m_isQuickSave = serializer.ReadInt32();
             //}
-            m_currentInterior = serializer.ReadInt32();
-            m_taxiBoost = serializer.ReadBool();
-            serializer.Align();
-            m_invertLook = serializer.ReadBool();
-            serializer.Align();
-            m_extraColor = serializer.ReadInt32();
-            m_isExtraColorOn = serializer.ReadBool(4);
-            m_extraColorInterpolation = serializer.ReadSingle();
-            m_radioListenTime = new StaticArray<uint>(serializer.ReadArray<uint>(10));
+            m_currentInterior = r.ReadInt32();
+            m_taxiBoost = r.ReadBool();
+            r.Align();
+            m_invertLook = r.ReadBool();
+            r.Align();
+            m_extraColor = r.ReadInt32();
+            m_isExtraColorOn = r.ReadBool(4);
+            m_extraColorInterpolation = r.ReadSingle();
+            m_radioListenTime = new StaticArray<uint>(r.ReadArray<uint>(10));
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write(m_lastMissionPassedName, Limits.LastMissionPassedNameLength, unicode: true);
-            if (!format.IsPS2)
+            w.Write(m_lastMissionPassedName, Limits.LastMissionPassedNameLength, unicode: true);
+            if (!fmt.IsPS2)
             {
-                if (format.IsPC || format.IsXbox)
+                if (fmt.IsPC || fmt.IsXbox)
                 {
-                    serializer.WriteObject(m_saveTime);
+                    w.Write(m_saveTime);
                 }
             }
-            serializer.Write(format.HasFlag(ConsoleFlags.Japan) ? TotalBlockDataSize : TotalBlockDataSize + 1);
-            serializer.Write((int) m_currLevel);
-            serializer.WriteObject(m_cameraPosition);
-            if (format.HasFlag(ConsoleFlags.Steam)) // TODO: distinguish between Windows Steam and macOS Steam
+            w.Write(fmt.HasFlag(ConsoleFlags.Japan) ? TotalBlockDataSize : TotalBlockDataSize + 1);
+            w.Write((int) m_currLevel);
+            w.Write(m_cameraPosition);
+            if (fmt.HasFlag(ConsoleFlags.Steam)) // TODO: distinguish between Windows Steam and macOS Steam
             {
-                serializer.Write(m_unknownSteamOnly);   // 0x3DF5C2FD
+                w.Write(m_unknownSteamOnly);   // 0x3DF5C2FD
             }
-            serializer.Write(m_millisecondsPerGameMinute);
-            serializer.Write(m_lastClockTick);
-            if (format.IsPS2)
+            w.Write(m_millisecondsPerGameMinute);
+            w.Write(m_lastClockTick);
+            if (fmt.IsPS2)
             {
-                serializer.Write(m_gameClockHours);
-                serializer.Write(m_gameClockMinutes);
-                serializer.Write((int) m_prefsControllerConfig);
+                w.Write(m_gameClockHours);
+                w.Write(m_gameClockMinutes);
+                w.Write((int) m_prefsControllerConfig);
             }
             else
             {
-                serializer.Write((byte) m_gameClockHours);
-                serializer.Align();
-                serializer.Write((byte) m_gameClockMinutes);
-                serializer.Align();
-                serializer.Write((short) m_prefsControllerConfig);
-                serializer.Align();
+                w.Write((byte) m_gameClockHours);
+                w.Align();
+                w.Write((byte) m_gameClockMinutes);
+                w.Align();
+                w.Write((short) m_prefsControllerConfig);
+                w.Align();
             }
-            serializer.Write(m_timeInMilliseconds);
-            serializer.Write(m_timeScale);
-            serializer.Write(m_timeStep);
-            serializer.Write(m_timeStepNonClipped);
-            serializer.Write(m_frameCounter);
-            serializer.Write(m_timeStep2);
-            serializer.Write(m_framesPerUpdate);
-            serializer.Write(m_timeScale2);
-            serializer.Write((short) m_oldWeatherType);
-            serializer.Align();
-            serializer.Write((short) m_newWeatherType);
-            serializer.Align();
-            serializer.Write((short) m_forcedWeatherType);
-            serializer.Align();
-            serializer.Write(m_interpolationValue);
-            if (format.IsPS2)
+            w.Write(m_timeInMilliseconds);
+            w.Write(m_timeScale);
+            w.Write(m_timeStep);
+            w.Write(m_timeStepNonClipped);
+            w.Write(m_frameCounter);
+            w.Write(m_timeStep2);
+            w.Write(m_framesPerUpdate);
+            w.Write(m_timeScale2);
+            w.Write((short) m_oldWeatherType);
+            w.Align();
+            w.Write((short) m_newWeatherType);
+            w.Align();
+            w.Write((short) m_forcedWeatherType);
+            w.Align();
+            w.Write(m_interpolationValue);
+            if (fmt.IsPS2)
             {
-                serializer.Write(m_prefsMusicVolume);
-                serializer.Write(m_prefsSfxVolume);
-                if (!format.HasFlag(ConsoleFlags.Australia))
+                w.Write(m_prefsMusicVolume);
+                w.Write(m_prefsSfxVolume);
+                if (!fmt.HasFlag(ConsoleFlags.Australia))
                 {
-                    serializer.Write((int) m_prefsControllerConfig);
+                    w.Write((int) m_prefsControllerConfig);
                 }
-                serializer.Write(m_prefsUseVibration, 4);
-                serializer.Write(m_prefsStereoMono, 4);
-                serializer.Write((int) m_prefsRadioStation);
-                serializer.Write(m_prefsBrightness);
-                if (!format.HasFlag(ConsoleFlags.Australia))
+                w.Write(m_prefsUseVibration, 4);
+                w.Write(m_prefsStereoMono, 4);
+                w.Write((int) m_prefsRadioStation);
+                w.Write(m_prefsBrightness);
+                if (!fmt.HasFlag(ConsoleFlags.Australia))
                 {
-                    serializer.Write(m_prefsShowTrails, 4);
+                    w.Write(m_prefsShowTrails, 4);
                 }
-                serializer.Write(m_prefsShowSubtitles, 4);
-                serializer.Write((int) m_prefsLanguage);
-                serializer.Write(m_prefsUseWideScreen, 4);
-                serializer.Write((int) m_prefsControllerConfig);
-                serializer.Write(m_prefsShowTrails, 4);
+                w.Write(m_prefsShowSubtitles, 4);
+                w.Write((int) m_prefsLanguage);
+                w.Write(m_prefsUseWideScreen, 4);
+                w.Write((int) m_prefsControllerConfig);
+                w.Write(m_prefsShowTrails, 4);
             }
             //serializer.WriteObject(m_compileDateAndTime);
-            serializer.Write(m_weatherTypeInList);
-            serializer.Write(m_inCarCameraMode);
-            serializer.Write(m_onFootCameraMode);
-            serializer.Write(m_currentInterior);
-            serializer.Write(m_taxiBoost);
-            serializer.Align();
-            serializer.Write(m_invertLook);
-            serializer.Align();
-            serializer.Write(m_extraColor);
-            serializer.Write(m_isExtraColorOn, 4);
-            serializer.Write(m_extraColorInterpolation);
-            serializer.WriteArray(m_radioListenTime.ToArray());
+            w.Write(m_weatherTypeInList);
+            w.Write(m_inCarCameraMode);
+            w.Write(m_onFootCameraMode);
+            w.Write(m_currentInterior);
+            w.Write(m_taxiBoost);
+            w.Align();
+            w.Write(m_invertLook);
+            w.Align();
+            w.Write(m_extraColor);
+            w.Write(m_isExtraColorOn, 4);
+            w.Write(m_extraColorInterpolation);
+            w.Write(m_radioListenTime.ToArray());
             //if (format.IsMobile)
             //{
             //    serializer.Write(m_isQuickSave);

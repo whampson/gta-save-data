@@ -7,6 +7,6 @@
         Rainy,
         Foggy,
         ExtraSunny,
-        Hurrticane
+        Hurricane
     }
 }
