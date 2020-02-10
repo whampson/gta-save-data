@@ -68,5 +68,14 @@ namespace GTASaveData {
                 return ResourceManager.GetString("Error_NotSupported_FixedSizeCollection", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The object does not support serialization..
+        /// </summary>
+        internal static string Error_NotSupported_Serialization {
+            get {
+                return ResourceManager.GetString("Error_NotSupported_Serialization", resourceCulture);
+            }
+        }
     }
 }

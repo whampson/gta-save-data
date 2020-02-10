@@ -120,4 +120,7 @@
   <data name="Error_NotSupported_FixedSizeCollection" xml:space="preserve">
     <value>Collection is of a fixed size.</value>
   </data>
+  <data name="Error_NotSupported_Serialization" xml:space="preserve">
+    <value>The object does not support serialization.</value>
+  </data>
 </root>
