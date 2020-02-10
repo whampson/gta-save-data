@@ -32,9 +32,19 @@ namespace GTASaveData
             return new DynamicArray<T>(array);
         }
 
+        public static implicit operator T[](DynamicArray<T> array)
+        {
+            return array.ToArray();
+        }
+
         public static implicit operator DynamicArray<T>(List<T> array)
         {
             return new DynamicArray<T>(array);
+        }
+
+        public static implicit operator List<T>(DynamicArray<T> array)
+        {
+            return array;
         }
     }
 }
