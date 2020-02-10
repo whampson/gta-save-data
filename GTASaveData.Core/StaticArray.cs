@@ -31,5 +31,10 @@ namespace GTASaveData
         {
             return new StaticArray<T>(array);
         }
+
+        public static implicit operator T[](StaticArray<T> array)
+        {
+            return array.ToArray();
+        }
     }
 }
