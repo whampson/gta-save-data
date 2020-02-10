@@ -47,7 +47,7 @@ namespace GTASaveData.Tests.VC
         {
             byte[] expected = File.ReadAllBytes(path);
 
-            VCSave x0 = SaveData.LoadFromFile<VCSave>(path, format);
+            VCSave x0 = SaveData.Load<VCSave>(path, format);
             VCSave x1 = CreateSerializedCopy(x0, out byte[] data, format);
 
             Assert.Equal(x0, x1);

@@ -151,11 +151,11 @@ namespace TestApp
             {
                 case Game.GTA3:
                     CurrentFileFormat = SaveData.GetFileFormat<GTA3Save>(path);
-                    CurrentSaveDataFile = SaveData.LoadFromFile<GTA3Save>(path, CurrentFileFormat);
+                    CurrentSaveDataFile = SaveData.Load<GTA3Save>(path, CurrentFileFormat);
                     break;
                 case Game.VC:
                     CurrentFileFormat = SaveData.GetFileFormat<VCSave>(path);
-                    CurrentSaveDataFile = SaveData.LoadFromFile<VCSave>(path, CurrentFileFormat);
+                    CurrentSaveDataFile = SaveData.Load<VCSave>(path, CurrentFileFormat);
                     break;
                 default:
                     RequestMessageBoxError("Selected game not yet supported!");
@@ -194,7 +194,7 @@ namespace TestApp
                 return;
             }
 
-            CurrentSaveDataFile.Write(path, CurrentFileFormat);
+            CurrentSaveDataFile.Store(path, CurrentFileFormat);
             StatusText = "File saved.";
         }
 

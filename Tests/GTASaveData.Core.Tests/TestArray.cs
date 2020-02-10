@@ -1,18 +1,13 @@
 ﻿using Bogus;
-using GTASaveData.Common;
-using GTASaveData.GTA3;
-using GTASaveData.Tests.GTA3;
-using GTASaveData.Tests.TestFramework;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using WpfEssentials;
 using Xunit;
 
-namespace GTASaveData.Tests.Common
+namespace GTASaveData.Core.Tests
 {
     public class TestArray
     {
@@ -216,6 +211,7 @@ namespace GTASaveData.Tests.Common
             Assert.Equal(5, raisedEvents[0].NewStartingIndex);
         }
 
+        #region Test Objects
         private class TestObject : INotifyPropertyChanged, IEquatable<TestObject>
         {
             public event PropertyChangedEventHandler PropertyChanged;
@@ -261,5 +257,6 @@ namespace GTASaveData.Tests.Common
                 return m_value.Equals(other.m_value);
             }
         }
+        #endregion
     }
 }

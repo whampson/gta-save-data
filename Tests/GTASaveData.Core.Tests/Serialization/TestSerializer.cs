@@ -1,14 +1,14 @@
 ﻿using Bogus;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.TestFramework;
 using System;
 using System.IO;
 using System.Linq;
+using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.Serialization
+namespace GTASaveData.Core.Tests.Serialization
 {
-    public class TestSaveDataSerializer
+    public class TestSerializer
     {
         [Theory]
         [InlineData(1, 9)]
@@ -30,7 +30,7 @@ namespace GTASaveData.Tests.Serialization
 
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
                     s.Write(b0);
                     s.Align(wordSize);
@@ -42,7 +42,7 @@ namespace GTASaveData.Tests.Serialization
 
             using (MemoryStream m = new MemoryStream(data))
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
                     b1 = s.ReadBool();
                     s.Align(wordSize);
@@ -67,7 +67,7 @@ namespace GTASaveData.Tests.Serialization
 
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m, mode, seq))
+                using (Serializer s = new Serializer(m, mode, seq))
                 {
                     s.WritePadding(100);
                 }
@@ -96,8 +96,8 @@ namespace GTASaveData.Tests.Serialization
         public void Bool(bool value)
         {
             bool x0 = value;
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            bool x1 = SaveDataSerializer.Deserialize<bool>(data);
+            byte[] data = Serializer.Serialize(x0);
+            bool x1 = Serializer.Deserialize<bool>(data);
 
             Assert.Equal(x0, x1);
             Assert.Single(data);
@@ -117,7 +117,7 @@ namespace GTASaveData.Tests.Serialization
 
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
                     s.Write(x0, numBytes);
                 }
@@ -126,7 +126,7 @@ namespace GTASaveData.Tests.Serialization
 
             using (MemoryStream m = new MemoryStream(data))
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
                     x1 = s.ReadBool(numBytes);
                 }
@@ -142,8 +142,8 @@ namespace GTASaveData.Tests.Serialization
             Faker f = new Faker();
 
             byte x0 = f.Random.Byte();
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            byte x1 = SaveDataSerializer.Deserialize<byte>(data);
+            byte[] data = Serializer.Serialize(x0);
+            byte x1 = Serializer.Deserialize<byte>(data);
 
             Assert.Equal(x0, x1);
             Assert.Single(data);
@@ -155,8 +155,8 @@ namespace GTASaveData.Tests.Serialization
             Faker f = new Faker();
 
             sbyte x0 = f.Random.SByte();
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            sbyte x1 = SaveDataSerializer.Deserialize<sbyte>(data);
+            byte[] data = Serializer.Serialize(x0);
+            sbyte x1 = Serializer.Deserialize<sbyte>(data);
 
             Assert.Equal(x0, x1);
             Assert.Single(data);
@@ -174,7 +174,7 @@ namespace GTASaveData.Tests.Serialization
 
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
                     s.Write(x0);
                 }
@@ -183,7 +183,7 @@ namespace GTASaveData.Tests.Serialization
 
             using (MemoryStream m = new MemoryStream(data))
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
                     x1 = s.ReadBytes(numBytes);
                 }
@@ -199,8 +199,8 @@ namespace GTASaveData.Tests.Serialization
             Faker f = new Faker();
 
             char x0 = f.Random.Char('\u0000', '\u00FF');
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            char x1 = SaveDataSerializer.Deserialize<char>(data);
+            byte[] data = Serializer.Serialize(x0);
+            char x1 = Serializer.Deserialize<char>(data);
 
             Assert.Equal(x0, x1);
             Assert.Single(data);
@@ -217,7 +217,7 @@ namespace GTASaveData.Tests.Serialization
 
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
                     s.Write(x0, true);
                 }
@@ -226,7 +226,7 @@ namespace GTASaveData.Tests.Serialization
 
             using (MemoryStream m = new MemoryStream(data))
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
                     x1 = s.ReadChar(true);
                 }
@@ -242,8 +242,8 @@ namespace GTASaveData.Tests.Serialization
             Faker f = new Faker();
 
             double x0 = f.Random.Double();
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            double x1 = SaveDataSerializer.Deserialize<double>(data);
+            byte[] data = Serializer.Serialize(x0);
+            double x1 = Serializer.Deserialize<double>(data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(8, data.Length);
@@ -255,8 +255,8 @@ namespace GTASaveData.Tests.Serialization
             Faker f = new Faker();
 
             float x0 = f.Random.Float();
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            float x1 = SaveDataSerializer.Deserialize<float>(data);
+            byte[] data = Serializer.Serialize(x0);
+            float x1 = Serializer.Deserialize<float>(data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(4, data.Length);
@@ -268,8 +268,8 @@ namespace GTASaveData.Tests.Serialization
             Faker f = new Faker();
 
             short x0 = f.Random.Short();
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            short x1 = SaveDataSerializer.Deserialize<short>(data);
+            byte[] data = Serializer.Serialize(x0);
+            short x1 = Serializer.Deserialize<short>(data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(2, data.Length);
@@ -281,8 +281,8 @@ namespace GTASaveData.Tests.Serialization
             Faker f = new Faker();
 
             ushort x0 = f.Random.UShort();
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            ushort x1 = SaveDataSerializer.Deserialize<ushort>(data);
+            byte[] data = Serializer.Serialize(x0);
+            ushort x1 = Serializer.Deserialize<ushort>(data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(2, data.Length);
@@ -294,8 +294,8 @@ namespace GTASaveData.Tests.Serialization
             Faker f = new Faker();
 
             int x0 = f.Random.Int();
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            int x1 = SaveDataSerializer.Deserialize<int>(data);
+            byte[] data = Serializer.Serialize(x0);
+            int x1 = Serializer.Deserialize<int>(data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(4, data.Length);
@@ -307,8 +307,8 @@ namespace GTASaveData.Tests.Serialization
             Faker f = new Faker();
 
             uint x0 = f.Random.UInt();
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            uint x1 = SaveDataSerializer.Deserialize<uint>(data);
+            byte[] data = Serializer.Serialize(x0);
+            uint x1 = Serializer.Deserialize<uint>(data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(4, data.Length);
@@ -320,8 +320,8 @@ namespace GTASaveData.Tests.Serialization
             Faker f = new Faker();
 
             long x0 = f.Random.Long();
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            long x1 = SaveDataSerializer.Deserialize<long>(data);
+            byte[] data = Serializer.Serialize(x0);
+            long x1 = Serializer.Deserialize<long>(data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(8, data.Length);
@@ -333,8 +333,8 @@ namespace GTASaveData.Tests.Serialization
             Faker f = new Faker();
 
             ulong x0 = f.Random.ULong();
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            ulong x1 = SaveDataSerializer.Deserialize<ulong>(data);
+            byte[] data = Serializer.Serialize(x0);
+            ulong x1 = Serializer.Deserialize<ulong>(data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(8, data.Length);
@@ -344,11 +344,19 @@ namespace GTASaveData.Tests.Serialization
         public void Object()
         {
             TestObject x0 = TestObject.Generate();
-            byte[] data = SaveDataSerializer.Serialize(x0);
-            TestObject x1 = SaveDataSerializer.Deserialize<TestObject>(data);
+            byte[] data = Serializer.Serialize(x0);
+            TestObject x1 = Serializer.Deserialize<TestObject>(data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(TestObject.SerializedSize, data.Length);
+        }
+
+        [Fact]
+        public void NonSerializableObject()
+        {
+            TestObject2 x = new TestObject2();
+
+            Assert.Throws<SerializationException>(() => Serializer.Serialize(x));
         }
 
         [Fact]
@@ -531,7 +539,7 @@ namespace GTASaveData.Tests.Serialization
         }
 
         #region Test Objects
-        public class TestObject : IEquatable<TestObject>
+        public class TestObject : Chunk, IEquatable<TestObject>
         {
             public int Integer { get; set; }
             public bool Boolean { get; set; }
@@ -540,18 +548,18 @@ namespace GTASaveData.Tests.Serialization
             public TestObject()
             { }
 
-            protected TestObject(SaveDataSerializer serializer)
+            protected override void ReadObjectData(Serializer r, FileFormat fmt)
             {
-                Integer = serializer.ReadInt32();
-                Boolean = serializer.ReadBool();
-                Single = serializer.ReadSingle();
+                Integer = r.ReadInt32();
+                Boolean = r.ReadBool();
+                Single = r.ReadSingle();
             }
 
-            public void WriteObjectData(SaveDataSerializer serializer)
+            protected override void WriteObjectData(Serializer w, FileFormat fmt)
             {
-                serializer.Write(Integer);
-                serializer.Write(Boolean);
-                serializer.Write(Single);
+                w.Write(Integer);
+                w.Write(Boolean);
+                w.Write(Single);
             }
 
             public override int GetHashCode()
@@ -593,6 +601,8 @@ namespace GTASaveData.Tests.Serialization
 
             public static int SerializedSize => 9;
         }
+
+        public class TestObject2 { }
         #endregion
 
         #region Helper Functions
@@ -603,7 +613,7 @@ namespace GTASaveData.Tests.Serialization
         {
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
                     s.Write(x, length, unicode, zeroTerminate);
                 }
@@ -614,7 +624,7 @@ namespace GTASaveData.Tests.Serialization
 
         public static string BytesToString(byte[] data, int length = 0, bool unicode = false)
         {
-            using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(data)))
+            using (Serializer s = new Serializer(new MemoryStream(data)))
             {
                 return s.ReadString(length, unicode);
             }
@@ -628,9 +638,9 @@ namespace GTASaveData.Tests.Serialization
         {
             using (MemoryStream m = new MemoryStream())
             {
-                using (SaveDataSerializer s = new SaveDataSerializer(m))
+                using (Serializer s = new Serializer(m))
                 {
-                    s.WriteArray(items, count, null, itemLength, unicode);
+                    s.Write(items, count, null, itemLength, unicode);
                 }
 
                 return m.ToArray();
@@ -641,7 +651,7 @@ namespace GTASaveData.Tests.Serialization
             int itemLength = 0,
             bool unicode = false)
         {
-            using (SaveDataSerializer s = new SaveDataSerializer(new MemoryStream(data)))
+            using (Serializer s = new Serializer(new MemoryStream(data)))
             {
                 return s.ReadArray<T>(count, null, itemLength, unicode);
             }

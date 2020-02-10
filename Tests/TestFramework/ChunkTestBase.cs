@@ -1,8 +1,8 @@
 ﻿using GTASaveData.Serialization;
 
-namespace GTASaveData.Tests.TestFramework
+namespace TestFramework
 {
-    public abstract class SaveDataObjectTestBase<T>
+    public abstract class ChunkTestBase<T>
     {
         public T CreateSerializedCopy(T x, FileFormat format = null)
         {
@@ -11,8 +11,8 @@ namespace GTASaveData.Tests.TestFramework
 
         public T CreateSerializedCopy(T x, out byte[] bytes, FileFormat format = null)
         {
-            bytes = SaveDataSerializer.Serialize(x, format);
-            T obj = SaveDataSerializer.Deserialize<T>(bytes, format);
+            bytes = Serializer.Serialize(x, format);
+            T obj = Serializer.Deserialize<T>(bytes, format);
 
             return obj;
         }

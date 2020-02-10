@@ -1,12 +1,12 @@
 ﻿using Bogus;
 using GTASaveData.Common;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.TestFramework;
+using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.Common
+namespace GTASaveData.Core.Tests.Common
 {
-    public class TestVector2d : SaveDataObjectTestBase<Vector2d>
+    public class TestVector2d : ChunkTestBase<Vector2d>
     {
         public override Vector2d GenerateTestVector(FileFormat format)
         {

@@ -1,11 +1,8 @@
-﻿using Bogus;
-using GTASaveData.Extensions;
+﻿using GTASaveData.Extensions;
 using Xunit;
 
-namespace GTASaveData.Tests.Extensions
+namespace GTASaveData.Core.Tests.Extensions
 {
-    // TODO: extend to IEnumerable?
-
     public class TestByteArrayExtensions
     {
         [Theory]

@@ -5,6 +5,7 @@ using System.Windows.Data;
 
 namespace TestApp
 {
+    // TODO: wtf does this do again?? attempt to convert a string to a matching enum value? If so, RENAME
     public class EnumBooleanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

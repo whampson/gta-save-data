@@ -1,12 +1,12 @@
 ﻿using Bogus;
 using GTASaveData.Common;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.TestFramework;
+using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.Common
+namespace GTASaveData.Core.Tests.Common
 {
-    public class TestRect3d : SaveDataObjectTestBase<Rect3d>
+    public class TestRect3d : ChunkTestBase<Rect3d>
     {
         public override Rect3d GenerateTestVector(FileFormat format)
         {
