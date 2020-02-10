@@ -773,13 +773,12 @@ namespace GTASaveData.Serialization
             }
             else if (t.GetInterface(nameof(IChunk)) != null)
             {
-                // TODO: test
                 MethodInfo readChunk = GetType().GetMethod(nameof(ReadChunk)).MakeGenericMethod(t);
                 ret = readChunk.Invoke(this, new object[] { format });
             }
             else
             {
-                throw NewSerializationException();
+                throw SerializationNotSupported();
             }
 
             return (T) ret;
@@ -855,13 +854,13 @@ namespace GTASaveData.Serialization
             }
             else
             {
-                throw NewSerializationException();
+                throw SerializationNotSupported();
             }
         }
 
-        SerializationException NewSerializationException()
+        private SerializationException SerializationNotSupported()
         {
-            return new SerializationException("The object does not support serialization.");
+            return new SerializationException(Strings.Error_NotSupported_Serialization);
         }
 
         #region IDisposable
