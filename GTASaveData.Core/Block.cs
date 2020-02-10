@@ -1,6 +1,7 @@
 ﻿using GTASaveData.Serialization;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData
@@ -33,6 +34,7 @@ namespace GTASaveData
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
             // nop
+            Debug.WriteLine("WARN: Calling useless method: Block#ReadObjectData()");
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
@@ -53,6 +55,16 @@ namespace GTASaveData
             }
 
             return m_data.SequenceEqual(other.m_data);
+        }
+
+        public static implicit operator byte[](Block b)
+        {
+            return b.m_data;
+        }
+
+        public static implicit operator Block(byte[] data)
+        {
+            return new Block(data);
         }
     }
 }
