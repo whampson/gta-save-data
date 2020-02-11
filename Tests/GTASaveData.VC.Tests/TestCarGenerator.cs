@@ -1,14 +1,14 @@
 ﻿using Bogus;
+using GTASaveData.Common;
+using GTASaveData.Core.Tests.Common;
 using GTASaveData.VC;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.TestFramework;
+using TestFramework;
 using Xunit;
-using GTASaveData.Common;
-using GTASaveData.Tests.Common;
 
 namespace GTASaveData.Tests.VC
 {
-    public class TestCarGenerator : SaveDataObjectTestBase<CarGenerator>
+    public class TestCarGenerator : SerializableObjectTestBase<CarGenerator>
     {
         public override CarGenerator GenerateTestVector(FileFormat format)
         {

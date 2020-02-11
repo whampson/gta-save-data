@@ -1,20 +1,20 @@
 ﻿using Bogus;
 using GTASaveData.VC;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.TestFramework;
 using System.Collections.Generic;
-using Xunit;
 using System.IO;
+using TestFramework;
+using Xunit;
 
 namespace GTASaveData.Tests.VC
 {
-    public class TestVCSave : SaveDataObjectTestBase<VCSave>
+    public class TestVCSave : SerializableObjectTestBase<ViceCitySave>
     {
-        public override VCSave GenerateTestVector(FileFormat format)
+        public override ViceCitySave GenerateTestVector(FileFormat format)
         {
             Faker faker = new Faker();
 
-            Faker<VCSave> model = new Faker<VCSave>()
+            Faker<ViceCitySave> model = new Faker<ViceCitySave>()
                 .RuleFor(x => x.SimpleVars, f => Generator.Generate<SimpleVars, TestSimpleVars>(format))
                 //.RuleFor(x => x.Scripts, Generator.Generate<Scripts, TestScripts>(format))
                 //.RuleFor(x => x.PedPool, TestHelper.Generate<PedPool, TestPedPool>(format))
@@ -47,8 +47,8 @@ namespace GTASaveData.Tests.VC
         {
             byte[] expected = File.ReadAllBytes(path);
 
-            VCSave x0 = SaveData.Load<VCSave>(path, format);
-            VCSave x1 = CreateSerializedCopy(x0, out byte[] data, format);
+            ViceCitySave x0 = GrandTheftAutoSave.Load<ViceCitySave>(path, format);
+            ViceCitySave x1 = CreateSerializedCopy(x0, out byte[] data, format);
 
             Assert.Equal(x0, x1);
             Assert.Equal(expected.Length, data.Length);
@@ -78,7 +78,7 @@ namespace GTASaveData.Tests.VC
 
         public static IEnumerable<object[]> TestFiles => new[]
         {
-            new object[] { VCSave.FileFormats.PCRetail, "./TestData/VC/PCRetail/StarterSave.b" },
+            new object[] { ViceCitySave.FileFormats.PCRetail, "../../../../TestData/VC/PCRetail/StarterSave.b" },
         };
 
         //public static IEnumerable<object[]> SerializationData => new[]

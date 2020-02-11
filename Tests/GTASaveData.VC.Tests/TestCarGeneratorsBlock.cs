@@ -1,12 +1,12 @@
 ﻿using Bogus;
 using GTASaveData.VC;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.TestFramework;
+using TestFramework;
 using Xunit;
 
 namespace GTASaveData.Tests.VC
 {
-    public class TestCarGeneratorsBlock : SaveDataObjectTestBase<CarGeneratorsBlock>
+    public class TestCarGeneratorsBlock : SerializableObjectTestBase<CarGeneratorsBlock>
     {
         public override CarGeneratorsBlock GenerateTestVector(FileFormat format)
         {

@@ -378,7 +378,7 @@ namespace GTASaveData.Serialization
         /// <param name="format">The data format.</param>
         /// <returns>An object.</returns>
         /// <exception cref="SerializationException">Thrown if an error occurs during deserialization.</exception>
-        public T ReadChunk<T>(FileFormat format = null) where T : IChunk, new()
+        public T ReadObject<T>(FileFormat format = null) where T : ISerializable, new()
         {
             T obj = new T();
             obj.ReadObjectData(this, format ?? FileFormat.Unknown);
@@ -617,14 +617,14 @@ namespace GTASaveData.Serialization
         /// Writes an object.
         /// </summary>
         /// <remarks>
-        /// The object type must implement the <see cref="IChunk"/> interface
+        /// The object type must implement the <see cref="ISerializable"/> interface
         /// and specify its serialization.
         /// </remarks>
         /// <typeparam name="T">The type of object to write.</typeparam>
         /// <param name="value">The object to write</param>
         /// <param name="format">The data format.</param>
         /// <exception cref="SerializationException">Thrown if an error occurs during serialization.</exception>
-        public void Write<T>(T value, FileFormat format = null) where T : IChunk
+        public void Write<T>(T value, FileFormat format = null) where T : ISerializable
         {
             value.WriteObjectData(this, format ?? FileFormat.Unknown);
         }
@@ -771,9 +771,9 @@ namespace GTASaveData.Serialization
             {
                 ret = (length == 0) ? ReadString(unicode) : ReadString(length, unicode);
             }
-            else if (t.GetInterface(nameof(IChunk)) != null)
+            else if (t.GetInterface(nameof(ISerializable)) != null)
             {
-                MethodInfo readChunk = GetType().GetMethod(nameof(ReadChunk)).MakeGenericMethod(t);
+                MethodInfo readChunk = GetType().GetMethod(nameof(ReadObject)).MakeGenericMethod(t);
                 ret = readChunk.Invoke(this, new object[] { format });
             }
             else
@@ -848,9 +848,9 @@ namespace GTASaveData.Serialization
             {
                 Write(Convert.ToString(value), length, unicode);
             }
-            else if (t.GetInterface(nameof(IChunk)) != null)
+            else if (t.GetInterface(nameof(ISerializable)) != null)
             {
-                Write((IChunk) value, format);
+                Write((ISerializable) value, format);
             }
             else
             {

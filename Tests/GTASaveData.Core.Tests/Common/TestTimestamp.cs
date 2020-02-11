@@ -7,7 +7,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests.Common
 {
-    public class TestTimestamp : ChunkTestBase<Timestamp>
+    public class TestTimestamp : SerializableObjectTestBase<Timestamp>
     {
         public override Timestamp GenerateTestVector(FileFormat format)
         {

@@ -539,7 +539,7 @@ namespace GTASaveData.Core.Tests.Serialization
         }
 
         #region Test Objects
-        public class TestObject : Chunk, IEquatable<TestObject>
+        public class TestObject : SerializableObject, IEquatable<TestObject>
         {
             public int Integer { get; set; }
             public bool Boolean { get; set; }

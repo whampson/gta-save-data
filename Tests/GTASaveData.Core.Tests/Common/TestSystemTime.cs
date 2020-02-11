@@ -7,7 +7,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests.Common
 {
-    public class TestSystemTime : ChunkTestBase<SystemTime>
+    public class TestSystemTime : SerializableObjectTestBase<SystemTime>
     {
         public override SystemTime GenerateTestVector(FileFormat format)
         {

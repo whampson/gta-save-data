@@ -120,12 +120,12 @@ namespace GTASaveData.Core.Tests
         [Fact]
         public void ModifyItem()
         {
-            List<ItemPropertyChangedEventArgs> raisedEvents = new List<ItemPropertyChangedEventArgs>();
+            List<ItemStateChangedEventArgs> raisedEvents = new List<ItemStateChangedEventArgs>();
             List<TestObject> items = Enumerable.Repeat(0, 10).Select(x => TestObject.GenerateRandom()).ToList();
 
             StaticArray<TestObject> a = new StaticArray<TestObject>(items);
 
-            a.ItemStateChanged += delegate (object sender, ItemPropertyChangedEventArgs e)
+            a.ItemStateChanged += delegate (object sender, ItemStateChangedEventArgs e)
             {
                 raisedEvents.Add(e);
             };

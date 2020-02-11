@@ -6,7 +6,7 @@ namespace GTASaveData.Common
     /// <summary>
     /// Represents a date and time. This is the .NET equivalent of the Win32 <c>SYSTEMTIME</c> structure.
     /// </summary>
-    public class SystemTime : Chunk, IEquatable<SystemTime>
+    public class SystemTime : SerializableObject, IEquatable<SystemTime>
     {
         private ushort m_year;
         private ushort m_month;

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests.Common
 {
-    public class TestRect3d : ChunkTestBase<Rect3d>
+    public class TestRect3d : SerializableObjectTestBase<Rect3d>
     {
         public override Rect3d GenerateTestVector(FileFormat format)
         {

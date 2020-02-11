@@ -21,7 +21,7 @@ namespace TestFramework
         //    return new FullyObservableCollection<T>(Enumerable.Range(0, count).Select(itemGenerator));
         //}
 
-        public static T[] CreateArray<T>(int count, Func<int, T> itemGenerator)
+        public static StaticArray<T> CreateArray<T>(int count, Func<int, T> itemGenerator)
             where T : new()
         {
             return Enumerable.Range(0, count).Select(itemGenerator).ToArray();
@@ -48,26 +48,26 @@ namespace TestFramework
             return new string(f.Random.Chars('\u0000', '\uD7FF', length));  // exclude surrogates
         }
 
-        public static TChunk Generate<TChunk, TChunkTest>()
-            where TChunk : Chunk
-            where TChunkTest : ChunkTestBase<TChunk>
+        public static T Generate<T, U>()
+            where T : SerializableObject
+            where U : SerializableObjectTestBase<T>
         {
-            return Generate<TChunk, TChunkTest>(FileFormat.Unknown);
+            return Generate<T, U>(FileFormat.Unknown);
         }
 
-        public static TChunk Generate<TChunk, TChunkTest>(FileFormat format)
-            where TChunk : Chunk
-            where TChunkTest : ChunkTestBase<TChunk>
+        public static T Generate<T, U>(FileFormat format)
+            where T : SerializableObject
+            where U : SerializableObjectTestBase<T>
         {
-            var testGen = Activator.CreateInstance(typeof(TChunkTest));
-            MethodInfo m = typeof(TChunkTest).GetMethod(
-                nameof(ChunkTestBase<TChunk>.GenerateTestVector),
+            var testGen = Activator.CreateInstance(typeof(U));
+            MethodInfo m = typeof(U).GetMethod(
+                nameof(SerializableObjectTestBase<T>.GenerateTestVector),
                 BindingFlags.Public | BindingFlags.Instance,
                 null,
                 new Type[] { typeof(FileFormat) },
                 null);
             
-            return (TChunk) m.Invoke(testGen, new object[] { format ?? FileFormat.Unknown });
+            return (T) m.Invoke(testGen, new object[] { format ?? FileFormat.Unknown });
         }
     }
 }

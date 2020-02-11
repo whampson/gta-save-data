@@ -1,16 +1,15 @@
 ﻿using Bogus;
-using GTASaveData;
+using GTASaveData.Common;
+using GTASaveData.Core.Tests.Common;
 using GTASaveData.VC;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.Common;
-using GTASaveData.Tests.TestFramework;
 using System.Collections.Generic;
+using TestFramework;
 using Xunit;
-using GTASaveData.Common;
 
 namespace GTASaveData.Tests.VC
 {
-    public class TestSimpleVars : SaveDataObjectTestBase<SimpleVars>
+    public class TestSimpleVars : SerializableObjectTestBase<SimpleVars>
     {
         public override SimpleVars GenerateTestVector(FileFormat format)
         {
@@ -76,8 +75,8 @@ namespace GTASaveData.Tests.VC
 
         public static IEnumerable<object[]> SerializationData => new[]
         {
-            new object[] { VCSave.FileFormats.PCRetail, 0xE4 },
-            new object[] { VCSave.FileFormats.PCSteam, 0xE8 }
+            new object[] { ViceCitySave.FileFormats.PCRetail, 0xE4 },
+            new object[] { ViceCitySave.FileFormats.PCSteam, 0xE8 }
         };
     }
 }

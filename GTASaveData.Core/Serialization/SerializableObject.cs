@@ -1,13 +1,12 @@
-﻿using GTASaveData.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using WpfEssentials;
 
-namespace GTASaveData
+namespace GTASaveData.Serialization
 {
     /// <summary>
     /// Represents an arbitrary data structure stored in a Grand Theft Auto save file.
     /// </summary>
-    public abstract class Chunk : ObservableObject, IChunk
+    public abstract class SerializableObject : ObservableObject, ISerializable
     {
         /// <summary>
         /// Popualates this object's fields by reading data from the specified <see cref="Serializer"/>.
@@ -23,12 +22,12 @@ namespace GTASaveData
         /// <param name="fmt">The data format for writing platform-specific data.</param>
         protected abstract void WriteObjectData(Serializer w, FileFormat fmt);
 
-        void IChunk.ReadObjectData(Serializer r, FileFormat fmt)
+        void ISerializable.ReadObjectData(Serializer r, FileFormat fmt)
         {
             ReadObjectData(r, fmt);
         }
 
-        void IChunk.WriteObjectData(Serializer w, FileFormat fmt)
+        void ISerializable.WriteObjectData(Serializer w, FileFormat fmt)
         {
             WriteObjectData(w, fmt);
         }

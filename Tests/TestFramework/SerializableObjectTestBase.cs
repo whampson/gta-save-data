@@ -2,7 +2,7 @@
 
 namespace TestFramework
 {
-    public abstract class ChunkTestBase<T>
+    public abstract class SerializableObjectTestBase<T>
     {
         public T CreateSerializedCopy(T x, FileFormat format = null)
         {

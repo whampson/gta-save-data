@@ -1,12 +1,11 @@
 ﻿using GTASaveData.Serialization;
 
-namespace GTASaveData
+namespace GTASaveData.Serialization
 {
     /// <summary>
     /// Exposes the methods necessary for object serialization.
-    /// The serialized blob is referred to as a Chunk.
     /// </summary>
-    public interface IChunk
+    public interface ISerializable
     {
         /// <summary>
         /// Reads this object's data from the specified <see cref="Serializer"/>.
