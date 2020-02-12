@@ -19,7 +19,7 @@ namespace TestFramework
 
         public T GenerateTestVector()
         {
-            return GenerateTestVector(FileFormat.Unknown);
+            return GenerateTestVector(FileFormat.None);
         }
 
         public abstract T GenerateTestVector(FileFormat format);

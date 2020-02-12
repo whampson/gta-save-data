@@ -4,7 +4,7 @@ using System;
 
 namespace GTASaveData.VC
 {
-    public sealed class CarGenerator : Chunk,
+    public sealed class CarGenerator : SerializableObject,
         IEquatable<CarGenerator>
     {
         private int m_model;
@@ -114,7 +114,7 @@ namespace GTASaveData.VC
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
             m_model = r.ReadInt32();
-            m_position = r.ReadChunk<Vector3d>();
+            m_position = r.ReadObject<Vector3d>();
             m_heading = r.ReadSingle();
             m_color1 = r.ReadInt16();
             m_color2 = r.ReadInt16();

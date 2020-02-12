@@ -52,7 +52,7 @@ namespace TestFramework
             where T : SerializableObject
             where U : SerializableObjectTestBase<T>
         {
-            return Generate<T, U>(FileFormat.Unknown);
+            return Generate<T, U>(FileFormat.None);
         }
 
         public static T Generate<T, U>(FileFormat format)
@@ -67,7 +67,7 @@ namespace TestFramework
                 new Type[] { typeof(FileFormat) },
                 null);
             
-            return (T) m.Invoke(testGen, new object[] { format ?? FileFormat.Unknown });
+            return (T) m.Invoke(testGen, new object[] { format ?? FileFormat.None });
         }
     }
 }

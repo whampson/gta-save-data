@@ -10,7 +10,7 @@ namespace GTASaveData.Serialization
         /// <summary>
         /// Represents an ambiguous or irrelevant file format.
         /// </summary>
-        public static readonly FileFormat Unknown = new FileFormat();
+        public static readonly FileFormat None = new FileFormat();
 
         /// <summary>
         /// Gets the <see cref="FileFormat"/> display name.

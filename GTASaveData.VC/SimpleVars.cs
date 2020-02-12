@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace GTASaveData.VC
 {
-    public sealed class SimpleVars : Chunk,
+    public sealed class SimpleVars : SerializableObject,
         IEquatable<SimpleVars>
     {
         public static class Limits
@@ -348,13 +348,13 @@ namespace GTASaveData.VC
             {
                 if (fmt.IsPC || fmt.IsXbox)   // TODO: confirm
                 {
-                    m_saveTime = r.ReadChunk<SystemTime>();
+                    m_saveTime = r.ReadObject<SystemTime>();
                 }
             }
             int constant = r.ReadInt32();
             Debug.Assert(/*constant == TotalBlockDataSize || */constant == (TotalBlockDataSize + 1));
             m_currLevel = (Level) r.ReadUInt32();
-            m_cameraPosition = r.ReadChunk<Vector3d>();
+            m_cameraPosition = r.ReadObject<Vector3d>();
             if (fmt.HasFlag(ConsoleFlags.Steam)) // TODO: distinguish between Windows Steam and macOS Steam
             {
                 m_unknownSteamOnly = r.ReadInt32();
@@ -524,7 +524,7 @@ namespace GTASaveData.VC
 
         public override bool Equals(object obj)
         {
-            return base.Equals(obj);
+            return Equals(obj as SimpleVars);
         }
 
         public bool Equals(SimpleVars other)

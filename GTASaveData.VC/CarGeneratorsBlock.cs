@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace GTASaveData.VC
 {
-    public sealed class CarGeneratorsBlock : Chunk,
+    public sealed class CarGeneratorsBlock : SerializableObject,
         IEquatable<CarGeneratorsBlock>
     {
         public static class Limits

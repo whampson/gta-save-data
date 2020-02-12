@@ -381,7 +381,7 @@ namespace GTASaveData.Serialization
         public T ReadObject<T>(FileFormat format = null) where T : ISerializable, new()
         {
             T obj = new T();
-            obj.ReadObjectData(this, format ?? FileFormat.Unknown);
+            obj.ReadObjectData(this, format ?? FileFormat.None);
 
             return obj;
         }
@@ -626,7 +626,7 @@ namespace GTASaveData.Serialization
         /// <exception cref="SerializationException">Thrown if an error occurs during serialization.</exception>
         public void Write<T>(T value, FileFormat format = null) where T : ISerializable
         {
-            value.WriteObjectData(this, format ?? FileFormat.Unknown);
+            value.WriteObjectData(this, format ?? FileFormat.None);
         }
 
         /// <summary>
