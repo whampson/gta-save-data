@@ -16,9 +16,8 @@ namespace GTASaveData
     /// This collection is WPF-ready. Changes to items in the collection and to the collection itself
     /// are observable by WPF UIs via the CollectionChanged and ItemStateChanged events.
     /// </remarks>
-    public abstract class Array<T> : IEnumerable, IEnumerable<T>, IList, IList<T>,
+    public class Array<T> : IEnumerable, IEnumerable<T>, IList, IList<T>,
         INotifyCollectionChanged, INotifyItemStateChanged
-        where T : new()
     {
         /// <summary>
         /// Occurs when the array changes, such as an item being added, removed, or replaced.
@@ -34,11 +33,10 @@ namespace GTASaveData
         private readonly bool m_itemsAreObservable;
 
         public int Count => m_items.Count;
+        public bool IsFixedSize => false;
         public bool IsReadOnly => false;
         public bool IsSynchronized => false;
         public object SyncRoot => this;
-
-        public abstract bool IsFixedSize { get; }
 
         public T this[int index]
         {
@@ -53,22 +51,19 @@ namespace GTASaveData
         }
         
         /// <summary>
-        /// Creates a new <see cref="Array{T}"/> with the specified number of items.
+        /// Creates a new empty <see cref="Array{T}"/>.
         /// </summary>
-        /// <param name="count">The number of items to pre-allocate.</param>
-        protected Array(int count)
+        public Array()
         {
-            m_items = new List<T>(count);
+            m_items = new List<T>();
             m_itemsAreObservable = typeof(T).IsObservable();
-
-            Populate(count);
         }
 
         /// <summary>
         /// Creates a new <see cref="Array{T}"/> with items from the specified enumerable.
         /// </summary>
         /// <param name="items">The items to initalize the array with.</param>
-        protected Array(IEnumerable<T> items)
+        public Array(IEnumerable<T> items)
         {
             m_items = new List<T>();
             m_itemsAreObservable = typeof(T).IsObservable();
@@ -80,19 +75,9 @@ namespace GTASaveData
         /// Creates a new <see cref="Array{T}"/> with items from the specified list.
         /// </summary>
         /// <param name="items">The items to initalize the array with.</param>
-        protected Array(List<T> items)
+        public Array(List<T> items)
             : this((IEnumerable<T>) items)
         { }
-
-        private void Populate(int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                T item = new T();
-                RegisterStateChangedHandler(item);
-                m_items.Add(item);
-            }
-        }
 
         private void Populate(IEnumerable<T> items)
         {
@@ -110,22 +95,13 @@ namespace GTASaveData
         /// <returns>The index of the new item, or -1 if not allowed.</returns>
         public int Add(object value)
         {
-            if (IsFixedSize)
-            {
-                return -1;
-            }
-
             Add((T) value);
+
             return m_items.Count - 1;
         }
 
         public void Add(T item)
         {
-            if (IsFixedSize)
-            {
-                throw NotSupportedDueToFixedSize();
-            }
-
             RegisterStateChangedHandler(item);
             m_items.Add(item);
 
@@ -134,28 +110,8 @@ namespace GTASaveData
 
         public void Clear()
         {
-            if (IsFixedSize)
-            {
-                // Set all items to default value
-                for (int i = 0; i < m_items.Count; i++)
-                {
-                    if (i < m_items.Count)
-                    {
-                        T oldItem = m_items[i];
-                        UnregisterStateChangedHandler(oldItem);
-                    }
-
-                    T newItem = new T();
-                    RegisterStateChangedHandler(newItem);
-                    m_items[i] = newItem;
-                }
-            }
-            else
-            {
-                // Empty-out the list
-                m_items.ForEach(item => UnregisterStateChangedHandler(item));
-                m_items.Clear();
-            }
+            m_items.ForEach(item => UnregisterStateChangedHandler(item));
+            m_items.Clear();
 
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
@@ -200,11 +156,6 @@ namespace GTASaveData
 
         public void Insert(int index, T item)
         {
-            if (IsFixedSize)
-            {
-                throw NotSupportedDueToFixedSize();
-            }
-
             m_items.Insert(index, item);
 
             RegisterStateChangedHandler(item);
@@ -223,11 +174,6 @@ namespace GTASaveData
 
         public bool Remove(T item)
         {
-            if (IsFixedSize)
-            {
-                throw NotSupportedDueToFixedSize();
-            }
-
             bool found = m_items.Remove(item);
             if (found)
             {
@@ -240,11 +186,6 @@ namespace GTASaveData
 
         public void RemoveAt(int index)
         {
-            if (IsFixedSize)
-            {
-                throw NotSupportedDueToFixedSize();
-            }
-
             T item = m_items[index];
             m_items.RemoveAt(index);
 
@@ -281,7 +222,7 @@ namespace GTASaveData
         {
             if (item != null && m_itemsAreObservable)
             {
-                ((INotifyPropertyChanged) item).PropertyChanged += ItemPropertyChangedHandler;
+                ((INotifyPropertyChanged) item).PropertyChanged += ItemStateChangedHandler;
             }
         }
 
@@ -289,11 +230,11 @@ namespace GTASaveData
         {
             if (item != null && m_itemsAreObservable)
             {
-                ((INotifyPropertyChanged) item).PropertyChanged -= ItemPropertyChangedHandler;
+                ((INotifyPropertyChanged) item).PropertyChanged -= ItemStateChangedHandler;
             }
         }
 
-        private void ItemPropertyChangedHandler(object sender, PropertyChangedEventArgs e)
+        private void ItemStateChangedHandler(object sender, PropertyChangedEventArgs e)
         {
             if (sender is T typedSender)
             {
@@ -328,11 +269,6 @@ namespace GTASaveData
         protected void OnCollectionChanged(NotifyCollectionChangedAction action, object newItem, object oldItem, int index)
         {
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItem, oldItem, index));
-        }
-
-        private NotSupportedException NotSupportedDueToFixedSize()
-        {
-            return new NotSupportedException(Strings.Error_NotSupported_FixedSizeCollection);
         }
     }
 }
