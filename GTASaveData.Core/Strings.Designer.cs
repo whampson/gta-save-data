@@ -61,11 +61,11 @@ namespace GTASaveData {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Collection is of a fixed size..
+        ///   Looks up a localized string similar to The collection cannot be modified while being changed by another thread..
         /// </summary>
-        internal static string Error_NotSupported_FixedSizeCollection {
+        internal static string Error_InvalidOperation_CollectionReentrancy {
             get {
-                return ResourceManager.GetString("Error_NotSupported_FixedSizeCollection", resourceCulture);
+                return ResourceManager.GetString("Error_InvalidOperation_CollectionReentrancy", resourceCulture);
             }
         }
         

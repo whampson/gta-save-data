@@ -6,7 +6,8 @@ namespace GTASaveData.Common
     /// <summary>
     /// Represents a date and time.
     /// </summary>
-    public class Timestamp : SerializableObject, IEquatable<Timestamp>
+    public class Timestamp : SerializableObject,
+        IEquatable<Timestamp>
     {
         private int m_year;
         private int m_month;

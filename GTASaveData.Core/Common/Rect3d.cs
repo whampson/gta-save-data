@@ -6,7 +6,8 @@ namespace GTASaveData.Common
     /// <summary>
     /// Represents a rectangle in 3-space.
     /// </summary>
-    public class Rect3d : SerializableObject, IEquatable<Rect3d>
+    public class Rect3d : SerializableObject,
+        IEquatable<Rect3d>
     {
         private float m_xMin;
         private float m_xMax;

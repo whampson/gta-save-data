@@ -18,7 +18,8 @@ namespace GTASaveData
     /// via the <see cref="ItemStateChanged"/> event.
     /// </remarks>
     public class Array<T> : ObservableObject,
-        IEnumerable, IEnumerable<T>, IList, IList<T>,
+        IEnumerable, IEnumerable<T>,
+        IList, IList<T>,
         INotifyCollectionChanged, INotifyItemStateChanged
     {
         /// <summary>

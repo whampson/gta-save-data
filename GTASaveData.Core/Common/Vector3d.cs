@@ -7,7 +7,8 @@ namespace GTASaveData.Common
     /// <summary>
     /// A 3-dimensional vector.
     /// </summary>
-    public class Vector3d : SerializableObject, IEquatable<Vector3d>
+    public class Vector3d : SerializableObject,
+        IEquatable<Vector3d>
     {
         private float m_x;
         private float m_y;

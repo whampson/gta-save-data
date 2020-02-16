@@ -7,7 +7,8 @@ namespace GTASaveData.Common
     /// <summary>
     /// A 2-dimensional vector.
     /// </summary>
-    public class Vector2d : SerializableObject, IEquatable<Vector2d>
+    public class Vector2d : SerializableObject,
+        IEquatable<Vector2d>
     {
         private float m_x;
         private float m_y;

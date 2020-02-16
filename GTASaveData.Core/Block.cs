@@ -9,14 +9,15 @@ namespace GTASaveData
     /// <summary>
     /// A container for arbitraty data. Useful for storing unknown block data.
     /// </summary>
-    public class Block : SerializableObject, IEquatable<Block>
+    public class Block : SerializableObject,
+        IEquatable<Block>
     {
         // TODO: custom JSON serializer so Data can be a base64 string?
 
-        private DynamicArray<byte> m_data;
+        private Array<byte> m_data;
 
         [JsonIgnore]
-        public DynamicArray<byte> Data
+        public Array<byte> Data
         {
             get { return m_data; }
             set { m_data = value; OnPropertyChanged(); }

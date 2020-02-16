@@ -4,7 +4,7 @@ using WpfEssentials;
 namespace GTASaveData.Serialization
 {
     /// <summary>
-    /// Represents an arbitrary data structure stored in a Grand Theft Auto save file.
+    /// Represents an arbitrary data structure stored in a <i>Grand Theft Auto</i> save file.
     /// </summary>
     public abstract class SerializableObject : ObservableObject, ISerializable
     {
@@ -35,6 +35,17 @@ namespace GTASaveData.Serialization
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        // TODO: optimize calculation with [SerializedSize()] on fixed-size types
+        public static int SizeOf<T>() where T : SerializableObject, new()
+        {
+            return Serializer.Serialize(new T()).Length;
+        }
+
+        public static int SizeOf<T>(FileFormat fmt) where T : SerializableObject, new()
+        {
+            return Serializer.Serialize(new T(), format: fmt).Length;
         }
     }
 }
