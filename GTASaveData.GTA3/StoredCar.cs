@@ -7,7 +7,7 @@ namespace GTASaveData.GTA3
     public class StoredCar : SerializableObject,
         IEquatable<StoredCar>
     {
-        private int m_modelId;          // TODO: enum
+        private VehicleModel m_model;
         private Vector3d m_position;
         private Vector3d m_rotation;
         private StoredCarImmunities m_immunities;
@@ -18,10 +18,10 @@ namespace GTASaveData.GTA3
         private sbyte m_extra2;
         private BombType m_bomb;
 
-        public int ModelId
+        public VehicleModel Model
         {
-            get { return m_modelId; }
-            set { m_modelId = value; OnPropertyChanged(); }
+            get { return m_model; }
+            set { m_model = value; OnPropertyChanged(); }
         }
 
         public Vector3d Position
@@ -87,7 +87,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_modelId = r.ReadInt32();
+            m_model = (VehicleModel) r.ReadInt32();
             m_position = r.ReadObject<Vector3d>();
             m_rotation = r.ReadObject<Vector3d>();
             m_immunities = (StoredCarImmunities) r.ReadInt32();
@@ -102,7 +102,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            w.Write((int) m_modelId);
+            w.Write((int) m_model);
             w.Write(m_position);
             w.Write(m_rotation);
             w.Write((int) m_immunities);
@@ -127,7 +127,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_modelId.Equals(other.m_modelId)
+            return m_model.Equals(other.m_model)
                 && m_position.Equals(other.m_position)
                 && m_rotation.Equals(other.m_rotation)
                 && m_immunities.Equals(other.m_immunities)

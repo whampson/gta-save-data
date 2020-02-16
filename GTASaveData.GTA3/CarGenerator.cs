@@ -18,7 +18,7 @@ namespace GTASaveData.GTA3
         private byte m_lockChance;
         private ushort m_minDelay;
         private ushort m_maxDelay;
-        private int m_timer;
+        private uint m_timer;
         private int m_vehiclePoolIndex;
         private bool m_enabled;
         private bool m_hasRecentlyBeenStolen;
@@ -92,7 +92,7 @@ namespace GTASaveData.GTA3
             set { m_maxDelay = value; OnPropertyChanged(); }
         }
 
-        public int Timer
+        public uint Timer
         {
             get { return m_timer; }
             set { m_timer = value; OnPropertyChanged(); }
@@ -136,6 +136,7 @@ namespace GTASaveData.GTA3
 
         public CarGenerator()
         {
+            m_position = new Vector3d();
             m_vecInf = new Vector3d();
             m_vecSup = new Vector3d();
         }
@@ -153,7 +154,7 @@ namespace GTASaveData.GTA3
             r.Align();
             m_minDelay = r.ReadUInt16();
             m_maxDelay = r.ReadUInt16();
-            m_timer = r.ReadInt32();
+            m_timer = r.ReadUInt32();
             m_vehiclePoolIndex = r.ReadInt32();
             m_enabled = r.ReadBool(2);
             m_hasRecentlyBeenStolen = r.ReadBool();
