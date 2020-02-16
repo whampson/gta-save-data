@@ -61,6 +61,33 @@ namespace GTASaveData {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value must be a power of 2..
+        /// </summary>
+        internal static string Error_Argument_PowerOf2 {
+            get {
+                return ResourceManager.GetString("Error_Argument_PowerOf2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream must be both readable and writable..
+        /// </summary>
+        internal static string Error_Argument_StreamMustBeRW {
+            get {
+                return ResourceManager.GetString("Error_Argument_StreamMustBeRW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The character cannot be a surrogate..
+        /// </summary>
+        internal static string Error_Argument_SurrogateChars {
+            get {
+                return ResourceManager.GetString("Error_Argument_SurrogateChars", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The collection cannot be modified while being changed by another thread..
         /// </summary>
         internal static string Error_InvalidOperation_CollectionReentrancy {

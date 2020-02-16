@@ -61,7 +61,6 @@ namespace GTASaveData.Serialization
             }
         }
 
-        // TODO: test method
         /// <summary>
         /// Aligns an address to the next multiple of the specified word size.
         /// </summary>
@@ -72,7 +71,7 @@ namespace GTASaveData.Serialization
         {
             if (wordSize < 1 || ((wordSize - 1) & wordSize) != 0)
             {
-                throw new ArgumentException("Word size must be a power of 2.", nameof(wordSize));
+                throw new ArgumentException(Strings.Error_Argument_PowerOf2, nameof(wordSize));
             }
 
             wordSize--;
@@ -98,7 +97,7 @@ namespace GTASaveData.Serialization
 
             if (!(baseStream.CanRead && baseStream.CanWrite))
             {
-                throw new ArgumentException("The base stream must be both readable and writable.", nameof(baseStream));
+                throw new ArgumentException(Strings.Error_Argument_StreamMustBeRW, nameof(baseStream));
             }
             
             m_reader = new BinaryReader(baseStream, Encoding.ASCII, true);
@@ -470,7 +469,7 @@ namespace GTASaveData.Serialization
 
             if (char.IsSurrogate(value))
             {
-                throw new ArgumentException("Surrogate code units are not supported.", nameof(value));
+                throw new ArgumentException(Strings.Error_Argument_SurrogateChars, nameof(value));
             }
 
             if (unicode)
