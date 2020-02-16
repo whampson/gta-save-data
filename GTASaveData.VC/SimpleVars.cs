@@ -42,7 +42,7 @@ namespace GTASaveData.VC
         private WeatherType m_newWeatherType;
         private WeatherType m_forcedWeatherType;
         private float m_interpolationValue;
-        private int m_prefsControllerConfig;    // TODO: enum?
+        private int m_prefsPadMode;
         private int m_prefsMusicVolume;
         private int m_prefsSfxVolume;
         private bool m_prefsUseVibration;
@@ -194,8 +194,8 @@ namespace GTASaveData.VC
 
         public int PrefsControllerConfig
         {
-            get { return m_prefsControllerConfig; }
-            set { m_prefsControllerConfig = value; OnPropertyChanged(); }
+            get { return m_prefsPadMode; }
+            set { m_prefsPadMode = value; OnPropertyChanged(); }
         }
 
         public int PrefsMusicVolume
@@ -363,7 +363,7 @@ namespace GTASaveData.VC
             {
                 m_gameClockHours = r.ReadInt32();
                 m_gameClockMinutes = r.ReadInt32();
-                m_prefsControllerConfig = r.ReadInt32();
+                m_prefsPadMode = r.ReadInt32();
             }
             else
             {
@@ -371,7 +371,7 @@ namespace GTASaveData.VC
                 r.Align();
                 m_gameClockMinutes = r.ReadByte();
                 r.Align();
-                m_prefsControllerConfig = r.ReadInt16();
+                m_prefsPadMode = r.ReadInt16();
                 r.Align();
             }
             m_timeInMilliseconds = r.ReadUInt32();
@@ -395,7 +395,7 @@ namespace GTASaveData.VC
                 m_prefsSfxVolume = r.ReadInt32();
                 if (!fmt.HasFlag(ConsoleFlags.Australia))
                 {
-                    m_prefsControllerConfig = r.ReadInt32();
+                    m_prefsPadMode = r.ReadInt32();
                 }
                 m_prefsUseVibration = r.ReadBool(4);
                 m_prefsStereoMono = r.ReadBool(4);
@@ -408,7 +408,7 @@ namespace GTASaveData.VC
                 m_prefsShowSubtitles = r.ReadBool(4);
                 m_prefsLanguage = r.ReadInt32();
                 m_prefsUseWideScreen = r.ReadBool(4);
-                m_prefsControllerConfig = r.ReadInt32();
+                m_prefsPadMode = r.ReadInt32();
                 m_prefsShowTrails = r.ReadBool(4);
             }
             //m_compileDateAndTime = serializer.ReadObject<Timestamp>();
@@ -453,7 +453,7 @@ namespace GTASaveData.VC
             {
                 w.Write(m_gameClockHours);
                 w.Write(m_gameClockMinutes);
-                w.Write((int) m_prefsControllerConfig);
+                w.Write((int) m_prefsPadMode);
             }
             else
             {
@@ -461,7 +461,7 @@ namespace GTASaveData.VC
                 w.Align();
                 w.Write((byte) m_gameClockMinutes);
                 w.Align();
-                w.Write((short) m_prefsControllerConfig);
+                w.Write((short) m_prefsPadMode);
                 w.Align();
             }
             w.Write(m_timeInMilliseconds);
@@ -485,7 +485,7 @@ namespace GTASaveData.VC
                 w.Write(m_prefsSfxVolume);
                 if (!fmt.HasFlag(ConsoleFlags.Australia))
                 {
-                    w.Write((int) m_prefsControllerConfig);
+                    w.Write((int) m_prefsPadMode);
                 }
                 w.Write(m_prefsUseVibration, 4);
                 w.Write(m_prefsStereoMono, 4);
@@ -498,7 +498,7 @@ namespace GTASaveData.VC
                 w.Write(m_prefsShowSubtitles, 4);
                 w.Write((int) m_prefsLanguage);
                 w.Write(m_prefsUseWideScreen, 4);
-                w.Write((int) m_prefsControllerConfig);
+                w.Write((int) m_prefsPadMode);
                 w.Write(m_prefsShowTrails, 4);
             }
             //serializer.WriteObject(m_compileDateAndTime);
@@ -553,7 +553,7 @@ namespace GTASaveData.VC
                 && m_newWeatherType.Equals(other.m_newWeatherType)
                 && m_forcedWeatherType.Equals(other.m_forcedWeatherType)
                 && m_interpolationValue.Equals(other.m_interpolationValue)
-                && m_prefsControllerConfig.Equals(other.m_prefsControllerConfig)
+                && m_prefsPadMode.Equals(other.m_prefsPadMode)
                 && m_prefsMusicVolume.Equals(other.m_prefsMusicVolume)
                 && m_prefsSfxVolume.Equals(other.m_prefsSfxVolume)
                 && m_prefsUseVibration.Equals(other.m_prefsUseVibration)
