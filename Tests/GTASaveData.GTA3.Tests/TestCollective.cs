@@ -1,12 +1,12 @@
 ﻿using Bogus;
 using GTASaveData.GTA3;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.TestFramework;
+using TestFramework;
 using Xunit;
 
 namespace GTASaveData.Tests.GTA3
 {
-    public class TestCollective : SaveDataObjectTestBase<Collective>
+    public class TestCollective : SerializableObjectTestBase<Collective>
     {
         public override Collective GenerateTestVector(FileFormat format)
         {
@@ -20,10 +20,12 @@ namespace GTASaveData.Tests.GTA3
         [Fact]
         public void Serialization()
         {
-            Collective c0 = GenerateTestVector();
-            Collective c1 = CreateSerializedCopy(c0, out byte[] data);
+            Collective x0 = GenerateTestVector();
+            Collective x1 = CreateSerializedCopy(x0, out byte[] data);
 
-            Assert.Equal(c0, c1);
+            Assert.Equal(x0.Unknown0, x1.Unknown0);
+            Assert.Equal(x0.Unknown1, x1.Unknown1);
+            Assert.Equal(x0, x1);
             Assert.Equal(8, data.Length);
         }
     }

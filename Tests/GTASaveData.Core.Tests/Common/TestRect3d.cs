@@ -27,6 +27,12 @@ namespace GTASaveData.Core.Tests.Common
             Rect3d x0 = GenerateTestVector();
             Rect3d x1 = CreateSerializedCopy(x0, out byte[] data);
 
+            Assert.Equal(x0.XMin, x1.XMin);
+            Assert.Equal(x0.XMax, x1.XMax);
+            Assert.Equal(x0.YMin, x1.YMin);
+            Assert.Equal(x0.YMax, x1.YMax);
+            Assert.Equal(x0.ZMin, x1.ZMin);
+            Assert.Equal(x0.ZMax, x1.ZMax);
             Assert.Equal(x0, x1);
             Assert.Equal(24, data.Length);
         }

@@ -9,20 +9,12 @@ namespace TestFramework
 {
     public static class Generator
     {
-        //public static ObservableCollection<T> CreateValueCollection<T>(int count, Func<int, T> itemGenerator)
-        //    where T : new()
-        //{
-        //    return new ObservableCollection<T>(Enumerable.Range(0, count).Select(itemGenerator));
-        //}
+        public static Array<T> CreateArray<T>(int count) where T : new()
+        {
+            return Enumerable.Range(0, count).Select(x => new T()).ToArray();
+        }
 
-        //public static FullyObservableCollection<T> CreateObjectCollection<T>(int count, Func<int, T> itemGenerator)
-        //    where T : INotifyPropertyChanged, new()
-        //{
-        //    return new FullyObservableCollection<T>(Enumerable.Range(0, count).Select(itemGenerator));
-        //}
-
-        public static StaticArray<T> CreateArray<T>(int count, Func<int, T> itemGenerator)
-            where T : new()
+        public static Array<T> CreateArray<T>(int count, Func<int, T> itemGenerator)
         {
             return Enumerable.Range(0, count).Select(itemGenerator).ToArray();
         }

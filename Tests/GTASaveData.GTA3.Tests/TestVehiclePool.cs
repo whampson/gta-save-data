@@ -1,18 +1,18 @@
 ﻿using Bogus;
 using GTASaveData.GTA3;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.TestFramework;
 using System.Collections.Generic;
+using TestFramework;
 using Xunit;
 
 namespace GTASaveData.Tests.GTA3
 {
-    public class TestVehiclePool : SaveDataObjectTestBase<VehiclePool>
+    public class TestVehiclePool : SerializableObjectTestBase<VehiclePool>
     {
         public override VehiclePool GenerateTestVector(FileFormat format)
         {
             Faker<VehiclePool> model = new Faker<VehiclePool>()
-                .RuleFor(x => x.Pool, f => Generator.CreateObjectCollection(1, g => Generator.Generate<VehiclePoolItem, TestVehiclePoolItem>(format)));
+                .RuleFor(x => x.Pool, f => Generator.CreateArray(10, g => Generator.Generate<VehiclePoolItem, TestVehiclePoolItem>(format)));
 
             return model.Generate();
         }

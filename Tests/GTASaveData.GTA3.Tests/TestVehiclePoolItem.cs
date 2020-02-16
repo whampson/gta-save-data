@@ -1,21 +1,21 @@
 ﻿using Bogus;
 using GTASaveData.GTA3;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.TestFramework;
 using System.Collections.Generic;
+using TestFramework;
 using Xunit;
 
 namespace GTASaveData.Tests.GTA3
 {
-    public class TestVehiclePoolItem : SaveDataObjectTestBase<VehiclePoolItem>
+    public class TestVehiclePoolItem : SerializableObjectTestBase<VehiclePoolItem>
     {
         public VehiclePoolItem GenerateVehicleTestVector(FileFormat format)
         {
             Faker<VehiclePoolItem> model = new Faker<VehiclePoolItem>()
                 .CustomInstantiator(f => new VehiclePoolItem(false))
-                .RuleFor(x => x.ModelId, f => f.Random.UShort())
+                .RuleFor(x => x.ModelId, f => f.PickRandom<VehicleModel>())
                 .RuleFor(x => x.VehicleRef, f => f.Random.UInt())
-                .RuleFor(x => x.Vehicle, f => Generator.Generate<Car, TestCar>(format));
+                .RuleFor(x => x.Vehicle, f => Generator.Generate<Automobile, TestAutomobile>(format));
 
             return model.Generate();
         }
@@ -24,7 +24,7 @@ namespace GTASaveData.Tests.GTA3
         {
             Faker<VehiclePoolItem> model = new Faker<VehiclePoolItem>()
                 .CustomInstantiator(f => new VehiclePoolItem(true))
-                .RuleFor(x => x.ModelId, f => f.Random.UShort())
+                .RuleFor(x => x.ModelId, f => f.PickRandom<VehicleModel>())
                 .RuleFor(x => x.VehicleRef, f => f.Random.UInt())
                 .RuleFor(x => x.Vehicle, f => Generator.Generate<Boat, TestBoat>(format));
 

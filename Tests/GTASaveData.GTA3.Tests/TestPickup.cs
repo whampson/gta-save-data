@@ -1,14 +1,14 @@
 ﻿using Bogus;
 using GTASaveData.Common;
+using GTASaveData.Core.Tests.Common;
 using GTASaveData.GTA3;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.Common;
-using GTASaveData.Tests.TestFramework;
+using TestFramework;
 using Xunit;
 
 namespace GTASaveData.Tests.GTA3
 {
-    public class TestPickup : SaveDataObjectTestBase<Pickup>
+    public class TestPickup : SerializableObjectTestBase<Pickup>
     {
         public override Pickup GenerateTestVector(FileFormat format)
         {
@@ -31,6 +31,14 @@ namespace GTASaveData.Tests.GTA3
             Pickup x0 = GenerateTestVector();
             Pickup x1 = CreateSerializedCopy(x0, out byte[] data);
 
+            Assert.Equal(x0.Type, x1.Type);
+            Assert.Equal(x0.HasBeenPickedUp, x1.HasBeenPickedUp);
+            Assert.Equal(x0.Amount, x1.Amount);
+            Assert.Equal(x0.ObjectIndex, x1.ObjectIndex);
+            Assert.Equal(x0.RegenerationTime, x1.RegenerationTime);
+            Assert.Equal(x0.ModelId, x1.ModelId);
+            Assert.Equal(x0.Flags, x1.Flags);
+            Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0, x1);
             Assert.Equal(28, data.Length);
         }

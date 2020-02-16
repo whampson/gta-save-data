@@ -23,6 +23,8 @@ namespace GTASaveData.Core.Tests.Common
             Vector2d x0 = GenerateTestVector();
             Vector2d x1 = CreateSerializedCopy(x0, out byte[] data);
 
+            Assert.Equal(x0.X, x1.X);
+            Assert.Equal(x0.Y, x1.Y);
             Assert.Equal(x0, x1);
             Assert.Equal(8, data.Length);
         }

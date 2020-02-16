@@ -45,17 +45,17 @@ namespace GTASaveData.Tests.VC
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void SerializationParity(FileFormat format, string path)
+        public void Serialization(FileFormat format, string path)
         {
             byte[] expected = File.ReadAllBytes(path);
 
             ViceCitySave x0 = GrandTheftAutoSave.Load<ViceCitySave>(path, format);
             ViceCitySave x1 = CreateSerializedCopy(x0, out byte[] data, format);
 
+            Assert.Equal(x0.SimpleVars, x1.SimpleVars);
+            Assert.Equal(x0.CarGenerators, x1.CarGenerators);
             Assert.Equal(x0, x1);
             Assert.Equal(expected.Length, data.Length);
-
-            File.WriteAllBytes(path + ".out", data);
         }
 
         //[Theory]

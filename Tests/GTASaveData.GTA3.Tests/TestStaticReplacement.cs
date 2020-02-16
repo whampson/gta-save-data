@@ -1,16 +1,16 @@
 ﻿using Bogus;
 using GTASaveData.GTA3;
 using GTASaveData.Serialization;
-using GTASaveData.Tests.TestFramework;
+using TestFramework;
 using Xunit;
 
 namespace GTASaveData.Tests.GTA3
 {
-    public class TestBuildingSwap : SaveDataObjectTestBase<BuildingSwap>
+    public class TestStaticReplacement : SerializableObjectTestBase<StaticReplacement>
     {
-        public override BuildingSwap GenerateTestVector(FileFormat format)
+        public override StaticReplacement GenerateTestVector(FileFormat format)
         {
-            Faker<BuildingSwap> model = new Faker<BuildingSwap>()
+            Faker<StaticReplacement> model = new Faker<StaticReplacement>()
                 .RuleFor(x => x.Type, f => f.PickRandom<ObjectType>())
                 .RuleFor(x => x.StaticIndex, f => f.Random.Int(0, 9999))
                 .RuleFor(x => x.NewModelId, f => f.Random.Int(0, 9999))
@@ -22,9 +22,13 @@ namespace GTASaveData.Tests.GTA3
         [Fact]
         public void Serialization()
         {
-            BuildingSwap x0 = GenerateTestVector();
-            BuildingSwap x1 = CreateSerializedCopy(x0, out byte[] data);
+            StaticReplacement x0 = GenerateTestVector();
+            StaticReplacement x1 = CreateSerializedCopy(x0, out byte[] data);
 
+            Assert.Equal(x0.Type, x1.Type);
+            Assert.Equal(x0.StaticIndex, x1.StaticIndex);
+            Assert.Equal(x0.NewModelId, x1.NewModelId);
+            Assert.Equal(x0.OldModelId, x1.OldModelId);
             Assert.Equal(x0, x1);
             Assert.Equal(16, data.Length);
         }

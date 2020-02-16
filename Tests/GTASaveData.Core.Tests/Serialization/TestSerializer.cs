@@ -83,10 +83,13 @@ namespace GTASaveData.Core.Tests.Serialization
                     Assert.NotEqual(0, data.Sum(x => x));
                     break;
                 case PaddingMode.Sequence:
-                    //Assert.Equal()
-                    // TODO: assert subsequence equal
-                    Assert.True(true);
+                {
+                    for (int i = 0; i < data.Length; i++)
+                    {
+                        Assert.Equal(seq[i % seq.Length], data[i]);
+                    }
                     break;
+                }
             }
         }
 
@@ -483,8 +486,7 @@ namespace GTASaveData.Core.Tests.Serialization
 
             Assert.Equal(initialCount, x0.Length);
             Assert.Equal(expectedCount, x1.Length);
-            // TODO: ensure first portion of x0 == x1
-            //Assert.Equal(x0.Select(x => bufferCount).ToArray(), x1);
+            Assert.Equal(x0.Take(Math.Min(bufferCount, initialCount)), x1.Take(Math.Min(bufferCount, initialCount)));
             Assert.Equal(4 * bufferCount, data.Length);
         }
 
@@ -517,8 +519,7 @@ namespace GTASaveData.Core.Tests.Serialization
 
             Assert.Equal(initialCount, x0.Length);
             Assert.Equal(expectedCount, x1.Length);
-            // TODO: ensure first portion of x0 == x1
-            //Assert.Equal(x0.Select(x => bufferCount).ToArray(), x1);
+            Assert.Equal(x0.Take(Math.Min(bufferCount, initialCount)), x1.Take(Math.Min(bufferCount, initialCount)));
             Assert.Equal(TestObject.SerializedSize * bufferCount, data.Length);
         }
 
