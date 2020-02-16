@@ -36,6 +36,9 @@ namespace GTASaveData
         /// </summary>
         public event NotifyItemStateChangedEventHandler ItemStateChanged;
 
+        private const string IndexerName = "Items[]";
+
+        private readonly BusyMonitor m_monitor;
         private readonly List<T> m_items;
         private readonly bool m_itemsAreObservable;
 
@@ -72,6 +75,7 @@ namespace GTASaveData
         /// </summary>
         public Array()
         {
+            m_monitor = new BusyMonitor();
             m_items = new List<T>();
             m_itemsAreObservable = typeof(T).IsObservable();
         }
@@ -116,6 +120,8 @@ namespace GTASaveData
         /// <param name="item">The item to add.</param>
         public void Add(T item)
         {
+            CheckReentrancy();
+
             m_items.Add(item);
 
             RegisterStateChangedHandler(item);
@@ -130,6 +136,8 @@ namespace GTASaveData
         /// </summary>
         public void Clear()
         {
+            CheckReentrancy();
+
             m_items.ForEach(item => UnregisterStateChangedHandler(item));
             m_items.Clear();
 
@@ -220,6 +228,8 @@ namespace GTASaveData
         /// <param name="item">The item to insert.</param>
         public void Insert(int index, T item)
         {
+            CheckReentrancy();
+
             m_items.Insert(index, item);
 
             RegisterStateChangedHandler(item);
@@ -241,6 +251,8 @@ namespace GTASaveData
 
         public void Move(int oldIndex, int newIndex)
         {
+            CheckReentrancy();
+
             T oldItem = m_items[oldIndex];
 
             m_items.RemoveAt(oldIndex);
@@ -266,6 +278,8 @@ namespace GTASaveData
         /// <returns>True if the item was found in the list and removed.</returns>
         public bool Remove(T item)
         {
+            CheckReentrancy();
+
             bool found = m_items.Remove(item);
             if (!found)
             {
@@ -283,6 +297,8 @@ namespace GTASaveData
 
         public void RemoveAt(int index)
         {
+            CheckReentrancy();
+
             T item = m_items[index];
             m_items.RemoveAt(index);
 
@@ -295,6 +311,8 @@ namespace GTASaveData
 
         public void Replace(T item, int index)
         {
+            CheckReentrancy();
+
             T oldItem = m_items[index];
             m_items[index] = item;
 
@@ -313,6 +331,22 @@ namespace GTASaveData
         {
             return m_items.ToArray();
         }
+
+        #region Thread Safety
+        private IDisposable BlockReentrancy()
+        {
+            m_monitor.Enter();
+            return m_monitor;
+        }
+
+        private void CheckReentrancy()
+        {
+            if (m_monitor.Busy)
+            {
+                throw new InvalidOperationException(Strings.Error_InvalidOperation_CollectionReentrancy);
+            }
+        }
+        #endregion
 
         #region IEnumerable
         /// <summary>
@@ -385,7 +419,10 @@ namespace GTASaveData
         /// <param name="e">The event arguments.</param>
         protected void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            CollectionChanged?.Invoke(this, e);
+            using (BlockReentrancy())
+            {
+                CollectionChanged?.Invoke(this, e);
+            }
         }
 
         /// <summary>
@@ -458,6 +495,23 @@ namespace GTASaveData
         }
         #endregion
 
-        private const string IndexerName = "Items[]";
+        #region Private Types
+        private class BusyMonitor : IDisposable
+        {
+            private int m_busyCount;
+
+            public bool Busy => m_busyCount > 0;
+
+            public void Enter()
+            {
+                ++m_busyCount;
+            }
+
+            public void Dispose()
+            {
+                --m_busyCount;
+            }
+        }
+        #endregion
     }
 }
