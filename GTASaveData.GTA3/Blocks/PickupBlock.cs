@@ -1,29 +1,27 @@
 ﻿using GTASaveData.Serialization;
 using System;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using WpfEssentials;
 
-namespace GTASaveData.GTA3
+namespace GTASaveData.GTA3.Blocks
 {
-    public class Pickups : SerializableObject,
-        IEquatable<Pickups>
+    public class PickupBlock : SerializableObject,
+        IEquatable<PickupBlock>
     {
         public static class Limits
         {
-            public const int PickupsArrayCount = 336;
+            public const int PickupsCount = 336;
             public const int PickupsCollectedCount = 20;
         }
 
-        private Array<Pickup> m_pickupsArray;
+        private Array<Pickup> m_pickups;
         private int m_lastCollectedIndex;
         private Array<int> m_pickupsCollected;
 
-        public Array<Pickup> PickupsArray
+        public Array<Pickup> Pickups
         {
-            get { return m_pickupsArray; }
-            set { m_pickupsArray = value; OnPropertyChanged(); }
+            get { return m_pickups; }
+            set { m_pickups = value; OnPropertyChanged(); }
         }
 
         public int LastCollectedIndex
@@ -38,15 +36,15 @@ namespace GTASaveData.GTA3
             set { m_pickupsCollected = value; OnPropertyChanged(); }
         }
 
-        public Pickups()
+        public PickupBlock()
         {
-            m_pickupsArray = new Array<Pickup>();
+            m_pickups = new Array<Pickup>();
             m_pickupsCollected = new Array<int>();
         }
 
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_pickupsArray = r.ReadArray<Pickup>(Limits.PickupsArrayCount);
+            m_pickups = r.ReadArray<Pickup>(Limits.PickupsCount);
             m_lastCollectedIndex = r.ReadUInt16();
             ushort constant0 = r.ReadUInt16();
             Debug.Assert(constant0 == 0);
@@ -55,7 +53,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            w.Write(m_pickupsArray.ToArray(), Limits.PickupsArrayCount);
+            w.Write(m_pickups.ToArray(), Limits.PickupsCount);
             w.Write((ushort) m_lastCollectedIndex);
             w.Write((ushort) 0);
             w.Write(m_pickupsCollected.ToArray(), Limits.PickupsCollectedCount);
@@ -63,17 +61,17 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Pickups);
+            return Equals(obj as PickupBlock);
         }
 
-        public bool Equals(Pickups other)
+        public bool Equals(PickupBlock other)
         {
             if (other == null)
             {
                 return false;
             }
 
-            return m_pickupsArray.SequenceEqual(other.m_pickupsArray)
+            return m_pickups.SequenceEqual(other.m_pickups)
                 && m_lastCollectedIndex.Equals(other.m_lastCollectedIndex)
                 && m_pickupsCollected.SequenceEqual(other.m_pickupsCollected);
         }

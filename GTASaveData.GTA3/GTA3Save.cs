@@ -33,9 +33,9 @@ namespace GTASaveData.GTA3
             set { m_blocks[0] = value; OnPropertyChanged(); }
         }
 
-        public Scripts Scripts
+        public ScriptBlock Scripts
         {
-            get { return m_blocks[1] as Scripts; }
+            get { return m_blocks[1] as ScriptBlock; }
             set { m_blocks[1] = value; OnPropertyChanged(); }
         }
 
@@ -75,9 +75,9 @@ namespace GTASaveData.GTA3
             set { m_blocks[7] = value; OnPropertyChanged(); }
         }
 
-        public Pickups Pickups
+        public PickupBlock Pickups
         {
-            get { return m_blocks[8] as Pickups; }
+            get { return m_blocks[8] as PickupBlock; }
             set { m_blocks[8] = value; OnPropertyChanged(); }
         }
 
@@ -181,14 +181,14 @@ namespace GTASaveData.GTA3
         public GTA3Save()
         {
             m_blocks[0] = new SimpleVars();
-            m_blocks[1] = new Scripts();
+            m_blocks[1] = new ScriptBlock();
             m_blocks[2] = new Block();
             m_blocks[3] = new GarageBlock();
             m_blocks[4] = new VehiclePool();
             m_blocks[5] = new Block();
             m_blocks[6] = new Block();
             m_blocks[7] = new Block();
-            m_blocks[8] = new Pickups();
+            m_blocks[8] = new PickupBlock();
             m_blocks[9] = new Block();
             m_blocks[10] = new Block();
             m_blocks[11] = new Block();
@@ -346,7 +346,7 @@ namespace GTASaveData.GTA3
                     {
                         case 0:
                             SimpleVars = Deserialize<SimpleVars>(r.ReadBytes(SimpleVarsSize));
-                            Scripts = Deserialize<Scripts>(ReadBlock(r, ScrTag));
+                            Scripts = Deserialize<ScriptBlock>(ReadBlock(r, ScrTag));
                             PedPool = ReadBlock(r, null);
                             Garages = Deserialize<GarageBlock>(ReadBlock(r, null));
                             Vehicles = Deserialize<VehiclePool>(ReadBlock(r, null));
@@ -357,7 +357,7 @@ namespace GTASaveData.GTA3
                             Cranes = ReadBlock(r, null);
                             break;
                         case 2:
-                            Pickups = Deserialize<Pickups>(ReadBlock(r, null));
+                            Pickups = Deserialize<PickupBlock>(ReadBlock(r, null));
                             PhoneInfo = ReadBlock(r, null);
                             Restarts = ReadBlock(r, RstTag);
                             RadarBlips = ReadBlock(r, RdrTag);
@@ -379,7 +379,7 @@ namespace GTASaveData.GTA3
                     {
                         case 0:
                             SimpleVars = Deserialize<SimpleVars>(r.ReadBytes(SimpleVarsSize));
-                            Scripts = Deserialize<Scripts>(ReadBlock(r, ScrTag));
+                            Scripts = Deserialize<ScriptBlock>(ReadBlock(r, ScrTag));
                             break;
                         case 1: PedPool = ReadBlock(r, null); break;
                         case 2: Garages = Deserialize<GarageBlock>(ReadBlock(r, null)); break;
@@ -387,7 +387,7 @@ namespace GTASaveData.GTA3
                         case 4: Objects = ReadBlock(r, null); break;
                         case 5: PathFind = ReadBlock(r, null); break;
                         case 6: Cranes = ReadBlock(r, null); break;
-                        case 7: Pickups = Deserialize<Pickups>(ReadBlock(r, null)); break;
+                        case 7: Pickups = Deserialize<PickupBlock>(ReadBlock(r, null)); break;
                         case 8: PhoneInfo = ReadBlock(r, null); break;
                         case 9: Restarts = ReadBlock(r, RstTag); break;
                         case 10: RadarBlips = ReadBlock(r, RdrTag); break;

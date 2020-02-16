@@ -3,10 +3,10 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 
-namespace GTASaveData.GTA3
+namespace GTASaveData.GTA3.Blocks
 {
-    public class Scripts : SerializableObject,
-        IEquatable<Scripts>
+    public class ScriptBlock : SerializableObject,
+        IEquatable<ScriptBlock>
     {
         public static class Limits
         {
@@ -15,8 +15,6 @@ namespace GTASaveData.GTA3
             public const int BuildingSwapsCount = 25;
             public const int InvisibilitySettingsCount = 20;
         }
-
-        private const int UnknownConstant = 0x3C8;
 
         private Array<uint> m_globalVariables;
         private int m_onAMissionFlag;
@@ -103,7 +101,7 @@ namespace GTASaveData.GTA3
             set { m_runningScripts = value; OnPropertyChanged(); }
         }
 
-        public Scripts()
+        public ScriptBlock()
         {
             m_globalVariables = new Array<uint>();
             m_contacts = new Array<ContactInfo>();
@@ -117,8 +115,8 @@ namespace GTASaveData.GTA3
         {
             int sizeOfScriptSpace = r.ReadInt32();
             m_globalVariables = r.ReadArray<uint>(sizeOfScriptSpace / 4);
-            int constant = r.ReadInt32();
-            Debug.Assert(constant == UnknownConstant);
+            int constant3C8h = r.ReadInt32();
+            Debug.Assert(constant3C8h == 0x3C8);
             m_onAMissionFlag = r.ReadInt32();
             m_contacts = r.ReadArray<ContactInfo>(Limits.ContactsCount);
             m_collectives = r.ReadArray<Collective>(Limits.CollectivesCount);
@@ -139,7 +137,7 @@ namespace GTASaveData.GTA3
         {
             w.Write(m_globalVariables.Count * 4);
             w.Write(m_globalVariables.ToArray());
-            w.Write(UnknownConstant);
+            w.Write(0x3C8);
             w.Write(m_onAMissionFlag);
             w.Write(m_contacts.ToArray(), Limits.ContactsCount);
             w.Write(m_collectives.ToArray(), Limits.CollectivesCount);
@@ -158,10 +156,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Scripts);
+            return Equals(obj as ScriptBlock);
         }
 
-        public bool Equals(Scripts other)
+        public bool Equals(ScriptBlock other)
         {
             if (other == null)
             {
