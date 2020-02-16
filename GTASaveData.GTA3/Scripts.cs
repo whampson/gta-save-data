@@ -1,13 +1,11 @@
 ﻿using GTASaveData.Serialization;
 using System;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using WpfEssentials;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Scripts : Chunk,
+    public class Scripts : SerializableObject,
         IEquatable<Scripts>
     {
         public static class Limits
@@ -20,20 +18,20 @@ namespace GTASaveData.GTA3
 
         private const int UnknownConstant = 0x3C8;
 
-        private ObservableCollection<uint> m_globalVariables;
+        private Array<uint> m_globalVariables;
         private int m_onAMissionFlag;
-        private FullyObservableCollection<ContactInfo> m_contacts;
-        private FullyObservableCollection<Collective> m_collectives;
+        private Array<ContactInfo> m_contacts;
+        private Array<Collective> m_collectives;
         private int m_nextFreeCollectiveIndex;
-        private FullyObservableCollection<BuildingSwap> m_buildingSwaps;
-        private FullyObservableCollection<InvisibilitySetting> m_invisibilitySettings;
+        private Array<StaticReplacement> m_buildingSwaps;
+        private Array<InvisibleObject> m_invisibilitySettings;
         private bool m_usingAMultiScriptFile;
         private int m_mainScriptSize;
         private int m_largestMissionScriptSize;
         private short m_numberOfMissionScripts;
-        private FullyObservableCollection<RunningScript> m_runningScripts;
+        private Array<Thread> m_runningScripts;
 
-        public ObservableCollection<uint> GlobalVariables
+        public Array<uint> GlobalVariables
         {
             get { return m_globalVariables; }
             set { m_globalVariables = value; OnPropertyChanged(); }
@@ -45,13 +43,13 @@ namespace GTASaveData.GTA3
             set { m_onAMissionFlag = value; OnPropertyChanged(); }
         }
 
-        public FullyObservableCollection<ContactInfo> Contacts
+        public Array<ContactInfo> Contacts
         {
             get { return m_contacts; }
             set { m_contacts = value; OnPropertyChanged(); }
         }
 
-        public FullyObservableCollection<Collective> Collectives
+        public Array<Collective> Collectives
         {
             get { return m_collectives; }
             set { m_collectives = value; OnPropertyChanged(); }
@@ -63,13 +61,13 @@ namespace GTASaveData.GTA3
             set { m_nextFreeCollectiveIndex = value; OnPropertyChanged(); }
         }
 
-        public FullyObservableCollection<BuildingSwap> BuildingSwaps
+        public Array<StaticReplacement> BuildingSwaps
         {
             get { return m_buildingSwaps; }
             set { m_buildingSwaps = value; OnPropertyChanged(); }
         }
 
-        public FullyObservableCollection<InvisibilitySetting> InvisibilitySettings
+        public Array<InvisibleObject> InvisibilitySettings
         {
             get { return m_invisibilitySettings; }
             set { m_invisibilitySettings = value; OnPropertyChanged(); }
@@ -99,7 +97,7 @@ namespace GTASaveData.GTA3
             set { m_numberOfMissionScripts = value; OnPropertyChanged(); }
         }
 
-        public FullyObservableCollection<RunningScript> RunningScripts
+        public Array<Thread> RunningScripts
         {
             get { return m_runningScripts; }
             set { m_runningScripts = value; OnPropertyChanged(); }
@@ -107,60 +105,55 @@ namespace GTASaveData.GTA3
 
         public Scripts()
         {
-            m_globalVariables = new ObservableCollection<uint>();
-            m_contacts = new FullyObservableCollection<ContactInfo>();
-            m_collectives = new FullyObservableCollection<Collective>();
-            m_buildingSwaps = new FullyObservableCollection<BuildingSwap>();
-            m_invisibilitySettings = new FullyObservableCollection<InvisibilitySetting>();
-            m_runningScripts = new FullyObservableCollection<RunningScript>();
+            m_globalVariables = new Array<uint>();
+            m_contacts = new Array<ContactInfo>();
+            m_collectives = new Array<Collective>();
+            m_buildingSwaps = new Array<StaticReplacement>();
+            m_invisibilitySettings = new Array<InvisibleObject>();
+            m_runningScripts = new Array<Thread>();
         }
 
-        private Scripts(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            int sizeOfScriptSpace = serializer.ReadInt32();
-            m_globalVariables = new ObservableCollection<uint>(serializer.ReadArray<uint>(sizeOfScriptSpace / 4));
-            int constant = serializer.ReadInt32();
+            int sizeOfScriptSpace = r.ReadInt32();
+            m_globalVariables = r.ReadArray<uint>(sizeOfScriptSpace / 4);
+            int constant = r.ReadInt32();
             Debug.Assert(constant == UnknownConstant);
-            m_onAMissionFlag = serializer.ReadInt32();
-            m_contacts = new FullyObservableCollection<ContactInfo>(serializer.ReadArray<ContactInfo>(Limits.ContactsCount));
-            m_collectives = new FullyObservableCollection<Collective>(serializer.ReadArray<Collective>(Limits.CollectivesCount));
-            m_nextFreeCollectiveIndex = serializer.ReadInt32();
-            m_buildingSwaps = new FullyObservableCollection<BuildingSwap>(serializer.ReadArray<BuildingSwap>(Limits.BuildingSwapsCount));
-            m_invisibilitySettings = new FullyObservableCollection<InvisibilitySetting>(serializer.ReadArray<InvisibilitySetting>(Limits.InvisibilitySettingsCount));
-            m_usingAMultiScriptFile = serializer.ReadBool();
-            serializer.Align();
-            m_mainScriptSize = serializer.ReadInt32();
-            m_largestMissionScriptSize = serializer.ReadInt32();
-            m_numberOfMissionScripts = serializer.ReadInt16();
-            serializer.Align();
-            int numRunningScripts = serializer.ReadInt32();
-            m_runningScripts = new FullyObservableCollection<RunningScript>(serializer.ReadArray<RunningScript>(numRunningScripts, format));
+            m_onAMissionFlag = r.ReadInt32();
+            m_contacts = r.ReadArray<ContactInfo>(Limits.ContactsCount);
+            m_collectives = r.ReadArray<Collective>(Limits.CollectivesCount);
+            m_nextFreeCollectiveIndex = r.ReadInt32();
+            m_buildingSwaps = r.ReadArray<StaticReplacement>(Limits.BuildingSwapsCount);
+            m_invisibilitySettings = r.ReadArray<InvisibleObject>(Limits.InvisibilitySettingsCount);
+            m_usingAMultiScriptFile = r.ReadBool();
+            r.Align();
+            m_mainScriptSize = r.ReadInt32();
+            m_largestMissionScriptSize = r.ReadInt32();
+            m_numberOfMissionScripts = r.ReadInt16();
+            r.Align();
+            int numRunningScripts = r.ReadInt32();
+            m_runningScripts = r.ReadArray<Thread>(numRunningScripts, fmt);
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write(m_globalVariables.Count * 4);
-            serializer.WriteArray(m_globalVariables.ToArray());
-            serializer.Write(UnknownConstant);
-            serializer.Write(m_onAMissionFlag);
-            serializer.WriteArray(m_contacts.ToArray(), Limits.ContactsCount);
-            serializer.WriteArray(m_collectives.ToArray(), Limits.CollectivesCount);
-            serializer.Write(m_nextFreeCollectiveIndex);
-            serializer.WriteArray(m_buildingSwaps.ToArray(), Limits.BuildingSwapsCount);
-            serializer.WriteArray(m_invisibilitySettings.ToArray(), Limits.InvisibilitySettingsCount);
-            serializer.Write(m_usingAMultiScriptFile);
-            serializer.Align();
-            serializer.Write(m_mainScriptSize);
-            serializer.Write(m_largestMissionScriptSize);
-            serializer.Write(m_numberOfMissionScripts);
-            serializer.Align();
-            serializer.Write(m_runningScripts.Count);
-            serializer.WriteArray(m_runningScripts.ToArray(), format: format);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write(m_globalVariables.Count * 4);
+            w.Write(m_globalVariables.ToArray());
+            w.Write(UnknownConstant);
+            w.Write(m_onAMissionFlag);
+            w.Write(m_contacts.ToArray(), Limits.ContactsCount);
+            w.Write(m_collectives.ToArray(), Limits.CollectivesCount);
+            w.Write(m_nextFreeCollectiveIndex);
+            w.Write(m_buildingSwaps.ToArray(), Limits.BuildingSwapsCount);
+            w.Write(m_invisibilitySettings.ToArray(), Limits.InvisibilitySettingsCount);
+            w.Write(m_usingAMultiScriptFile);
+            w.Align();
+            w.Write(m_mainScriptSize);
+            w.Write(m_largestMissionScriptSize);
+            w.Write(m_numberOfMissionScripts);
+            w.Align();
+            w.Write(m_runningScripts.Count);
+            w.Write(m_runningScripts.ToArray(), format: fmt);
         }
 
         public override bool Equals(object obj)

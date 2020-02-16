@@ -3,11 +3,11 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class VehiclePoolItem : Chunk,
+    public class VehiclePoolItem : SerializableObject,
         IEquatable<VehiclePoolItem>
     {
         private bool m_isBoat;
-        private ushort m_modelId;       // TODO: enum
+        private VehicleModel m_modelId;
         private uint m_vehicleRef;
         private Vehicle m_vehicle;
 
@@ -16,7 +16,7 @@ namespace GTASaveData.GTA3
             get { return m_isBoat; }
         }
 
-        public ushort ModelId
+        public VehicleModel ModelId
         { 
             get { return m_modelId; }
             set { m_modelId = value; OnPropertyChanged(); }
@@ -41,42 +41,27 @@ namespace GTASaveData.GTA3
         public VehiclePoolItem(bool isBoat)
         {
             m_isBoat = isBoat;
-            if (isBoat)
-            {
-                m_vehicle = new Boat();
-            }
-            else
-            {
-                m_vehicle = new Car();
-            }
+            m_vehicle = (isBoat)
+                ? new Boat() as Vehicle
+                : new Automobile() as Vehicle;
         }
 
-        private VehiclePoolItem(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_isBoat = serializer.ReadBool(4);
-            m_modelId = serializer.ReadUInt16();
-            m_vehicleRef = serializer.ReadUInt32();
-            if (m_isBoat)
-            {
-                m_vehicle = serializer.ReadObject<Boat>(format);
-            }
-            else
-            {
-                m_vehicle = serializer.ReadObject<Car>(format);
-            }
+            m_isBoat = r.ReadBool(4);
+            m_modelId = (VehicleModel) r.ReadUInt16();
+            m_vehicleRef = r.ReadUInt32();
+            m_vehicle = (m_isBoat)
+                ? r.ReadObject<Boat>(fmt) as Vehicle
+                : r.ReadObject<Automobile>(fmt) as Vehicle;
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write(m_isBoat, 4);
-            serializer.Write(m_modelId);
-            serializer.Write(m_vehicleRef);
-            serializer.WriteObject(m_vehicle, format);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write(m_isBoat, 4);
+            w.Write((ushort) m_modelId);
+            w.Write(m_vehicleRef);
+            w.Write(m_vehicle, fmt);
         }
 
         public override bool Equals(object obj)

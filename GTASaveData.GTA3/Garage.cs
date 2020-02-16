@@ -4,7 +4,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Garage : Chunk,
+    public class Garage : SerializableObject,
         IEquatable<Garage>
     {
         private GarageType m_type;
@@ -13,7 +13,7 @@ namespace GTASaveData.GTA3
         private bool m_closingWithoutTargetVehicle;
         private bool m_deactivated;
         private bool m_resprayHappened;
-        private int m_targetVehicle;
+        private VehicleModel m_targetVehicle;
         private uint m_door1Pointer;
         private uint m_door2Pointer;
         private bool m_isDoor1PoolIndex;
@@ -72,7 +72,7 @@ namespace GTASaveData.GTA3
             set { m_resprayHappened = value; OnPropertyChanged(); }
         }
 
-        public int TargetVehicle
+        public VehicleModel TargetVehicle
         {
             get { return m_targetVehicle; }
             set { m_targetVehicle = value; OnPropertyChanged(); }
@@ -212,79 +212,74 @@ namespace GTASaveData.GTA3
             m_unknown4 = new StoredCar();
         }
 
-        private Garage(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_type = (GarageType) serializer.ReadByte();
-            m_state = (GarageState) serializer.ReadByte();
-            m_unknown0 = serializer.ReadByte();
-            m_closingWithoutTargetVehicle = serializer.ReadBool();
-            m_deactivated = serializer.ReadBool();
-            m_resprayHappened = serializer.ReadBool();
-            serializer.Align();
-            m_targetVehicle = serializer.ReadInt32();
-            m_door1Pointer = serializer.ReadUInt32();
-            m_door2Pointer = serializer.ReadUInt32();
-            m_isDoor1PoolIndex = serializer.ReadBool();
-            m_isDoor2PoolIndex = serializer.ReadBool();
-            m_isDoor1Object = serializer.ReadBool();
-            m_isDoor2Object = serializer.ReadBool();
-            m_unknown1 = serializer.ReadByte();
-            m_isRotatedDoor = serializer.ReadBool();
-            m_cameraFollowsPlayer = serializer.ReadBool();
-            serializer.Align();
-            m_position = serializer.ReadObject<Rect3d>();
-            m_doorOpenMinZOffset = serializer.ReadSingle();
-            m_doorOpenMaxZOffset = serializer.ReadSingle();
-            m_door1XY = serializer.ReadObject<Vector2d>();
-            m_door2XY = serializer.ReadObject<Vector2d>();
-            m_door1Z = serializer.ReadSingle();
-            m_door2Z = serializer.ReadSingle();
-            m_doorLastOpenTime = serializer.ReadUInt32();
-            m_collectedCarsState = serializer.ReadByte();
-            serializer.Align();
-            m_targetVehiclePointer = serializer.ReadUInt32();
-            m_unknown3 = serializer.ReadUInt32();
-            m_unknown4 = serializer.ReadObject<StoredCar>();
+            m_type = (GarageType) r.ReadByte();
+            m_state = (GarageState) r.ReadByte();
+            m_unknown0 = r.ReadByte();
+            m_closingWithoutTargetVehicle = r.ReadBool();
+            m_deactivated = r.ReadBool();
+            m_resprayHappened = r.ReadBool();
+            r.Align();
+            m_targetVehicle = (VehicleModel) r.ReadInt32();
+            m_door1Pointer = r.ReadUInt32();
+            m_door2Pointer = r.ReadUInt32();
+            m_isDoor1PoolIndex = r.ReadBool();
+            m_isDoor2PoolIndex = r.ReadBool();
+            m_isDoor1Object = r.ReadBool();
+            m_isDoor2Object = r.ReadBool();
+            m_unknown1 = r.ReadByte();
+            m_isRotatedDoor = r.ReadBool();
+            m_cameraFollowsPlayer = r.ReadBool();
+            r.Align();
+            m_position = r.ReadObject<Rect3d>();
+            m_doorOpenMinZOffset = r.ReadSingle();
+            m_doorOpenMaxZOffset = r.ReadSingle();
+            m_door1XY = r.ReadObject<Vector2d>();
+            m_door2XY = r.ReadObject<Vector2d>();
+            m_door1Z = r.ReadSingle();
+            m_door2Z = r.ReadSingle();
+            m_doorLastOpenTime = r.ReadUInt32();
+            m_collectedCarsState = r.ReadByte();
+            r.Align();
+            m_targetVehiclePointer = r.ReadUInt32();
+            m_unknown3 = r.ReadUInt32();
+            m_unknown4 = r.ReadObject<StoredCar>();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write((byte) m_type);
-            serializer.Write((byte) m_state);
-            serializer.Write(m_unknown0);
-            serializer.Write(m_closingWithoutTargetVehicle);
-            serializer.Write(m_deactivated);
-            serializer.Write(m_resprayHappened);
-            serializer.Align();
-            serializer.Write(m_targetVehicle);
-            serializer.Write(m_door1Pointer);
-            serializer.Write(m_door2Pointer);
-            serializer.Write(m_isDoor1PoolIndex);
-            serializer.Write(m_isDoor2PoolIndex);
-            serializer.Write(m_isDoor1Object);
-            serializer.Write(m_isDoor2Object);
-            serializer.Write(m_unknown1);
-            serializer.Write(m_isRotatedDoor);
-            serializer.Write(m_cameraFollowsPlayer);
-            serializer.Align();
-            serializer.WriteObject(m_position);
-            serializer.Write(m_doorOpenMinZOffset);
-            serializer.Write(m_doorOpenMaxZOffset);
-            serializer.WriteObject(m_door1XY);
-            serializer.WriteObject(m_door2XY);
-            serializer.Write(m_door1Z);
-            serializer.Write(m_door2Z);
-            serializer.Write(m_doorLastOpenTime);
-            serializer.Write(m_collectedCarsState);
-            serializer.Align();
-            serializer.Write(m_targetVehiclePointer);
-            serializer.Write(m_unknown3);
-            serializer.WriteObject(m_unknown4);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write((byte) m_type);
+            w.Write((byte) m_state);
+            w.Write(m_unknown0);
+            w.Write(m_closingWithoutTargetVehicle);
+            w.Write(m_deactivated);
+            w.Write(m_resprayHappened);
+            w.Align();
+            w.Write((int) m_targetVehicle);
+            w.Write(m_door1Pointer);
+            w.Write(m_door2Pointer);
+            w.Write(m_isDoor1PoolIndex);
+            w.Write(m_isDoor2PoolIndex);
+            w.Write(m_isDoor1Object);
+            w.Write(m_isDoor2Object);
+            w.Write(m_unknown1);
+            w.Write(m_isRotatedDoor);
+            w.Write(m_cameraFollowsPlayer);
+            w.Align();
+            w.Write(m_position);
+            w.Write(m_doorOpenMinZOffset);
+            w.Write(m_doorOpenMaxZOffset);
+            w.Write(m_door1XY);
+            w.Write(m_door2XY);
+            w.Write(m_door1Z);
+            w.Write(m_door2Z);
+            w.Write(m_doorLastOpenTime);
+            w.Write(m_collectedCarsState);
+            w.Align();
+            w.Write(m_targetVehiclePointer);
+            w.Write(m_unknown3);
+            w.Write(m_unknown4);
         }
 
         public override bool Equals(object obj)

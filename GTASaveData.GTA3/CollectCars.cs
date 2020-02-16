@@ -2,6 +2,9 @@
 
 namespace GTASaveData.GTA3
 {
+    /// <summary>
+    /// Flags representing the status of collected cars for the Portand Harbor Import/Export garage.
+    /// </summary>
     [Flags]
     public enum CollectCars1
     {
@@ -23,6 +26,9 @@ namespace GTASaveData.GTA3
         Pony        = 0b_1000_0000_0000_0000,
     }
 
+    /// <summary>
+    /// Flags representing the status of collected cars for the Pike Creek Import/Export garage.
+    /// </summary>
     [Flags]
     public enum CollectCars2
     {
@@ -44,12 +50,18 @@ namespace GTASaveData.GTA3
         Esperanto   = 0b_1000_0000_0000_0000,
     }
 
+    /// <summary>
+    /// Flags representing the status of collected cars for an unused Import/Export garage.
+    /// </summary>
     [Flags]
     public enum CollectCars3
     {
         Landstalker = 0b_0000_0000_0000_0001
     }
 
+    /// <summary>
+    /// Flags representing the status of collected cars for the Emergency Vehicle Crane in Portland Harbor.
+    /// </summary>
     [Flags]
     public enum CollectCarsMilitaryCrane
     {

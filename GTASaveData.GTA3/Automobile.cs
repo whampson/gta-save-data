@@ -1,13 +1,12 @@
 ﻿using GTASaveData.Common;
 using GTASaveData.Serialization;
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Car : Vehicle,
-        IEquatable<Car>
+    public class Automobile : Vehicle,
+        IEquatable<Automobile>
     {
         public static class Limits
         {
@@ -36,35 +35,30 @@ namespace GTASaveData.GTA3
             }
         }
 
-        public Car()
+        public Automobile()
             : base()
         { }
 
-        private Car(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_unknownArray0 = new ObservableCollection<byte>(serializer.ReadBytes(Limits.GetUnknownArray0Size(format)));
-            m_position = serializer.ReadObject<Vector3d>();
-            m_unknownArray1 = new ObservableCollection<byte>(serializer.ReadBytes(Limits.GetUnknownArray1Size(format)));
+            m_unknownArray0 = r.ReadBytes(Limits.GetUnknownArray0Size(fmt));
+            m_position = r.ReadObject<Vector3d>();
+            m_unknownArray1 = r.ReadBytes(Limits.GetUnknownArray1Size(fmt));
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.WriteArray(m_unknownArray0.ToArray(), Limits.GetUnknownArray0Size(format));
-            serializer.WriteObject(m_position);
-            serializer.WriteArray(m_unknownArray1.ToArray(), Limits.GetUnknownArray1Size(format));
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write(m_unknownArray0.ToArray(), Limits.GetUnknownArray0Size(fmt));
+            w.Write(m_position);
+            w.Write(m_unknownArray1.ToArray(), Limits.GetUnknownArray1Size(fmt));
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Car);
+            return Equals(obj as Automobile);
         }
 
-        public bool Equals(Car other)
+        public bool Equals(Automobile other)
         {
             if (other == null)
             {

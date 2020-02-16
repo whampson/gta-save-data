@@ -4,7 +4,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class StoredCar : Chunk,
+    public class StoredCar : SerializableObject,
         IEquatable<StoredCar>
     {
         private int m_modelId;          // TODO: enum
@@ -85,39 +85,34 @@ namespace GTASaveData.GTA3
             m_rotation = new Vector3d();
         }
 
-        private StoredCar(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_modelId = serializer.ReadInt32();
-            m_position = serializer.ReadObject<Vector3d>();
-            m_rotation = serializer.ReadObject<Vector3d>();
-            m_immunities = (StoredCarImmunities) serializer.ReadInt32();
-            m_color1 = serializer.ReadByte();
-            m_color2 = serializer.ReadByte();
-            m_radio = (RadioStation) serializer.ReadByte();
-            m_extra1 = serializer.ReadSByte();
-            m_extra2 = serializer.ReadSByte();
-            m_bomb = (BombType) serializer.ReadByte();
-            serializer.Align();
+            m_modelId = r.ReadInt32();
+            m_position = r.ReadObject<Vector3d>();
+            m_rotation = r.ReadObject<Vector3d>();
+            m_immunities = (StoredCarImmunities) r.ReadInt32();
+            m_color1 = r.ReadByte();
+            m_color2 = r.ReadByte();
+            m_radio = (RadioStation) r.ReadByte();
+            m_extra1 = r.ReadSByte();
+            m_extra2 = r.ReadSByte();
+            m_bomb = (BombType) r.ReadByte();
+            r.Align();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write((int) m_modelId);
-            serializer.WriteObject(m_position);
-            serializer.WriteObject(m_rotation);
-            serializer.Write((int) m_immunities);
-            serializer.Write(m_color1);
-            serializer.Write(m_color2);
-            serializer.Write((byte) m_radio);
-            serializer.Write(m_extra1);
-            serializer.Write(m_extra2);
-            serializer.Write((byte) m_bomb);
-            serializer.Align();
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write((int) m_modelId);
+            w.Write(m_position);
+            w.Write(m_rotation);
+            w.Write((int) m_immunities);
+            w.Write(m_color1);
+            w.Write(m_color2);
+            w.Write((byte) m_radio);
+            w.Write(m_extra1);
+            w.Write(m_extra2);
+            w.Write((byte) m_bomb);
+            w.Align();
         }
 
         public override bool Equals(object obj)

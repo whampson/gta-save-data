@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class ContactInfo : Chunk,
+    public class ContactInfo : SerializableObject,
         IEquatable<ContactInfo>
     {
         private int m_onAMissionFlag;
@@ -24,21 +24,16 @@ namespace GTASaveData.GTA3
         public ContactInfo()
         { }
 
-        private ContactInfo(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_onAMissionFlag = serializer.ReadInt32();
-            m_baseBriefId = serializer.ReadInt32();
+            m_onAMissionFlag = r.ReadInt32();
+            m_baseBriefId = r.ReadInt32();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write(m_onAMissionFlag);
-            serializer.Write(m_baseBriefId);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write(m_onAMissionFlag);
+            w.Write(m_baseBriefId);
         }
 
         public override bool Equals(object obj)

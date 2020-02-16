@@ -1,12 +1,11 @@
 ﻿using GTASaveData.Serialization;
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class RunningScript : Chunk,
-        IEquatable<RunningScript>
+    public class Thread : SerializableObject,
+        IEquatable<Thread>
     {
         public static class Limits
         {
@@ -20,9 +19,9 @@ namespace GTASaveData.GTA3
         private uint m_prevScript;
         private string m_name;
         private uint m_instructionPointer;
-        private ObservableCollection<uint> m_stack;
+        private Array<uint> m_stack;
         private ushort m_stackPointer;
-        private ObservableCollection<uint> m_localVariables;
+        private Array<uint> m_localVariables;
         private uint m_timerA;
         private uint m_timerB;
         private bool m_ifResult;
@@ -59,7 +58,7 @@ namespace GTASaveData.GTA3
             set { m_instructionPointer = value; OnPropertyChanged(); }
         }
 
-        public ObservableCollection<uint> Stack
+        public Array<uint> Stack
         {
             get { return m_stack; }
             set { m_stack = value; OnPropertyChanged(); }
@@ -71,7 +70,7 @@ namespace GTASaveData.GTA3
             set { m_stackPointer = value; OnPropertyChanged(); }
         }
 
-        public ObservableCollection<uint> LocalVariables
+        public Array<uint> LocalVariables
         {
             get { return m_localVariables; }
             set { m_localVariables = value; OnPropertyChanged(); }
@@ -143,82 +142,77 @@ namespace GTASaveData.GTA3
             set { m_isMission = value; OnPropertyChanged(); }
         }
 
-        public RunningScript()
+        public Thread()
         {
             m_name = string.Empty;
-            m_stack = new ObservableCollection<uint>();
-            m_localVariables = new ObservableCollection<uint>();
+            m_stack = new Array<uint>();
+            m_localVariables = new Array<uint>();
         }
 
-        private RunningScript(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            int stackSize = format.IsPS2
+            int stackSize = fmt.IsPS2
                 ? Limits.StackSizePS2
                 : Limits.StackSize;
 
-            m_nextScript = serializer.ReadUInt32();
-            m_prevScript = serializer.ReadUInt32();
-            m_name = serializer.ReadString(Limits.NameLength);
-            m_instructionPointer = serializer.ReadUInt32();
-            m_stack = new ObservableCollection<uint>(serializer.ReadArray<uint>(stackSize));
-            m_stackPointer = serializer.ReadUInt16();
-            serializer.Align();
-            m_localVariables = new ObservableCollection<uint>(serializer.ReadArray<uint>(Limits.LocalVariablesCount));
-            m_timerA = serializer.ReadUInt32();
-            m_timerB = serializer.ReadUInt32();
-            m_ifResult = serializer.ReadBool();
-            m_isMissionScript = serializer.ReadBool();
-            m_isActive = serializer.ReadBool();
-            serializer.Align();
-            m_wakeTime = serializer.ReadUInt32();
-            m_ifNumber = serializer.ReadUInt16();
-            m_notFlag = serializer.ReadBool();
-            m_isWastedOrBustedCheckEnabled = serializer.ReadBool();
-            m_isWastedOrBusted = serializer.ReadBool();
-            m_isMission = serializer.ReadBool();
-            serializer.Align();
+            m_nextScript = r.ReadUInt32();
+            m_prevScript = r.ReadUInt32();
+            m_name = r.ReadString(Limits.NameLength);
+            m_instructionPointer = r.ReadUInt32();
+            m_stack = r.ReadArray<uint>(stackSize);
+            m_stackPointer = r.ReadUInt16();
+            r.Align();
+            m_localVariables = r.ReadArray<uint>(Limits.LocalVariablesCount);
+            m_timerA = r.ReadUInt32();
+            m_timerB = r.ReadUInt32();
+            m_ifResult = r.ReadBool();
+            m_isMissionScript = r.ReadBool();
+            m_isActive = r.ReadBool();
+            r.Align();
+            m_wakeTime = r.ReadUInt32();
+            m_ifNumber = r.ReadUInt16();
+            m_notFlag = r.ReadBool();
+            m_isWastedOrBustedCheckEnabled = r.ReadBool();
+            m_isWastedOrBusted = r.ReadBool();
+            m_isMission = r.ReadBool();
+            r.Align();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            int stackSize = format.IsPS2
+            int stackSize = fmt.IsPS2
                 ? Limits.StackSizePS2
                 : Limits.StackSize;
 
-            serializer.Write(m_nextScript);
-            serializer.Write(m_prevScript);
-            serializer.Write(m_name, Limits.NameLength);
-            serializer.Write(m_instructionPointer);
-            serializer.WriteArray(m_stack.ToArray(), stackSize);
-            serializer.Write(m_stackPointer);
-            serializer.Align();
-            serializer.WriteArray(m_localVariables.ToArray(), Limits.LocalVariablesCount);
-            serializer.Write(m_timerA);
-            serializer.Write(m_timerB);
-            serializer.Write(m_ifResult);
-            serializer.Write(m_isMissionScript);
-            serializer.Write(m_isActive);
-            serializer.Align();
-            serializer.Write(m_wakeTime);
-            serializer.Write(m_ifNumber);
-            serializer.Write(m_notFlag);
-            serializer.Write(m_isWastedOrBustedCheckEnabled);
-            serializer.Write(m_isWastedOrBusted);
-            serializer.Write(m_isMission);
-            serializer.Align();
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write(m_nextScript);
+            w.Write(m_prevScript);
+            w.Write(m_name, Limits.NameLength);
+            w.Write(m_instructionPointer);
+            w.Write(m_stack.ToArray(), stackSize);
+            w.Write(m_stackPointer);
+            w.Align();
+            w.Write(m_localVariables.ToArray(), Limits.LocalVariablesCount);
+            w.Write(m_timerA);
+            w.Write(m_timerB);
+            w.Write(m_ifResult);
+            w.Write(m_isMissionScript);
+            w.Write(m_isActive);
+            w.Align();
+            w.Write(m_wakeTime);
+            w.Write(m_ifNumber);
+            w.Write(m_notFlag);
+            w.Write(m_isWastedOrBustedCheckEnabled);
+            w.Write(m_isWastedOrBusted);
+            w.Write(m_isMission);
+            w.Align();
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as RunningScript);
+            return Equals(obj as Thread);
         }
 
-        public bool Equals(RunningScript other)
+        public bool Equals(Thread other)
         {
             if (other == null)
             {

@@ -2,8 +2,7 @@
 {
     public enum PickupType
     {
-        Invalid,
-
+        None,
         InShop,
         OnStreet,
         Once,

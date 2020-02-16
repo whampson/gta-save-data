@@ -1,17 +1,17 @@
 ﻿using GTASaveData.Common;
+using GTASaveData.Serialization;
 using Newtonsoft.Json;
-using System.Collections.ObjectModel;
 
 namespace GTASaveData.GTA3
 {
-    public abstract class Vehicle : Chunk
+    public abstract class Vehicle : SerializableObject
     {
-        protected ObservableCollection<byte> m_unknownArray0;
+        protected Array<byte> m_unknownArray0;
         protected Vector3d m_position;
-        protected ObservableCollection<byte> m_unknownArray1;
+        protected Array<byte> m_unknownArray1;
 
         [JsonIgnore]
-        public ObservableCollection<byte> UnknownArray0
+        public Array<byte> UnknownArray0
         {
             get { return m_unknownArray0; }
             set { m_unknownArray0 = value; OnPropertyChanged(); }
@@ -24,7 +24,7 @@ namespace GTASaveData.GTA3
         }
 
         [JsonIgnore]
-        public ObservableCollection<byte> UnknownArray1
+        public Array<byte> UnknownArray1
         {
             get { return m_unknownArray1; }
             set { m_unknownArray1 = value; OnPropertyChanged(); }
@@ -32,8 +32,8 @@ namespace GTASaveData.GTA3
 
         public Vehicle()
         {
-            m_unknownArray0 = new ObservableCollection<byte>();
-            m_unknownArray1 = new ObservableCollection<byte>();
+            m_unknownArray0 = new Array<byte>();
+            m_unknownArray1 = new Array<byte>();
             m_position = new Vector3d();
         }
     }

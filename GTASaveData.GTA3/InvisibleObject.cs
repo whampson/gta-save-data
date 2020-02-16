@@ -3,8 +3,8 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class InvisibilitySetting : Chunk,
-        IEquatable<InvisibilitySetting>
+    public class InvisibleObject : SerializableObject,
+        IEquatable<InvisibleObject>
     {
         private ObjectType m_type;
         private int m_staticIndex;
@@ -21,32 +21,27 @@ namespace GTASaveData.GTA3
             set { m_staticIndex = value; OnPropertyChanged(); }
         }
 
-        public InvisibilitySetting()
+        public InvisibleObject()
         { }
 
-        private InvisibilitySetting(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_type = (ObjectType) serializer.ReadInt32();
-            m_staticIndex = serializer.ReadInt32();
+            m_type = (ObjectType) r.ReadInt32();
+            m_staticIndex = r.ReadInt32();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write((int) m_type);
-            serializer.Write(m_staticIndex);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write((int) m_type);
+            w.Write(m_staticIndex);
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as InvisibilitySetting);
+            return Equals(obj as InvisibleObject);
         }
 
-        public bool Equals(InvisibilitySetting other)
+        public bool Equals(InvisibleObject other)
         {
             if (other == null)
             {

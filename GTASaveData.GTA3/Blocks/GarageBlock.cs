@@ -1,17 +1,16 @@
 ﻿using GTASaveData.Serialization;
 using System;
 using System.Linq;
-using WpfEssentials;
 
-namespace GTASaveData.GTA3
+namespace GTASaveData.GTA3.Blocks
 {
-    public sealed class Garages : Chunk,
-        IEquatable<Garages>
+    public class GarageBlock : SerializableObject,
+        IEquatable<GarageBlock>
     {
         public static class Limits
         {
-            public const int StoredCarSlotsCount = 6;
-            public const int GarageObjectsCount = 32;
+            public const int StoredCarsCount = 18;
+            public const int GaragesCount = 32;
         }
 
         private int m_numberOfGarages;
@@ -24,8 +23,8 @@ namespace GTASaveData.GTA3
         private CollectCars2 m_carTypesCollected2;
         private CollectCars3 m_carTypesCollected3;
         private int m_lastTimeHelpMessage;
-        private FullyObservableCollection<StoredCarSlot> m_storedCarSlots;
-        private FullyObservableCollection<Garage> m_garageObjects;
+        private Array<StoredCar> m_storedCars;
+        private Array<Garage> m_garages;
 
         public int NumberOfGarages
         { 
@@ -87,67 +86,62 @@ namespace GTASaveData.GTA3
             set { m_lastTimeHelpMessage = value; OnPropertyChanged(); }
         }
 
-        public FullyObservableCollection<StoredCarSlot> StoredCarSlots
+        public Array<StoredCar> StoredCars
         { 
-            get { return m_storedCarSlots; }
-            set { m_storedCarSlots = value; OnPropertyChanged(); }
+            get { return m_storedCars; }
+            set { m_storedCars = value; OnPropertyChanged(); }
         }
 
-        public FullyObservableCollection<Garage> GarageObjects
+        public Array<Garage> Garages
         { 
-            get { return m_garageObjects; }
-            set { m_garageObjects = value; OnPropertyChanged(); }
+            get { return m_garages; }
+            set { m_garages = value; OnPropertyChanged(); }
         }
 
-        public Garages()
+        public GarageBlock()
         {
-            m_storedCarSlots = new FullyObservableCollection<StoredCarSlot>();
-            m_garageObjects = new FullyObservableCollection<Garage>();
+            m_storedCars = new Array<StoredCar>();
+            m_garages = new Array<Garage>();
         }
 
-        private Garages(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_numberOfGarages = serializer.ReadInt32();
-            m_freeBombs = serializer.ReadBool(4);
-            m_freeResprays = serializer.ReadBool(4);
-            m_carsCollected = serializer.ReadInt32();
-            m_bankVansCollected = serializer.ReadInt32();
-            m_policeCarsCollected = serializer.ReadInt32();
-            m_carTypesCollected1 = (CollectCars1) serializer.ReadInt32();
-            m_carTypesCollected2 = (CollectCars2) serializer.ReadInt32();
-            m_carTypesCollected3 = (CollectCars3) serializer.ReadInt32();
-            m_lastTimeHelpMessage = serializer.ReadInt32();
-            m_storedCarSlots = new FullyObservableCollection<StoredCarSlot>(serializer.ReadArray<StoredCarSlot>(Limits.StoredCarSlotsCount));
-            m_garageObjects = new FullyObservableCollection<Garage>(serializer.ReadArray<Garage>(Limits.GarageObjectsCount));
+            m_numberOfGarages = r.ReadInt32();
+            m_freeBombs = r.ReadBool(4);
+            m_freeResprays = r.ReadBool(4);
+            m_carsCollected = r.ReadInt32();
+            m_bankVansCollected = r.ReadInt32();
+            m_policeCarsCollected = r.ReadInt32();
+            m_carTypesCollected1 = (CollectCars1) r.ReadInt32();
+            m_carTypesCollected2 = (CollectCars2) r.ReadInt32();
+            m_carTypesCollected3 = (CollectCars3) r.ReadInt32();
+            m_lastTimeHelpMessage = r.ReadInt32();
+            m_storedCars = r.ReadArray<StoredCar>(Limits.StoredCarsCount);
+            m_garages = r.ReadArray<Garage>(Limits.GaragesCount);
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write(m_numberOfGarages);
-            serializer.Write(m_freeBombs, 4);
-            serializer.Write(m_freeResprays, 4);
-            serializer.Write(m_carsCollected);
-            serializer.Write(m_bankVansCollected);
-            serializer.Write(m_policeCarsCollected);
-            serializer.Write((int) m_carTypesCollected1);
-            serializer.Write((int) m_carTypesCollected2);
-            serializer.Write((int) m_carTypesCollected3);
-            serializer.Write(m_lastTimeHelpMessage);
-            serializer.WriteArray(m_storedCarSlots.ToArray(), Limits.StoredCarSlotsCount);
-            serializer.WriteArray(m_garageObjects.ToArray(), Limits.GarageObjectsCount);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write(m_numberOfGarages);
+            w.Write(m_freeBombs, 4);
+            w.Write(m_freeResprays, 4);
+            w.Write(m_carsCollected);
+            w.Write(m_bankVansCollected);
+            w.Write(m_policeCarsCollected);
+            w.Write((int) m_carTypesCollected1);
+            w.Write((int) m_carTypesCollected2);
+            w.Write((int) m_carTypesCollected3);
+            w.Write(m_lastTimeHelpMessage);
+            w.Write(m_storedCars.ToArray(), Limits.StoredCarsCount);
+            w.Write(m_garages.ToArray(), Limits.GaragesCount);
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Garages);
+            return Equals(obj as GarageBlock);
         }
 
-        public bool Equals(Garages other)
+        public bool Equals(GarageBlock other)
         {
             if (other == null)
             {
@@ -164,8 +158,8 @@ namespace GTASaveData.GTA3
                 && m_carTypesCollected2.Equals(other.m_carTypesCollected2)
                 && m_carTypesCollected3.Equals(other.m_carTypesCollected3)
                 && m_lastTimeHelpMessage.Equals(other.m_lastTimeHelpMessage)
-                && m_storedCarSlots.SequenceEqual(other.m_storedCarSlots)
-                && m_garageObjects.SequenceEqual(other.m_garageObjects);
+                && m_storedCars.SequenceEqual(other.m_storedCars)
+                && m_garages.SequenceEqual(other.m_garages);
         }
     }
 }

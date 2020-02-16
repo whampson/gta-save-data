@@ -1,15 +1,13 @@
 ﻿using GTASaveData.Serialization;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using WpfEssentials;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Pickups : Chunk,
+    public class Pickups : SerializableObject,
         IEquatable<Pickups>
     {
         public static class Limits
@@ -18,11 +16,11 @@ namespace GTASaveData.GTA3
             public const int PickupsCollectedCount = 20;
         }
 
-        private FullyObservableCollection<Pickup> m_pickupsArray;
+        private Array<Pickup> m_pickupsArray;
         private int m_lastCollectedIndex;
-        private ObservableCollection<int> m_pickupsCollected;
+        private Array<int> m_pickupsCollected;
 
-        public FullyObservableCollection<Pickup> PickupsArray
+        public Array<Pickup> PickupsArray
         {
             get { return m_pickupsArray; }
             set { m_pickupsArray = value; OnPropertyChanged(); }
@@ -34,7 +32,7 @@ namespace GTASaveData.GTA3
             set { m_lastCollectedIndex = value; OnPropertyChanged(); }
         }
 
-        public ObservableCollection<int> PickupsCollected
+        public Array<int> PickupsCollected
         {
             get { return m_pickupsCollected; }
             set { m_pickupsCollected = value; OnPropertyChanged(); }
@@ -42,30 +40,25 @@ namespace GTASaveData.GTA3
 
         public Pickups()
         {
-            m_pickupsArray = new FullyObservableCollection<Pickup>();
-            m_pickupsCollected = new ObservableCollection<int>();
+            m_pickupsArray = new Array<Pickup>();
+            m_pickupsCollected = new Array<int>();
         }
 
-        private Pickups(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_pickupsArray = new FullyObservableCollection<Pickup>(serializer.ReadArray<Pickup>(Limits.PickupsArrayCount));
-            m_lastCollectedIndex = serializer.ReadUInt16();
-            ushort constant0 = serializer.ReadUInt16();
+            m_pickupsArray = r.ReadArray<Pickup>(Limits.PickupsArrayCount);
+            m_lastCollectedIndex = r.ReadUInt16();
+            ushort constant0 = r.ReadUInt16();
             Debug.Assert(constant0 == 0);
-            m_pickupsCollected = new ObservableCollection<int>(serializer.ReadArray<int>(Limits.PickupsCollectedCount));
+            m_pickupsCollected = r.ReadArray<int>(Limits.PickupsCollectedCount);
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.WriteArray(m_pickupsArray.ToArray(), Limits.PickupsArrayCount);
-            serializer.Write((ushort) m_lastCollectedIndex);
-            serializer.Write((ushort) 0);
-            serializer.WriteArray(m_pickupsCollected.ToArray(), Limits.PickupsCollectedCount);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write(m_pickupsArray.ToArray(), Limits.PickupsArrayCount);
+            w.Write((ushort) m_lastCollectedIndex);
+            w.Write((ushort) 0);
+            w.Write(m_pickupsCollected.ToArray(), Limits.PickupsCollectedCount);
         }
 
         public override bool Equals(object obj)

@@ -3,8 +3,8 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class BuildingSwap : Chunk,
-        IEquatable<BuildingSwap>
+    public class StaticReplacement : SerializableObject,
+        IEquatable<StaticReplacement>
     {
         private ObjectType m_type;
         private int m_staticIndex;
@@ -35,7 +35,7 @@ namespace GTASaveData.GTA3
             set { m_oldModelId = value; OnPropertyChanged(); }
         }
 
-        public BuildingSwap()
+        public StaticReplacement()
         {
             m_type = ObjectType.None;
             m_staticIndex = 0;
@@ -43,33 +43,28 @@ namespace GTASaveData.GTA3
             m_oldModelId = -1;
         }
 
-        private BuildingSwap(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_type = (ObjectType) serializer.ReadInt32();
-            m_staticIndex = serializer.ReadInt32();
-            m_newModelId = serializer.ReadInt32();
-            m_oldModelId = serializer.ReadInt32();
+            m_type = (ObjectType) r.ReadInt32();
+            m_staticIndex = r.ReadInt32();
+            m_newModelId = r.ReadInt32();
+            m_oldModelId = r.ReadInt32();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write((int) m_type);
-            serializer.Write(m_staticIndex);
-            serializer.Write(m_newModelId);
-            serializer.Write(m_oldModelId);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write((int) m_type);
+            w.Write(m_staticIndex);
+            w.Write(m_newModelId);
+            w.Write(m_oldModelId);
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as BuildingSwap);
+            return Equals(obj as StaticReplacement);
         }
 
-        public bool Equals(BuildingSwap other)
+        public bool Equals(StaticReplacement other)
         {
             if (other == null)
             {

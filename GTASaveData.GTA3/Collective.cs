@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Collective : Chunk,
+    public class Collective : SerializableObject,
         IEquatable<Collective>
     {
         private int m_unknown0;
@@ -27,21 +27,16 @@ namespace GTASaveData.GTA3
             m_unknown0 = 0;
         }
 
-        private Collective(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_unknown0 = serializer.ReadInt32();
-            m_unknown1 = serializer.ReadInt32();
+            m_unknown0 = r.ReadInt32();
+            m_unknown1 = r.ReadInt32();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write(m_unknown0);
-            serializer.Write(m_unknown1);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write(m_unknown0);
+            w.Write(m_unknown1);
         }
 
         public override bool Equals(object obj)

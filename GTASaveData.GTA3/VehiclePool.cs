@@ -1,16 +1,15 @@
 ﻿using GTASaveData.Serialization;
 using System;
 using System.Linq;
-using WpfEssentials;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class VehiclePool : Chunk,
+    public class VehiclePool : SerializableObject,
         IEquatable<VehiclePool>
     {
-        private FullyObservableCollection<VehiclePoolItem> m_pool;
+        private Array<VehiclePoolItem> m_pool;
 
-        public FullyObservableCollection<VehiclePoolItem> Pool
+        public Array<VehiclePoolItem> Pool
         {
             get { return m_pool; }
             set { m_pool = value; OnPropertyChanged(); }
@@ -18,18 +17,18 @@ namespace GTASaveData.GTA3
 
         public VehiclePool()
         {
-            m_pool = new FullyObservableCollection<VehiclePoolItem>();
+            m_pool = new Array<VehiclePoolItem>();
         }
 
-        private VehiclePool(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            int numCars = serializer.ReadInt32();
-            int numBoats = serializer.ReadInt32();
+            int numCars = r.ReadInt32();
+            int numBoats = r.ReadInt32();
 
-            m_pool = new FullyObservableCollection<VehiclePoolItem>(serializer.ReadArray<VehiclePoolItem>(numCars + numBoats, format));
+            m_pool = r.ReadArray<VehiclePoolItem>(numCars + numBoats, fmt);
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
             int numCars = 0;
             int numBoats = 0;
@@ -45,16 +44,10 @@ namespace GTASaveData.GTA3
                 }
             }
 
-            serializer.Write(numCars);
-            serializer.Write(numBoats);
-            serializer.WriteArray(m_pool.ToArray(), format: format);
+            w.Write(numCars);
+            w.Write(numBoats);
+            w.Write(m_pool.ToArray(), format: fmt);
         }
-
-        public override int GetHashCode() 
-        {
-            return base.GetHashCode();
-        }
-
         public override bool Equals(object obj)
         {
             return Equals(obj as VehiclePool);

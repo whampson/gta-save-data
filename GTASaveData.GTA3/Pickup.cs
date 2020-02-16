@@ -4,7 +4,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public sealed class Pickup : Chunk,
+    public class Pickup : SerializableObject,
         IEquatable<Pickup>
     {
         private PickupType m_type;
@@ -69,33 +69,28 @@ namespace GTASaveData.GTA3
             m_position = new Vector3d();
         }
 
-        private Pickup(SaveDataSerializer serializer, FileFormat format)
+        protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_type = (PickupType) serializer.ReadByte();
-            m_hasBeenPickedUp = serializer.ReadBool();
-            m_amount = serializer.ReadUInt16();
-            m_objectIndex = serializer.ReadUInt32();
-            m_regenerationTime = serializer.ReadUInt32();
-            m_modelId = serializer.ReadUInt16();
-            m_flags = serializer.ReadUInt16();
-            m_position = serializer.ReadObject<Vector3d>();
+            m_type = (PickupType) r.ReadByte();
+            m_hasBeenPickedUp = r.ReadBool();
+            m_amount = r.ReadUInt16();
+            m_objectIndex = r.ReadUInt32();
+            m_regenerationTime = r.ReadUInt32();
+            m_modelId = r.ReadUInt16();
+            m_flags = r.ReadUInt16();
+            m_position = r.ReadObject<Vector3d>();
         }
 
-        protected override void WriteObjectData(SaveDataSerializer serializer, FileFormat format)
+        protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            serializer.Write((byte) m_type);
-            serializer.Write(m_hasBeenPickedUp);
-            serializer.Write(m_amount);
-            serializer.Write(m_objectIndex);
-            serializer.Write(m_regenerationTime);
-            serializer.Write(m_modelId);
-            serializer.Write(m_flags);
-            serializer.WriteObject(m_position);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            w.Write((byte) m_type);
+            w.Write(m_hasBeenPickedUp);
+            w.Write(m_amount);
+            w.Write(m_objectIndex);
+            w.Write(m_regenerationTime);
+            w.Write(m_modelId);
+            w.Write(m_flags);
+            w.Write(m_position);
         }
 
         public override bool Equals(object obj)
