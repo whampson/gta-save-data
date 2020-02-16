@@ -13,7 +13,7 @@ namespace GTASaveData.Tests.VC
         public override CarGenerator GenerateTestVector(FileFormat format)
         {
             Faker<CarGenerator> model = new Faker<CarGenerator>()
-                .RuleFor(x => x.Model, f => f.Random.Int())
+                .RuleFor(x => x.Model, f => f.PickRandom<VehicleModel>())
                 .RuleFor(x => x.Position, f => Generator.Generate<Vector3d, TestVector3d>())
                 .RuleFor(x => x.Heading, f => f.Random.Float())
                 .RuleFor(x => x.Color1, f => f.Random.UShort())
@@ -25,7 +25,7 @@ namespace GTASaveData.Tests.VC
                 .RuleFor(x => x.MaxDelay, f => f.Random.UShort())
                 .RuleFor(x => x.Timer, f => f.Random.Int())
                 .RuleFor(x => x.VehiclePoolIndex, f => f.Random.Int())
-                .RuleFor(x => x.Generate, f => f.Random.Bool())
+                .RuleFor(x => x.Enabled, f => f.Random.Bool())
                 .RuleFor(x => x.HasRecentlyBeenStolen, f => f.Random.Bool());
 
             return model.Generate();

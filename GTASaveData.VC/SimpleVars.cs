@@ -1,8 +1,6 @@
 ﻿using GTASaveData.Common;
 using GTASaveData.Serialization;
-using GTASaveData.VC;
 using System;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -66,7 +64,7 @@ namespace GTASaveData.VC
         private int m_extraColor;
         private bool m_isExtraColorOn;
         private float m_extraColorInterpolation;
-        private StaticArray<uint> m_radioListenTime;
+        private Array<uint> m_radioListenTime;
 
         public string LastMissionPassedName
         {
@@ -326,7 +324,7 @@ namespace GTASaveData.VC
             set { m_extraColorInterpolation = value; OnPropertyChanged(); }
         }
 
-        public StaticArray<uint> RadioListenTime
+        public Array<uint> RadioListenTime
         {
             get { return m_radioListenTime; }
             set { m_radioListenTime = value; OnPropertyChanged(); }
@@ -338,7 +336,7 @@ namespace GTASaveData.VC
             m_saveTime = new SystemTime();
             m_cameraPosition = new Vector3d();
             //m_compileDateAndTime = new Timestamp();
-            m_radioListenTime = new StaticArray<uint>(Limits.RadioListenTimeCount);
+            m_radioListenTime = new Array<uint>();
         }
 
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
@@ -429,7 +427,7 @@ namespace GTASaveData.VC
             m_extraColor = r.ReadInt32();
             m_isExtraColorOn = r.ReadBool(4);
             m_extraColorInterpolation = r.ReadSingle();
-            m_radioListenTime = new StaticArray<uint>(r.ReadArray<uint>(10));
+            m_radioListenTime = r.ReadArray<uint>(Limits.RadioListenTimeCount);
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
@@ -515,7 +513,7 @@ namespace GTASaveData.VC
             w.Write(m_extraColor);
             w.Write(m_isExtraColorOn, 4);
             w.Write(m_extraColorInterpolation);
-            w.Write(m_radioListenTime.ToArray());
+            w.Write(m_radioListenTime.ToArray(), Limits.RadioListenTimeCount);
             //if (format.IsMobile)
             //{
             //    serializer.Write(m_isQuickSave);

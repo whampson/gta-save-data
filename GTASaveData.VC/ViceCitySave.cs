@@ -1,7 +1,7 @@
 ﻿using GTASaveData.Extensions;
 using GTASaveData.Serialization;
+using GTASaveData.VC.Blocks;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -115,9 +115,9 @@ namespace GTASaveData.VC
             set { m_blocks[14] = value; OnPropertyChanged(); }
         }
 
-        public CarGeneratorsBlock CarGenerators
+        public CarGeneratorBlock CarGenerators
         {
-            get { return m_blocks[15] as CarGeneratorsBlock; }
+            get { return m_blocks[15] as CarGeneratorBlock; }
             set { m_blocks[15] = value; OnPropertyChanged(); }
         }
 
@@ -184,7 +184,7 @@ namespace GTASaveData.VC
                     return 23;
                 }
 
-                throw new NotImplementedException();
+                throw new InvalidOperationException("Not implemented!");
             }
         }
 
@@ -201,7 +201,7 @@ namespace GTASaveData.VC
                     return 0xE8;
                 }
 
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("Not implemented!");
             }
         }
 
@@ -223,7 +223,7 @@ namespace GTASaveData.VC
             m_blocks[12] = new Block();
             m_blocks[13] = new Block();
             m_blocks[14] = new Block();
-            m_blocks[15] = new CarGeneratorsBlock();
+            m_blocks[15] = new CarGeneratorBlock();
             m_blocks[16] = new Block();
             m_blocks[17] = new Block();
             m_blocks[18] = new Block();
@@ -253,9 +253,7 @@ namespace GTASaveData.VC
                 }
             }
 
-            // TODO: finish
-
-            return null;
+            throw new InvalidOperationException("Not implemented!");
         }
 
         protected override byte[] ReadBlock(Serializer r, string tag)
@@ -342,7 +340,7 @@ namespace GTASaveData.VC
                     case 11: RadarBlips = ReadBlock(r, RdrTag); break;
                     case 12: Zones = ReadBlock(r, ZnsTag); break;
                     case 13: GangData = ReadBlock(r, GngTag); break;
-                    case 14: CarGenerators = Deserialize<CarGeneratorsBlock>(ReadBlock(r, CgnTag)); break;
+                    case 14: CarGenerators = Deserialize<CarGeneratorBlock>(ReadBlock(r, CgnTag)); break;
                     case 15: Particles = ReadBlock(r, null); break;
                     case 16: AudioScriptObjects = ReadBlock(r, AudTag); break;
                     case 17: ScriptPaths = ReadBlock(r, null); break;

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using TestFramework;
 using Xunit;
+using GTASaveData.VC.Blocks;
+using GTASaveData.Tests.VC.Blocks;
 
 namespace GTASaveData.Tests.VC
 {
@@ -29,7 +31,7 @@ namespace GTASaveData.Tests.VC
                 //.RuleFor(x => x.RadarBlips, Generator.Generate<RadarBlips, TestRadarBlips>(format))
                 //.RuleFor(x => x.Zones, Generator.Generate<Zones, TestZones>(format))
                 //.RuleFor(x => x.GangData, Generator.Generate<GangData, TestGangData>(format))
-                .RuleFor(x => x.CarGenerators, Generator.Generate<CarGeneratorsBlock, TestCarGeneratorsBlock>(format))
+                .RuleFor(x => x.CarGenerators, Generator.Generate<CarGeneratorBlock, TestCarGeneratorBlock>(format))
                 //.RuleFor(x => x.Particles, Generator.Generate<Particles, TestParticles>(format))
                 //.RuleFor(x => x.AudioScriptObjects, Generator.Generate<AudioScriptObjects, TestAudioScriptObjects>(format))
                 //.RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))

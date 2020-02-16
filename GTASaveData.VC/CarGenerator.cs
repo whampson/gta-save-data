@@ -5,9 +5,10 @@ using System;
 namespace GTASaveData.VC
 {
     public sealed class CarGenerator : SerializableObject,
+        ICarGenerator,
         IEquatable<CarGenerator>
     {
-        private int m_model;
+        private VehicleModel m_model;
         private Vector3d m_position;
         private float m_heading;
         private int m_color1;
@@ -19,10 +20,16 @@ namespace GTASaveData.VC
         private int m_maxDelay;
         private int m_timer;
         private int m_vehiclePoolIndex;
-        private bool m_generate;
+        private bool m_enabled;
         private bool m_hasRecentlyBeenStolen;
 
-        public int Model
+        int ICarGenerator.Model
+        {
+            get { return (int) m_model; }
+            set { m_model = (VehicleModel) value; OnPropertyChanged(); }
+        }
+
+        public VehicleModel Model
         {
             get { return m_model; }
             set { m_model = value; OnPropertyChanged(); }
@@ -94,10 +101,10 @@ namespace GTASaveData.VC
             set { m_vehiclePoolIndex = value; OnPropertyChanged(); }
         }
 
-        public bool Generate
+        public bool Enabled
         {
-            get { return m_generate; }
-            set { m_generate = value; OnPropertyChanged(); }
+            get { return m_enabled; }
+            set { m_enabled = value; OnPropertyChanged(); }
         }
 
         public bool HasRecentlyBeenStolen
@@ -113,11 +120,11 @@ namespace GTASaveData.VC
 
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_model = r.ReadInt32();
+            m_model = (VehicleModel) r.ReadInt32();
             m_position = r.ReadObject<Vector3d>();
             m_heading = r.ReadSingle();
-            m_color1 = r.ReadInt16();
-            m_color2 = r.ReadInt16();
+            m_color1 = r.ReadUInt16();
+            m_color2 = r.ReadUInt16();
             m_forceSpawn = r.ReadBool();
             m_alarmChance = r.ReadByte();
             m_lockChance = r.ReadByte();
@@ -126,14 +133,14 @@ namespace GTASaveData.VC
             m_maxDelay = r.ReadUInt16();
             m_timer = r.ReadInt32();
             m_vehiclePoolIndex = r.ReadInt32();
-            m_generate = r.ReadBool(2);
+            m_enabled = r.ReadBool(2);
             m_hasRecentlyBeenStolen = r.ReadBool();
             r.Align();
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            w.Write(m_model);
+            w.Write((int) m_model);
             w.Write(m_position);
             w.Write(m_heading);
             w.Write((ushort) m_color1);
@@ -146,7 +153,7 @@ namespace GTASaveData.VC
             w.Write((ushort) m_maxDelay);
             w.Write(m_timer);
             w.Write(m_vehiclePoolIndex);
-            w.Write(m_generate, 2);
+            w.Write(m_enabled, 2);
             w.Write(m_hasRecentlyBeenStolen);
             w.Align();
         }
@@ -175,7 +182,7 @@ namespace GTASaveData.VC
                 && m_maxDelay.Equals(other.m_maxDelay)
                 && m_timer.Equals(other.m_timer)
                 && m_vehiclePoolIndex.Equals(other.m_vehiclePoolIndex)
-                && m_generate.Equals(other.m_generate)
+                && m_enabled.Equals(other.m_enabled)
                 && m_hasRecentlyBeenStolen.Equals(other.m_hasRecentlyBeenStolen);
         }
 
