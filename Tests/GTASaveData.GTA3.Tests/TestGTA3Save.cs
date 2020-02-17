@@ -20,7 +20,7 @@ namespace GTASaveData.Tests.GTA3
                 .RuleFor(x => x.Scripts, Generator.Generate<ScriptBlock, TestScriptBlock>(format))
                 //.RuleFor(x => x.PedPool, TestHelper.Generate<PedPool, TestPedPool>(format))
                 .RuleFor(x => x.Garages, Generator.Generate<GarageBlock, TestGarageBlock>(format))
-                .RuleFor(x => x.Vehicles, Generator.Generate<VehiclePool, TestVehiclePool>(format))
+                .RuleFor(x => x.VehiclePool, Generator.Generate<VehiclePool, TestVehiclePool>(format))
                 //.RuleFor(x => x.Objects, Generator.Generate<Objects, TestObjects>(format))
                 //.RuleFor(x => x.PathFind, Generator.Generate<PathFind, TestPathFind>(format))
                 //.RuleFor(x => x.Cranes, Generator.Generate<Cranes, TestCranes>(format))
@@ -43,49 +43,79 @@ namespace GTASaveData.Tests.GTA3
         }
 
         [Theory]
-        [MemberData(nameof(SerializationData))]
-        public void Serialization(FileFormat format)
+        [MemberData(nameof(TestFiles))]
+        public void FileFormatDetection(FileFormat expected, string filename)
+        {
+            string path = TestData.GetTestDataPath(Game.GTA3, expected, filename);
+
+            FileFormat detected = GrandTheftAutoSave.GetFileFormat<GTA3Save>(path);
+
+            Assert.Equal(expected, detected);
+        }
+
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
             GTA3Save x0 = GenerateTestVector(format);
             GTA3Save x1 = CreateSerializedCopy(x0, format);
 
-            Assert.Equal(x0.SimpleVars, x1.SimpleVars);
-            Assert.Equal(x0.Scripts, x1.Scripts);
-            //Assert.Equal(x0.PedPool, x1.PedPool);
-            Assert.Equal(x0.Garages, x1.Garages);
-            Assert.Equal(x0.Vehicles, x1.Vehicles);
-            Assert.Equal(x0.Pickups, x1.Pickups);
-            Assert.Equal(x0.CarGenerators, x1.CarGenerators);
-
-            Assert.Equal(x0, x1);
-            // TODO: data size check?
+            AssertEqual(x0, x1);
         }
 
         [Theory]
-        [MemberData(nameof(FileFormatData))]
-        public void FileTypeDetection(FileFormat expectedFileFormat, string filePath)
+        [MemberData(nameof(TestFiles))]
+        public void RealDataSerialization(FileFormat format, string filename)
         {
-            FileFormat detected = GrandTheftAutoSave.GetFileFormat<GTA3Save>(filePath);
+            string path = TestData.GetTestDataPath(Game.GTA3, format, filename);
 
-            Assert.Equal(expectedFileFormat, detected);
+            GTA3Save x0 = GrandTheftAutoSave.Load<GTA3Save>(path);
+            GTA3Save x1 = CreateSerializedCopy(x0, format);
+
+            AssertEqual(x0, x1);
         }
 
-        public static IEnumerable<object[]> FileFormatData => new[]
+        private void AssertEqual(GTA3Save x0, GTA3Save x1)
         {
-            // TODO: testdata access in testFramework
-            new object[] { GTA3Save.FileFormats.PC, "./TestData/GTA3/PC/1_JM4" },
-            new object[] { GTA3Save.FileFormats.PC, "./TestData/GTA3/PC/2_AS3" },
-            new object[] { GTA3Save.FileFormats.PS2AU, "./TestData/GTA3/PS2AU/1_T4X4_2" },
-            new object[] { GTA3Save.FileFormats.PS2AU, "./TestData/GTA3/PS2AU/2_AS3" },
-            new object[] { GTA3Save.FileFormats.PS2AU, "./TestData/GTA3/PS2AU/3_CAT2" },
-            new object[] { GTA3Save.FileFormats.PS2JP, "./TestData/GTA3/PS2JP/1_LM1" },
-            new object[] { GTA3Save.FileFormats.PS2JP, "./TestData/GTA3/PS2JP/2_LM2" },
-            new object[] { GTA3Save.FileFormats.PS2NAEU, "./TestData/GTA3/PS2NAEU/1_T4X4_1" },
-            new object[] { GTA3Save.FileFormats.PS2NAEU, "./TestData/GTA3/PS2NAEU/2_LM1" },
-            new object[] { GTA3Save.FileFormats.PS2NAEU, "./TestData/GTA3/PS2NAEU/3_CAT2" },
+            Assert.Equal(x0.SimpleVars, x1.SimpleVars);
+            Assert.Equal(x0.Scripts, x1.Scripts);
+            Assert.Equal(x0.PedPool, x1.PedPool);
+            Assert.Equal(x0.Garages, x1.Garages);
+            Assert.Equal(x0.VehiclePool, x1.VehiclePool);
+            Assert.Equal(x0.ObjectPool, x1.ObjectPool);
+            Assert.Equal(x0.PathFind, x1.PathFind);
+            Assert.Equal(x0.Cranes, x1.Cranes);
+            Assert.Equal(x0.Pickups, x1.Pickups);
+            Assert.Equal(x0.PhoneInfo, x1.PhoneInfo);
+            Assert.Equal(x0.RestartPoints, x1.RestartPoints);
+            Assert.Equal(x0.RadarBlips, x1.RadarBlips);
+            Assert.Equal(x0.Zones, x1.Zones);
+            Assert.Equal(x0.GangData, x1.GangData);
+            Assert.Equal(x0.CarGenerators, x1.CarGenerators);
+            Assert.Equal(x0.Particles, x1.Particles);
+            Assert.Equal(x0.AudioScriptObjects, x1.AudioScriptObjects);
+            Assert.Equal(x0.PlayerInfo, x1.PlayerInfo);
+            Assert.Equal(x0.Stats, x1.Stats);
+            Assert.Equal(x0.Streaming, x1.Streaming);
+            Assert.Equal(x0.PedTypeInfo, x1.PedTypeInfo);
+            Assert.Equal(x0, x1);
+        }
+
+        public static IEnumerable<object[]> TestFiles => new[]
+        {
+            //new object[] { GTA3Save.FileFormats.PC, "1_JM4" },
+            //new object[] { GTA3Save.FileFormats.PC, "2_AS3" },
+            new object[] { GTA3Save.FileFormats.PS2AU, "1_T4X4_2" },
+            new object[] { GTA3Save.FileFormats.PS2AU, "2_AS3" },
+            new object[] { GTA3Save.FileFormats.PS2AU, "3_CAT2" },
+            new object[] { GTA3Save.FileFormats.PS2JP, "1_LM1" },
+            new object[] { GTA3Save.FileFormats.PS2JP, "2_LM2" },
+            //new object[] { GTA3Save.FileFormats.PS2NAEU, "1_T4X4_1" },
+            //new object[] { GTA3Save.FileFormats.PS2NAEU, "2_LM1" },
+            //new object[] { GTA3Save.FileFormats.PS2NAEU, "3_CAT2" },
         };
 
-        public static IEnumerable<object[]> SerializationData => new[]
+        public static IEnumerable<object[]> FileFormats => new[]
         {
             new object[] { GTA3Save.FileFormats.Android },
             new object[] { GTA3Save.FileFormats.IOS },

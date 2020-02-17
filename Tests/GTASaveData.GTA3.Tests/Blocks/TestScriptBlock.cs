@@ -41,7 +41,7 @@ namespace GTASaveData.Tests.GTA3.Blocks
             ScriptBlock x0 = GenerateTestVector(format);
             ScriptBlock x1 = CreateSerializedCopy(x0, out byte[] data, format);
 
-            int runningScriptSize = format.IsPS2 ? 0x80 : 0x88;
+            int runningScriptSize = format.SupportsPS2 ? 0x80 : 0x88;
             int expectedSize = 0x3D4 + (x0.GlobalVariables.Count * 4) + (x0.RunningScripts.Count * runningScriptSize);
 
             Assert.Equal(x0.GlobalVariables, x1.GlobalVariables);

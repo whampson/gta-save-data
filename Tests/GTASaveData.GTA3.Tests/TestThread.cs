@@ -12,7 +12,7 @@ namespace GTASaveData.Tests.GTA3
         public override Thread GenerateTestVector(FileFormat format)
         {
             int numLocals = Thread.Limits.LocalVariablesCount;
-            int stackSize = format.IsPS2
+            int stackSize = format.SupportsPS2
                 ? Thread.Limits.StackSizePS2
                 : Thread.Limits.StackSize;
 
