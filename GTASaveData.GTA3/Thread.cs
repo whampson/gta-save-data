@@ -151,7 +151,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            int stackSize = fmt.IsPS2
+            int stackSize = fmt.SupportsPS2
                 ? Limits.StackSizePS2
                 : Limits.StackSize;
 
@@ -180,7 +180,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            int stackSize = fmt.IsPS2
+            int stackSize = fmt.SupportsPS2
                 ? Limits.StackSizePS2
                 : Limits.StackSize;
 

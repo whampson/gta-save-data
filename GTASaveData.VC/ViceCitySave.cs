@@ -179,7 +179,7 @@ namespace GTASaveData.VC
         {
             get
             {
-                if (FileFormat.IsPC)
+                if (FileFormat.SupportsPC)
                 {
                     return 23;
                 }
@@ -487,22 +487,20 @@ namespace GTASaveData.VC
 
         public static class FileFormats
         {
-            // TODO: revamp this a bit
             public static readonly FileFormat PCRetail = new FileFormat(
-                "PC (Retail)", ConsoleType.PC
+                "PC_Retail", "PC (Windows/macOS)",
+                new GameConsole(ConsoleType.Win32),
+                new GameConsole(ConsoleType.MacOS, ConsoleFlags.Steam)
             );
 
             public static readonly FileFormat PCSteam = new FileFormat(
-                "PC (Steam)", ConsoleType.PC, ConsoleFlags.Steam
-            );
-
-            public static readonly FileFormat PS2 = new FileFormat(
-                "PS2", ConsoleType.PS2
+                "PC_Steam", "PC (Windows, Steam)",
+                new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam)
             );
 
             public static FileFormat[] GetAll()
             {
-                return new FileFormat[] { PCRetail, PCSteam, PS2 };
+                return new FileFormat[] { PCRetail, PCSteam };
             }
         }
     }

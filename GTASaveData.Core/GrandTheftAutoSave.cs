@@ -10,7 +10,7 @@ namespace GTASaveData
     /// <summary>
     /// Represents a saved <i>Grand Theft Auto</i> game.
     /// </summary>
-    public abstract class GrandTheftAutoSave : SerializableObject
+    public abstract class GrandTheftAutoSave : SerializableObject, IGrandTheftAutoSave
     {
         public static T Load<T>(string path) where T : GrandTheftAutoSave, new()
         {
@@ -34,7 +34,7 @@ namespace GTASaveData
                 return null;
             }
 
-            Debug.WriteLine("Loading {0} {1}...", format.DisplayName, typeof(T).Name);
+            Debug.WriteLine("Save type: {0}, {1}", typeof(T).Name, format.Name);
 
             using (MemoryStream m = new MemoryStream(data))
             {

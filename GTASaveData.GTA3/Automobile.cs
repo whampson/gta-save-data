@@ -12,21 +12,21 @@ namespace GTASaveData.GTA3
         {
             public static int GetUnknownArray0Size(FileFormat fmt)
             {
-                return (fmt.IsPS2) ? 48 : 52;
+                return (fmt.SupportsPS2) ? 48 : 52;
             }
 
             public static int GetUnknownArray1Size(FileFormat fmt)
             {
                 int size = 0;
-                if (fmt.IsPS2)
+                if (fmt.SupportsPS2)
                 {
                     size = 1556;
                 }
-                else if (fmt.IsPC || fmt.IsXbox)
+                else if (fmt.SupportsPC || fmt.SupportsXbox)
                 {
                     size = 1384;
                 }
-                else if (fmt.IsMobile)
+                else if (fmt.SupportsMobile)
                 {
                     size = 1388;
                 }

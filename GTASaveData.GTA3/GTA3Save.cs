@@ -51,13 +51,13 @@ namespace GTASaveData.GTA3
             set { m_blocks[3] = value; OnPropertyChanged(); }
         }
 
-        public VehiclePool Vehicles
+        public VehiclePool VehiclePool
         {
             get { return m_blocks[4] as VehiclePool; }
             set { m_blocks[4] = value; OnPropertyChanged(); }
         }
 
-        public Block Objects
+        public Block ObjectPool
         {
             get { return m_blocks[5] as Block; }
             set { m_blocks[5] = value; OnPropertyChanged(); }
@@ -87,7 +87,7 @@ namespace GTASaveData.GTA3
             set { m_blocks[9] = value; OnPropertyChanged(); }
         }
 
-        public Block Restarts
+        public Block RestartPoints
         {
             get { return m_blocks[10] as Block; }
             set { m_blocks[10] = value; OnPropertyChanged(); }
@@ -155,21 +155,21 @@ namespace GTASaveData.GTA3
 
         public override string Name => SimpleVars.LastMissionPassedName;
 
-        protected override int MaxBlockSize => (FileFormat.IsPS2) ? 50000 : 55000;
+        protected override int MaxBlockSize => (FileFormat.SupportsPS2) ? 50000 : 55000;
 
         protected override int BlockCount => 21;
 
-        protected override int SectionCount => (FileFormat.IsPS2) ? 3 : 20;
+        protected override int SectionCount => (FileFormat.SupportsPS2) ? 3 : 20;
 
         protected override int SimpleVarsSize
         {
             get
             {
-                if (FileFormat.IsMobile || FileFormat.IsPS2)
+                if (FileFormat.SupportsMobile || FileFormat.SupportsPS2)
                 {
-                    return (FileFormat.HasFlag(ConsoleFlags.Australia)) ? 0xA8 : 0xB0;
+                    return (FileFormat.IsSupported(ConsoleType.PS2, ConsoleFlags.Australia)) ? 0xA8 : 0xB0;
                 }
-                else if (FileFormat.IsPC || FileFormat.IsXbox)
+                else if (FileFormat.SupportsPC || FileFormat.SupportsXbox)
                 {
                     return 0xBC;
                 }
@@ -340,7 +340,7 @@ namespace GTASaveData.GTA3
         {
             using (Serializer r = CreateSerializer(new MemoryStream(data)))
             {
-                if (FileFormat.IsPS2)
+                if (FileFormat.SupportsPS2)
                 {
                     switch (index)
                     {
@@ -349,17 +349,17 @@ namespace GTASaveData.GTA3
                             Scripts = Deserialize<ScriptBlock>(ReadBlock(r, ScrTag));
                             PedPool = ReadBlock(r, null);
                             Garages = Deserialize<GarageBlock>(ReadBlock(r, null));
-                            Vehicles = Deserialize<VehiclePool>(ReadBlock(r, null));
+                            VehiclePool = Deserialize<VehiclePool>(ReadBlock(r, null));
                             break;
                         case 1:
-                            Objects = ReadBlock(r, null);
+                            ObjectPool = ReadBlock(r, null);
                             PathFind = ReadBlock(r, null);
                             Cranes = ReadBlock(r, null);
                             break;
                         case 2:
                             Pickups = Deserialize<PickupBlock>(ReadBlock(r, null));
                             PhoneInfo = ReadBlock(r, null);
-                            Restarts = ReadBlock(r, RstTag);
+                            RestartPoints = ReadBlock(r, RstTag);
                             RadarBlips = ReadBlock(r, RdrTag);
                             Zones = ReadBlock(r, ZnsTag);
                             GangData = ReadBlock(r, GngTag);
@@ -383,13 +383,13 @@ namespace GTASaveData.GTA3
                             break;
                         case 1: PedPool = ReadBlock(r, null); break;
                         case 2: Garages = Deserialize<GarageBlock>(ReadBlock(r, null)); break;
-                        case 3: Vehicles = Deserialize<VehiclePool>(ReadBlock(r, null)); break;
-                        case 4: Objects = ReadBlock(r, null); break;
+                        case 3: VehiclePool = Deserialize<VehiclePool>(ReadBlock(r, null)); break;
+                        case 4: ObjectPool = ReadBlock(r, null); break;
                         case 5: PathFind = ReadBlock(r, null); break;
                         case 6: Cranes = ReadBlock(r, null); break;
                         case 7: Pickups = Deserialize<PickupBlock>(ReadBlock(r, null)); break;
                         case 8: PhoneInfo = ReadBlock(r, null); break;
-                        case 9: Restarts = ReadBlock(r, RstTag); break;
+                        case 9: RestartPoints = ReadBlock(r, RstTag); break;
                         case 10: RadarBlips = ReadBlock(r, RdrTag); break;
                         case 11: Zones = ReadBlock(r, ZnsTag); break;
                         case 12: GangData = ReadBlock(r, GngTag); break;
@@ -411,7 +411,7 @@ namespace GTASaveData.GTA3
             {
                 using (Serializer w = CreateSerializer(m))
                 {
-                    if (FileFormat.IsPS2)
+                    if (FileFormat.SupportsPS2)
                     {
                         switch (index)
                         {
@@ -419,26 +419,28 @@ namespace GTASaveData.GTA3
                                 w.Write(Serialize(SimpleVars));
                                 w.Write(CreateBlock(ScrTag, Scripts));
                                 w.Write(CreateBlock(null, PedPool));
-                                w.Write(CreateBlock(null, Vehicles));
+                                w.Write(CreateBlock(null, Garages));
+                                w.Write(CreateBlock(null, VehiclePool));
                                 break;
                             case 1:
-                                CreateBlock(null, Objects);
-                                CreateBlock(null, PathFind);
-                                CreateBlock(null, Cranes);
+                                w.Write(CreateBlock(null, ObjectPool));
+                                w.Write(CreateBlock(null, PathFind));
+                                w.Write(CreateBlock(null, Cranes));
                                 break;
                             case 2:
-                                CreateBlock(null, Pickups);
-                                CreateBlock(null, PhoneInfo);
-                                CreateBlock(RdrTag, RadarBlips);
-                                CreateBlock(ZnsTag, Zones);
-                                CreateBlock(GngTag, GangData);                                
-                                CreateBlock(CgnTag, CarGenerators);
-                                CreateBlock(null, Particles);
-                                CreateBlock(AudTag, AudioScriptObjects);
-                                CreateBlock(null, PlayerInfo);
-                                CreateBlock(null, Stats);
-                                CreateBlock(null, Streaming);
-                                CreateBlock(PtpTag, PedTypeInfo);
+                                w.Write(CreateBlock(null, Pickups));
+                                w.Write(CreateBlock(null, PhoneInfo));
+                                w.Write(CreateBlock(RstTag, RestartPoints));
+                                w.Write(CreateBlock(RdrTag, RadarBlips));
+                                w.Write(CreateBlock(ZnsTag, Zones));
+                                w.Write(CreateBlock(GngTag, GangData));
+                                w.Write(CreateBlock(CgnTag, CarGenerators));
+                                w.Write(CreateBlock(null, Particles));
+                                w.Write(CreateBlock(AudTag, AudioScriptObjects));
+                                w.Write(CreateBlock(null, PlayerInfo));
+                                w.Write(CreateBlock(null, Stats));
+                                w.Write(CreateBlock(null, Streaming));
+                                w.Write(CreateBlock(PtpTag, PedTypeInfo));
                                 break;
                         }
                     }
@@ -452,13 +454,13 @@ namespace GTASaveData.GTA3
                                 break;
                             case 1: w.Write(CreateBlock(null, PedPool)); break;
                             case 2: w.Write(CreateBlock(null, Garages)); break;
-                            case 3: w.Write(CreateBlock(null, Vehicles)); break;
-                            case 4: w.Write(CreateBlock(null, Objects)); break;
+                            case 3: w.Write(CreateBlock(null, VehiclePool)); break;
+                            case 4: w.Write(CreateBlock(null, ObjectPool)); break;
                             case 5: w.Write(CreateBlock(null, PathFind)); break;
                             case 6: w.Write(CreateBlock(null, Cranes)); break;
                             case 7: w.Write(CreateBlock(null, Pickups)); break;
                             case 8: w.Write(CreateBlock(null, PhoneInfo)); break;
-                            case 9: w.Write(CreateBlock(RstTag, Restarts)); break;
+                            case 9: w.Write(CreateBlock(RstTag, RestartPoints)); break;
                             case 10: w.Write(CreateBlock(RdrTag, RadarBlips)); break;
                             case 11: w.Write(CreateBlock(ZnsTag, Zones)); break;
                             case 12: w.Write(CreateBlock(GngTag, GangData)); break;
@@ -505,7 +507,7 @@ namespace GTASaveData.GTA3
             }
 
             Debug.WriteLine("Read {0} sections ({1} padding).", numSectionsRead, numSectionsRead - index);
-            Debug.Assert(r.BaseStream.Position == SizeOfGameInBytes + (4 * numSectionsRead));
+            Debug.Assert(r.BaseStream.Position == SizeOfGameInBytes + (4 * numSectionsRead));   // TODO: JP saves hit this
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
@@ -570,31 +572,41 @@ namespace GTASaveData.GTA3
         public static class FileFormats
         {
             public static readonly FileFormat Android = new FileFormat(
-                "Android", ConsoleType.Android
+                "Android", "Android",
+                new GameConsole(ConsoleType.Android)
             );
 
             public static readonly FileFormat IOS = new FileFormat(
-                "iOS", ConsoleType.IOS
+                "iOS", "iOS",
+                new GameConsole(ConsoleType.IOS)
             );
 
             public static readonly FileFormat PC = new FileFormat(
-                "PC (Windows/macOS)", ConsoleType.PC
+                "PC", "PC (Windows/macOS)",
+                new GameConsole(ConsoleType.Win32),
+                new GameConsole(ConsoleType.MacOS),
+                new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam),
+                new GameConsole(ConsoleType.MacOS, ConsoleFlags.Steam)
             );
 
             public static readonly FileFormat PS2AU = new FileFormat(
-                "PS2 (Australia)", ConsoleType.PS2, ConsoleFlags.Australia
+                "PS2_AU", "PS2 (PAL, Australia)",
+                new GameConsole(ConsoleType.PS2, ConsoleFlags.Australia)
             );
 
             public static readonly FileFormat PS2JP = new FileFormat(
-                "PS2 (Japan)", ConsoleType.PS2, ConsoleFlags.Japan
+                "PS2_JP", "PS2 (NTSC-J)",
+                new GameConsole(ConsoleType.PS2, ConsoleFlags.Japan)
             );
 
             public static readonly FileFormat PS2NAEU = new FileFormat(
-                "PS2 (North America/Europe)", ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe
+                "PS2_NAEU", "PS2 (NTSC-U/C & PAL)",
+                new GameConsole(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe)
             );
 
             public static readonly FileFormat Xbox = new FileFormat(
-                "Xbox", ConsoleType.Xbox
+                "Xbox", "Xbox",
+                new GameConsole(ConsoleType.Xbox)
             );
 
             public static FileFormat[] GetAll()
