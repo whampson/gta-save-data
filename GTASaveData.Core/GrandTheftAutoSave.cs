@@ -1,7 +1,9 @@
 ﻿using GTASaveData.Serialization;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace GTASaveData
 {
@@ -89,6 +91,8 @@ namespace GTASaveData
             get { return m_fileFormat; }
             set { m_fileFormat = value ?? FileFormat.None; OnPropertyChanged(); }
         }
+
+        public IReadOnlyList<SerializableObject> Blocks => m_blocks.ToList().AsReadOnly();
 
         /// <summary>
         /// Gets the name of this save.
