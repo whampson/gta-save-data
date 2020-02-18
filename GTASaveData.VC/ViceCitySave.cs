@@ -1,4 +1,6 @@
-﻿using GTASaveData.Extensions;
+﻿using GTASaveData.Common;
+using GTASaveData.Common.Blocks;
+using GTASaveData.Extensions;
 using GTASaveData.Serialization;
 using GTASaveData.VC.Blocks;
 using System;
@@ -11,7 +13,9 @@ namespace GTASaveData.VC
     /// <summary>
     /// Represents a save file for <i>Grand Theft Auto: Vice City</i>.
     /// </summary>
-    public sealed class ViceCitySave : GrandTheftAutoSave, IEquatable<ViceCitySave>
+    public sealed class ViceCitySave : GrandTheftAutoSave,
+        IGrandTheftAutoSave,
+        IEquatable<ViceCitySave>
     {
         //private const int SizeOfGameInBytes = 0x31400;
 
@@ -167,6 +171,16 @@ namespace GTASaveData.VC
         {
             get { return m_blocks[23] as Block; }
             set { m_blocks[23] = value; OnPropertyChanged(); }
+        }
+
+        ISimpleVars IGrandTheftAutoSave.SimpleVars
+        {
+            get { return SimpleVars; }
+        }
+
+        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators
+        {
+            get { return CarGenerators; }
         }
 
         public override string Name => SimpleVars.LastMissionPassedName;

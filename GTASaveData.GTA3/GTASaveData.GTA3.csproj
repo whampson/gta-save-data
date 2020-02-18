@@ -12,7 +12,7 @@
     <AssemblyVersion>0.1.0.303</AssemblyVersion>
     <FileVersion>0.1.0.303</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.1.0-alpha-304</Version>
+    <Version>0.1.0-alpha-308</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 

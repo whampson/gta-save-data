@@ -1,4 +1,5 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Common.Blocks;
+using GTASaveData.Serialization;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +13,7 @@ namespace GTASaveData
     /// <summary>
     /// Represents a saved <i>Grand Theft Auto</i> game.
     /// </summary>
-    public abstract class GrandTheftAutoSave : SerializableObject, IGrandTheftAutoSave
+    public abstract class GrandTheftAutoSave : SerializableObject
     {
         public static T Load<T>(string path) where T : GrandTheftAutoSave, new()
         {

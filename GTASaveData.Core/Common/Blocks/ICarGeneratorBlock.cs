@@ -1,9 +1,9 @@
 ﻿namespace GTASaveData.Common.Blocks
 {
-    public interface ICarGeneratorBlock<T> where T : ICarGenerator, new()
+    public interface ICarGeneratorBlock
     {
-        Array<T> ParkedCars { get; set; }
-
         int NumberOfParkedCarsToGenerate { get; set; }
+
+        ICarGenerator[] ParkedCars { get; }
     }
 }

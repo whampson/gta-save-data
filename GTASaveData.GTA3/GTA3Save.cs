@@ -1,4 +1,6 @@
-﻿using GTASaveData.Extensions;
+﻿using GTASaveData.Common;
+using GTASaveData.Common.Blocks;
+using GTASaveData.Extensions;
 using GTASaveData.GTA3.Blocks;
 using GTASaveData.Serialization;
 using System;
@@ -12,6 +14,7 @@ namespace GTASaveData.GTA3
     /// Represents a save file for <i>Grand Theft Auto III</i>.
     /// </summary>
     public class GTA3Save : GrandTheftAutoSave,
+        IGrandTheftAutoSave,
         IEquatable<GTA3Save>
     {
         // The number of bytes in all first-level blocks, excluding the size header.
@@ -151,6 +154,16 @@ namespace GTASaveData.GTA3
         {
             get { return m_blocks[20] as Block; }
             set { m_blocks[20] = value; OnPropertyChanged(); }
+        }
+
+        ISimpleVars IGrandTheftAutoSave.SimpleVars
+        {
+            get { return SimpleVars; }
+        }
+
+        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators
+        {
+            get { return CarGenerators; }
         }
 
         public override string Name => SimpleVars.LastMissionPassedName;

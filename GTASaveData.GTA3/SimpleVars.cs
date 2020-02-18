@@ -6,6 +6,7 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     public class SimpleVars : SerializableObject,
+        ISimpleVars,
         IEquatable<SimpleVars>
     {
         public static class Limits
@@ -277,6 +278,24 @@ namespace GTASaveData.GTA3
         {
             get { return m_isQuickSave; }
             set { m_isQuickSave = value; OnPropertyChanged(); }
+        }
+
+        int ISimpleVars.OldWeatherType
+        {
+            get { return (int) OldWeatherType; }
+            set { OldWeatherType = (WeatherType) value; }   // TODO: do I need OnPropertyChanged?
+        }
+
+        int ISimpleVars.NewWeatherType
+        {
+            get { return (int) NewWeatherType; }
+            set { NewWeatherType = (WeatherType) value; }
+        }
+
+        int ISimpleVars.ForcedWeatherType
+        {
+            get { return (int) ForcedWeatherType; }
+            set { ForcedWeatherType = (WeatherType) value; }
         }
 
         public SimpleVars()

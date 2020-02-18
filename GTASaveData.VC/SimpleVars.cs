@@ -7,6 +7,7 @@ using System.Linq;
 namespace GTASaveData.VC
 {
     public sealed class SimpleVars : SerializableObject,
+        ISimpleVars,
         IEquatable<SimpleVars>
     {
         public static class Limits
@@ -27,7 +28,7 @@ namespace GTASaveData.VC
         private Level m_currLevel;
         private Vector3d m_cameraPosition;
         private int m_unknownSteamOnly;
-        private uint m_millisecondsPerGameMinute;
+        private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
         private int m_gameClockHours;
         private int m_gameClockMinutes;
@@ -103,7 +104,7 @@ namespace GTASaveData.VC
             set { m_unknownSteamOnly = value; OnPropertyChanged(); }
         }
 
-        public uint MillisecondsPerGameMinute
+        public int MillisecondsPerGameMinute
         {
             get { return m_millisecondsPerGameMinute; }
             set { m_millisecondsPerGameMinute = value; OnPropertyChanged(); }
@@ -337,6 +338,24 @@ namespace GTASaveData.VC
             set { m_radioListenTime = value; OnPropertyChanged(); }
         }
 
+        int ISimpleVars.OldWeatherType
+        {
+            get { return (int) OldWeatherType; }
+            set { OldWeatherType = (WeatherType) value; }   // TODO: do I need OnPropertyChanged?
+        }
+
+        int ISimpleVars.NewWeatherType
+        {
+            get { return (int) NewWeatherType; }
+            set { NewWeatherType = (WeatherType) value; }
+        }
+
+        int ISimpleVars.ForcedWeatherType
+        {
+            get { return (int) ForcedWeatherType; }
+            set { ForcedWeatherType = (WeatherType) value; }
+        }
+
         public SimpleVars()
         {
             m_lastMissionPassedName = string.Empty;
@@ -364,7 +383,7 @@ namespace GTASaveData.VC
             {
                 m_unknownSteamOnly = r.ReadInt32();
             }
-            m_millisecondsPerGameMinute = r.ReadUInt32();
+            m_millisecondsPerGameMinute = r.ReadInt32();
             m_lastClockTick = r.ReadUInt32();
             if (fmt.SupportsPS2)   // TODO: confirm
             {

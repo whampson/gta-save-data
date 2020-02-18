@@ -1,4 +1,5 @@
-﻿using GTASaveData.Common.Blocks;
+﻿using GTASaveData.Common;
+using GTASaveData.Common.Blocks;
 using GTASaveData.Serialization;
 using System;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ using System.Linq;
 namespace GTASaveData.VC.Blocks
 {
     public class CarGeneratorBlock : SerializableObject,
-        ICarGeneratorBlock<CarGenerator>,
+        ICarGeneratorBlock,
         IEquatable<CarGeneratorBlock>
     {
         public static class Limits
@@ -50,6 +51,12 @@ namespace GTASaveData.VC.Blocks
             get { return m_parkedCars; }
             set { m_parkedCars = value; OnPropertyChanged(); }
         }
+
+        ICarGenerator[] ICarGeneratorBlock.ParkedCars
+        {
+            get { return ParkedCars; }
+        }
+
         public CarGeneratorBlock()
         {
             m_parkedCars = new Array<CarGenerator>();
