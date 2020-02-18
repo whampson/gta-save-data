@@ -13,11 +13,11 @@ namespace GTASaveData.GTA3
             public const int LastMissionPassedNameLength = 24;
         }
 
-        // This is the number of bytes in a GTA3 save excluding the 4-byte block size
-        // values that appear before each outer data block. It shows up in SimpleVars
-        // despite not being used at all by the game. Non-Japanese versions add 1 to
-        // this number for some reason.
-        private const uint TotalBlockDataSize = 0x31400;
+        //// This is the number of bytes in a GTA3 save excluding the 4-byte block size
+        //// values that appear before each outer data block. It shows up in SimpleVars
+        //// despite not being used at all by the game. Non-Japanese versions add 1 to
+        //// this number for some reason.
+        //private const uint TotalBlockDataSize = 0x31400;
 
         private string m_lastMissionPassedName;
         private SystemTime m_saveTime;
@@ -376,7 +376,7 @@ namespace GTASaveData.GTA3
                     w.Write(m_saveTime);
                 }
             }
-            w.Write(fmt.IsSupported(ConsoleType.PS2, ConsoleFlags.Japan) ? TotalBlockDataSize : TotalBlockDataSize + 1);
+            w.Write(m_sizeOfGameInBytes);
             w.Write((int) m_currLevel);
             w.Write(m_cameraPosition);
             w.Write(m_millisecondsPerGameMinute);
@@ -458,6 +458,7 @@ namespace GTASaveData.GTA3
 
             return m_lastMissionPassedName.Equals(other.m_lastMissionPassedName)
                 && m_saveTime.Equals(other.m_saveTime)
+                && m_sizeOfGameInBytes.Equals(other.m_sizeOfGameInBytes)
                 && m_currLevel.Equals(other.m_currLevel)
                 && m_cameraPosition.Equals(other.m_cameraPosition)
                 && m_millisecondsPerGameMinute.Equals(other.m_millisecondsPerGameMinute)

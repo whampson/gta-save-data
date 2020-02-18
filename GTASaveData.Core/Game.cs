@@ -8,16 +8,16 @@ namespace GTASaveData
         GTA3,
 
         [Description("Vice City")]
-        VC,
+        ViceCity,
 
         //[Description("San Andreas")]
-        //SA,
+        //SanAndreas,
 
         //[Description("Liberty City Stories")]
-        //LCS,
+        //LibertyCityStories,
 
         //[Description("Vice City Stories")]
-        //VCS,
+        //ViceCityStories,
 
         //[Description("GTA IV")]
         //GTA4

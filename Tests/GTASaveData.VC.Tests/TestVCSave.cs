@@ -21,8 +21,9 @@ namespace GTASaveData.Tests.VC
                 //.RuleFor(x => x.Scripts, Generator.Generate<Scripts, TestScripts>(format))
                 //.RuleFor(x => x.PedPool, TestHelper.Generate<PedPool, TestPedPool>(format))
                 //.RuleFor(x => x.Garages, Generator.Generate<Garages, TestGarages>(format))
-                //.RuleFor(x => x.Vehicles, Generator.Generate<VehiclePool, TestVehiclePool>(format))
-                //.RuleFor(x => x.Objects, Generator.Generate<Objects, TestObjects>(format))
+                //.RuleFor(x => x.GameLogic, Generator.Generate<GameLogic, TestGameLogic>(format))
+                //.RuleFor(x => x.VehiclePool, Generator.Generate<VehiclePool, TestVehiclePool>(format))
+                //.RuleFor(x => x.ObjectPool, Generator.Generate<ObjectPool, TestObjectPool>(format))
                 //.RuleFor(x => x.PathFind, Generator.Generate<PathFind, TestPathFind>(format))
                 //.RuleFor(x => x.Cranes, Generator.Generate<Cranes, TestCranes>(format))
                 //.RuleFor(x => x.Pickups, Generator.Generate<Pickups, TestPickups>(format))
@@ -34,8 +35,10 @@ namespace GTASaveData.Tests.VC
                 .RuleFor(x => x.CarGenerators, Generator.Generate<CarGeneratorBlock, TestCarGeneratorBlock>(format))
                 //.RuleFor(x => x.Particles, Generator.Generate<Particles, TestParticles>(format))
                 //.RuleFor(x => x.AudioScriptObjects, Generator.Generate<AudioScriptObjects, TestAudioScriptObjects>(format))
+                //.RuleFor(x => x.ScriptPaths, Generator.Generate<ScriptPaths, TestScriptPaths>(format))
                 //.RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))
                 //.RuleFor(x => x.Stats, Generator.Generate<Stats, TestStats>(format))
+                //.RuleFor(x => x.SetPieces, Generator.Generate<SetPieces, TestSetPieces>(format))
                 //.RuleFor(x => x.Streaming, Generator.Generate<Streaming, TestStreaming>(format))
                 //.RuleFor(x => x.PedTypeInfo, Generator.Generate<PedTypeInfo, TestPedTypeInfo>(format))
                 ;
@@ -45,53 +48,81 @@ namespace GTASaveData.Tests.VC
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void Serialization(FileFormat format, string path)
+        public void FileFormatDetection(FileFormat expected, string filename)
         {
-            byte[] expected = File.ReadAllBytes(path);
+            string path = TestData.GetTestDataPath(Game.ViceCity, expected, filename);
 
-            ViceCitySave x0 = GrandTheftAutoSave.Load<ViceCitySave>(path, format);
-            ViceCitySave x1 = CreateSerializedCopy(x0, out byte[] data, format);
+            FileFormat detected = GrandTheftAutoSave.GetFileFormat<ViceCitySave>(path);
 
-            Assert.Equal(x0.SimpleVars, x1.SimpleVars);
-            Assert.Equal(x0.CarGenerators, x1.CarGenerators);
-            Assert.Equal(x0, x1);
-            Assert.Equal(expected.Length, data.Length);
+            Assert.Equal(expected, detected);
         }
 
-        //[Theory]
-        //[MemberData(nameof(SerializationData))]
-        //public void Serialization(FileFormat format)
-        //{
-        //    VCSave x0 = GenerateTestVector(format);
-        //    VCSave x1 = CreateSerializedCopy(x0, format);
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
+        {
+            ViceCitySave x0 = GenerateTestVector(format);
+            ViceCitySave x1 = CreateSerializedCopy(x0, format);
 
-        //    Assert.Equal(x0, x1);
-        //    // TODO: data size check?
-        //}
+            AssertEqual(x0, x1);
+        }
 
-        //[Theory]
-        //[MemberData(nameof(FileFormatData))]
-        //public void FileTypeDetection(FileFormat expectedFileFormat, string filePath)
-        //{
-        //    FileFormat detected = VCSave.GetFileFormat(filePath);
+        [Theory]
+        [MemberData(nameof(TestFiles))]
+        public void RealDataSerialization(FileFormat format, string filename)
+        {
+            string path = TestData.GetTestDataPath(Game.ViceCity, format, filename);
 
-        //    Assert.Equal(expectedFileFormat, detected);
-        //}
+            ViceCitySave x0 = GrandTheftAutoSave.Load<ViceCitySave>(path);
+            ViceCitySave x1 = CreateSerializedCopy(x0, format);
+
+            AssertEqual(x0, x1);
+        }
+
+        private void AssertEqual(ViceCitySave x0, ViceCitySave x1)
+        {
+            Assert.Equal(x0.SimpleVars, x1.SimpleVars);
+            Assert.Equal(x0.Scripts, x1.Scripts);
+            Assert.Equal(x0.PedPool, x1.PedPool);
+            Assert.Equal(x0.Garages, x1.Garages);
+            Assert.Equal(x0.GameLogic, x1.GameLogic);
+            Assert.Equal(x0.VehiclePool, x1.VehiclePool);
+            Assert.Equal(x0.ObjectPool, x1.ObjectPool);
+            Assert.Equal(x0.PathFind, x1.PathFind);
+            Assert.Equal(x0.Cranes, x1.Cranes);
+            Assert.Equal(x0.Pickups, x1.Pickups);
+            Assert.Equal(x0.PhoneInfo, x1.PhoneInfo);
+            Assert.Equal(x0.RestartPoints, x1.RestartPoints);
+            Assert.Equal(x0.RadarBlips, x1.RadarBlips);
+            Assert.Equal(x0.Zones, x1.Zones);
+            Assert.Equal(x0.GangData, x1.GangData);
+            Assert.Equal(x0.CarGenerators, x1.CarGenerators);
+            Assert.Equal(x0.Particles, x1.Particles);
+            Assert.Equal(x0.AudioScriptObjects, x1.AudioScriptObjects);
+            Assert.Equal(x0.ScriptPaths, x1.ScriptPaths);
+            Assert.Equal(x0.PlayerInfo, x1.PlayerInfo);
+            Assert.Equal(x0.Stats, x1.Stats);
+            Assert.Equal(x0.SetPieces, x1.SetPieces);
+            Assert.Equal(x0.Streaming, x1.Streaming);
+            Assert.Equal(x0.PedTypeInfo, x1.PedTypeInfo);
+            Assert.Equal(x0, x1);
+        }
 
         public static IEnumerable<object[]> TestFiles => new[]
         {
-            new object[] { ViceCitySave.FileFormats.PCRetail, "../../../../TestData/VC/PCRetail/StarterSave.b" },
+            new object[] { ViceCitySave.FileFormats.PCRetail, "ITBEG" },
+            new object[] { ViceCitySave.FileFormats.PCRetail, "ITBEG_JP" },
+            new object[] { ViceCitySave.FileFormats.PCRetail, "PROTEC3" },
+            new object[] { ViceCitySave.FileFormats.PCSteam, "BARON3" },
+            new object[] { ViceCitySave.FileFormats.PCRetail, "PROTEC3" },
+            // TODO: PS2
         };
 
-        //public static IEnumerable<object[]> SerializationData => new[]
-        //{
-        //    new object[] { VCSave.FileFormats.Android },
-        //    new object[] { VCSave.FileFormats.IOS },
-        //    new object[] { VCSave.FileFormats.PC },
-        //    new object[] { VCSave.FileFormats.PS2AU },
-        //    new object[] { VCSave.FileFormats.PS2JP },
-        //    new object[] { VCSave.FileFormats.PS2NAEU },
-        //    new object[] { VCSave.FileFormats.Xbox },
-        //};
+        public static IEnumerable<object[]> FileFormats => new[]
+        {
+            new object[] { ViceCitySave.FileFormats.PCRetail },
+            new object[] { ViceCitySave.FileFormats.PCSteam },
+            //new object[] { ViceCitySave.FileFormats.PS2 },
+        };
     }
 }

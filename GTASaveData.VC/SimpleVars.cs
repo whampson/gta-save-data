@@ -15,14 +15,15 @@ namespace GTASaveData.VC
             public const int RadioListenTimeCount = 10;
         }
 
-        // This is the number of bytes in a GTA:VC save excluding the 4-byte block size
-        // values that appear before each outer data block. It shows up in SimpleVars
-        // despite not being used at all by the game. Non-Japanese versions add 1 to
-        // this number for some reason.
-        private const uint TotalBlockDataSize = 0x31400;
+        //// This is the number of bytes in a GTA:VC save excluding the 4-byte block size
+        //// values that appear before each outer data block. It shows up in SimpleVars
+        //// despite not being used at all by the game. Non-Japanese versions add 1 to
+        //// this number for some reason.
+        //private const uint TotalBlockDataSize = 0x31400;
 
         private string m_lastMissionPassedName;
         private SystemTime m_saveTime;
+        private int m_sizeOfGameInBytes;
         private Level m_currLevel;
         private Vector3d m_cameraPosition;
         private int m_unknownSteamOnly;
@@ -52,7 +53,7 @@ namespace GTASaveData.VC
         private bool m_prefsUseWideScreen;
         private bool m_prefsShowTrails;
         private bool m_prefsShowSubtitles;
-        private int m_prefsLanguage;            // TODO: enum
+        private Language m_prefsLanguage;
         //private Timestamp m_compileDateAndTime;
         private int m_weatherTypeInList;
         private float m_inCarCameraMode;
@@ -76,6 +77,12 @@ namespace GTASaveData.VC
         {
             get { return m_saveTime; }
             set { m_saveTime = value; OnPropertyChanged(); }
+        }
+
+        public int SizeOfGameInBytes
+        {
+            get { return m_sizeOfGameInBytes; }
+            set { m_sizeOfGameInBytes = value; OnPropertyChanged(); }
         }
 
         public Level CurrLevel
@@ -252,7 +259,7 @@ namespace GTASaveData.VC
             set { m_prefsShowSubtitles = value; OnPropertyChanged(); }
         }
 
-        public int PrefsLanguage
+        public Language PrefsLanguage
         {
             get { return m_prefsLanguage; }
             set { m_prefsLanguage = value; OnPropertyChanged(); }
@@ -349,8 +356,8 @@ namespace GTASaveData.VC
                     m_saveTime = r.ReadObject<SystemTime>();
                 }
             }
-            int constant = r.ReadInt32();
-            Debug.Assert(/*constant == TotalBlockDataSize || */constant == (TotalBlockDataSize + 1));
+            m_sizeOfGameInBytes = r.ReadInt32();
+            Debug.Assert(m_sizeOfGameInBytes == (fmt.IsSupported(ConsoleType.PS2, ConsoleFlags.Japan) ? 0x31400 : 0x31401));    // maybe
             m_currLevel = (Level) r.ReadUInt32();
             m_cameraPosition = r.ReadObject<Vector3d>();
             if (fmt.IsSupported(ConsoleType.Win32, ConsoleFlags.Steam))
@@ -407,7 +414,7 @@ namespace GTASaveData.VC
                     m_prefsShowTrails = r.ReadBool(4);
                 }
                 m_prefsShowSubtitles = r.ReadBool(4);
-                m_prefsLanguage = r.ReadInt32();
+                m_prefsLanguage = (Language) r.ReadInt32();
                 m_prefsUseWideScreen = r.ReadBool(4);
                 m_prefsPadMode = r.ReadInt32();
                 m_prefsShowTrails = r.ReadBool(4);
@@ -441,7 +448,7 @@ namespace GTASaveData.VC
                     w.Write(m_saveTime);
                 }
             }
-            w.Write(fmt.IsSupported(ConsoleType.PS2, ConsoleFlags.Japan) ? TotalBlockDataSize : TotalBlockDataSize + 1);
+            w.Write(m_sizeOfGameInBytes);
             w.Write((int) m_currLevel);
             w.Write(m_cameraPosition);
             if (fmt.IsSupported(ConsoleType.Win32, ConsoleFlags.Steam)) // TODO: distinguish between Windows Steam and macOS Steam
@@ -487,7 +494,7 @@ namespace GTASaveData.VC
                 w.Write(m_prefsSfxVolume);
                 if (!fmt.IsSupported(ConsoleType.PS2, ConsoleFlags.Australia))
                 {
-                    w.Write((int) m_prefsPadMode);
+                    w.Write(m_prefsPadMode);
                 }
                 w.Write(m_prefsUseVibration, 4);
                 w.Write(m_prefsStereoMono, 4);
@@ -500,7 +507,7 @@ namespace GTASaveData.VC
                 w.Write(m_prefsShowSubtitles, 4);
                 w.Write((int) m_prefsLanguage);
                 w.Write(m_prefsUseWideScreen, 4);
-                w.Write((int) m_prefsPadMode);
+                w.Write(m_prefsPadMode);
                 w.Write(m_prefsShowTrails, 4);
             }
             //serializer.WriteObject(m_compileDateAndTime);
@@ -536,6 +543,7 @@ namespace GTASaveData.VC
 
             return m_lastMissionPassedName.Equals(other.m_lastMissionPassedName)
                 && m_saveTime.Equals(other.m_saveTime)
+                && m_sizeOfGameInBytes.Equals(other.m_sizeOfGameInBytes)
                 && m_currLevel.Equals(other.m_currLevel)
                 && m_cameraPosition.Equals(other.m_cameraPosition)
                 && m_unknownSteamOnly.Equals(other.m_unknownSteamOnly)
