@@ -103,16 +103,16 @@ namespace GTASaveData.Tests.GTA3
 
         public static IEnumerable<object[]> TestFiles => new[]
         {
-            //new object[] { GTA3Save.FileFormats.PC, "1_JM4" },
-            //new object[] { GTA3Save.FileFormats.PC, "2_AS3" },
+            new object[] { GTA3Save.FileFormats.PC, "1_JM4" },
+            new object[] { GTA3Save.FileFormats.PC, "2_AS3" },
             new object[] { GTA3Save.FileFormats.PS2AU, "1_T4X4_2" },
             new object[] { GTA3Save.FileFormats.PS2AU, "2_AS3" },
             new object[] { GTA3Save.FileFormats.PS2AU, "3_CAT2" },
             new object[] { GTA3Save.FileFormats.PS2JP, "1_LM1" },
             new object[] { GTA3Save.FileFormats.PS2JP, "2_LM2" },
-            //new object[] { GTA3Save.FileFormats.PS2NAEU, "1_T4X4_1" },
-            //new object[] { GTA3Save.FileFormats.PS2NAEU, "2_LM1" },
-            //new object[] { GTA3Save.FileFormats.PS2NAEU, "3_CAT2" },
+            new object[] { GTA3Save.FileFormats.PS2NAEU, "1_T4X4_1" },
+            new object[] { GTA3Save.FileFormats.PS2NAEU, "2_LM1" },
+            new object[] { GTA3Save.FileFormats.PS2NAEU, "3_CAT2" },
         };
 
         public static IEnumerable<object[]> FileFormats => new[]

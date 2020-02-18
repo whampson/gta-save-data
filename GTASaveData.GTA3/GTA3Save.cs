@@ -15,7 +15,7 @@ namespace GTASaveData.GTA3
         IEquatable<GTA3Save>
     {
         // The number of bytes in all first-level blocks, excluding the size header.
-        private const int SizeOfGameInBytes = 0x31400;
+        //private const int SizeOfGameInBytes = 0x31400;
 
         // Block IDs for tagged blocks.
         private const string ScrTag = "SCR";
@@ -490,8 +490,8 @@ namespace GTASaveData.GTA3
             FileFormat = fmt;
 
             int index = 0;
-
             int numSectionsRead = 0;
+            int bytesRead = 0;
 
             while (r.BaseStream.Position < r.BaseStream.Length - 4)
             {
@@ -504,10 +504,17 @@ namespace GTASaveData.GTA3
                 }
 
                 numSectionsRead++;
+                bytesRead += data.Length;
             }
 
-            Debug.WriteLine("Read {0} sections ({1} padding).", numSectionsRead, numSectionsRead - index);
-            Debug.Assert(r.BaseStream.Position == SizeOfGameInBytes + (4 * numSectionsRead));   // TODO: JP saves hit this
+#if DEBUG
+            Debug.WriteLine("Loaded GTA3 -- total bytes: {0}, total sections: {1}, padding: {2}",
+                bytesRead, numSectionsRead, numSectionsRead - index);
+
+            int sizeOfGame = (int) Serializer.GetAlignedAddress(SimpleVars.SizeOfGameInBytes);
+            Debug.Assert(bytesRead == (sizeOfGame - 4));
+            Debug.Assert(r.BaseStream.Position == sizeOfGame + (4 * numSectionsRead) - 4);
+#endif
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
@@ -522,10 +529,13 @@ namespace GTASaveData.GTA3
 
             int index = 0;
             int checksum = 0;
-            int numSectionsRead = 0;
+            int numSectionsWritten = 0;
             int bytesWritten = 0;
 
-            while (bytesWritten < SizeOfGameInBytes)
+            //const int SizeOfGameInBytes = 0x31400;          // TODO: TEMP
+            int sizeOfGame = (int) Serializer.GetAlignedAddress(SimpleVars.SizeOfGameInBytes);
+
+            while (bytesWritten < sizeOfGame - 4)
             {
                 byte[] data;
 
@@ -535,7 +545,7 @@ namespace GTASaveData.GTA3
                 }
                 else
                 {
-                    data = CreatePadding(SizeOfGameInBytes - bytesWritten);
+                    data = CreatePadding((sizeOfGame - 4) - bytesWritten);
                 }
 
                 w.Write(data.Length);
@@ -543,13 +553,16 @@ namespace GTASaveData.GTA3
 
                 checksum += data.Sum(x => x);
                 bytesWritten += data.Length;
-                numSectionsRead++;
+                numSectionsWritten++;
             }
 
-            Debug.WriteLine("Wrote {0} sections ({1} padding).", numSectionsRead, numSectionsRead - index);
+#if DEBUG
+            Debug.WriteLine("Saved GTA3 -- total bytes: {0}, total sections: {1}, padding: {2}",
+                bytesWritten, numSectionsWritten, numSectionsWritten - index);
 
-            Debug.Assert(bytesWritten == SizeOfGameInBytes);
-            Debug.Assert(w.BaseStream.Position == SizeOfGameInBytes + (4 * numSectionsRead));
+            Debug.Assert(bytesWritten == (sizeOfGame - 4));
+            Debug.Assert(w.BaseStream.Position == sizeOfGame + (4 * numSectionsWritten) - 4);
+#endif
 
             w.Write(checksum);
         }

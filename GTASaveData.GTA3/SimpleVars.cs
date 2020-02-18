@@ -21,9 +21,10 @@ namespace GTASaveData.GTA3
 
         private string m_lastMissionPassedName;
         private SystemTime m_saveTime;
+        private int m_sizeOfGameInBytes;
         private Level m_currLevel;
         private Vector3d m_cameraPosition;
-        private uint m_millisecondsPerGameMinute;
+        private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
         private int m_gameClockHours;
         private int m_gameClockMinutes;
@@ -34,7 +35,7 @@ namespace GTASaveData.GTA3
         private float m_timeStep2;
         private float m_timeStepNonClipped;
         private float m_framesPerUpdate;
-        private uint m_frameCounter;
+        private int m_frameCounter;
         private WeatherType m_oldWeatherType;
         private WeatherType m_newWeatherType;
         private WeatherType m_forcedWeatherType;
@@ -68,6 +69,12 @@ namespace GTASaveData.GTA3
             set { m_saveTime = value; OnPropertyChanged(); }
         }
 
+        public int SizeOfGameInBytes
+        {
+            get { return m_sizeOfGameInBytes; }
+            set { m_sizeOfGameInBytes = value; OnPropertyChanged(); }
+        }
+
         public Level CurrLevel
         {
             get { return m_currLevel; }
@@ -80,7 +87,7 @@ namespace GTASaveData.GTA3
             set { m_cameraPosition = value; OnPropertyChanged(); }
         }
 
-        public uint MillisecondsPerGameMinute
+        public int MillisecondsPerGameMinute
         {
             get { return m_millisecondsPerGameMinute; }
             set { m_millisecondsPerGameMinute = value; OnPropertyChanged(); }
@@ -146,7 +153,7 @@ namespace GTASaveData.GTA3
             set { m_framesPerUpdate = value; OnPropertyChanged(); }
         }
 
-        public uint FrameCounter
+        public int FrameCounter
         {
             get { return m_frameCounter; }
             set { m_frameCounter = value; OnPropertyChanged(); }
@@ -290,11 +297,11 @@ namespace GTASaveData.GTA3
                     m_saveTime = r.ReadObject<SystemTime>();
                 }
             }
-            int constant = r.ReadInt32();
-            Debug.Assert(constant == TotalBlockDataSize || constant == (TotalBlockDataSize + 1));
+            m_sizeOfGameInBytes = r.ReadInt32();
+            Debug.Assert(m_sizeOfGameInBytes == (fmt.IsSupported(ConsoleType.PS2, ConsoleFlags.Japan) ? 0x31400 : 0x31401));
             m_currLevel = (Level) r.ReadUInt32();
             m_cameraPosition = r.ReadObject<Vector3d>();
-            m_millisecondsPerGameMinute = r.ReadUInt32();
+            m_millisecondsPerGameMinute = r.ReadInt32();
             m_lastClockTick = r.ReadUInt32();
             if (fmt.SupportsPS2)
             {
@@ -316,7 +323,7 @@ namespace GTASaveData.GTA3
             m_timeScale = r.ReadSingle();
             m_timeStep = r.ReadSingle();
             m_timeStepNonClipped = r.ReadSingle();
-            m_frameCounter = r.ReadUInt32();
+            m_frameCounter = r.ReadInt32();
             m_timeStep2 = r.ReadSingle();
             m_framesPerUpdate = r.ReadSingle();
             m_timeScale2 = r.ReadSingle();
