@@ -4,7 +4,6 @@ using GTASaveData.Serialization;
 using GTASaveData.VC;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
@@ -13,46 +12,32 @@ using WpfEssentials.Win32;
 
 namespace TestApp
 {
-    public enum Game
-    {
-        [Description("GTA 3")]
-        GTA3,
-
-        [Description("Vice City")]
-        VC,
-
-        [Description("San Andreas")]
-        SA,
-
-        [Description("Liberty City Stories")]
-        LCS,
-
-        [Description("Vice City Stories")]
-        VCS,
-
-        [Description("GTA 4")]
-        GTA4
-    }
-
     public class ViewModel : ObservableObject
     {
         public void OnLoadSaveData()
         {
-            // TODO: stuff
+            IGrandTheftAutoSave s = CurrentSaveDataFile as IGrandTheftAutoSave;
+
+            Debug.WriteLine("Last mission passed: {0}", (object) s.SimpleVars.LastMissionPassedName);
+            Debug.WriteLine("Global timer: {0}", s.SimpleVars.TimeInMilliseconds);
+            Debug.WriteLine("Minute length: {0}", s.SimpleVars.MillisecondsPerGameMinute);
+            Debug.WriteLine("Camera position: <{0:0.####}, {1:0.####}, {2:0.####}>",
+                s.SimpleVars.CameraPosition.X, s.SimpleVars.CameraPosition.Y, s.SimpleVars.CameraPosition.Z);
+            Debug.WriteLine("Num active car gens: {0}", s.CarGenerators.NumberOfParkedCarsToGenerate);
         }
 
         #region Events, Variables, and Properties
         public EventHandler<FileDialogEventArgs> FileDialogRequested;
         public EventHandler<MessageBoxEventArgs> MessageBoxRequested;
 
-        private SaveData m_currentSaveDataFile;
+        private GrandTheftAutoSave m_currentSaveDataFile;
         private FileFormat m_currentFileFormat;
         private Game m_selectedGame;
         private int m_selectedBlockIndex;
         private string m_text;
         private string m_statusText;
 
-        public SaveData CurrentSaveDataFile
+        public GrandTheftAutoSave CurrentSaveDataFile
         {
             get { return m_currentSaveDataFile; }
             set { m_currentSaveDataFile = value; OnPropertyChanged(); }
@@ -93,6 +78,7 @@ namespace TestApp
             get { return BlockNames[SelectedGame]; }
         }
         #endregion
+
         #region Commands
         public ICommand FileOpenCommand
         {
@@ -150,12 +136,12 @@ namespace TestApp
             switch (m_selectedGame)
             {
                 case Game.GTA3:
-                    CurrentFileFormat = SaveData.GetFileFormat<GTA3Save>(path);
-                    CurrentSaveDataFile = SaveData.Load<GTA3Save>(path, CurrentFileFormat);
+                    CurrentFileFormat = GrandTheftAutoSave.GetFileFormat<GTA3Save>(path);
+                    CurrentSaveDataFile = GrandTheftAutoSave.Load<GTA3Save>(path, CurrentFileFormat);
                     break;
-                case Game.VC:
-                    CurrentFileFormat = SaveData.GetFileFormat<VCSave>(path);
-                    CurrentSaveDataFile = SaveData.Load<VCSave>(path, CurrentFileFormat);
+                case Game.ViceCity:
+                    CurrentFileFormat = GrandTheftAutoSave.GetFileFormat<ViceCitySave>(path);
+                    CurrentSaveDataFile = GrandTheftAutoSave.Load<ViceCitySave>(path, CurrentFileFormat);
                     break;
                 default:
                     RequestMessageBoxError("Selected game not yet supported!");
@@ -194,7 +180,7 @@ namespace TestApp
                 return;
             }
 
-            CurrentSaveDataFile.Store(path, CurrentFileFormat);
+            CurrentSaveDataFile.Save(path);
             StatusText = "File saved.";
         }
 
@@ -206,7 +192,7 @@ namespace TestApp
                 return;
             }
 
-            IReadOnlyList<Chunk> blocks = CurrentSaveDataFile.Blocks;
+            IReadOnlyList<SerializableObject> blocks = CurrentSaveDataFile.Blocks;
             Debug.Assert(CurrentSaveDataFile.Blocks.Count == BlockNames[SelectedGame].Length);
 
             Text = blocks[SelectedBlockIndex].ToString();
@@ -241,11 +227,12 @@ namespace TestApp
                 text, "Error", icon: MessageBoxImage.Error));
         }
         #endregion
+
         #region Misc
         public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
         {
             { Game.GTA3, GTA3BlockNames },
-            { Game.VC, VCBlockNames }
+            { Game.ViceCity, VCBlockNames }
         };
 
         public static string[] GTA3BlockNames => new[]

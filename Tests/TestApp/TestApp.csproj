@@ -38,4 +38,10 @@
     <PackageReference Include="WpfEssentials.Win32" Version="1.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\GTASaveData.Core\GTASaveData.Core.csproj" />
+    <ProjectReference Include="..\..\GTASaveData.GTA3\GTASaveData.GTA3.csproj" />
+    <ProjectReference Include="..\..\GTASaveData.VC\GTASaveData.VC.csproj" />
+  </ItemGroup>
+
 </Project>
