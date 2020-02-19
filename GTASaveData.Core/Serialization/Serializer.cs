@@ -449,9 +449,11 @@ namespace GTASaveData.Serialization
         /// Writes a byte array.
         /// </summary>
         /// <param name="buffer">The byte array to write.</param>
-        public void Write(byte[] buffer)
+        public int Write(byte[] buffer)
         {
             m_writer.Write(buffer);
+
+            return buffer.Length;
         }
 
         /// <summary>
