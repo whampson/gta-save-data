@@ -1,5 +1,4 @@
 ﻿using GTASaveData.Common;
-using GTASaveData.Common.Blocks;
 using GTASaveData.Extensions;
 using GTASaveData.Serialization;
 using GTASaveData.VC.Blocks;
@@ -17,8 +16,6 @@ namespace GTASaveData.VC
         IGrandTheftAutoSave,
         IEquatable<ViceCitySave>
     {
-        //private const int SizeOfGameInBytes = 0x31400;
-
         // Block IDs for tagged blocks.
         private const string ScrTag = "SCR";
         private const string RstTag = "RST";
@@ -173,17 +170,9 @@ namespace GTASaveData.VC
             set { m_blocks[23] = value; OnPropertyChanged(); }
         }
 
-        ISimpleVars IGrandTheftAutoSave.SimpleVars
-        {
-            get { return SimpleVars; }
-        }
+        ISimpleVars IGrandTheftAutoSave.SimpleVars => SimpleVars;
 
-        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators
-        {
-            get { return CarGenerators; }
-        }
-
-        public override string Name => SimpleVars.LastMissionPassedName;
+        public override string Name => SimpleVars.SaveName;
 
         protected override int MaxBlockSize => 0xD6D8;      // TODO: PS2 
 
@@ -309,20 +298,6 @@ namespace GTASaveData.VC
                     w.Align();
 
                     Debug.WriteLineIf(totalLength > MaxBlockSize, "CreateBlock: Maximum block size exceeded!");
-                }
-
-                return m.ToArray();
-            }
-        }
-
-        protected override byte[] CreatePadding(int length)
-        {
-            using(MemoryStream m = new MemoryStream())
-            {
-                using (Serializer w = CreateSerializer(m))
-                {
-                    int padLength = Math.Min(length, MaxBlockSize);
-                    w.WritePadding(padLength);
                 }
 
                 return m.ToArray();

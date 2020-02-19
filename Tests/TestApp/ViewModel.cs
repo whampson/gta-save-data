@@ -18,12 +18,11 @@ namespace TestApp
         {
             IGrandTheftAutoSave s = CurrentSaveDataFile as IGrandTheftAutoSave;
 
-            Debug.WriteLine("Last mission passed: {0}", (object) s.SimpleVars.LastMissionPassedName);
-            Debug.WriteLine("Global timer: {0}", s.SimpleVars.TimeInMilliseconds);
+            Debug.WriteLine("Last mission passed: {0}", (object) s.SimpleVars.SaveName);
+            Debug.WriteLine("Global timer: {0}", s.SimpleVars.GlobalTimer);
             Debug.WriteLine("Minute length: {0}", s.SimpleVars.MillisecondsPerGameMinute);
             Debug.WriteLine("Camera position: <{0:0.####}, {1:0.####}, {2:0.####}>",
                 s.SimpleVars.CameraPosition.X, s.SimpleVars.CameraPosition.Y, s.SimpleVars.CameraPosition.Z);
-            Debug.WriteLine("Num active car gens: {0}", s.CarGenerators.NumberOfParkedCarsToGenerate);
         }
 
         #region Events, Variables, and Properties

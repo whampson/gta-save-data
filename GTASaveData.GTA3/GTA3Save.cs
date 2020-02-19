@@ -1,5 +1,4 @@
 ﻿using GTASaveData.Common;
-using GTASaveData.Common.Blocks;
 using GTASaveData.Extensions;
 using GTASaveData.GTA3.Blocks;
 using GTASaveData.Serialization;
@@ -17,9 +16,6 @@ namespace GTASaveData.GTA3
         IGrandTheftAutoSave,
         IEquatable<GTA3Save>
     {
-        // The number of bytes in all first-level blocks, excluding the size header.
-        //private const int SizeOfGameInBytes = 0x31400;
-
         // Block IDs for tagged blocks.
         private const string ScrTag = "SCR";
         private const string RstTag = "RST";
@@ -156,17 +152,9 @@ namespace GTASaveData.GTA3
             set { m_blocks[20] = value; OnPropertyChanged(); }
         }
 
-        ISimpleVars IGrandTheftAutoSave.SimpleVars
-        {
-            get { return SimpleVars; }
-        }
+        ISimpleVars IGrandTheftAutoSave.SimpleVars => SimpleVars;
 
-        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators
-        {
-            get { return CarGenerators; }
-        }
-
-        public override string Name => SimpleVars.LastMissionPassedName;
+        public override string Name => SimpleVars.SaveName;
 
         protected override int MaxBlockSize => (FileFormat.SupportsPS2) ? 50000 : 55000;
 
