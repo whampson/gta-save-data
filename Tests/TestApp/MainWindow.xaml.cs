@@ -49,5 +49,10 @@ namespace TestApp
                 }
             }
         }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ViewModel.UpdateTextBox();
+        }
     }
 }

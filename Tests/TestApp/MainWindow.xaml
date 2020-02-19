@@ -83,11 +83,13 @@
                 SelectionChanged="BlockComboBox_SelectionChanged"
                 IsEnabled="{Binding CurrentSaveDataFile, Converter={StaticResource NullBooleanConverter}}"/>
 
-            <Label Grid.Row="1" Grid.Column="1"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Content="{Binding CurrentSaveDataFile.Name}"
-                IsEnabled="{Binding CurrentSaveDataFile, Converter={StaticResource NullBooleanConverter}}"/>
+            <TextBox Grid.Row="1" Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Margin="5,7.5,5,7.5"
+                Text="{Binding CurrentSaveDataFile.SimpleVars.SaveName}"
+                IsEnabled="{Binding CurrentSaveDataFile, Converter={StaticResource NullBooleanConverter}}"
+                LostFocus="TextBox_LostFocus"/>
 
             <TextBox Grid.Row="2" Grid.ColumnSpan="3"
                 IsReadOnly="True"

@@ -12,6 +12,7 @@ namespace GTASaveData.SA
         public static class Limits
         {
             public const int SaveNameLength = 100;
+            public const int UnknownDataLength = 45;
         }
 
         private uint m_versionId;
@@ -53,9 +54,10 @@ namespace GTASaveData.SA
         private bool m_unknownRiotRelated;
         private int m_maxWantedLevel;
         private int m_maxChaos;
-        private bool m_isFrenchLanguageSet;
-        private bool m_isGermanGame;
+        private bool m_isFrench;
+        private bool m_isGerman;
         private bool m_isUncensored;
+        private Array<byte> m_unknown;
         private int m_cinematicCameraHelpRemaining;
         private SystemTime m_saveTime;
         private uint m_targetMarkerHandle;
@@ -285,6 +287,12 @@ namespace GTASaveData.SA
             set { m_unknownRiotRelated = value; OnPropertyChanged(); }
         }
 
+        public Array<byte> Unknown
+        {
+            get { return m_unknown; }
+            set { m_unknown = value; OnPropertyChanged(); }
+        }
+
         public int MaxWantedLevel
         { 
             get { return m_maxWantedLevel; }
@@ -297,16 +305,16 @@ namespace GTASaveData.SA
             set { m_maxChaos = value; OnPropertyChanged(); }
         }
 
-        public bool IsFrenchLanguageSet
+        public bool IsFrench
         { 
-            get { return m_isFrenchLanguageSet; }
-            set { m_isFrenchLanguageSet = value; OnPropertyChanged(); }
+            get { return m_isFrench; }
+            set { m_isFrench = value; OnPropertyChanged(); }
         }
 
-        public bool IsGermanGame
+        public bool IsGerman
         { 
-            get { return m_isGermanGame; }
-            set { m_isGermanGame = value; OnPropertyChanged(); }
+            get { return m_isGerman; }
+            set { m_isGerman = value; OnPropertyChanged(); }
         }
 
         public bool IsUncensored
@@ -391,24 +399,30 @@ namespace GTASaveData.SA
             m_currentWeather = r.ReadInt16();
             m_forcedWeather = r.ReadInt16();
             m_weatherInterpolation = r.ReadSingle();     // maybe dword?
+            r.Align();
             m_weatherTypeInList = r.ReadInt32();
             m_amountOfRainFallen = r.ReadSingle();
             m_inCarCameraMode = r.ReadInt32();
             m_onFootCameraMode = r.ReadInt32();
             m_currentInterior = r.ReadInt32();
             m_invertLook = r.ReadBool();
+            r.Align();
             m_extraColorId = r.ReadInt32();
             m_extraOn = r.ReadBool();
+            r.Align();
             m_extraInterpolation = r.ReadSingle();
             m_extraWeather = r.ReadInt32();
             m_currentWaterConfiguration = r.ReadInt32();
             m_riotMode = r.ReadBool();
             m_unknownRiotRelated = r.ReadBool();
+            r.Align();
             m_maxWantedLevel = r.ReadInt32();
             m_maxChaos = r.ReadInt32();
-            m_isFrenchLanguageSet = r.ReadBool();
-            m_isGermanGame = r.ReadBool();
+            m_isFrench = r.ReadBool();
+            m_isGerman = r.ReadBool();
             m_isUncensored = r.ReadBool();
+            r.Align();
+            m_unknown = r.ReadBytes(Limits.UnknownDataLength);
             m_cinematicCameraHelpRemaining = r.ReadByte();
             m_saveTime = r.ReadObject<SystemTime>();
             m_targetMarkerHandle = r.ReadUInt32();
@@ -454,24 +468,30 @@ namespace GTASaveData.SA
             w.Write((short) m_currentWeather);
             w.Write((short) m_forcedWeather);
             w.Write(m_weatherInterpolation);
+            w.Align();
             w.Write(m_weatherTypeInList);
             w.Write(m_amountOfRainFallen);
             w.Write(m_inCarCameraMode);
             w.Write(m_onFootCameraMode);
             w.Write(m_currentInterior);
             w.Write(m_invertLook);
+            w.Align();
             w.Write(m_extraColorId);
             w.Write(m_extraOn);
+            w.Align();
             w.Write(m_extraInterpolation);
             w.Write(m_extraWeather);
             w.Write(m_currentWaterConfiguration);
             w.Write(m_riotMode);
             w.Write(m_unknownRiotRelated);
+            w.Align();
             w.Write(m_maxWantedLevel);
             w.Write(m_maxChaos);
-            w.Write(m_isFrenchLanguageSet);
-            w.Write(m_isGermanGame);
+            w.Write(m_isFrench);
+            w.Write(m_isGerman);
             w.Write(m_isUncensored);
+            w.Align();
+            w.Write(m_unknown.ToArray(), Limits.UnknownDataLength);
             w.Write((byte) m_cinematicCameraHelpRemaining);
             w.Write(m_saveTime);
             w.Write(m_targetMarkerHandle);
@@ -534,8 +554,8 @@ namespace GTASaveData.SA
                 && m_unknownRiotRelated.Equals(other.m_unknownRiotRelated)
                 && m_maxWantedLevel.Equals(other.m_maxWantedLevel)
                 && m_maxChaos.Equals(other.m_maxChaos)
-                && m_isFrenchLanguageSet.Equals(other.m_isFrenchLanguageSet)
-                && m_isGermanGame.Equals(other.m_isGermanGame)
+                && m_isFrench.Equals(other.m_isFrench)
+                && m_isGerman.Equals(other.m_isGerman)
                 && m_isUncensored.Equals(other.m_isUncensored)
                 && m_cinematicCameraHelpRemaining.Equals(other.m_cinematicCameraHelpRemaining)
                 && m_saveTime.Equals(other.m_saveTime)

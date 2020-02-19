@@ -34,7 +34,7 @@ namespace GTASaveData.SA
 
         protected override FileFormat DetectFileFormat(byte[] data)
         {
-            throw new NotImplementedException();
+            return FileFormat.None;
         }
 
         protected byte[] ReadBlock(Serializer r)
@@ -45,18 +45,33 @@ namespace GTASaveData.SA
             string tag;
             byte[] data;
             int blockSize;
+            int bufferSize;
+            int index;
 
             tag = r.ReadString(5);
             Debug.Assert(tag == Tag);
 
             mark = r.BaseStream.Position;
-            data = r.ReadBytes(MaxBlockSize);
-            blockSize = data.FindFirst("BLOCK".GetAsciiBytes());
-            if (blockSize == -1)
+            blockSize = 0;
+            index = -1;
+
+            do
             {
-                // TODO: keep this?
-                throw new InvalidOperationException("End of file reached!");
-            }
+                bufferSize = (int) Math.Min(MaxBlockSize, r.BaseStream.Length - mark - 4);
+                if (bufferSize < 4)
+                {
+                    break;
+                }
+
+                data = r.ReadBytes(bufferSize);
+                index = data.FindFirst("BLOCK".GetAsciiBytes());
+                if (index == -1)
+                {
+                    blockSize += data.Length;
+                }
+            } while (index == -1);
+
+            blockSize += index;
 
             r.BaseStream.Position = mark;
             data = r.ReadBytes(blockSize);
@@ -70,7 +85,7 @@ namespace GTASaveData.SA
             {
                 using (Serializer w = CreateSerializer(m))
                 {
-                    w.Write("BLOCK");
+                    w.Write("BLOCK", 5);
                     w.Write(data);
                 }
 
@@ -104,7 +119,7 @@ namespace GTASaveData.SA
                 index++;
             }
 
-            Debug.WriteLine("Loaded San Andreas -- blocks: {1}", index);
+            Debug.WriteLine("Loaded San Andreas -- blocks: {0}", index);
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
@@ -119,6 +134,8 @@ namespace GTASaveData.SA
 
                 bytesWritten += w.Write(block);
             }
+
+            // TODO: padding
 
             w.Write(checkSum);
             bytesWritten += 4;
