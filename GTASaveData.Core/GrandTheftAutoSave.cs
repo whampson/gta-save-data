@@ -1,6 +1,7 @@
 ﻿using GTASaveData.Common.Blocks;
 using GTASaveData.Serialization;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -146,13 +147,25 @@ namespace GTASaveData
             return CreateBlock(tag, Serialize(obj));
         }
 
+        protected virtual byte[] CreatePadding(int length)
+        {
+            using (MemoryStream m = new MemoryStream())
+            {
+                using (Serializer w = CreateSerializer(m))
+                {
+                    int padLength = Math.Min(length, MaxBlockSize);
+                    w.WritePadding(padLength);
+                }
+
+                return m.ToArray();
+            }
+        }
+
         protected abstract FileFormat DetectFileFormat(byte[] data);
 
         protected abstract byte[] ReadBlock(Serializer r, string tag);
 
         protected abstract byte[] CreateBlock(string tag, byte[] data);
-        
-        protected abstract byte[] CreatePadding(int length);
 
         protected abstract void LoadSection(int index, byte[] data);
 
