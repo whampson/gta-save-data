@@ -220,7 +220,6 @@ namespace GTASaveData.VC
         }
 
         public ViceCitySave()
-            : base()
         {
             m_blocks[0] = new SimpleVars();
             m_blocks[1] = new Block();
