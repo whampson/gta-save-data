@@ -2,7 +2,7 @@
 {
     public interface ISimpleVars
     {
-        string LastMissionPassedName { get; set; }
+        string SaveName { get; set; }
 
         SystemTime SaveTime { get; set; }
 
@@ -10,22 +10,26 @@
 
         int MillisecondsPerGameMinute { get; set; }
 
-        uint LastClockTick { get; set; }
+        uint WeatherTimer { get; set; }
 
-        int GameClockHours { get; set; }
+        int GameHour { get; set; }
 
-        int GameClockMinutes { get; set; }
+        int GameMinute { get; set; }
 
-        uint TimeInMilliseconds { get; set; }
+        uint GlobalTimer { get; set; }
 
-        int OldWeatherType { get; set; }
+        int PreviousWeather { get; set; }
 
-        int NewWeatherType { get; set; }
+        int CurrentWeather { get; set; }
 
-        int ForcedWeatherType { get; set; }
+        int ForcedWeather { get; set; }
 
-        float InterpolationValue { get; set; }
+        float WeatherInterpolation { get; set; }
 
         int WeatherTypeInList { get; set; }
+
+        // pad mode?
+        // on foot camera?
+        // in car camera?
     }
 }

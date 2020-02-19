@@ -14,16 +14,16 @@ namespace GTASaveData.Tests.GTA3
         public override SimpleVars GenerateTestVector(FileFormat format)
         {
             Faker<SimpleVars> model = new Faker<SimpleVars>()
-                .RuleFor(x => x.LastMissionPassedName, f => !format.SupportsPS2 ? Generator.RandomWords(f, 23) : string.Empty)
+                .RuleFor(x => x.SaveName, f => !format.SupportsPS2 ? Generator.RandomWords(f, 23) : string.Empty)
                 .RuleFor(x => x.SaveTime, (format.SupportsPC || format.SupportsXbox) ? Generator.Generate<SystemTime, TestSystemTime>() : new SystemTime())
                 .RuleFor(x => x.SizeOfGameInBytes, format.IsSupported(ConsoleType.PS2, ConsoleFlags.Japan) ? 0x31400 : 0x31401)
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector3d, TestVector3d>())
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
-                .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
-                .RuleFor(x => x.GameClockHours, f => f.Random.Byte())
-                .RuleFor(x => x.GameClockMinutes, f => f.Random.Byte())
-                .RuleFor(x => x.TimeInMilliseconds, f => f.Random.UInt())
+                .RuleFor(x => x.WeatherTimer, f => f.Random.UInt())
+                .RuleFor(x => x.GameHour, f => f.Random.Byte())
+                .RuleFor(x => x.GameMinute, f => f.Random.Byte())
+                .RuleFor(x => x.GlobalTimer, f => f.Random.UInt())
                 .RuleFor(x => x.TimeScale, f => f.Random.Float())
                 .RuleFor(x => x.TimeStep, f => f.Random.Float())
                 .RuleFor(x => x.TimeStepNonClipped, f => f.Random.Float())
@@ -31,10 +31,10 @@ namespace GTASaveData.Tests.GTA3
                 .RuleFor(x => x.TimeStep2, f => f.Random.Float())
                 .RuleFor(x => x.FramesPerUpdate, f => f.Random.Float())
                 .RuleFor(x => x.TimeScale2, f => f.Random.Float())
-                .RuleFor(x => x.OldWeatherType, f => f.PickRandom<WeatherType>())
-                .RuleFor(x => x.NewWeatherType, f => f.PickRandom<WeatherType>())
-                .RuleFor(x => x.ForcedWeatherType, f => f.PickRandom<WeatherType>())
-                .RuleFor(x => x.InterpolationValue, f => f.Random.Float())
+                .RuleFor(x => x.PreviousWeather, f => f.PickRandom<WeatherType>())
+                .RuleFor(x => x.CurrentWeather, f => f.PickRandom<WeatherType>())
+                .RuleFor(x => x.ForcedWeather, f => f.PickRandom<WeatherType>())
+                .RuleFor(x => x.WeatherInterpolation, f => f.Random.Float())
                 .RuleFor(x => x.PrefsMusicVolume, f => format.SupportsPS2 ? f.Random.Int() : 0)
                 .RuleFor(x => x.PrefsSfxVolume, f => format.SupportsPS2 ? f.Random.Int() : 0)
                 .RuleFor(x => x.PrefsUseVibration, f => format.SupportsPS2 ? f.Random.Bool() : false)
@@ -62,15 +62,15 @@ namespace GTASaveData.Tests.GTA3
             SimpleVars x0 = GenerateTestVector(format);
             SimpleVars x1 = CreateSerializedCopy(x0, out byte[] data, format);
 
-            Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
+            Assert.Equal(x0.SaveName, x1.SaveName);
             Assert.Equal(x0.SaveTime, x1.SaveTime);
             Assert.Equal(x0.CurrLevel, x1.CurrLevel);
             Assert.Equal(x0.CameraPosition, x1.CameraPosition);
             Assert.Equal(x0.MillisecondsPerGameMinute, x1.MillisecondsPerGameMinute);
-            Assert.Equal(x0.LastClockTick, x1.LastClockTick);
-            Assert.Equal(x0.GameClockHours, x1.GameClockHours);
-            Assert.Equal(x0.GameClockMinutes, x1.GameClockMinutes);
-            Assert.Equal(x0.TimeInMilliseconds, x1.TimeInMilliseconds);
+            Assert.Equal(x0.WeatherTimer, x1.WeatherTimer);
+            Assert.Equal(x0.GameHour, x1.GameHour);
+            Assert.Equal(x0.GameMinute, x1.GameMinute);
+            Assert.Equal(x0.GlobalTimer, x1.GlobalTimer);
             Assert.Equal(x0.TimeScale, x1.TimeScale);
             Assert.Equal(x0.TimeStep, x1.TimeStep);
             Assert.Equal(x0.TimeStepNonClipped, x1.TimeStepNonClipped);
@@ -78,10 +78,10 @@ namespace GTASaveData.Tests.GTA3
             Assert.Equal(x0.TimeStep2, x1.TimeStep2);
             Assert.Equal(x0.FramesPerUpdate, x1.FramesPerUpdate);
             Assert.Equal(x0.TimeScale2, x1.TimeScale2);
-            Assert.Equal(x0.OldWeatherType, x1.OldWeatherType);
-            Assert.Equal(x0.NewWeatherType, x1.NewWeatherType);
-            Assert.Equal(x0.ForcedWeatherType, x1.ForcedWeatherType);
-            Assert.Equal(x0.InterpolationValue, x1.InterpolationValue);
+            Assert.Equal(x0.PreviousWeather, x1.PreviousWeather);
+            Assert.Equal(x0.CurrentWeather, x1.CurrentWeather);
+            Assert.Equal(x0.ForcedWeather, x1.ForcedWeather);
+            Assert.Equal(x0.WeatherInterpolation, x1.WeatherInterpolation);
             Assert.Equal(x0.PrefsMusicVolume, x1.PrefsMusicVolume);
             Assert.Equal(x0.PrefsSfxVolume, x1.PrefsSfxVolume);
             Assert.Equal(x0.PrefsUseVibration, x1.PrefsUseVibration);
