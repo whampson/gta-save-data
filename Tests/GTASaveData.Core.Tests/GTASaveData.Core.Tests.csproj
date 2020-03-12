@@ -2,18 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
-<<<<<<< Updated upstream
-    <AssemblyVersion>1.0.0.64</AssemblyVersion>
-
-    <FileVersion>1.0.0.64</FileVersion>
-=======
     <AssemblyVersion>1.0.0.76</AssemblyVersion>
-
     <FileVersion>1.0.0.76</FileVersion>
->>>>>>> Stashed changes
   </PropertyGroup>
 
   <ItemGroup>

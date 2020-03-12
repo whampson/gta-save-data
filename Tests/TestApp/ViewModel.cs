@@ -1,10 +1,12 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
+using GTASaveData.SA;
 using GTASaveData.Serialization;
 using GTASaveData.VC;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using WpfEssentials;
@@ -18,12 +20,11 @@ namespace TestApp
         {
             IGrandTheftAutoSave s = CurrentSaveDataFile as IGrandTheftAutoSave;
 
-            Debug.WriteLine("Last mission passed: {0}", (object) s.SimpleVars.LastMissionPassedName);
-            Debug.WriteLine("Global timer: {0}", s.SimpleVars.TimeInMilliseconds);
+            Debug.WriteLine("Last mission passed: {0}", (object) s.SimpleVars.SaveName);
+            Debug.WriteLine("Global timer: {0}", s.SimpleVars.GlobalTimer);
             Debug.WriteLine("Minute length: {0}", s.SimpleVars.MillisecondsPerGameMinute);
             Debug.WriteLine("Camera position: <{0:0.####}, {1:0.####}, {2:0.####}>",
                 s.SimpleVars.CameraPosition.X, s.SimpleVars.CameraPosition.Y, s.SimpleVars.CameraPosition.Z);
-            Debug.WriteLine("Num active car gens: {0}", s.CarGenerators.NumberOfParkedCarsToGenerate);
         }
 
         #region Events, Variables, and Properties
@@ -133,19 +134,36 @@ namespace TestApp
 
         public void LoadSaveData(string path)
         {
-            switch (m_selectedGame)
+            try
             {
-                case Game.GTA3:
-                    CurrentFileFormat = GrandTheftAutoSave.GetFileFormat<GTA3Save>(path);
-                    CurrentSaveDataFile = GrandTheftAutoSave.Load<GTA3Save>(path, CurrentFileFormat);
-                    break;
-                case Game.ViceCity:
-                    CurrentFileFormat = GrandTheftAutoSave.GetFileFormat<ViceCitySave>(path);
-                    CurrentSaveDataFile = GrandTheftAutoSave.Load<ViceCitySave>(path, CurrentFileFormat);
-                    break;
-                default:
-                    RequestMessageBoxError("Selected game not yet supported!");
-                    return;
+                switch (m_selectedGame)
+                {
+                    case Game.GTA3:
+                        CurrentFileFormat = GrandTheftAutoSave.GetFileFormat<GTA3Save>(path);
+                        CurrentSaveDataFile = GrandTheftAutoSave.Load<GTA3Save>(path, CurrentFileFormat);
+                        break;
+                    case Game.ViceCity:
+                        CurrentFileFormat = GrandTheftAutoSave.GetFileFormat<ViceCitySave>(path);
+                        CurrentSaveDataFile = GrandTheftAutoSave.Load<ViceCitySave>(path, CurrentFileFormat);
+                        break;
+                    case Game.SanAndreas:
+                        CurrentFileFormat = FileFormat.None;
+                        CurrentSaveDataFile = GrandTheftAutoSave.Load<SanAndreasSave>(path);
+                        break;
+                    default:
+                        RequestMessageBoxError("Selected game not yet supported!");
+                        return;
+                }
+            }
+            catch (IOException e)
+            {
+                RequestMessageBoxError("Failed to open file: " + e.Message);
+                return;
+            }
+            catch (SerializationException e)
+            {
+                RequestMessageBoxError("Failed to open file: " + e.Message);
+                return;
             }
 
             if (CurrentSaveDataFile == null)
@@ -232,7 +250,8 @@ namespace TestApp
         public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
         {
             { Game.GTA3, GTA3BlockNames },
-            { Game.ViceCity, VCBlockNames }
+            { Game.ViceCity, VCBlockNames },
+            { Game.SanAndreas, SABlockNames },
         };
 
         public static string[] GTA3BlockNames => new[]
@@ -247,7 +266,7 @@ namespace TestApp
             "7: Cranes",
             "8: Pickups",
             "9: PhoneInfo",
-            "10: Restarts",
+            "10: RestartPoints",
             "11: RadarBlips",
             "12: Zones",
             "13: GangData",
@@ -273,7 +292,7 @@ namespace TestApp
             "8: Cranes",
             "9: Pickups",
             "10: PhoneInfo",
-            "11: Restarts",
+            "11: RestartPoints",
             "12: RadarBlips",
             "13: Zones",
             "14: GangData",
@@ -286,6 +305,38 @@ namespace TestApp
             "21: SetPieces",
             "22: Streaming",
             "23: PedTypeInfo"
+        };
+
+        public static string[] SABlockNames => new[]
+        {
+            "0: SimpleVars",
+            "1: Scripts",
+            "2: Players&Objects",
+            "3: Garages",
+            "4: GameLogic",
+            "5: PathFind",
+            "6: Pickups",
+            "7: PhoneInfo",
+            "8: RestartPoints",
+            "9: RadarBlips",
+            "10: Zones",
+            "11: GangData",
+            "12: CarGenerators",
+            "13: PedGenerators",
+            "14: AudioScriptObjects",
+            "15: PlayerInfo",
+            "16: Stats",
+            "17: SetPieces",
+            "18: Models",
+            "19: PedRelationships",
+            "20: Tags",
+            "21: IPL",
+            "22: Shopping",
+            "23: GangWars",
+            "24: UniqueStuntJumps",
+            "25: ENEX",
+            "26: RadioData",
+            "27: 3DMarkers"
         };
     }
     #endregion

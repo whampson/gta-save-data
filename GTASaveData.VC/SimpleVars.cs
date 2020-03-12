@@ -12,15 +12,9 @@ namespace GTASaveData.VC
     {
         public static class Limits
         {
-            public const int LastMissionPassedNameLength = 24;
+            public const int SaveNameLength = 24;
             public const int RadioListenTimeCount = 10;
         }
-
-        //// This is the number of bytes in a GTA:VC save excluding the 4-byte block size
-        //// values that appear before each outer data block. It shows up in SimpleVars
-        //// despite not being used at all by the game. Non-Japanese versions add 1 to
-        //// this number for some reason.
-        //private const uint TotalBlockDataSize = 0x31400;
 
         private string m_lastMissionPassedName;
         private SystemTime m_saveTime;
@@ -68,7 +62,7 @@ namespace GTASaveData.VC
         private float m_extraColorInterpolation;
         private Array<uint> m_radioListenTime;
 
-        public string LastMissionPassedName
+        public string SaveName
         {
             get { return m_lastMissionPassedName; }
             set { m_lastMissionPassedName = value; OnPropertyChanged(); }
@@ -110,25 +104,25 @@ namespace GTASaveData.VC
             set { m_millisecondsPerGameMinute = value; OnPropertyChanged(); }
         }
 
-        public uint LastClockTick
+        public uint WeatherTimer
         {
             get { return m_lastClockTick; }
             set { m_lastClockTick = value; OnPropertyChanged(); }
         }
 
-        public int GameClockHours
+        public int GameHour
         {
             get { return m_gameClockHours; }
             set { m_gameClockHours = value; OnPropertyChanged(); }
         }
 
-        public int GameClockMinutes
+        public int GameMinute
         {
             get { return m_gameClockMinutes; }
             set { m_gameClockMinutes = value; OnPropertyChanged(); }
         }
 
-        public uint TimeInMilliseconds
+        public uint GlobalTimer
         {
             get { return m_timeInMilliseconds; }
             set { m_timeInMilliseconds = value; OnPropertyChanged(); }
@@ -176,25 +170,25 @@ namespace GTASaveData.VC
             set { m_frameCounter = value; OnPropertyChanged(); }
         }
 
-        public WeatherType OldWeatherType
+        public WeatherType PreviousWeather
         {
             get { return m_oldWeatherType; }
             set { m_oldWeatherType = value; OnPropertyChanged(); }
         }
 
-        public WeatherType NewWeatherType
+        public WeatherType CurrentWeather
         {
             get { return m_newWeatherType; }
             set { m_newWeatherType = value; OnPropertyChanged(); }
         }
 
-        public WeatherType ForcedWeatherType
+        public WeatherType ForcedWeather
         {
             get { return m_forcedWeatherType; }
             set { m_forcedWeatherType = value; OnPropertyChanged(); }
         }
 
-        public float InterpolationValue
+        public float WeatherInterpolation
         {
             get { return m_interpolationValue; }
             set { m_interpolationValue = value; OnPropertyChanged(); }
@@ -338,22 +332,22 @@ namespace GTASaveData.VC
             set { m_radioListenTime = value; OnPropertyChanged(); }
         }
 
-        int ISimpleVars.OldWeatherType
+        int ISimpleVars.PreviousWeather
         {
-            get { return (int) OldWeatherType; }
-            set { OldWeatherType = (WeatherType) value; }   // TODO: do I need OnPropertyChanged?
+            get { return (int) PreviousWeather; }
+            set { PreviousWeather = (WeatherType) value; }   // TODO: do I need OnPropertyChanged?
         }
 
-        int ISimpleVars.NewWeatherType
+        int ISimpleVars.CurrentWeather
         {
-            get { return (int) NewWeatherType; }
-            set { NewWeatherType = (WeatherType) value; }
+            get { return (int) CurrentWeather; }
+            set { CurrentWeather = (WeatherType) value; }
         }
 
-        int ISimpleVars.ForcedWeatherType
+        int ISimpleVars.ForcedWeather
         {
-            get { return (int) ForcedWeatherType; }
-            set { ForcedWeatherType = (WeatherType) value; }
+            get { return (int) ForcedWeather; }
+            set { ForcedWeather = (WeatherType) value; }
         }
 
         public SimpleVars()
@@ -367,7 +361,7 @@ namespace GTASaveData.VC
 
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
-            m_lastMissionPassedName = r.ReadString(Limits.LastMissionPassedNameLength, unicode: true);
+            m_lastMissionPassedName = r.ReadString(Limits.SaveNameLength, unicode: true);
             if (!fmt.SupportsPS2)  // TODO: confirm
             {
                 if (fmt.SupportsPC || fmt.SupportsXbox)   // TODO: confirm
@@ -459,7 +453,7 @@ namespace GTASaveData.VC
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
-            w.Write(m_lastMissionPassedName, Limits.LastMissionPassedNameLength, unicode: true);
+            w.Write(m_lastMissionPassedName, Limits.SaveNameLength, unicode: true);
             if (!fmt.SupportsPS2)
             {
                 if (fmt.SupportsPC || fmt.SupportsXbox)

@@ -10,8 +10,8 @@ namespace GTASaveData
         [Description("Vice City")]
         ViceCity,
 
-        //[Description("San Andreas")]
-        //SanAndreas,
+        [Description("San Andreas")]
+        SanAndreas,
 
         //[Description("Liberty City Stories")]
         //LibertyCityStories,

@@ -2,6 +2,7 @@
 {
     public enum WeatherType
     {
+        None = -1,
         Sunny,
         Cloudy,
         Rainy,
