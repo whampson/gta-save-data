@@ -1,4 +1,5 @@
 ﻿using GTASaveData.Common;
+using GTASaveData.Common.Blocks;
 using GTASaveData.Extensions;
 using GTASaveData.Serialization;
 using GTASaveData.VC.Blocks;
@@ -172,6 +173,7 @@ namespace GTASaveData.VC
 
         ISimpleVars IGrandTheftAutoSave.SimpleVars => SimpleVars;
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 <<<<<<< Updated upstream
         public override string Name => SimpleVars.LastMissionPassedName;
@@ -181,6 +183,10 @@ namespace GTASaveData.VC
         public override string Name => SimpleVars.SaveName;
 >>>>>>> Stashed changes
 =======
+=======
+        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators => CarGenerators;
+
+>>>>>>> Stashed changes
         public override string Name => SimpleVars.SaveName;
 >>>>>>> san-andreas
 

@@ -1,4 +1,5 @@
 using GTASaveData.Common;
+using GTASaveData.Common.Blocks;
 using GTASaveData.Extensions;
 using GTASaveData.GTA3.Blocks;
 using GTASaveData.Serialization;
@@ -153,6 +154,8 @@ namespace GTASaveData.GTA3
         }
 
         ISimpleVars IGrandTheftAutoSave.SimpleVars => SimpleVars;
+
+        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators => CarGenerators;
 
         public override string Name => SimpleVars.SaveName;
 

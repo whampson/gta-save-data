@@ -1,4 +1,5 @@
 ﻿using GTASaveData.Common;
+using GTASaveData.Common.Blocks;
 using GTASaveData.Extensions;
 using GTASaveData.Serialization;
 using System;
@@ -31,6 +32,8 @@ namespace GTASaveData.SA
         protected override int SimpleVarsSize => 0x138;
 
         ISimpleVars IGrandTheftAutoSave.SimpleVars => SimpleVars;
+
+        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators => throw new NotImplementedException();
 
         protected override FileFormat DetectFileFormat(byte[] data)
         {
