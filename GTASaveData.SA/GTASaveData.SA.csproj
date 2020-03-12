@@ -1,18 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>GTASaveData.Core</AssemblyName>
-    <RootNamespace>GTASaveData</RootNamespace>
+    <AssemblyName>GTASaveData.SA</AssemblyName>
+    <RootNamespace>GTASaveData.SA</RootNamespace>
     <Authors>Wes Hampson</Authors>
     <Company>Wes Hampson</Company>
     <Product>GTASaveData</Product>
-    <Description>Shared objects and APIs for the GTA save data library.</Description>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
-    <AssemblyVersion>0.1.0.278</AssemblyVersion>
-    <FileVersion>0.1.0.278</FileVersion>
+    <Description>A .NET library for manipulating Grand Theft Auto: San Andreas save files.</Description>
+    <AssemblyVersion>0.1.0.24</AssemblyVersion>
+    <FileVersion>0.1.0.24</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.1.0-alpha-282</Version>
+    <Version>0.1.0-alpha-24</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -41,23 +41,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="WpfEssentials" Version="1.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Strings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Strings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <ProjectReference Include="..\GTASaveData.Core\GTASaveData.Core.csproj" />
   </ItemGroup>
 
 </Project>

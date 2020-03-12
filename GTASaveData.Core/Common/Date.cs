@@ -6,15 +6,15 @@ namespace GTASaveData.Common
     /// <summary>
     /// Represents a date and time.
     /// </summary>
-    public class Timestamp : SerializableObject,
-        IEquatable<Timestamp>
+    public class Date : SerializableObject,
+        IEquatable<Date>
     {
-        private int m_year;
-        private int m_month;
-        private int m_day;
-        private int m_hour;
-        private int m_minute;
         private int m_second;
+        private int m_minute;
+        private int m_hour;
+        private int m_day;
+        private int m_month;
+        private int m_year;
 
         public int Year
         {
@@ -52,10 +52,10 @@ namespace GTASaveData.Common
             set { m_second = value; OnPropertyChanged(); }
         }
 
-        public Timestamp()
+        public Date()
         { }
 
-        public Timestamp(DateTime dateTime)
+        public Date(DateTime dateTime)
         {
             m_second = dateTime.Second;
             m_minute = dateTime.Minute;
@@ -98,10 +98,10 @@ namespace GTASaveData.Common
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Timestamp);
+            return Equals(obj as Date);
         }
 
-        public bool Equals(Timestamp other)
+        public bool Equals(Date other)
         {
             if (other == null)
             {
@@ -116,14 +116,14 @@ namespace GTASaveData.Common
                 && m_second.Equals(other.m_second);
         }
 
-        public static explicit operator DateTime(Timestamp t)
+        public static explicit operator DateTime(Date t)
         {
             return t.ToDateTime();
         }
 
-        public static explicit operator Timestamp(DateTime t)
+        public static explicit operator Date(DateTime t)
         {
-            return new Timestamp(t);
+            return new Date(t);
         }
     }
 }

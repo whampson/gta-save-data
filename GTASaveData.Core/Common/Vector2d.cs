@@ -34,6 +34,14 @@ namespace GTASaveData.Common
         public Vector2d()
         { }
 
+        public double DistanceTo(Vector2d other)
+        {
+            double x = Math.Pow(m_x - other.m_x, 2);
+            double y = Math.Pow(m_y - other.m_y, 2);
+
+            return Math.Sqrt(x + y);
+        }
+
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
             m_x = r.ReadSingle();

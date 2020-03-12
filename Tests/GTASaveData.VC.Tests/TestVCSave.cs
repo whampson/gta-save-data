@@ -7,6 +7,8 @@ using TestFramework;
 using Xunit;
 using GTASaveData.VC.Blocks;
 using GTASaveData.Tests.VC.Blocks;
+using System.Linq;
+using System;
 
 namespace GTASaveData.Tests.VC
 {
@@ -62,9 +64,13 @@ namespace GTASaveData.Tests.VC
         public void RandomDataSerialization(FileFormat format)
         {
             ViceCitySave x0 = GenerateTestVector(format);
-            ViceCitySave x1 = CreateSerializedCopy(x0, format);
+            ViceCitySave x1 = CreateSerializedCopy(x0, out byte[] data, format);
 
             AssertEqual(x0, x1);
+
+            int calculatedSum = data.Take(data.Length - 4).Sum(_ => _);
+            int storedSum = BitConverter.ToInt32(data, data.Length - 4);
+            Assert.Equal(calculatedSum, storedSum);
         }
 
         [Theory]
@@ -74,9 +80,13 @@ namespace GTASaveData.Tests.VC
             string path = TestData.GetTestDataPath(Game.ViceCity, format, filename);
 
             ViceCitySave x0 = GrandTheftAutoSave.Load<ViceCitySave>(path);
-            ViceCitySave x1 = CreateSerializedCopy(x0, format);
+            ViceCitySave x1 = CreateSerializedCopy(x0, out byte[] data, format);
 
             AssertEqual(x0, x1);
+
+            int calculatedSum = data.Take(data.Length - 4).Sum(_ => _);
+            int storedSum = BitConverter.ToInt32(data, data.Length - 4);
+            Assert.Equal(calculatedSum, storedSum);
         }
 
         private void AssertEqual(ViceCitySave x0, ViceCitySave x1)

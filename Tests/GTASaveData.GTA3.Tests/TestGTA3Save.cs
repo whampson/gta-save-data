@@ -3,7 +3,9 @@ using GTASaveData.GTA3;
 using GTASaveData.GTA3.Blocks;
 using GTASaveData.Serialization;
 using GTASaveData.Tests.GTA3.Blocks;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using TestFramework;
 using Xunit;
 
@@ -58,9 +60,13 @@ namespace GTASaveData.Tests.GTA3
         public void RandomDataSerialization(FileFormat format)
         {
             GTA3Save x0 = GenerateTestVector(format);
-            GTA3Save x1 = CreateSerializedCopy(x0, format);
+            GTA3Save x1 = CreateSerializedCopy(x0, out byte[] data, format);
 
             AssertEqual(x0, x1);
+
+            int calculatedSum = data.Take(data.Length - 4).Sum(_ => _);
+            int storedSum = BitConverter.ToInt32(data, data.Length - 4);
+            Assert.Equal(calculatedSum, storedSum);
         }
 
         [Theory]
@@ -70,9 +76,13 @@ namespace GTASaveData.Tests.GTA3
             string path = TestData.GetTestDataPath(Game.GTA3, format, filename);
 
             GTA3Save x0 = GrandTheftAutoSave.Load<GTA3Save>(path);
-            GTA3Save x1 = CreateSerializedCopy(x0, format);
+            GTA3Save x1 = CreateSerializedCopy(x0, out byte[] data, format);
 
             AssertEqual(x0, x1);
+
+            int calculatedSum = data.Take(data.Length - 4).Sum(_ => _);
+            int storedSum = BitConverter.ToInt32(data, data.Length - 4);
+            Assert.Equal(calculatedSum, storedSum);
         }
 
         private void AssertEqual(GTA3Save x0, GTA3Save x1)

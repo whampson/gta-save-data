@@ -15,10 +15,10 @@ namespace GTASaveData.VC
         private int m_color2;
         private bool m_forceSpawn;
         private int m_alarmChance;
-        private int m_lockChance;
+        private int m_lockedChance;
         private int m_minDelay;
         private int m_maxDelay;
-        private int m_timer;
+        private uint m_timer;
         private int m_vehiclePoolIndex;
         private bool m_enabled;
         private bool m_hasRecentlyBeenStolen;
@@ -71,10 +71,10 @@ namespace GTASaveData.VC
             set { m_alarmChance = value; OnPropertyChanged(); }
         }
 
-        public int LockChance
+        public int LockedChance
         {
-            get { return m_lockChance; }
-            set { m_lockChance = value; OnPropertyChanged(); }
+            get { return m_lockedChance; }
+            set { m_lockedChance = value; OnPropertyChanged(); }
         }
 
         public int MinDelay
@@ -89,7 +89,7 @@ namespace GTASaveData.VC
             set { m_maxDelay = value; OnPropertyChanged(); }
         }
 
-        public int Timer
+        public uint Timer
         {
             get { return m_timer; }
             set { m_timer = value; OnPropertyChanged(); }
@@ -123,15 +123,15 @@ namespace GTASaveData.VC
             m_model = (VehicleModel) r.ReadInt32();
             m_position = r.ReadObject<Vector3d>();
             m_heading = r.ReadSingle();
-            m_color1 = r.ReadUInt16();
-            m_color2 = r.ReadUInt16();
+            m_color1 = r.ReadInt16();
+            m_color2 = r.ReadInt16();
             m_forceSpawn = r.ReadBool();
             m_alarmChance = r.ReadByte();
-            m_lockChance = r.ReadByte();
+            m_lockedChance = r.ReadByte();
             r.Align();
             m_minDelay = r.ReadUInt16();
             m_maxDelay = r.ReadUInt16();
-            m_timer = r.ReadInt32();
+            m_timer = r.ReadUInt32();
             m_vehiclePoolIndex = r.ReadInt32();
             m_enabled = r.ReadBool(2);
             m_hasRecentlyBeenStolen = r.ReadBool();
@@ -143,11 +143,11 @@ namespace GTASaveData.VC
             w.Write((int) m_model);
             w.Write(m_position);
             w.Write(m_heading);
-            w.Write((ushort) m_color1);
-            w.Write((ushort) m_color2);
+            w.Write((short) m_color1);
+            w.Write((short) m_color2);
             w.Write(m_forceSpawn);
             w.Write((byte) m_alarmChance);
-            w.Write((byte) m_lockChance);
+            w.Write((byte) m_lockedChance);
             w.Align();
             w.Write((ushort) m_minDelay);
             w.Write((ushort) m_maxDelay);
@@ -177,7 +177,7 @@ namespace GTASaveData.VC
                 && m_color2.Equals(other.m_color2)
                 && m_forceSpawn.Equals(other.m_forceSpawn)
                 && m_alarmChance.Equals(other.m_alarmChance)
-                && m_lockChance.Equals(other.m_lockChance)
+                && m_lockedChance.Equals(other.m_lockedChance)
                 && m_minDelay.Equals(other.m_minDelay)
                 && m_maxDelay.Equals(other.m_maxDelay)
                 && m_timer.Equals(other.m_timer)

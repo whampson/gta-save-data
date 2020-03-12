@@ -2,6 +2,8 @@
 using GTASaveData.Common.Blocks;
 using GTASaveData.Serialization;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -13,7 +15,7 @@ namespace GTASaveData.VC.Blocks
     {
         public static class Limits
         {
-            public const int CarGeneratorsCount = 185;
+            public const int CarGeneratorsCapacity = 185;
         }
 
         private int m_numberOfCarGenerators;
@@ -22,13 +24,13 @@ namespace GTASaveData.VC.Blocks
         private int m_generateEvenIfPlayerIsCloseCounter;
         private Array<CarGenerator> m_parkedCars;
 
-        public int TotalNumberOfCarGenerators
+        public int NumberOfCarGenerators
         {
             get { return m_numberOfCarGenerators; }
             set { m_numberOfCarGenerators = value; OnPropertyChanged(); }
         }
 
-        public int NumberOfParkedCarsToGenerate
+        public int NumberOfActiveCarGenerators
         {
             get { return m_numberOfActiveCarGenerators; }
             set { m_numberOfActiveCarGenerators = value; OnPropertyChanged(); }
@@ -52,9 +54,17 @@ namespace GTASaveData.VC.Blocks
             set { m_parkedCars = value; OnPropertyChanged(); }
         }
 
-        ICarGenerator[] ICarGeneratorBlock.ParkedCars
+        IEnumerable<ICarGenerator> ICarGeneratorBlock.ParkedCars
         {
-            get { return ParkedCars; }
+            get { return m_parkedCars; }
+        }
+
+        public void SetParkedCar(int index, ICarGenerator cg)
+        {
+            CarGenerator carGen = cg as CarGenerator;
+            // TODO: error if null
+
+            m_parkedCars[index] = carGen;
         }
 
         public CarGeneratorBlock()
@@ -73,7 +83,7 @@ namespace GTASaveData.VC.Blocks
             r.Align();
             int constant1FCCh = r.ReadInt32();
             Debug.Assert(constant1FCCh == 0x1FCC);
-            m_parkedCars = r.ReadArray<CarGenerator>(Limits.CarGeneratorsCount);
+            m_parkedCars = r.ReadArray<CarGenerator>(Limits.CarGeneratorsCapacity);
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
@@ -85,7 +95,7 @@ namespace GTASaveData.VC.Blocks
             w.Write((byte) m_generateEvenIfPlayerIsCloseCounter);
             w.Align();
             w.Write(0x1FCC);
-            w.Write(m_parkedCars.ToArray(), Limits.CarGeneratorsCount);
+            w.Write(m_parkedCars.ToArray(), Limits.CarGeneratorsCapacity);
         }
 
         public override bool Equals(object obj)

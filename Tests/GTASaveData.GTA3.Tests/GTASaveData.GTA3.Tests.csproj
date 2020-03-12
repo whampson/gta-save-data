@@ -5,9 +5,15 @@
 
     <IsPackable>false</IsPackable>
 
+<<<<<<< Updated upstream
     <AssemblyVersion>1.0.0.55</AssemblyVersion>
 
     <FileVersion>1.0.0.55</FileVersion>
+=======
+    <AssemblyVersion>1.0.0.75</AssemblyVersion>
+
+    <FileVersion>1.0.0.75</FileVersion>
+>>>>>>> Stashed changes
   </PropertyGroup>
 
   <ItemGroup>

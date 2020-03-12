@@ -52,7 +52,7 @@ namespace GTASaveData.GTA3
         private bool m_prefsShowTrails;
         private bool m_prefsShowSubtitles;
         private Language m_prefsLanguage;
-        private Timestamp m_compileDateAndTime;
+        private Date m_compileDateAndTime;
         private int m_weatherTypeInList;
         private float m_inCarCameraMode;
         private float m_onFootCameraMode;
@@ -250,7 +250,7 @@ namespace GTASaveData.GTA3
             set { m_prefsLanguage = value; OnPropertyChanged(); }
         }
 
-        public Timestamp CompileDateAndTime
+        public Date CompileDateAndTime
         {
             get { return m_compileDateAndTime; }
             set { m_compileDateAndTime = value; OnPropertyChanged(); }
@@ -303,7 +303,7 @@ namespace GTASaveData.GTA3
             m_lastMissionPassedName = string.Empty;
             m_saveTime = new SystemTime();
             m_cameraPosition = new Vector3d();
-            m_compileDateAndTime = new Timestamp();
+            m_compileDateAndTime = new Date();
         }
 
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
@@ -375,7 +375,7 @@ namespace GTASaveData.GTA3
                 m_prefsCurrentPadMode = r.ReadInt32();
                 m_prefsShowTrails = r.ReadBool(4);
             }
-            m_compileDateAndTime = r.ReadObject<Timestamp>();
+            m_compileDateAndTime = r.ReadObject<Date>();
             m_weatherTypeInList = r.ReadInt32();
             m_inCarCameraMode = r.ReadSingle();
             m_onFootCameraMode = r.ReadSingle();

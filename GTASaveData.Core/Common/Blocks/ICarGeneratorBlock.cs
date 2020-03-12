@@ -1,9 +1,16 @@
-﻿namespace GTASaveData.Common.Blocks
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace GTASaveData.Common.Blocks
 {
     public interface ICarGeneratorBlock
     {
-        int NumberOfParkedCarsToGenerate { get; set; }
+        int NumberOfCarGenerators { get; set; }
 
-        ICarGenerator[] ParkedCars { get; }
+        int NumberOfActiveCarGenerators { get; set; }
+
+        IEnumerable<ICarGenerator> ParkedCars { get; }
+
+        void SetParkedCar(int index, ICarGenerator cg);
     }
 }

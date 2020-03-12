@@ -12,6 +12,12 @@
 
         int Color2 { get; set; }
 
+        int AlarmChance { get; set; }
+
+        int LockedChance { get; set; }
+
+        uint Timer { get; set; }
+
         bool Enabled { get; set; }
     }
 }

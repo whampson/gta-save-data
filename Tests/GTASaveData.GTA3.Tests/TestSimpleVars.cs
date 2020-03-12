@@ -46,7 +46,7 @@ namespace GTASaveData.Tests.GTA3
                 .RuleFor(x => x.PrefsUseWideScreen, f => format.SupportsPS2 ? f.Random.Bool() : false)
                 .RuleFor(x => x.PrefsControllerConfig, f => format.SupportsPS2 ? f.Random.Int() : 0)
                 .RuleFor(x => x.PrefsShowTrails, f => format.SupportsPS2 ? f.Random.Bool() : false)
-                .RuleFor(x => x.CompileDateAndTime, Generator.Generate<Timestamp, TestTimestamp>())
+                .RuleFor(x => x.CompileDateAndTime, Generator.Generate<Date, TestTimestamp>())
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
                 .RuleFor(x => x.InCarCameraMode, f => f.Random.Float())
                 .RuleFor(x => x.OnFootCameraMode, f => f.Random.Float())

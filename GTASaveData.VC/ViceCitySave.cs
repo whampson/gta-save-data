@@ -183,7 +183,13 @@ namespace GTASaveData.VC
             get { return CarGenerators; }
         }
 
+<<<<<<< Updated upstream
         public override string Name => SimpleVars.LastMissionPassedName;
+=======
+        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators => CarGenerators;
+
+        public override string Name => SimpleVars.SaveName;
+>>>>>>> Stashed changes
 
         protected override int MaxBlockSize => 0xD6D8;      // TODO: PS2 
 
@@ -465,6 +471,7 @@ namespace GTASaveData.VC
             while (bytesWritten < sizeOfGame - 4)
             {
                 byte[] data;
+                int lengthSum;
 
                 if (index < SectionCount)
                 {
@@ -478,6 +485,7 @@ namespace GTASaveData.VC
                 w.Write(data.Length);
                 w.Write(data);
 
+                lengthSum = Serializer.Serialize(data.Length).Sum(x => x);
                 checksum += data.Sum(x => x);
                 bytesWritten += data.Length;
                 numSectionsWritten++;

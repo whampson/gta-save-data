@@ -12,11 +12,11 @@ namespace GTASaveData.Tests.VC.Blocks
         public override CarGeneratorBlock GenerateTestVector(FileFormat format)
         {
             Faker<CarGeneratorBlock> model = new Faker<CarGeneratorBlock>()
-                .RuleFor(x => x.TotalNumberOfCarGenerators, f => f.Random.Int())
-                .RuleFor(x => x.NumberOfParkedCarsToGenerate, f => f.Random.Int())
+                .RuleFor(x => x.NumberOfCarGenerators, f => f.Random.Int())
+                .RuleFor(x => x.NumberOfActiveCarGenerators, f => f.Random.Int())
                 .RuleFor(x => x.ProcessCounter, f => f.Random.Byte())
                 .RuleFor(x => x.GenerateEvenIfPlayerIsCloseCounter, f => f.Random.Byte())
-                .RuleFor(x => x.ParkedCars, f => Generator.CreateArray(CarGeneratorBlock.Limits.CarGeneratorsCount, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
+                .RuleFor(x => x.ParkedCars, f => Generator.CreateArray(CarGeneratorBlock.Limits.CarGeneratorsCapacity, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
 
             return model.Generate();
         }

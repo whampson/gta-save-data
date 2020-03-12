@@ -11,13 +11,13 @@ namespace GTASaveData.GTA3
         private VehicleModel m_model;
         private Vector3d m_position;
         private float m_heading;
-        private ushort m_color1;
-        private ushort m_color2;
+        private int m_color1;
+        private int m_color2;
         private bool m_forceSpawn;
-        private byte m_alarmChance;
-        private byte m_lockChance;
-        private ushort m_minDelay;
-        private ushort m_maxDelay;
+        private int m_alarmChance;
+        private int m_lockedChance;
+        private int m_minDelay;
+        private int m_maxDelay;
         private uint m_timer;
         private int m_vehiclePoolIndex;
         private bool m_enabled;
@@ -53,13 +53,13 @@ namespace GTASaveData.GTA3
         public int Color1
         {
             get { return m_color1; }
-            set { m_color1 = (ushort) value; OnPropertyChanged(); }
+            set { m_color1 = value; OnPropertyChanged(); }
         }
 
         public int Color2
         {
             get { return m_color2; }
-            set { m_color2 = (ushort) value; OnPropertyChanged(); }
+            set { m_color2 = value; OnPropertyChanged(); }
         }
 
         public bool ForceSpawn
@@ -68,25 +68,25 @@ namespace GTASaveData.GTA3
             set { m_forceSpawn = value; OnPropertyChanged(); }
         }
 
-        public byte AlarmChance
+        public int AlarmChance
         {
             get { return m_alarmChance; }
             set { m_alarmChance = value; OnPropertyChanged(); }
         }
 
-        public byte LockChance
+        public int LockedChance
         {
-            get { return m_lockChance; }
-            set { m_lockChance = value; OnPropertyChanged(); }
+            get { return m_lockedChance; }
+            set { m_lockedChance = value; OnPropertyChanged(); }
         }
 
-        public ushort MinDelay
+        public int MinDelay
         {
             get { return m_minDelay; }
             set { m_minDelay = value; OnPropertyChanged(); }
         }
 
-        public ushort MaxDelay
+        public int MaxDelay
         {
             get { return m_maxDelay; }
             set { m_maxDelay = value; OnPropertyChanged(); }
@@ -146,11 +146,11 @@ namespace GTASaveData.GTA3
             m_model = (VehicleModel) r.ReadInt32();
             m_position = r.ReadObject<Vector3d>();
             m_heading = r.ReadSingle();
-            m_color1 = r.ReadUInt16();
-            m_color2 = r.ReadUInt16();
+            m_color1 = r.ReadInt16();
+            m_color2 = r.ReadInt16();
             m_forceSpawn = r.ReadBool();
             m_alarmChance = r.ReadByte();
-            m_lockChance = r.ReadByte();
+            m_lockedChance = r.ReadByte();
             r.Align();
             m_minDelay = r.ReadUInt16();
             m_maxDelay = r.ReadUInt16();
@@ -169,14 +169,14 @@ namespace GTASaveData.GTA3
             w.Write((int) m_model);
             w.Write(m_position);
             w.Write(m_heading);
-            w.Write(m_color1);
-            w.Write(m_color2);
+            w.Write((short) m_color1);
+            w.Write((short) m_color2);
             w.Write(m_forceSpawn);
-            w.Write(m_alarmChance);
-            w.Write(m_lockChance);
+            w.Write((byte) m_alarmChance);
+            w.Write((byte) m_lockedChance);
             w.Align();
-            w.Write(m_minDelay);
-            w.Write(m_maxDelay);
+            w.Write((ushort) m_minDelay);
+            w.Write((ushort) m_maxDelay);
             w.Write(m_timer);
             w.Write(m_vehiclePoolIndex);
             w.Write(m_enabled, 2);
@@ -206,7 +206,7 @@ namespace GTASaveData.GTA3
                 && m_color2.Equals(other.m_color2)
                 && m_forceSpawn.Equals(other.m_forceSpawn)
                 && m_alarmChance.Equals(other.m_alarmChance)
-                && m_lockChance.Equals(other.m_lockChance)
+                && m_lockedChance.Equals(other.m_lockedChance)
                 && m_minDelay.Equals(other.m_minDelay)
                 && m_maxDelay.Equals(other.m_maxDelay)
                 && m_timer.Equals(other.m_timer)

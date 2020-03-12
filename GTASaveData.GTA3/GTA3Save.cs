@@ -166,7 +166,9 @@ namespace GTASaveData.GTA3
             get { return CarGenerators; }
         }
 
-        public override string Name => SimpleVars.LastMissionPassedName;
+        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators => CarGenerators;
+
+        public override string Name => SimpleVars.SaveName;
 
         protected override int MaxBlockSize => (FileFormat.SupportsPS2) ? 50000 : 55000;
 
@@ -550,6 +552,7 @@ namespace GTASaveData.GTA3
             while (bytesWritten < sizeOfGame - 4)
             {
                 byte[] data;
+                int lengthSum;
 
                 if (index < SectionCount)
                 {
@@ -563,7 +566,8 @@ namespace GTASaveData.GTA3
                 w.Write(data.Length);
                 w.Write(data);
 
-                checksum += data.Sum(x => x);
+                lengthSum = Serializer.Serialize(data.Length).Sum(x => x);
+                checksum += data.Sum(x => x) + lengthSum;
                 bytesWritten += data.Length;
                 numSectionsWritten++;
             }

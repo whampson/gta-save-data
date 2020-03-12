@@ -41,6 +41,15 @@ namespace GTASaveData.Common
         public Vector3d()
         { }
 
+        public double DistanceTo(Vector3d other)
+        {
+            double x = Math.Pow(m_x - other.m_x, 2);
+            double y = Math.Pow(m_y - other.m_y, 2);
+            double z = Math.Pow(m_z - other.m_z, 2);
+
+            return Math.Sqrt(x + y + z);
+        }
+
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
             m_x = r.ReadSingle();

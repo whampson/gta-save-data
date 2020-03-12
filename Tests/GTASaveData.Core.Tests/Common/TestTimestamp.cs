@@ -7,19 +7,19 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests.Common
 {
-    public class TestTimestamp : SerializableObjectTestBase<Timestamp>
+    public class TestTimestamp : SerializableObjectTestBase<Date>
     {
-        public override Timestamp GenerateTestVector(FileFormat format)
+        public override Date GenerateTestVector(FileFormat format)
         {
-            return new Timestamp(
+            return new Date(
                 new Faker().Date.Between(new DateTime(1970, 1, 1), DateTime.Now));
         }
 
         [Fact]
         public void Serialization()
         {
-            Timestamp x0 = GenerateTestVector();
-            Timestamp x1 = CreateSerializedCopy(x0, out byte[] data);
+            Date x0 = GenerateTestVector();
+            Date x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Year, x1.Year);
             Assert.Equal(x0.Month, x1.Month);
