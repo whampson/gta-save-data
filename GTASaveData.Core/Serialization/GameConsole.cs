@@ -50,7 +50,7 @@ namespace GTASaveData.Serialization
     {
         None,
         Android,
-        IOS,
+        iOS,
         MacOS,
         PS2,
         PS3,

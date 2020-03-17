@@ -1,11 +1,13 @@
 ﻿using GTASaveData.Serialization;
 using System;
+using System.Diagnostics;
 
-namespace GTASaveData.Common
+namespace GTASaveData
 {
     /// <summary>
     /// Represents a date and time.
     /// </summary>
+    [Size(0x18)]
     public class Date : SerializableObject,
         IEquatable<Date>
     {
@@ -73,6 +75,8 @@ namespace GTASaveData.Common
             m_day = r.ReadInt32();
             m_month = r.ReadInt32();
             m_year = r.ReadInt32();
+
+            Debug.Assert(r.Position() - r.Marked() == SizeOf<Date>());
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
@@ -83,6 +87,8 @@ namespace GTASaveData.Common
             w.Write(m_day);
             w.Write(m_month);
             w.Write(m_year);
+
+            Debug.Assert(w.Position() - w.Marked() == SizeOf<Date>());
         }
 
         public DateTime ToDateTime()
@@ -94,6 +100,11 @@ namespace GTASaveData.Common
                 m_hour,
                 m_minute,
                 m_second);
+        }
+
+        public override string ToString()
+        {
+            return ToDateTime().ToString();
         }
 
         public override bool Equals(object obj)

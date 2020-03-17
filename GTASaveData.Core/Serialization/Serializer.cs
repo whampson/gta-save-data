@@ -83,6 +83,7 @@ namespace GTASaveData.Serialization
         private bool m_disposed;
         private PaddingMode m_paddingMode;
         private byte[] m_paddingSequence;
+        private long m_mark;
 
         /// <summary>
         /// Creates a new <see cref="Serializer"/> using the specified stream as the serialization endpoint.
@@ -99,7 +100,8 @@ namespace GTASaveData.Serialization
             {
                 throw new ArgumentException(Strings.Error_Argument_StreamMustBeRW, nameof(baseStream));
             }
-            
+
+            m_mark = baseStream.Position;
             m_reader = new BinaryReader(baseStream, Encoding.ASCII, true);
             m_writer = new BinaryWriter(baseStream, Encoding.ASCII, true);
             m_disposed = false;
@@ -170,6 +172,21 @@ namespace GTASaveData.Serialization
         public void Skip(int amount)
         {
             BaseStream.Position += amount;
+        }
+
+        public void Mark()
+        {
+            m_mark = BaseStream.Position;
+        }
+
+        public long Marked()
+        {
+            return m_mark;
+        }
+
+        public long Position()
+        {
+            return BaseStream.Position;
         }
 
         /// <summary>

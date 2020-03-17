@@ -1,11 +1,13 @@
 ﻿using GTASaveData.Serialization;
 using System;
+using System.Diagnostics;
 
-namespace GTASaveData.Common
+namespace GTASaveData
 {
     /// <summary>
-    /// Represents a date and time. This is the .NET equivalent of the Win32 <c>SYSTEMTIME</c> structure.
+    /// Represents the Win32 <c>SYSTEMTIME</c> structure.
     /// </summary>
+    [Size(16)]
     public class SystemTime : SerializableObject,
         IEquatable<SystemTime>
     {
@@ -79,6 +81,8 @@ namespace GTASaveData.Common
             m_minute = (ushort) dateTime.Minute;
             m_second = (ushort) dateTime.Second;
             m_millisecond = (ushort) dateTime.Millisecond;
+
+            
         }
 
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
@@ -91,6 +95,8 @@ namespace GTASaveData.Common
             m_minute = r.ReadUInt16();
             m_second = r.ReadUInt16();
             m_millisecond = r.ReadUInt16();
+
+            Debug.Assert(r.Position() - r.Marked() == SizeOf<SystemTime>());
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
@@ -103,6 +109,8 @@ namespace GTASaveData.Common
             w.Write(m_minute);
             w.Write(m_second);
             w.Write(m_millisecond);
+
+            Debug.Assert(w.Position() - w.Marked() == SizeOf<SystemTime>());
         }
 
         public DateTime ToDateTime()
@@ -115,6 +123,11 @@ namespace GTASaveData.Common
                 m_minute,
                 m_second,
                 m_millisecond);
+        }
+
+        public override string ToString()
+        {
+            return ToDateTime().ToString();
         }
 
         public override bool Equals(object obj)

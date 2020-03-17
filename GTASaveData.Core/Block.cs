@@ -1,5 +1,6 @@
 ﻿using GTASaveData.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -7,16 +8,14 @@ using System.Linq;
 namespace GTASaveData
 {
     /// <summary>
-    /// A container for arbitraty data. Useful for storing unknown block data.
+    /// A container for arbitraty data.
     /// </summary>
     public class Block : SerializableObject,
         IEquatable<Block>
     {
-        // TODO: custom JSON serializer so Data can be a base64 string?
-
         private Array<byte> m_data;
 
-        [JsonIgnore]
+        [JsonConverter(typeof(BinaryConverter))]
         public Array<byte> Data
         {
             get { return m_data; }
@@ -40,7 +39,7 @@ namespace GTASaveData
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
             // nop
-            Debug.WriteLine("WARN: Calling useless method: Block#ReadObjectData()");
+            Debug.WriteLine("Block#ReadObjectData(): useless call");
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)

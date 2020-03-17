@@ -1,13 +1,10 @@
-﻿using GTASaveData.Common;
-using GTASaveData.Common.Blocks;
-
-namespace GTASaveData
+﻿namespace GTASaveData
 {
     public interface IGrandTheftAutoSave
     {
-        ISimpleVars SimpleVars { get; }
+        //ISimpleVars SimpleVars { get; }
 
-        ICarGeneratorBlock CarGenerators { get; }
+        //ICarGeneratorBlock CarGenerators { get; }
 
         // TODO: add common structures 
     }

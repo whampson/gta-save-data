@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using WpfEssentials;
 
 namespace GTASaveData.Serialization
@@ -24,11 +25,17 @@ namespace GTASaveData.Serialization
 
         void ISerializable.ReadObjectData(Serializer r, FileFormat fmt)
         {
+#if DEBUG
+            r.Mark();
+#endif
             ReadObjectData(r, fmt);
         }
 
         void ISerializable.WriteObjectData(Serializer w, FileFormat fmt)
         {
+#if DEBUG
+            w.Mark();
+#endif
             WriteObjectData(w, fmt);
         }
 
@@ -37,15 +44,15 @@ namespace GTASaveData.Serialization
             return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
 
-        // TODO: optimize calculation with [SerializedSize()] on fixed-size types
-        public static int SizeOf<T>() where T : SerializableObject, new()
+        public static int SizeOf<T>() where T : SerializableObject
         {
-            return Serializer.Serialize(new T()).Length;
-        }
+            SizeAttribute sizeAttr = (SizeAttribute) Attribute.GetCustomAttribute(typeof(T), typeof(SizeAttribute));
+            if (sizeAttr == null)
+            {
+                throw new InvalidOperationException(string.Format("Cannot use SizeOf() on type {0}.", typeof(T)));
+            }
 
-        public static int SizeOf<T>(FileFormat fmt) where T : SerializableObject, new()
-        {
-            return Serializer.Serialize(new T(), format: fmt).Length;
+            return sizeAttr.Size;
         }
     }
 }

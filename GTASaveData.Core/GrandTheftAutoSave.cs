@@ -1,5 +1,4 @@
-﻿using GTASaveData.Common.Blocks;
-using GTASaveData.Serialization;
+﻿using GTASaveData.Serialization;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -96,9 +95,6 @@ namespace GTASaveData
 
         public IReadOnlyList<SerializableObject> Blocks => m_blocks.ToList().AsReadOnly();
 
-        /// <summary>
-        /// Gets the name of this save.
-        /// </summary>
         public abstract string Name { get; }
 
         protected abstract int MaxBlockSize { get; }

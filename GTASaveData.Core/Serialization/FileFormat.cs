@@ -27,7 +27,7 @@ namespace GTASaveData.Serialization
 
         public bool SupportsAndroid => IsSupported(ConsoleType.Android);
 
-        public bool SupportsIOS => IsSupported(ConsoleType.IOS);
+        public bool SupportsIOS => IsSupported(ConsoleType.iOS);
 
         public bool SupportsMacOS => IsSupported(ConsoleType.MacOS);
 
