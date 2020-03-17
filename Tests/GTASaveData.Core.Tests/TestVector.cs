@@ -1,16 +1,15 @@
 ﻿using Bogus;
-using GTASaveData.Common;
 using GTASaveData.Serialization;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Core.Tests.Common
+namespace GTASaveData.Core.Tests
 {
-    public class TestVector3d : SerializableObjectTestBase<Vector3d>
+    public class TestVector : SerializableObjectTestBase<Vector>
     {
-        public override Vector3d GenerateTestVector(FileFormat format)
+        public override Vector GenerateTestVector(FileFormat format)
         {
-            Faker<Vector3d> model = new Faker<Vector3d>()
+            Faker<Vector> model = new Faker<Vector>()
                 .RuleFor(x => x.X, f => f.Random.Float(-4000, 4000))
                 .RuleFor(x => x.Y, f => f.Random.Float(-4000, 4000))
                 .RuleFor(x => x.Z, f => f.Random.Float(-4000, 4000));
@@ -21,8 +20,8 @@ namespace GTASaveData.Core.Tests.Common
         [Fact]
         public void Serialization()
         {
-            Vector3d x0 = GenerateTestVector();
-            Vector3d x1 = CreateSerializedCopy(x0, out byte[] data);
+            Vector x0 = GenerateTestVector();
+            Vector x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.X, x1.X);
             Assert.Equal(x0.Y, x1.Y);

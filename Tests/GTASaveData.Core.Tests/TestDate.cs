@@ -1,13 +1,12 @@
 ﻿using Bogus;
-using GTASaveData.Common;
 using GTASaveData.Serialization;
 using System;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Core.Tests.Common
+namespace GTASaveData.Core.Tests
 {
-    public class TestTimestamp : SerializableObjectTestBase<Date>
+    public class TestDate : SerializableObjectTestBase<Date>
     {
         public override Date GenerateTestVector(FileFormat format)
         {
