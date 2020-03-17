@@ -22,6 +22,7 @@ namespace GTASaveData
             set { m_data = value; OnPropertyChanged(); }
         }
 
+        [JsonIgnore]
         public int Length
         {
             get { return m_data.Count; }

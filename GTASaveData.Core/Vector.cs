@@ -34,26 +34,31 @@ namespace GTASaveData
             set { m_z = value; OnPropertyChanged(); }
         }
 
+        [JsonIgnore]
         public float Heading
         {
             get { return (float) Math.Atan2(-m_x, m_y); }
         }
 
+        [JsonIgnore]
         public float Magnitude
         {
             get { return (float) Math.Sqrt(MagnitudeSquared); }
         }
 
+        [JsonIgnore]
         public float MagnitudeSquared
         {
             get { return (m_x * m_x) + (m_y * m_y) + (m_z * m_z); }
         }
 
+        [JsonIgnore]
         public float Magnitude2D
         {
             get { return (float) Math.Sqrt(MagnitudeSquared2D); }
         }
 
+        [JsonIgnore]
         public float MagnitudeSquared2D
         {
             get { return (m_x * m_x) + (m_y * m_y); }
