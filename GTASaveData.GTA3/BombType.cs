@@ -3,10 +3,10 @@
     public enum BombType
     {
         None,
-        Timer,
-        Ignition,
+        Timed,
+        OnIgnition,
         Remote,
-        TimerArmed,
-        IgnitionArmed
+        TimedActive,
+        OnIgnitionActive
     }
 }

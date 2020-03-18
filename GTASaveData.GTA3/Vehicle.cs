@@ -7,7 +7,7 @@ namespace GTASaveData.GTA3
     public abstract class Vehicle : SerializableObject
     {
         protected Array<byte> m_unknownArray0;
-        protected Vector3d m_position;
+        protected Vector m_position;
         protected Array<byte> m_unknownArray1;
 
         [JsonIgnore]
@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3
             set { m_unknownArray0 = value; OnPropertyChanged(); }
         }
 
-        public Vector3d Position
+        public Vector Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -34,7 +34,7 @@ namespace GTASaveData.GTA3
         {
             m_unknownArray0 = new Array<byte>();
             m_unknownArray1 = new Array<byte>();
-            m_position = new Vector3d();
+            m_position = new Vector();
         }
     }
 }

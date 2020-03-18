@@ -3,9 +3,9 @@
     public enum ObjectType
     {
         None,
-        Path,
-        Static,
-        DynamicLoaded,
-        DynamicUnloaded
+        Treadable,
+        Building,
+        Object,
+        Dummy
     }
 }

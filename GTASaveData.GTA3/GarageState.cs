@@ -6,7 +6,7 @@
         Opened,
         Closing,
         Opening,
-        OpenedWithServicedCar,
-        ClosedWithDroppedOffCar
+        OpenedContainsCar,
+        ClosedAfterDropOff
     }
 }

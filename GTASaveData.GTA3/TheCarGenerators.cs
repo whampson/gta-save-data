@@ -1,17 +1,15 @@
 ﻿using GTASaveData.Common;
-using GTASaveData.Common.Blocks;
 using GTASaveData.Serialization;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3.Blocks
 {
-    public class CarGeneratorBlock : SerializableObject,
+    public class TheCarGenerators : SerializableObject,
         ICarGeneratorBlock,
-        IEquatable<CarGeneratorBlock>
+        IEquatable<TheCarGenerators>
     {
         public static class Limits
         {
@@ -67,7 +65,7 @@ namespace GTASaveData.GTA3.Blocks
             m_parkedCars[index] = carGen;
         }
 
-        public CarGeneratorBlock()
+        public TheCarGenerators()
         {
             m_parkedCars = new Array<CarGenerator>();
         }
@@ -100,10 +98,10 @@ namespace GTASaveData.GTA3.Blocks
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as CarGeneratorBlock);
+            return Equals(obj as TheCarGenerators);
         }
 
-        public bool Equals(CarGeneratorBlock other)
+        public bool Equals(TheCarGenerators other)
         {
             if (other == null)
             {

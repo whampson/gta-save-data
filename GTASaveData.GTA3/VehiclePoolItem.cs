@@ -7,7 +7,7 @@ namespace GTASaveData.GTA3
         IEquatable<VehiclePoolItem>
     {
         private bool m_isBoat;
-        private VehicleModel m_modelId;
+        private VehicleType m_modelId;
         private uint m_vehicleRef;
         private Vehicle m_vehicle;
 
@@ -16,7 +16,7 @@ namespace GTASaveData.GTA3
             get { return m_isBoat; }
         }
 
-        public VehicleModel ModelId
+        public VehicleType ModelId
         { 
             get { return m_modelId; }
             set { m_modelId = value; OnPropertyChanged(); }
@@ -49,7 +49,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
             m_isBoat = r.ReadBool(4);
-            m_modelId = (VehicleModel) r.ReadUInt16();
+            m_modelId = (VehicleType) r.ReadUInt16();
             m_vehicleRef = r.ReadUInt32();
             m_vehicle = (m_isBoat)
                 ? r.ReadObject<Boat>(fmt) as Vehicle

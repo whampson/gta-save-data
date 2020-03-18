@@ -14,11 +14,11 @@ namespace GTASaveData.GTA3
             public const int SaveNameLength = 24;
         }
 
-        private string m_lastMissionPassedName;
+        private string m_saveName;
         private SystemTime m_saveTime;
         private int m_sizeOfGameInBytes;
         private Level m_currLevel;
-        private Vector3d m_cameraPosition;
+        private Vector m_cameraPosition;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
         private int m_gameClockHours;
@@ -54,8 +54,8 @@ namespace GTASaveData.GTA3
 
         public string SaveName
         {
-            get { return m_lastMissionPassedName; }
-            set { m_lastMissionPassedName = value; OnPropertyChanged(); }
+            get { return m_saveName; }
+            set { m_saveName = value; OnPropertyChanged(); }
         }
 
         public SystemTime SaveTime
@@ -76,7 +76,7 @@ namespace GTASaveData.GTA3
             set { m_currLevel = value; OnPropertyChanged(); }
         }
 
-        public Vector3d CameraPosition
+        public Vector CameraPosition
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
@@ -88,22 +88,28 @@ namespace GTASaveData.GTA3
             set { m_millisecondsPerGameMinute = value; OnPropertyChanged(); }
         }
 
-        public uint WeatherTimer
+        public uint LastClockTick
         {
             get { return m_lastClockTick; }
             set { m_lastClockTick = value; OnPropertyChanged(); }
         }
 
-        public int GameHour
+        public int GameClockHours
         {
             get { return m_gameClockHours; }
             set { m_gameClockHours = value; OnPropertyChanged(); }
         }
 
-        public int GameMinute
+        public int GameClockMinutes
         {
             get { return m_gameClockMinutes; }
             set { m_gameClockMinutes = value; OnPropertyChanged(); }
+        }
+
+        public int CurrPadMode
+        {
+            get { return m_prefsCurrentPadMode; }
+            set { m_prefsCurrentPadMode = value; OnPropertyChanged(); }
         }
 
         public uint GlobalTimer
@@ -176,12 +182,6 @@ namespace GTASaveData.GTA3
         {
             get { return m_interpolationValue; }
             set { m_interpolationValue = value; OnPropertyChanged(); }
-        }
-
-        public int PrefsControllerConfig
-        {
-            get { return m_prefsCurrentPadMode; }
-            set { m_prefsCurrentPadMode = value; OnPropertyChanged(); }
         }
 
         public int PrefsMusicVolume
@@ -296,7 +296,7 @@ namespace GTASaveData.GTA3
         {
             m_lastMissionPassedName = string.Empty;
             m_saveTime = new SystemTime();
-            m_cameraPosition = new Vector3d();
+            m_cameraPosition = new Vector();
             m_compileDateAndTime = new Date();
         }
 
@@ -313,7 +313,7 @@ namespace GTASaveData.GTA3
             m_sizeOfGameInBytes = r.ReadInt32();
             Debug.Assert(m_sizeOfGameInBytes == (fmt.IsSupported(ConsoleType.PS2, ConsoleFlags.Japan) ? 0x31400 : 0x31401));
             m_currLevel = (Level) r.ReadUInt32();
-            m_cameraPosition = r.ReadObject<Vector3d>();
+            m_cameraPosition = r.ReadObject<Vector>();
             m_millisecondsPerGameMinute = r.ReadInt32();
             m_lastClockTick = r.ReadUInt32();
             if (fmt.SupportsPS2)

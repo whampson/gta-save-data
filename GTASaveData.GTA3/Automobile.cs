@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
             m_unknownArray0 = r.ReadBytes(Limits.GetUnknownArray0Size(fmt));
-            m_position = r.ReadObject<Vector3d>();
+            m_position = r.ReadObject<Vector>();
             m_unknownArray1 = r.ReadBytes(Limits.GetUnknownArray1Size(fmt));
         }
 

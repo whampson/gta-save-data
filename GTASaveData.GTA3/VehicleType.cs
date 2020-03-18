@@ -1,6 +1,6 @@
 ﻿namespace GTASaveData.GTA3
 {
-    public enum VehicleModel
+    public enum VehicleType
     {
         // TODO: descriptions
 

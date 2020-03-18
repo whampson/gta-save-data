@@ -5,8 +5,8 @@ using System.Linq;
 
 namespace GTASaveData.GTA3.Blocks
 {
-    public class ScriptBlock : SerializableObject,
-        IEquatable<ScriptBlock>
+    public class TheScripts : SerializableObject,
+        IEquatable<TheScripts>
     {
         public static class Limits
         {
@@ -101,7 +101,7 @@ namespace GTASaveData.GTA3.Blocks
             set { m_runningScripts = value; OnPropertyChanged(); }
         }
 
-        public ScriptBlock()
+        public TheScripts()
         {
             m_globalVariables = new Array<uint>();
             m_contacts = new Array<ContactInfo>();
@@ -156,10 +156,10 @@ namespace GTASaveData.GTA3.Blocks
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as ScriptBlock);
+            return Equals(obj as TheScripts);
         }
 
-        public bool Equals(ScriptBlock other)
+        public bool Equals(TheScripts other)
         {
             if (other == null)
             {

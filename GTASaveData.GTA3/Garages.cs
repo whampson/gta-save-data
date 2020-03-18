@@ -1,21 +1,23 @@
 ﻿using GTASaveData.Serialization;
 using System;
+using System.Diagnostics;
 using System.Linq;
 
-namespace GTASaveData.GTA3.Blocks
+namespace GTASaveData.GTA3
 {
-    public class GarageBlock : SerializableObject,
-        IEquatable<GarageBlock>
+    [Size(0x1478)]
+    public class Garages : SerializableObject,
+        IEquatable<Garages>
     {
         public static class Limits
         {
-            public const int StoredCarsCount = 18;
-            public const int GaragesCount = 32;
+            public const int NumberOfStoredCars = 18;
+            public const int NumberOfGarages = 32;
         }
 
         private int m_numberOfGarages;
-        private bool m_freeBombs;
-        private bool m_freeResprays;
+        private bool m_bombsAreFree;
+        private bool m_respraysAreFree;
         private int m_carsCollected;
         private int m_bankVansCollected;
         private int m_policeCarsCollected;
@@ -32,16 +34,16 @@ namespace GTASaveData.GTA3.Blocks
             set { m_numberOfGarages = value; OnPropertyChanged(); }
         }
 
-        public bool FreeBombs
+        public bool BombsAreFree
         { 
-            get { return m_freeBombs; }
-            set { m_freeBombs = value; OnPropertyChanged(); }
+            get { return m_bombsAreFree; }
+            set { m_bombsAreFree = value; OnPropertyChanged(); }
         }
 
-        public bool FreeResprays
+        public bool RespraysAreFree
         { 
-            get { return m_freeResprays; }
-            set { m_freeResprays = value; OnPropertyChanged(); }
+            get { return m_respraysAreFree; }
+            set { m_respraysAreFree = value; OnPropertyChanged(); }
         }
 
         public int CarsCollected
@@ -92,13 +94,13 @@ namespace GTASaveData.GTA3.Blocks
             set { m_storedCars = value; OnPropertyChanged(); }
         }
 
-        public Array<Garage> Garages
+        public Array<Garage> GaragesArray
         { 
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
         }
 
-        public GarageBlock()
+        public Garages()
         {
             m_storedCars = new Array<StoredCar>();
             m_garages = new Array<Garage>();
@@ -107,8 +109,8 @@ namespace GTASaveData.GTA3.Blocks
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
             m_numberOfGarages = r.ReadInt32();
-            m_freeBombs = r.ReadBool(4);
-            m_freeResprays = r.ReadBool(4);
+            m_bombsAreFree = r.ReadBool(4);
+            m_respraysAreFree = r.ReadBool(4);
             m_carsCollected = r.ReadInt32();
             m_bankVansCollected = r.ReadInt32();
             m_policeCarsCollected = r.ReadInt32();
@@ -116,15 +118,17 @@ namespace GTASaveData.GTA3.Blocks
             m_carTypesCollected2 = (CollectCars2) r.ReadInt32();
             m_carTypesCollected3 = (CollectCars3) r.ReadInt32();
             m_lastTimeHelpMessage = r.ReadInt32();
-            m_storedCars = r.ReadArray<StoredCar>(Limits.StoredCarsCount);
-            m_garages = r.ReadArray<Garage>(Limits.GaragesCount);
+            m_storedCars = r.ReadArray<StoredCar>(Limits.NumberOfStoredCars);
+            m_garages = r.ReadArray<Garage>(Limits.NumberOfGarages);
+
+            Debug.Assert(r.Position() - r.Marked() == SizeOf<Garages>());
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
             w.Write(m_numberOfGarages);
-            w.Write(m_freeBombs, 4);
-            w.Write(m_freeResprays, 4);
+            w.Write(m_bombsAreFree, 4);
+            w.Write(m_respraysAreFree, 4);
             w.Write(m_carsCollected);
             w.Write(m_bankVansCollected);
             w.Write(m_policeCarsCollected);
@@ -132,16 +136,18 @@ namespace GTASaveData.GTA3.Blocks
             w.Write((int) m_carTypesCollected2);
             w.Write((int) m_carTypesCollected3);
             w.Write(m_lastTimeHelpMessage);
-            w.Write(m_storedCars.ToArray(), Limits.StoredCarsCount);
-            w.Write(m_garages.ToArray(), Limits.GaragesCount);
+            w.Write(m_storedCars.ToArray(), Limits.NumberOfStoredCars);
+            w.Write(m_garages.ToArray(), Limits.NumberOfGarages);
+
+            Debug.Assert(w.Position() - w.Marked() == SizeOf<Garages>());
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as GarageBlock);
+            return Equals(obj as Garages);
         }
 
-        public bool Equals(GarageBlock other)
+        public bool Equals(Garages other)
         {
             if (other == null)
             {
@@ -149,8 +155,8 @@ namespace GTASaveData.GTA3.Blocks
             }
 
             return m_numberOfGarages.Equals(other.m_numberOfGarages)
-                && m_freeBombs.Equals(other.m_freeBombs)
-                && m_freeResprays.Equals(other.m_freeResprays)
+                && m_bombsAreFree.Equals(other.m_bombsAreFree)
+                && m_respraysAreFree.Equals(other.m_respraysAreFree)
                 && m_carsCollected.Equals(other.m_carsCollected)
                 && m_bankVansCollected.Equals(other.m_bankVansCollected)
                 && m_policeCarsCollected.Equals(other.m_policeCarsCollected)

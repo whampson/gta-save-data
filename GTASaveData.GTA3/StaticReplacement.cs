@@ -1,8 +1,10 @@
 ﻿using GTASaveData.Serialization;
 using System;
+using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
+    [Size(16)]
     public class StaticReplacement : SerializableObject,
         IEquatable<StaticReplacement>
     {
@@ -49,6 +51,8 @@ namespace GTASaveData.GTA3
             m_staticIndex = r.ReadInt32();
             m_newModelId = r.ReadInt32();
             m_oldModelId = r.ReadInt32();
+
+            Debug.Assert(r.Position() - r.Marked() == SizeOf<StaticReplacement>());
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
@@ -57,6 +61,8 @@ namespace GTASaveData.GTA3
             w.Write(m_staticIndex);
             w.Write(m_newModelId);
             w.Write(m_oldModelId);
+
+            Debug.Assert(w.Position() - w.Marked() == SizeOf<StaticReplacement>());
         }
 
         public override bool Equals(object obj)

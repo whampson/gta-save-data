@@ -1,40 +1,47 @@
 ﻿using GTASaveData.Common;
 using GTASaveData.Serialization;
 using System;
+using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
+    [Size(0x8C)]
     public class Garage : SerializableObject,
         IEquatable<Garage>
     {
         private GarageType m_type;
         private GarageState m_state;
-        private byte m_unknown0;
+        private byte m_field02h;
         private bool m_closingWithoutTargetVehicle;
         private bool m_deactivated;
         private bool m_resprayHappened;
-        private VehicleModel m_targetVehicle;
-        private uint m_door1Pointer;
-        private uint m_door2Pointer;
+        private byte m_field06h;
+        private byte m_field07h;
+        private VehicleType m_targetModel;
+        private uint m_pDoor1;
+        private uint m_pDoor2;
         private bool m_isDoor1PoolIndex;
         private bool m_isDoor2PoolIndex;
         private bool m_isDoor1Object;
         private bool m_isDoor2Object;
-        private byte m_unknown1;
+        private byte m_field24h;
         private bool m_isRotatedDoor;
         private bool m_cameraFollowsPlayer;
-        private Rect3d m_position;
+        private byte m_field27h;
+        private Vector m_vecInf;
+        private Vector m_vecSup;
         private float m_doorOpenMinZOffset;
         private float m_doorOpenMaxZOffset;
-        private Vector2d m_door1XY;
-        private Vector2d m_door2XY;
-        private float m_door1Z;
-        private float m_door2Z;
+        private Vector m_door1Pos;
+        private Vector m_door2Pos;
         private uint m_doorLastOpenTime;
         private byte m_collectedCarsState;
-        private uint m_targetVehiclePointer;
-        private uint m_unknown3;
-        private StoredCar m_unknown4;
+        private byte m_field89h;
+        private byte m_field90h;
+        private byte m_field91h;
+        private uint m_pTargetVehicle;
+        private int m_field96h;
+        private StoredCar m_storedCar;
 
         public GarageType Type
         {
@@ -48,10 +55,10 @@ namespace GTASaveData.GTA3
             set { m_state = value; OnPropertyChanged(); }
         }
 
-        public byte Unknown0
+        public byte Field02h
         {
-            get { return m_unknown0; }
-            set { m_unknown0 = value; OnPropertyChanged(); }
+            get { return m_field02h; }
+            set { m_field02h = value; OnPropertyChanged(); }
         }
 
         public bool ClosingWithoutTargetVehicle
@@ -72,22 +79,22 @@ namespace GTASaveData.GTA3
             set { m_resprayHappened = value; OnPropertyChanged(); }
         }
 
-        public VehicleModel TargetVehicle
+        public VehicleType TargetVehicle
         {
-            get { return m_targetVehicle; }
-            set { m_targetVehicle = value; OnPropertyChanged(); }
+            get { return m_targetModel; }
+            set { m_targetModel = value; OnPropertyChanged(); }
         }
 
-        public uint Door1Pointer
+        public uint Door1
         {
-            get { return m_door1Pointer; }
-            set { m_door1Pointer = value; OnPropertyChanged(); }
+            get { return m_pDoor1; }
+            set { m_pDoor1 = value; OnPropertyChanged(); }
         }
 
-        public uint Door2Pointer
+        public uint Door2
         {
-            get { return m_door2Pointer; }
-            set { m_door2Pointer = value; OnPropertyChanged(); }
+            get { return m_pDoor2; }
+            set { m_pDoor2 = value; OnPropertyChanged(); }
         }
 
         public bool IsDoor1PoolIndex
@@ -114,10 +121,10 @@ namespace GTASaveData.GTA3
             set { m_isDoor2Object = value; OnPropertyChanged(); }
         }
 
-        public byte Unknown1
+        public byte Field24h
         {
-            get { return m_unknown1; }
-            set { m_unknown1 = value; OnPropertyChanged(); }
+            get { return m_field24h; }
+            set { m_field24h = value; OnPropertyChanged(); }
         }
 
         public bool IsRotatedDoor
@@ -132,10 +139,16 @@ namespace GTASaveData.GTA3
             set { m_cameraFollowsPlayer = value; OnPropertyChanged(); }
         }
 
-        public Rect3d Position
+        public Vector PosInf
         {
-            get { return m_position; }
-            set { m_position = value; OnPropertyChanged(); }
+            get { return m_vecInf; }
+            set { m_vecInf = value; OnPropertyChanged(); }
+        }
+
+        public Vector PosSup
+        {
+            get { return m_vecSup; }
+            set { m_vecSup = value; OnPropertyChanged(); }
         }
 
         public float DoorOpenMinZOffset
@@ -150,28 +163,16 @@ namespace GTASaveData.GTA3
             set { m_doorOpenMaxZOffset = value; OnPropertyChanged(); }
         }
 
-        public Vector2d Door1XY
+        public Vector Door1Pos
         {
-            get { return m_door1XY; }
-            set { m_door1XY = value; OnPropertyChanged(); }
+            get { return m_door1Pos; }
+            set { m_door1Pos = value; OnPropertyChanged(); }
         }
 
-        public Vector2d Door2XY
+        public Vector Door2Pos
         {
-            get { return m_door2XY; }
-            set { m_door2XY = value; OnPropertyChanged(); }
-        }
-
-        public float Door1Z
-        {
-            get { return m_door1Z; }
-            set { m_door1Z = value; OnPropertyChanged(); }
-        }
-
-        public float Door2Z
-        {
-            get { return m_door2Z; }
-            set { m_door2Z = value; OnPropertyChanged(); }
+            get { return m_door2Pos; }
+            set { m_door2Pos = value; OnPropertyChanged(); }
         }
 
         public uint DoorLastOpenTime
@@ -186,100 +187,143 @@ namespace GTASaveData.GTA3
             set { m_collectedCarsState = value; OnPropertyChanged(); }
         }
 
+        public byte Field89h
+        {
+            get { return m_field89h; }
+            set { m_field89h = value; OnPropertyChanged(); }
+        }
+
+        public byte Field90h
+        {
+            get { return m_field90h; }
+            set { m_field90h = value; OnPropertyChanged(); }
+        }
+
+        public byte Field91h
+        {
+            get { return m_field91h; }
+            set { m_field91h = value; OnPropertyChanged(); }
+        }
+
         public uint TargetVehiclePointer
         {
-            get { return m_targetVehiclePointer; }
-            set { m_targetVehiclePointer = value; OnPropertyChanged(); }
+            get { return m_pTargetVehicle; }
+            set { m_pTargetVehicle = value; OnPropertyChanged(); }
         }
 
-        public uint Unknown3
+        public int Field96h
         {
-            get { return m_unknown3; }
-            set { m_unknown3 = value; OnPropertyChanged(); }
+            get { return m_field96h; }
+            set { m_field96h = value; OnPropertyChanged(); }
         }
 
-        public StoredCar Unknown4
+        public StoredCar StoredCar
         {
-            get { return m_unknown4; }
-            set { m_unknown4 = value; OnPropertyChanged(); }
+            get { return m_storedCar; }
+            set { m_storedCar = value; OnPropertyChanged(); }
         }
 
         public Garage()
         {
-            m_position = new Rect3d();
-            m_door1XY = new Vector2d();
-            m_door2XY = new Vector2d();
-            m_unknown4 = new StoredCar();
+            m_vecInf = new Vector();
+            m_vecSup = new Vector();
+            m_door1Pos = new Vector();
+            m_door2Pos = new Vector();
+            m_storedCar = new StoredCar();
         }
 
         protected override void ReadObjectData(Serializer r, FileFormat fmt)
         {
             m_type = (GarageType) r.ReadByte();
             m_state = (GarageState) r.ReadByte();
-            m_unknown0 = r.ReadByte();
+            m_field02h = r.ReadByte();
             m_closingWithoutTargetVehicle = r.ReadBool();
             m_deactivated = r.ReadBool();
             m_resprayHappened = r.ReadBool();
-            r.Align();
-            m_targetVehicle = (VehicleModel) r.ReadInt32();
-            m_door1Pointer = r.ReadUInt32();
-            m_door2Pointer = r.ReadUInt32();
+            m_field06h = r.ReadByte();
+            m_field07h = r.ReadByte();
+            m_targetModel = (VehicleType) r.ReadInt32();
+            m_pDoor1 = r.ReadUInt32();
+            m_pDoor2 = r.ReadUInt32();
             m_isDoor1PoolIndex = r.ReadBool();
             m_isDoor2PoolIndex = r.ReadBool();
             m_isDoor1Object = r.ReadBool();
             m_isDoor2Object = r.ReadBool();
-            m_unknown1 = r.ReadByte();
+            m_field24h = r.ReadByte();
             m_isRotatedDoor = r.ReadBool();
             m_cameraFollowsPlayer = r.ReadBool();
-            r.Align();
-            m_position = r.ReadObject<Rect3d>();
+            m_field27h = r.ReadByte();
+            m_vecInf.X = r.ReadSingle();
+            m_vecSup.X = r.ReadSingle();
+            m_vecInf.Y = r.ReadSingle();
+            m_vecSup.Y = r.ReadSingle();
+            m_vecInf.Z = r.ReadSingle();
+            m_vecSup.Z = r.ReadSingle();
             m_doorOpenMinZOffset = r.ReadSingle();
             m_doorOpenMaxZOffset = r.ReadSingle();
-            m_door1XY = r.ReadObject<Vector2d>();
-            m_door2XY = r.ReadObject<Vector2d>();
-            m_door1Z = r.ReadSingle();
-            m_door2Z = r.ReadSingle();
+            m_door1Pos.X = r.ReadSingle();
+            m_door1Pos.Y = r.ReadSingle();
+            m_door2Pos.X = r.ReadSingle();
+            m_door2Pos.Y = r.ReadSingle();
+            m_door1Pos.Z = r.ReadSingle();
+            m_door2Pos.Z = r.ReadSingle();
             m_doorLastOpenTime = r.ReadUInt32();
             m_collectedCarsState = r.ReadByte();
-            r.Align();
-            m_targetVehiclePointer = r.ReadUInt32();
-            m_unknown3 = r.ReadUInt32();
-            m_unknown4 = r.ReadObject<StoredCar>();
+            m_field89h = r.ReadByte();
+            m_field90h = r.ReadByte();
+            m_field91h = r.ReadByte();
+            m_pTargetVehicle = r.ReadUInt32();
+            m_field96h = r.ReadInt32();
+            m_storedCar = r.ReadObject<StoredCar>();
+
+            Debug.Assert(r.Position() - r.Marked() == SizeOf<Garage>(), "Garage: Invalid read size!");
         }
 
         protected override void WriteObjectData(Serializer w, FileFormat fmt)
         {
             w.Write((byte) m_type);
             w.Write((byte) m_state);
-            w.Write(m_unknown0);
+            w.Write(m_field02h);
             w.Write(m_closingWithoutTargetVehicle);
             w.Write(m_deactivated);
             w.Write(m_resprayHappened);
-            w.Align();
-            w.Write((int) m_targetVehicle);
-            w.Write(m_door1Pointer);
-            w.Write(m_door2Pointer);
+            w.Write(m_field06h);
+            w.Write(m_field07h);
+            w.Write((int) m_targetModel);
+            w.Write(m_pDoor1);
+            w.Write(m_pDoor2);
             w.Write(m_isDoor1PoolIndex);
             w.Write(m_isDoor2PoolIndex);
             w.Write(m_isDoor1Object);
             w.Write(m_isDoor2Object);
-            w.Write(m_unknown1);
+            w.Write(m_field24h);
             w.Write(m_isRotatedDoor);
             w.Write(m_cameraFollowsPlayer);
-            w.Align();
-            w.Write(m_position);
+            w.Write(m_field27h);
+            w.Write(m_vecInf.X);
+            w.Write(m_vecSup.X);
+            w.Write(m_vecInf.Y);
+            w.Write(m_vecSup.Y);
+            w.Write(m_vecInf.Z);
+            w.Write(m_vecSup.Z);
             w.Write(m_doorOpenMinZOffset);
             w.Write(m_doorOpenMaxZOffset);
-            w.Write(m_door1XY);
-            w.Write(m_door2XY);
-            w.Write(m_door1Z);
-            w.Write(m_door2Z);
+            w.Write(m_door1Pos.X);
+            w.Write(m_door1Pos.Y);
+            w.Write(m_door2Pos.X);
+            w.Write(m_door2Pos.Y);
+            w.Write(m_door1Pos.Z);
+            w.Write(m_door2Pos.Z);
             w.Write(m_doorLastOpenTime);
             w.Write(m_collectedCarsState);
-            w.Align();
-            w.Write(m_targetVehiclePointer);
-            w.Write(m_unknown3);
-            w.Write(m_unknown4);
+            w.Write(m_field89h);
+            w.Write(m_field90h);
+            w.Write(m_field91h);
+            w.Write(m_pTargetVehicle);
+            w.Write(m_field96h);
+            w.Write(m_storedCar);
+
+            Debug.Assert(w.Position() - w.Marked() == SizeOf<Garage>(), "Garage: Invalid write size!");
         }
 
         public override bool Equals(object obj)
@@ -296,32 +340,37 @@ namespace GTASaveData.GTA3
 
             return m_type.Equals(other.m_type)
                 && m_state.Equals(other.m_state)
-                && m_unknown0.Equals(other.m_unknown0)
+                && m_field02h.Equals(other.m_field02h)
                 && m_closingWithoutTargetVehicle.Equals(other.m_closingWithoutTargetVehicle)
                 && m_deactivated.Equals(other.m_deactivated)
                 && m_resprayHappened.Equals(other.m_resprayHappened)
-                && m_targetVehicle.Equals(other.m_targetVehicle)
-                && m_door1Pointer.Equals(other.m_door1Pointer)
-                && m_door2Pointer.Equals(other.m_door2Pointer)
+                && m_field06h.Equals(other.m_field06h)
+                && m_field07h.Equals(other.m_field07h)
+                && m_targetModel.Equals(other.m_targetModel)
+                && m_pDoor1.Equals(other.m_pDoor1)
+                && m_pDoor2.Equals(other.m_pDoor2)
                 && m_isDoor1PoolIndex.Equals(other.m_isDoor1PoolIndex)
                 && m_isDoor2PoolIndex.Equals(other.m_isDoor2PoolIndex)
                 && m_isDoor1Object.Equals(other.m_isDoor1Object)
                 && m_isDoor2Object.Equals(other.m_isDoor2Object)
-                && m_unknown1.Equals(other.m_unknown1)
+                && m_field24h.Equals(other.m_field24h)
                 && m_isRotatedDoor.Equals(other.m_isRotatedDoor)
                 && m_cameraFollowsPlayer.Equals(other.m_cameraFollowsPlayer)
-                && m_position.Equals(other.m_position)
+                && m_field27h.Equals(other.m_field27h)
+                && m_vecInf.Equals(other.m_vecInf)
+                && m_vecSup.Equals(other.m_vecSup)
                 && m_doorOpenMinZOffset.Equals(other.m_doorOpenMinZOffset)
                 && m_doorOpenMaxZOffset.Equals(other.m_doorOpenMaxZOffset)
-                && m_door1XY.Equals(other.m_door1XY)
-                && m_door2XY.Equals(other.m_door2XY)
-                && m_door1Z.Equals(other.m_door1Z)
-                && m_door2Z.Equals(other.m_door2Z)
+                && m_door1Pos.Equals(other.m_door1Pos)
+                && m_door2Pos.Equals(other.m_door2Pos)
                 && m_doorLastOpenTime.Equals(other.m_doorLastOpenTime)
                 && m_collectedCarsState.Equals(other.m_collectedCarsState)
-                && m_targetVehiclePointer.Equals(other.m_targetVehiclePointer)
-                && m_unknown3.Equals(other.m_unknown3)
-                && m_unknown4.Equals(other.m_unknown4);
+                && m_field89h.Equals(other.m_field89h)
+                && m_field90h.Equals(other.m_field90h)
+                && m_field91h.Equals(other.m_field91h)
+                && m_pTargetVehicle.Equals(other.m_pTargetVehicle)
+                && m_field96h.Equals(other.m_field96h)
+                && m_storedCar.Equals(other.m_storedCar);
         }
     }
 }

@@ -33,9 +33,9 @@ namespace GTASaveData.GTA3
             set { m_blocks[0] = value; OnPropertyChanged(); }
         }
 
-        public ScriptBlock Scripts
+        public TheScripts Scripts
         {
-            get { return m_blocks[1] as ScriptBlock; }
+            get { return m_blocks[1] as TheScripts; }
             set { m_blocks[1] = value; OnPropertyChanged(); }
         }
 
@@ -45,9 +45,9 @@ namespace GTASaveData.GTA3
             set { m_blocks[2] = value; OnPropertyChanged(); }
         }
 
-        public GarageBlock Garages
+        public Garages Garages
         {
-            get { return m_blocks[3] as GarageBlock; }
+            get { return m_blocks[3] as Garages; }
             set { m_blocks[3] = value; OnPropertyChanged(); }
         }
 
@@ -75,9 +75,9 @@ namespace GTASaveData.GTA3
             set { m_blocks[7] = value; OnPropertyChanged(); }
         }
 
-        public PickupBlock Pickups
+        public Pickups Pickups
         {
-            get { return m_blocks[8] as PickupBlock; }
+            get { return m_blocks[8] as Pickups; }
             set { m_blocks[8] = value; OnPropertyChanged(); }
         }
 
@@ -111,9 +111,9 @@ namespace GTASaveData.GTA3
             set { m_blocks[13] = value; OnPropertyChanged(); }
         }
 
-        public CarGeneratorBlock CarGenerators
+        public TheCarGenerators CarGenerators
         {
-            get { return m_blocks[14] as CarGeneratorBlock; }
+            get { return m_blocks[14] as TheCarGenerators; }
             set { m_blocks[14] = value; OnPropertyChanged(); }
         }
 
@@ -155,7 +155,7 @@ namespace GTASaveData.GTA3
 
         ISimpleVars IGrandTheftAutoSave.SimpleVars => SimpleVars;
 
-        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators => CarGenerators;
+        //ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators => CarGenerators;
 
         public override string Name => SimpleVars.SaveName;
 
@@ -185,20 +185,20 @@ namespace GTASaveData.GTA3
         public GTA3Save()
         {
             m_blocks[0] = new SimpleVars();
-            m_blocks[1] = new ScriptBlock();
+            m_blocks[1] = new TheScripts();
             m_blocks[2] = new Block();
-            m_blocks[3] = new GarageBlock();
+            m_blocks[3] = new Garages();
             m_blocks[4] = new VehiclePool();
             m_blocks[5] = new Block();
             m_blocks[6] = new Block();
             m_blocks[7] = new Block();
-            m_blocks[8] = new PickupBlock();
+            m_blocks[8] = new Pickups();
             m_blocks[9] = new Block();
             m_blocks[10] = new Block();
             m_blocks[11] = new Block();
             m_blocks[12] = new Block();
             m_blocks[13] = new Block();
-            m_blocks[14] = new CarGeneratorBlock();
+            m_blocks[14] = new TheCarGenerators();
             m_blocks[15] = new Block();
             m_blocks[16] = new Block();
             m_blocks[17] = new Block();
@@ -226,19 +226,19 @@ namespace GTASaveData.GTA3
             if (scr == 0xB0 && fileId == 0x04)
             {
                 // PS2, Austra
-                return FileFormats.PS2AU;
+                return FileFormats.PS2_AU;
             }
             else if (scr == 0xB8)
             {
                 if (fileIdJP == 0x04)
                 {
                     // PS2, Japan
-                    return FileFormats.PS2JP;
+                    return FileFormats.PS2_JP;
                 }
                 else if (fileId == 0x04)
                 {
                     // PS2, North America/Europe
-                    return FileFormats.PS2NAEU;
+                    return FileFormats.PS2_NAEU;
                 }
                 else if (fileId == 0x34)
                 {
@@ -255,7 +255,7 @@ namespace GTASaveData.GTA3
                 if (blk1Size == 0x648)
                 {
                     // iOS
-                    return FileFormats.IOS;
+                    return FileFormats.iOS;
                 }
                 else if (blk1Size == 0x64C)
                 {
@@ -350,9 +350,9 @@ namespace GTASaveData.GTA3
                     {
                         case 0:
                             SimpleVars = Deserialize<SimpleVars>(r.ReadBytes(SimpleVarsSize));
-                            Scripts = Deserialize<ScriptBlock>(ReadBlock(r, ScrTag));
+                            Scripts = Deserialize<TheScripts>(ReadBlock(r, ScrTag));
                             PedPool = ReadBlock(r, null);
-                            Garages = Deserialize<GarageBlock>(ReadBlock(r, null));
+                            Garages = Deserialize<Garages>(ReadBlock(r, null));
                             VehiclePool = Deserialize<VehiclePool>(ReadBlock(r, null));
                             break;
                         case 1:
@@ -361,13 +361,13 @@ namespace GTASaveData.GTA3
                             Cranes = ReadBlock(r, null);
                             break;
                         case 2:
-                            Pickups = Deserialize<PickupBlock>(ReadBlock(r, null));
+                            Pickups = Deserialize<Pickups>(ReadBlock(r, null));
                             PhoneInfo = ReadBlock(r, null);
                             RestartPoints = ReadBlock(r, RstTag);
                             RadarBlips = ReadBlock(r, RdrTag);
                             Zones = ReadBlock(r, ZnsTag);
                             GangData = ReadBlock(r, GngTag);
-                            CarGenerators = Deserialize<CarGeneratorBlock>(ReadBlock(r, CgnTag));
+                            CarGenerators = Deserialize<TheCarGenerators>(ReadBlock(r, CgnTag));
                             Particles = ReadBlock(r, null);
                             AudioScriptObjects = ReadBlock(r, AudTag);
                             PlayerInfo = ReadBlock(r, null);
@@ -383,21 +383,21 @@ namespace GTASaveData.GTA3
                     {
                         case 0:
                             SimpleVars = Deserialize<SimpleVars>(r.ReadBytes(SimpleVarsSize));
-                            Scripts = Deserialize<ScriptBlock>(ReadBlock(r, ScrTag));
+                            Scripts = Deserialize<TheScripts>(ReadBlock(r, ScrTag));
                             break;
                         case 1: PedPool = ReadBlock(r, null); break;
-                        case 2: Garages = Deserialize<GarageBlock>(ReadBlock(r, null)); break;
+                        case 2: Garages = Deserialize<Garages>(ReadBlock(r, null)); break;
                         case 3: VehiclePool = Deserialize<VehiclePool>(ReadBlock(r, null)); break;
                         case 4: ObjectPool = ReadBlock(r, null); break;
                         case 5: PathFind = ReadBlock(r, null); break;
                         case 6: Cranes = ReadBlock(r, null); break;
-                        case 7: Pickups = Deserialize<PickupBlock>(ReadBlock(r, null)); break;
+                        case 7: Pickups = Deserialize<Pickups>(ReadBlock(r, null)); break;
                         case 8: PhoneInfo = ReadBlock(r, null); break;
                         case 9: RestartPoints = ReadBlock(r, RstTag); break;
                         case 10: RadarBlips = ReadBlock(r, RdrTag); break;
                         case 11: Zones = ReadBlock(r, ZnsTag); break;
                         case 12: GangData = ReadBlock(r, GngTag); break;
-                        case 13: CarGenerators = Deserialize<CarGeneratorBlock>(ReadBlock(r, CgnTag)); break;
+                        case 13: CarGenerators = Deserialize<TheCarGenerators>(ReadBlock(r, CgnTag)); break;
                         case 14: Particles = ReadBlock(r, null); break;
                         case 15: AudioScriptObjects = ReadBlock(r, AudTag); break;
                         case 16: PlayerInfo = ReadBlock(r, null); break;
@@ -585,6 +585,20 @@ namespace GTASaveData.GTA3
             return m_blocks.SequenceEqual(other.m_blocks);
         }
 
+        [Flags]
+        public enum FileTypeFlags
+        {
+            None,
+            GTA3_Android = 1 << 0,
+            GTA3_iOS = 1 << 1,
+            GTA3_PC = 1 << 2,
+            GTA3_PS2_AU = 1 << 3,
+            GTA3_PS2_JP = 1 << 4,
+            GTA3_PS2_NAEU = 1 << 5,
+            GTA3_Xbox = 1 << 6
+        }
+
+        // TODO: renamme to FileTypes
         public static class FileFormats
         {
             public static readonly FileFormat Android = new FileFormat(
@@ -592,9 +606,9 @@ namespace GTASaveData.GTA3
                 new GameConsole(ConsoleType.Android)
             );
 
-            public static readonly FileFormat IOS = new FileFormat(
+            public static readonly FileFormat iOS = new FileFormat(
                 "iOS", "iOS",
-                new GameConsole(ConsoleType.IOS)
+                new GameConsole(ConsoleType.iOS)
             );
 
             public static readonly FileFormat PC = new FileFormat(
@@ -605,17 +619,17 @@ namespace GTASaveData.GTA3
                 new GameConsole(ConsoleType.MacOS, ConsoleFlags.Steam)
             );
 
-            public static readonly FileFormat PS2AU = new FileFormat(
+            public static readonly FileFormat PS2_AU = new FileFormat(
                 "PS2_AU", "PS2 (PAL, Australia)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.Australia)
             );
 
-            public static readonly FileFormat PS2JP = new FileFormat(
+            public static readonly FileFormat PS2_JP = new FileFormat(
                 "PS2_JP", "PS2 (NTSC-J)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.Japan)
             );
 
-            public static readonly FileFormat PS2NAEU = new FileFormat(
+            public static readonly FileFormat PS2_NAEU = new FileFormat(
                 "PS2_NAEU", "PS2 (NTSC-U/C & PAL)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe)
             );
@@ -627,7 +641,7 @@ namespace GTASaveData.GTA3
 
             public static FileFormat[] GetAll()
             {
-                return new FileFormat[] { Android, IOS, PC, PS2AU, PS2JP, PS2NAEU, Xbox };
+                return new FileFormat[] { Android, iOS, PC, PS2_AU, PS2_JP, PS2_NAEU, Xbox };
             }
         }
     }

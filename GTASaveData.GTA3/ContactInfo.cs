@@ -3,6 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
+    [Size(8)]
     public class ContactInfo : SerializableObject,
         IEquatable<ContactInfo>
     {
