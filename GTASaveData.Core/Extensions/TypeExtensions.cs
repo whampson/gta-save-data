@@ -3,9 +3,6 @@ using System.ComponentModel;
 
 namespace GTASaveData.Extensions
 {
-    /// <summary>
-    /// Extension methods for the <see cref="Type"/> class.
-    /// </summary>
     public static class TypeExtensions
     {
         /// <summary>

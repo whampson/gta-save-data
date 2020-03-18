@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GTASaveData.Serialization
+namespace GTASaveData
 {
     public struct GameConsole : IEquatable<GameConsole>
     {
@@ -43,13 +43,10 @@ namespace GTASaveData.Serialization
 
         public override string ToString()
         {
-            return string.Format("GameConsole: {{ Type = {0}, Flags = {1} ] }}", Type, Flags);
+            return string.Format("GameConsole: {{ Type = {0}, Flags = {1} }}", Type, Flags);
         }
     }
 
-    /// <summary>
-    /// Game systems that GTA games can run on.
-    /// </summary>
     public enum ConsoleType
     {
         None,
@@ -64,9 +61,6 @@ namespace GTASaveData.Serialization
         Xbox360
     }
 
-    /// <summary>
-    /// Regions and other meta flags pertaining to the <see cref="ConsoleType"/>s.
-    /// </summary>
     [Flags]
     public enum ConsoleFlags
     {

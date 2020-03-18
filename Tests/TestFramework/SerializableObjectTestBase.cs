@@ -1,27 +1,35 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData;
 
 namespace TestFramework
 {
     public abstract class SerializableObjectTestBase<T>
     {
-        public T CreateSerializedCopy(T x, FileFormat format = null)
+        public T CreateSerializedCopy(T obj)
         {
-            return CreateSerializedCopy(x, out _, format);
+            return CreateSerializedCopy(obj, SaveFileFormat.Default, out byte[] _);
         }
 
-        public T CreateSerializedCopy(T x, out byte[] bytes, FileFormat format = null)
+        public T CreateSerializedCopy(T obj, out byte[] bytes)
         {
-            bytes = Serializer.Serialize(x, format);
-            T obj = Serializer.Deserialize<T>(bytes, format);
+            return CreateSerializedCopy(obj, SaveFileFormat.Default, out bytes);
+        }
 
-            return obj;
+        public T CreateSerializedCopy(T obj, SaveFileFormat fmt)
+        {
+            return CreateSerializedCopy(obj, fmt, out byte[] _);
+        }
+
+        public T CreateSerializedCopy(T obj, SaveFileFormat fmt, out byte[] bytes)
+        {
+            bytes = Serializer.Write(obj, fmt);
+            return Serializer.Read<T>(bytes, fmt);
         }
 
         public T GenerateTestVector()
         {
-            return GenerateTestVector(FileFormat.None);
+            return GenerateTestVector(SaveFileFormat.Default);
         }
 
-        public abstract T GenerateTestVector(FileFormat format);
+        public abstract T GenerateTestVector(SaveFileFormat format);
     }
 }

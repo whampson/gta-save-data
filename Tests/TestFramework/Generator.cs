@@ -1,6 +1,6 @@
 ﻿using Bogus;
 using GTASaveData;
-using GTASaveData.Serialization;
+using GTASaveData.Types;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -41,14 +41,14 @@ namespace TestFramework
         }
 
         public static T Generate<T, U>()
-            where T : SerializableObject
+            where T : GTAObject
             where U : SerializableObjectTestBase<T>
         {
-            return Generate<T, U>(FileFormat.None);
+            return Generate<T, U>(SaveFileFormat.Default);
         }
 
-        public static T Generate<T, U>(FileFormat format)
-            where T : SerializableObject
+        public static T Generate<T, U>(SaveFileFormat format)
+            where T : GTAObject
             where U : SerializableObjectTestBase<T>
         {
             var testGen = Activator.CreateInstance(typeof(U));
@@ -56,10 +56,10 @@ namespace TestFramework
                 nameof(SerializableObjectTestBase<T>.GenerateTestVector),
                 BindingFlags.Public | BindingFlags.Instance,
                 null,
-                new Type[] { typeof(FileFormat) },
+                new Type[] { typeof(SaveFileFormat) },
                 null);
             
-            return (T) m.Invoke(testGen, new object[] { format ?? FileFormat.None });
+            return (T) m.Invoke(testGen, new object[] { format });
         }
     }
 }

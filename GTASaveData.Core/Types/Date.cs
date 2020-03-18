@@ -1,14 +1,13 @@
-﻿using GTASaveData.Serialization;
-using System;
+﻿using System;
 using System.Diagnostics;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
     /// <summary>
     /// Represents a date and time.
     /// </summary>
     [Size(0x18)]
-    public class Date : SerializableObject,
+    public class Date : GTAObject,
         IEquatable<Date>
     {
         private int m_second;
@@ -67,28 +66,28 @@ namespace GTASaveData
             m_year = dateTime.Year;
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_second = r.ReadInt32();
-            m_minute = r.ReadInt32();
-            m_hour = r.ReadInt32();
-            m_day = r.ReadInt32();
-            m_month = r.ReadInt32();
-            m_year = r.ReadInt32();
+            m_second = buf.ReadInt32();
+            m_minute = buf.ReadInt32();
+            m_hour = buf.ReadInt32();
+            m_day = buf.ReadInt32();
+            m_month = buf.ReadInt32();
+            m_year = buf.ReadInt32();
 
-            Debug.Assert(r.Position() - r.Marked() == SizeOf<Date>());
+            Debug.Assert(buf.Offset == SizeOf<Date>());
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write(m_second);
-            w.Write(m_minute);
-            w.Write(m_hour);
-            w.Write(m_day);
-            w.Write(m_month);
-            w.Write(m_year);
+            buf.Write(m_second);
+            buf.Write(m_minute);
+            buf.Write(m_hour);
+            buf.Write(m_day);
+            buf.Write(m_month);
+            buf.Write(m_year);
 
-            Debug.Assert(w.Position() - w.Marked() == SizeOf<Date>());
+            Debug.Assert(buf.Offset == SizeOf<Date>());
         }
 
         public DateTime ToDateTime()

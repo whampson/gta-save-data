@@ -1,14 +1,13 @@
-﻿using GTASaveData.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
     /// <summary>
     /// Represents a 2-dimensional vector.
     /// </summary>
     [Size(8)]
-    public class Vector2D : SerializableObject,
+    public class Vector2D : GTAObject,
         IEquatable<Vector2D>
     {
         private float m_x;
@@ -76,16 +75,16 @@ namespace GTASaveData
             }
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_x = r.ReadSingle();
-            m_y = r.ReadSingle();
+            m_x = buf.ReadSingle();
+            m_y = buf.ReadSingle();
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write(m_x);
-            w.Write(m_y);
+            buf.Write(m_x);
+            buf.Write(m_y);
         }
 
         public override string ToString()

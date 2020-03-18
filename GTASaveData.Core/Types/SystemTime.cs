@@ -1,14 +1,13 @@
-﻿using GTASaveData.Serialization;
-using System;
+﻿using System;
 using System.Diagnostics;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
     /// <summary>
-    /// Represents the Win32 <c>SYSTEMTIME</c> structure.
+    /// A .NET version of the Win32 <c>SYSTEMTIME</c> structure.
     /// </summary>
     [Size(16)]
-    public class SystemTime : SerializableObject,
+    public class SystemTime : GTAObject,
         IEquatable<SystemTime>
     {
         private ushort m_year;
@@ -81,36 +80,34 @@ namespace GTASaveData
             m_minute = (ushort) dateTime.Minute;
             m_second = (ushort) dateTime.Second;
             m_millisecond = (ushort) dateTime.Millisecond;
-
-            
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_year = r.ReadUInt16();
-            m_month = r.ReadUInt16();
-            m_dayOfWeek = r.ReadUInt16();
-            m_day = r.ReadUInt16();
-            m_hour = r.ReadUInt16();
-            m_minute = r.ReadUInt16();
-            m_second = r.ReadUInt16();
-            m_millisecond = r.ReadUInt16();
+            m_year = buf.ReadUInt16();
+            m_month = buf.ReadUInt16();
+            m_dayOfWeek = buf.ReadUInt16();
+            m_day = buf.ReadUInt16();
+            m_hour = buf.ReadUInt16();
+            m_minute = buf.ReadUInt16();
+            m_second = buf.ReadUInt16();
+            m_millisecond = buf.ReadUInt16();
 
-            Debug.Assert(r.Position() - r.Marked() == SizeOf<SystemTime>());
+            Debug.Assert(buf.Offset == SizeOf<SystemTime>());
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write(m_year);
-            w.Write(m_month);
-            w.Write(m_dayOfWeek);
-            w.Write(m_day);
-            w.Write(m_hour);
-            w.Write(m_minute);
-            w.Write(m_second);
-            w.Write(m_millisecond);
+            buf.Write(m_year);
+            buf.Write(m_month);
+            buf.Write(m_dayOfWeek);
+            buf.Write(m_day);
+            buf.Write(m_hour);
+            buf.Write(m_minute);
+            buf.Write(m_second);
+            buf.Write(m_millisecond);
 
-            Debug.Assert(w.Position() - w.Marked() == SizeOf<SystemTime>());
+            Debug.Assert(buf.Offset == SizeOf<SystemTime>());
         }
 
         public DateTime ToDateTime()

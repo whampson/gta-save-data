@@ -1,13 +1,13 @@
 ﻿using Bogus;
-using GTASaveData.Serialization;
+using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Core.Tests
+namespace GTASaveData.Core.Tests.Types
 {
     public class TestVector : SerializableObjectTestBase<Vector>
     {
-        public override Vector GenerateTestVector(FileFormat format)
+        public override Vector GenerateTestVector(SaveFileFormat format)
         {
             Faker<Vector> model = new Faker<Vector>()
                 .RuleFor(x => x.X, f => f.Random.Float(-4000, 4000))

@@ -61,47 +61,56 @@ namespace GTASaveData {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The value must be a power of 2..
+        ///   Looks up a localized string similar to The value must be non-negative..
         /// </summary>
-        internal static string Error_Argument_PowerOf2 {
+        internal static string Error_Argument_NoNegative {
             get {
-                return ResourceManager.GetString("Error_Argument_PowerOf2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream must be both readable and writable..
-        /// </summary>
-        internal static string Error_Argument_StreamMustBeRW {
-            get {
-                return ResourceManager.GetString("Error_Argument_StreamMustBeRW", resourceCulture);
+                return ResourceManager.GetString("Error_Argument_NoNegative", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The character cannot be a surrogate..
         /// </summary>
-        internal static string Error_Argument_SurrogateChars {
+        internal static string Error_Argument_NoSurrogateChars {
             get {
-                return ResourceManager.GetString("Error_Argument_SurrogateChars", resourceCulture);
+                return ResourceManager.GetString("Error_Argument_NoSurrogateChars", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The index must be smaller than the length of the sequence..
+        /// </summary>
+        internal static string Error_Argument_SequenceIndexOutOfRange {
+            get {
+                return ResourceManager.GetString("Error_Argument_SequenceIndexOutOfRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sequence length must be less than or equal to the length of the array..
+        /// </summary>
+        internal static string Error_Argument_SequenceTooBig {
+            get {
+                return ResourceManager.GetString("Error_Argument_SequenceTooBig", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The collection cannot be modified while being changed by another thread..
         /// </summary>
-        internal static string Error_InvalidOperation_CollectionReentrancy {
+        internal static string Error_InvalidOperation_NoCollectionReentrancy {
             get {
-                return ResourceManager.GetString("Error_InvalidOperation_CollectionReentrancy", resourceCulture);
+                return ResourceManager.GetString("Error_InvalidOperation_NoCollectionReentrancy", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The object does not support serialization..
         /// </summary>
-        internal static string Error_NotSupported_Serialization {
+        internal static string Error_InvalidOperation_NoSerialization {
             get {
-                return ResourceManager.GetString("Error_NotSupported_Serialization", resourceCulture);
+                return ResourceManager.GetString("Error_InvalidOperation_NoSerialization", resourceCulture);
             }
         }
     }

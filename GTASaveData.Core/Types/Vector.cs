@@ -1,15 +1,13 @@
-﻿using GTASaveData.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
     /// <summary>
     /// Represents a 3-dimensional vector.
     /// </summary>
     [Size(12)]
-    public class Vector : SerializableObject,
+    public class Vector : GTAObject,
         IEquatable<Vector>
     {
         private float m_x;
@@ -87,22 +85,18 @@ namespace GTASaveData
             }
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_x = r.ReadSingle();
-            m_y = r.ReadSingle();
-            m_z = r.ReadSingle();
-
-            Debug.Assert(r.Position() - r.Marked() == SizeOf<Vector>());
+            m_x = buf.ReadSingle();
+            m_y = buf.ReadSingle();
+            m_z = buf.ReadSingle();
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write(m_x);
-            w.Write(m_y);
-            w.Write(m_z);
-
-            Debug.Assert(w.Position() - w.Marked() == SizeOf<Vector>());
+            buf.Write(m_x);
+            buf.Write(m_y);
+            buf.Write(m_z);
         }
 
         public override string ToString()

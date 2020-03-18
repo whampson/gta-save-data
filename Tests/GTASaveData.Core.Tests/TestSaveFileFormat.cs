@@ -1,9 +1,8 @@
-﻿using GTASaveData.Serialization;
-using Xunit;
+﻿using Xunit;
 
-namespace GTASaveData.Core.Tests.Serialization
+namespace GTASaveData.Core.Tests
 {
-    public class TestFileFormat
+    public class TestSaveFileFormat
     {
         [Theory]
         [InlineData(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe, true)]
@@ -14,14 +13,14 @@ namespace GTASaveData.Core.Tests.Serialization
         [InlineData(ConsoleType.Win32, ConsoleFlags.None, true)]
         public void TestSupportedWithFlags(ConsoleType type, ConsoleFlags flags, bool expectedResult)
         {
-            FileFormat fmt = new FileFormat(
+            SaveFileFormat fmt = new SaveFileFormat(
                 "Test", "Test Format",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe),
                 new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam),
                 new GameConsole(ConsoleType.Win32)
             );
 
-            bool result = fmt.IsSupported(type, flags);
+            bool result = fmt.IsSupportedOn(type, flags);
             Assert.Equal(expectedResult, result);
         }
 

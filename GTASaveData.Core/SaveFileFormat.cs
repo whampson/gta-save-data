@@ -2,45 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GTASaveData.Serialization
+namespace GTASaveData
 {
-    /// <summary>
-    /// Represents a standard way that a <see cref="GTASave"/> file can be encoded.
-    /// </summary>
-    public struct FileFormat : IEquatable<FileFormat>
+    public struct SaveFileFormat : IEquatable<SaveFileFormat>
     {
-        /// <summary>
-        /// Represents an ambiguous or irrelevant file format.
-        /// </summary>
-        public static readonly FileFormat None = new FileFormat(null, null);
+        public static readonly SaveFileFormat Default = new SaveFileFormat(null, null);
 
         public string Name { get; }
         public string Description { get; }
         public IEnumerable<GameConsole> SupportedConsoles { get; }
 
-        public bool SupportsAndroid => IsSupportedOn(ConsoleType.Android);
-
-        public bool SupportsIOS => IsSupportedOn(ConsoleType.iOS);
-
-        public bool SupportsMacOS => IsSupportedOn(ConsoleType.MacOS);
-
-        public bool SupportsMobile => SupportsAndroid || SupportsIOS;
-
-        public bool SupportsPC => SupportsMacOS || SupportsWin32;
-
+        public bool SupportedOnAndroid => IsSupportedOn(ConsoleType.Android);
+        public bool SupportedOniOS => IsSupportedOn(ConsoleType.iOS);
+        public bool SupportedOnMacOS => IsSupportedOn(ConsoleType.MacOS);
+        public bool SupportedOnMobile => SupportedOnAndroid || SupportedOniOS;
+        public bool SupportsPC => SupportedOnMacOS || SupportsWin32;
         public bool SupportsPS2 => IsSupportedOn(ConsoleType.PS2);
-
         public bool SupportsPS3 => IsSupportedOn(ConsoleType.PS3);
-
         public bool SupportsPSP => IsSupportedOn(ConsoleType.PSP);
-
         public bool SupportsWin32 => IsSupportedOn(ConsoleType.Win32);
-
         public bool SupportsXbox => IsSupportedOn(ConsoleType.Xbox);
-
         public bool SupportsXbox360 => IsSupportedOn(ConsoleType.Xbox360);
 
-        public FileFormat(string name, string description, params GameConsole[] supportedConsoles)
+        public SaveFileFormat(string name, string description, params GameConsole[] supportedConsoles)
         {
             Name = name;
             Description = description;
@@ -60,8 +44,6 @@ namespace GTASaveData.Serialization
         public override int GetHashCode()
         {
             int hash = 17;
-            hash += 23 * Name.GetHashCode();
-            hash += 23 * Description.GetHashCode();
             foreach (GameConsole c in SupportedConsoles)
             {
                 hash += 23 * c.GetHashCode();
@@ -75,14 +57,12 @@ namespace GTASaveData.Serialization
             {
                 return false;
             }
-            return Equals((FileFormat) obj);
+            return Equals((SaveFileFormat) obj);
         }
 
-        public bool Equals(FileFormat other)
+        public bool Equals(SaveFileFormat other)
         {
-            return Name.Equals(other.Name)
-                && Description.Equals(other.Description)
-                && SupportedConsoles.SequenceEqual(other.SupportedConsoles);
+            return SupportedConsoles.SequenceEqual(other.SupportedConsoles);
         }
 
         public override string ToString()
@@ -90,12 +70,12 @@ namespace GTASaveData.Serialization
             return Description ?? Name ?? string.Empty;
         }
 
-        public static bool operator ==(FileFormat left, FileFormat right)
+        public static bool operator ==(SaveFileFormat left, SaveFileFormat right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(FileFormat left, FileFormat right)
+        public static bool operator !=(SaveFileFormat left, SaveFileFormat right)
         {
             return !left.Equals(right);
         }

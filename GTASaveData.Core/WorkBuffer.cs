@@ -1,206 +1,103 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace GTASaveData.Serialization
+namespace GTASaveData
 {
-    /// <summary>
-    /// Handles the reading and writing of the binary data stored within Grand Theft Auto save data files.
-    /// </summary>
-    public sealed class Serializer : IDisposable
+    public sealed class WorkBuffer : IDisposable
     {
-        public static T Deserialize<T>(byte[] buffer)
-        {
-            return Deserialize<T>(buffer, FileFormat.None);
-        }
-
-        /// <summary>
-        /// Creates an object from the data stored in a byte array.
-        /// </summary>
-        /// <typeparam name="T">The type of object to create.</typeparam>
-        /// <param name="buffer">The byte array containing serialized object data.</param>
-        /// <param name="format">The format of the data, if applicable</param>
-        /// <returns>An object of type <typeparamref name="T"/>.</returns>
-        /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
-        public static T Deserialize<T>(byte[] buffer, FileFormat format)
-        {
-            if (buffer == null)
-            {
-                throw new ArgumentNullException(nameof(buffer));
-            }
-
-            using (Serializer s = new Serializer(new MemoryStream(buffer)))
-            {
-                return s.GenericRead<T>(format, 0, false);
-            }
-        }
-
-        public static byte[] Serialize<T>(T obj,
-            PaddingMode padding = PaddingMode.Zeros,
-            byte[] paddingSequence = null)
-        {
-            return Serialize(obj, FileFormat.None, padding, paddingSequence);
-        }
-
-        /// <summary>
-        /// Creates a byte array from data in the specified object.
-        /// </summary>
-        /// <typeparam name="T">The type of object to serialize.</typeparam>
-        /// <param name="obj">The object to serialize.</param>
-        /// <param name="format">The serialization format, if applicable.</param>
-        /// <param name="padding">The <see cref="Serialization.PaddingMode"/> to use for alignment.</param>
-        /// <param name="paddingSequence">The sequence of bytes to use when the padding mode is <see cref="PaddingMode.Sequence"/>.</param>
-        /// <returns>A byte array containing the serialized object data.</returns>
-        /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
-        public static byte[] Serialize<T>(T obj, FileFormat format,
-            PaddingMode padding = PaddingMode.Zeros,
-            byte[] paddingSequence = null)
-        {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
-
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (Serializer s = new Serializer(m, padding, paddingSequence))
-                {
-                    s.GenericWrite(obj, format, 0, false);
-                }
-
-                return m.ToArray();
-            }
-        }
-
-        /// <summary>
-        /// Aligns an address to the next multiple of the specified word size.
-        /// </summary>
-        /// <param name="address">The address to align.</param>
-        /// <param name="wordSize">The word size to align to. Note: must be a power of 2.</param>
-        /// <returns>The aligned address.</returns>
-        public static long GetAlignedAddress(long address, int wordSize = 4)
-        {
-            if (wordSize < 1 || ((wordSize - 1) & wordSize) != 0)
-            {
-                throw new ArgumentException(Strings.Error_Argument_PowerOf2, nameof(wordSize));
-            }
-
-            wordSize--;
-            return (address + wordSize) & ~wordSize;
-        }
-
+        private readonly MemoryStream m_buffer;
         private readonly BinaryReader m_reader;
         private readonly BinaryWriter m_writer;
         private bool m_disposed;
-        private PaddingMode m_paddingMode;
-        private byte[] m_paddingSequence;
-        private long m_mark;
 
-        /// <summary>
-        /// Creates a new <see cref="Serializer"/> using the specified stream as the serialization endpoint.
-        /// </summary>
-        /// <param name="baseStream">A readable and writable data stream.</param>
-        public Serializer(Stream baseStream)
+        public PaddingType Padding
         {
-            if (baseStream == null)
+            get;
+            set;
+        }
+
+        private byte[] _paddingBytes;   // prefer using property
+        public byte[] PaddingBytes
+        {
+            get { return _paddingBytes; }
+            set { _paddingBytes = value ?? new byte[1] { 0 }; }
+        }
+
+        public int Mark
+        {
+            get;
+            set;
+        }
+
+        public int Position
+        {
+            get { return (int) m_reader.BaseStream.Position; }
+            set { m_reader.BaseStream.Position = m_writer.BaseStream.Position = value; }
+        }
+
+        public int Offset
+        {
+            get { return Position - Mark; }
+        }
+
+        public int Capacity
+        {
+            get { return m_buffer.Capacity; }
+        }
+
+        private WorkBuffer(MemoryStream buffer)
+        {
+            m_buffer = buffer;
+            m_reader = new BinaryReader(m_buffer, Encoding.ASCII, true);
+            m_writer = new BinaryWriter(m_buffer, Encoding.ASCII, true);
+        }
+
+        public WorkBuffer()
+            : this(new MemoryStream())
+        { }
+
+        public WorkBuffer(byte[] data)
+            : this(new MemoryStream(data))
+        { }
+
+        public WorkBuffer(int capacity)
+            : this(new MemoryStream(capacity))
+        { }
+
+        public void Dispose()
+        {
+            if (!m_disposed)
             {
-                throw new ArgumentNullException(nameof(baseStream));
-            }
-
-            if (!(baseStream.CanRead && baseStream.CanWrite))
-            {
-                throw new ArgumentException(Strings.Error_Argument_StreamMustBeRW, nameof(baseStream));
-            }
-
-            m_mark = baseStream.Position;
-            m_reader = new BinaryReader(baseStream, Encoding.ASCII, true);
-            m_writer = new BinaryWriter(baseStream, Encoding.ASCII, true);
-            m_disposed = false;
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="Serializer"/> using the specified stream as the serialization endpoint.
-        /// </summary>
-        /// <param name="baseStream">A readable and writable data stream.</param>
-        /// <param name="paddingMode">The <see cref="Serialization.PaddingMode"/> to use for alignment.</param>
-        /// <param name="paddingSequence">The sequence of bytes to use if the padding mode is set to <see cref="PaddingMode.Sequence"/>.</param>
-        public Serializer(Stream baseStream, PaddingMode paddingMode, byte[] paddingSequence = null)
-            : this(baseStream)
-        {
-            m_paddingMode = paddingMode;
-            PaddingSequence = paddingSequence;      // use setter to handle null case
-        }
-
-        /// <summary>
-        /// Gets the underlying serialization <see cref="Stream"/>.
-        /// </summary>
-        public Stream BaseStream
-        {
-            get { return m_reader.BaseStream; }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="Serialization.PaddingMode"/> to use during serialization.
-        /// </summary>
-        public PaddingMode PaddingMode
-        {
-            get { return m_paddingMode; }
-            set { m_paddingMode = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the padding sequence to use if <see cref="PaddingMode.Sequence"/> is selected.
-        /// </summary>
-        public byte[] PaddingSequence
-        {
-            get { return m_paddingSequence; }
-            set
-            {
-                if (value == null)
-                {
-                    value = new byte[1] { 0 };
-                }
-                m_paddingSequence = value;
+                m_writer.Dispose();
+                m_reader.Dispose();
+                m_disposed = true;
             }
         }
 
-        /// <summary>
-        /// Aligns the current position in the serialization stream to a multiple of the specified word size.
-        /// </summary>
-        /// <param name="wordSize">The word size to align to. Note: must be a power of 2.</param>
-        public void Align(int wordSize = 4)
+        public void Align4Bytes()
         {
-            long pos = BaseStream.Position;
-            int num = (int) (GetAlignedAddress(pos, wordSize) - pos);
-
-            WritePadding(num);
+            WritePadding(SaveFile.GetAlignedAddress(Position) - Position);
         }
 
-        public void Mark()
+        public void Reset()
         {
-            m_mark = BaseStream.Position;
+            Position = 0;
+            ResetMark();
         }
 
-        public long Marked()
+        public void ResetMark()
         {
-            return m_mark;
+            Mark = Position;
         }
 
-        public long Position()
+        public byte[] ToByteArray()
         {
-            return BaseStream.Position;
-        }
-
-        /// <summary>
-        /// Skips ahead or beind the specified number of bytes.
-        /// </summary>
-        /// <param name="amount">The number of bytes by which to skip ahead or back.</param>
-        public void Skip(int amount)
-        {
-            BaseStream.Position += amount;
+            return m_buffer.ToArray();
         }
 
         /// <summary>
@@ -401,7 +298,7 @@ namespace GTASaveData.Serialization
             return s;
         }
 
-        public T ReadObject<T>() where T : ISerializable, new()
+        public T ReadObject<T>() where T : IGTAObject, new()
         {
             T obj = new T();
             obj.ReadObjectData(this);
@@ -416,7 +313,7 @@ namespace GTASaveData.Serialization
         /// <param name="format">The data format.</param>
         /// <returns>An object.</returns>
         /// <exception cref="SerializationException">Thrown if an error occurs during deserialization.</exception>
-        public T ReadObject<T>(FileFormat format) where T : ISerializable, new()
+        public T ReadObject<T>(SaveFileFormat format) where T : IGTAObject, new()
         {
             T obj = new T();
             obj.ReadObjectData(this, format);
@@ -428,7 +325,7 @@ namespace GTASaveData.Serialization
             int itemLength = 0,
             bool unicode = false)
         {
-            return ReadArray<T>(count, FileFormat.None, itemLength, unicode);
+            return ReadArray<T>(count, SaveFileFormat.Default, itemLength, unicode);
         }
 
         /// <summary>
@@ -442,7 +339,7 @@ namespace GTASaveData.Serialization
         /// <returns>An array of the specified type.</returns>
         /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
         public T[] ReadArray<T>(int count,
-            FileFormat format,
+            SaveFileFormat format,
             int itemLength = 0,
             bool unicode = false)
         {
@@ -517,7 +414,7 @@ namespace GTASaveData.Serialization
 
             if (char.IsSurrogate(value))
             {
-                throw new ArgumentException(Strings.Error_Argument_SurrogateChars, nameof(value));
+                throw new ArgumentException(Strings.Error_Argument_NoSurrogateChars, nameof(value));
             }
 
             if (unicode)
@@ -660,23 +557,23 @@ namespace GTASaveData.Serialization
             WritePadding(numPadding);
         }
 
-        public void Write<T>(T value) where T : ISerializable
+        public void Write<T>(T value) where T : IGTAObject
         {
-            Write(value, FileFormat.None);
+            Write(value, SaveFileFormat.Default);
         }
 
         /// <summary>
         /// Writes an object.
         /// </summary>
         /// <remarks>
-        /// The object type must implement the <see cref="ISerializable"/> interface
+        /// The object type must implement the <see cref="IGTAObject"/> interface
         /// and specify its serialization.
         /// </remarks>
         /// <typeparam name="T">The type of object to write.</typeparam>
         /// <param name="value">The object to write</param>
         /// <param name="format">The data format.</param>
         /// <exception cref="SerializationException">Thrown if an error occurs during serialization.</exception>
-        public void Write<T>(T value, FileFormat format) where T : ISerializable
+        public void Write<T>(T value, SaveFileFormat format) where T : IGTAObject
         {
             value.WriteObjectData(this, format);
         }
@@ -687,7 +584,7 @@ namespace GTASaveData.Serialization
             bool unicode = false)
             where T : new()
         {
-            Write<T>(items, FileFormat.None, count, itemLength, unicode);
+            Write<T>(items, SaveFileFormat.Default, count, itemLength, unicode);
         }
 
         /// <summary>
@@ -706,7 +603,7 @@ namespace GTASaveData.Serialization
         /// <param name="unicode">A value indicating whether to write unicode characters.</param>
         /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
         public void Write<T>(T[] items,
-            FileFormat format,
+            SaveFileFormat format,
             int? count = null,
             int itemLength = 0,
             bool unicode = false)
@@ -728,20 +625,27 @@ namespace GTASaveData.Serialization
 
         /// <summary>
         /// Writes the specified number of padding bytes.
-        /// The exact bytes written depends on the current <see cref="PaddingMode"/>.
+        /// The exact bytes written depends on the current <see cref="Padding"/>.
         /// </summary>
         /// <param name="length">The number of bytes to write.</param>
         public void WritePadding(int length)
         {
-            switch (m_paddingMode)
+            switch (Padding)
             {
-                case PaddingMode.Zeros:
+                case PaddingType.Pattern:
                 {
-                    Write(Enumerable.Repeat<byte>(0, length).ToArray());
+                    byte[] pad = new byte[length];
+                    byte[] seq = PaddingBytes;
+
+                    for (int i = 0; i < length; i++)
+                    {
+                        pad[i] = seq[i % seq.Length];
+                    }
+                    Write(pad);
                     break;
                 }
 
-                case PaddingMode.Random:
+                case PaddingType.Random:
                 {
                     byte[] pad = new byte[length];
                     Random rand = new Random();
@@ -751,31 +655,23 @@ namespace GTASaveData.Serialization
                     break;
                 }
 
-                case PaddingMode.Sequence:
-                {
-                    byte[] pad = new byte[length];
-                    byte[] seq = m_paddingSequence;
-
-                    for (int i = 0; i < length; i++)
-                    {
-                        pad[i] = seq[i % seq.Length];
-                    }
-                    Write(pad);
-                    break;
-                }
             }
+
+            Debug.WriteLine("Wrote {0} padding bytes", length);
         }
 
-        private T GenericRead<T>(FileFormat format, int length, bool unicode)
+        internal T GenericRead<T>(SaveFileFormat format,
+            int length = 0,
+            bool unicode = false)
         {
-            object ret;
-
             if (length < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             Type t = typeof(T);
+            object ret = null;
+
             if (t == typeof(bool))
             {
                 ret = ReadBool((length == 0) ? 1 : length);
@@ -832,20 +728,18 @@ namespace GTASaveData.Serialization
             {
                 ret = (length == 0) ? ReadString(unicode) : ReadString(length, unicode);
             }
-            else if (t.GetInterface(nameof(ISerializable)) != null)
+            else if (t.GetInterface(nameof(IGTAObject)) != null)
             {
                 MethodInfo readChunk = GetType().GetMethod(nameof(ReadObject)).MakeGenericMethod(t);
                 ret = readChunk.Invoke(this, new object[] { format });
-            }
-            else
-            {
-                throw SerializationNotSupported();
             }
 
             return (T) ret;
         }
 
-        private void GenericWrite<T>(T value, FileFormat format, int length, bool unicode)
+        internal bool GenericWrite<T>(T value, SaveFileFormat format,
+            int length = 0,
+            bool unicode = false)
         {
             if (length < 0)
             {
@@ -853,6 +747,8 @@ namespace GTASaveData.Serialization
             }
 
             Type t = typeof(T);
+            bool retval = true;
+
             if (t == typeof(bool))
             {
                 Write(Convert.ToBoolean(value), (length == 0) ? 1 : length);
@@ -909,31 +805,16 @@ namespace GTASaveData.Serialization
             {
                 Write(Convert.ToString(value), length, unicode);
             }
-            else if (t.GetInterface(nameof(ISerializable)) != null)
+            else if (t.GetInterface(nameof(IGTAObject)) != null)
             {
-                Write((ISerializable) value, format);
+                Write((IGTAObject) value, format);
             }
             else
             {
-                throw SerializationNotSupported();
+                retval = false;
             }
-        }
 
-        private SerializationException SerializationNotSupported()
-        {
-            return new SerializationException(Strings.Error_NotSupported_Serialization);
+            return retval;
         }
-
-        #region IDisposable
-        public void Dispose()
-        {
-            if (!m_disposed)
-            {
-                m_writer.Dispose();
-                m_reader.Dispose();
-                m_disposed = true;
-            }
-        }
-        #endregion
     }
 }

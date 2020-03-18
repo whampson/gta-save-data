@@ -6,7 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using WpfEssentials;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
     /// <summary>
     /// Represents a collection of objects with sequential and contiguous storage.
@@ -344,7 +344,7 @@ namespace GTASaveData
         {
             if (m_monitor.Busy)
             {
-                throw new InvalidOperationException(Strings.Error_InvalidOperation_CollectionReentrancy);
+                throw new InvalidOperationException(Strings.Error_InvalidOperation_NoCollectionReentrancy);
             }
         }
         #endregion

@@ -1,17 +1,16 @@
-﻿using GTASaveData.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Diagnostics;
 using System.Linq;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
     /// <summary>
     /// A container for arbitraty data.
     /// </summary>
-    public class Block : SerializableObject,
-        IEquatable<Block>
+    public class Dummy : GTAObject,
+        IEquatable<Dummy>
     {
         private Array<byte> m_data;
 
@@ -28,32 +27,32 @@ namespace GTASaveData
             get { return m_data.Count; }
         }
 
-        public Block()
+        public Dummy()
             : this(new byte[0])
         { }
 
-        public Block(byte[] data)
+        public Dummy(byte[] data)
         {
             m_data = data;
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
             // nop
-            Debug.WriteLine("Block#ReadObjectData(): useless call");
+            Debug.WriteLine("Useless call to Dummy#ReadObjectData()");
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write(m_data.ToArray());
+            buf.Write(m_data.ToArray());
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Block);
+            return Equals(obj as Dummy);
         }
 
-        public bool Equals(Block other)
+        public bool Equals(Dummy other)
         {
             if (other == null)
             {
@@ -63,14 +62,14 @@ namespace GTASaveData
             return m_data.SequenceEqual(other.m_data);
         }
 
-        public static implicit operator byte[](Block b)
+        public static implicit operator byte[](Dummy b)
         {
             return b.m_data;
         }
 
-        public static implicit operator Block(byte[] data)
+        public static implicit operator Dummy(byte[] data)
         {
-            return new Block(data);
+            return new Dummy(data);
         }
     }
 }

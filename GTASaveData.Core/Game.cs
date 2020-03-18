@@ -4,22 +4,28 @@ namespace GTASaveData
 {
     public enum Game
     {
-        [Description("GTA III")]
-        GTA3,
+        [Description("GTA 3")]
+        III,
 
         [Description("Vice City")]
-        ViceCity,
+        VC,
 
         [Description("San Andreas")]
-        SanAndreas,
+        SA,
 
         //[Description("Liberty City Stories")]
-        //LibertyCityStories,
+        //LCS,
 
         //[Description("Vice City Stories")]
-        //ViceCityStories,
+        //VCS,
 
         //[Description("GTA IV")]
-        //GTA4
+        //IV,
+
+        //[Description("TLAD")]
+        //TLAD,
+
+        //[Description("TBOGT")]
+        //TBOGT,
     }
 }

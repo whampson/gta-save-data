@@ -2,9 +2,6 @@
 
 namespace GTASaveData.Extensions
 {
-    /// <summary>
-    /// Extension methods for the <see cref="string"/> class.
-    /// </summary>
     public static class StringExtensions
     {
         /// <summary>

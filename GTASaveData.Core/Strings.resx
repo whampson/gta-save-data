@@ -117,19 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Error_Argument_PowerOf2" xml:space="preserve">
-    <value>The value must be a power of 2.</value>
+  <data name="Error_Argument_NoNegative" xml:space="preserve">
+    <value>The value must be non-negative.</value>
   </data>
-  <data name="Error_Argument_StreamMustBeRW" xml:space="preserve">
-    <value>The stream must be both readable and writable.</value>
-  </data>
-  <data name="Error_Argument_SurrogateChars" xml:space="preserve">
+  <data name="Error_Argument_NoSurrogateChars" xml:space="preserve">
     <value>The character cannot be a surrogate.</value>
   </data>
-  <data name="Error_InvalidOperation_CollectionReentrancy" xml:space="preserve">
+  <data name="Error_Argument_SequenceIndexOutOfRange" xml:space="preserve">
+    <value>The index must be smaller than the length of the sequence.</value>
+  </data>
+  <data name="Error_Argument_SequenceTooBig" xml:space="preserve">
+    <value>The sequence length must be less than or equal to the length of the array.</value>
+  </data>
+  <data name="Error_InvalidOperation_NoCollectionReentrancy" xml:space="preserve">
     <value>The collection cannot be modified while being changed by another thread.</value>
   </data>
-  <data name="Error_NotSupported_Serialization" xml:space="preserve">
+  <data name="Error_InvalidOperation_NoSerialization" xml:space="preserve">
     <value>The object does not support serialization.</value>
   </data>
 </root>

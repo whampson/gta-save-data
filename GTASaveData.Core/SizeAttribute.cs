@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GTASaveData.Serialization
+namespace GTASaveData
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public class SizeAttribute : Attribute
