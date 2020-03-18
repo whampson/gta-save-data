@@ -5,14 +5,40 @@ using System.Linq;
 namespace GTASaveData.Serialization
 {
     /// <summary>
-    /// Represents a standard way that a <see cref="GrandTheftAutoSave"/> file can be encoded.
+    /// Represents a standard way that a <see cref="GTASave"/> file can be encoded.
     /// </summary>
-    public sealed class FileFormat : IEquatable<FileFormat>
+    public struct FileFormat : IEquatable<FileFormat>
     {
         /// <summary>
         /// Represents an ambiguous or irrelevant file format.
         /// </summary>
         public static readonly FileFormat None = new FileFormat(null, null);
+
+        public string Name { get; }
+        public string Description { get; }
+        public IEnumerable<GameConsole> SupportedConsoles { get; }
+
+        public bool SupportsAndroid => IsSupportedOn(ConsoleType.Android);
+
+        public bool SupportsIOS => IsSupportedOn(ConsoleType.iOS);
+
+        public bool SupportsMacOS => IsSupportedOn(ConsoleType.MacOS);
+
+        public bool SupportsMobile => SupportsAndroid || SupportsIOS;
+
+        public bool SupportsPC => SupportsMacOS || SupportsWin32;
+
+        public bool SupportsPS2 => IsSupportedOn(ConsoleType.PS2);
+
+        public bool SupportsPS3 => IsSupportedOn(ConsoleType.PS3);
+
+        public bool SupportsPSP => IsSupportedOn(ConsoleType.PSP);
+
+        public bool SupportsWin32 => IsSupportedOn(ConsoleType.Win32);
+
+        public bool SupportsXbox => IsSupportedOn(ConsoleType.Xbox);
+
+        public bool SupportsXbox360 => IsSupportedOn(ConsoleType.Xbox360);
 
         public FileFormat(string name, string description, params GameConsole[] supportedConsoles)
         {
@@ -21,38 +47,12 @@ namespace GTASaveData.Serialization
             SupportedConsoles = new List<GameConsole>(supportedConsoles);
         }
 
-        public string Name { get; }
-        public string Description { get; }
-        public IEnumerable<GameConsole> SupportedConsoles { get; }
-
-        public bool SupportsAndroid => IsSupported(ConsoleType.Android);
-
-        public bool SupportsIOS => IsSupported(ConsoleType.iOS);
-
-        public bool SupportsMacOS => IsSupported(ConsoleType.MacOS);
-
-        public bool SupportsMobile => SupportsAndroid || SupportsIOS;
-
-        public bool SupportsPC => SupportsMacOS || SupportsWin32;
-
-        public bool SupportsPS2 => IsSupported(ConsoleType.PS2);
-
-        public bool SupportsPS3 => IsSupported(ConsoleType.PS3);
-
-        public bool SupportsPSP => IsSupported(ConsoleType.PSP);
-
-        public bool SupportsWin32 => IsSupported(ConsoleType.Win32);
-
-        public bool SupportsXbox => IsSupported(ConsoleType.Xbox);
-
-        public bool SupportsXbox360 => IsSupported(ConsoleType.Xbox360);
-
-        public bool IsSupported(GameConsole c)
+        public bool IsSupportedOn(GameConsole c)
         {
             return SupportedConsoles.Contains(c);
         }
 
-        public bool IsSupported(ConsoleType c, ConsoleFlags flags = ConsoleFlags.None)
+        public bool IsSupportedOn(ConsoleType c, ConsoleFlags flags = ConsoleFlags.None)
         {
             return SupportedConsoles.Any(x => x.Type == c && x.Flags.HasFlag(flags));
         }
@@ -69,10 +69,13 @@ namespace GTASaveData.Serialization
 
             return hash;
         }
-
         public override bool Equals(object obj)
         {
-            return Equals(obj as FileFormat);
+            if (obj == null)
+            {
+                return false;
+            }
+            return Equals((FileFormat) obj);
         }
 
         public bool Equals(FileFormat other)
@@ -85,6 +88,16 @@ namespace GTASaveData.Serialization
         public override string ToString()
         {
             return Description ?? Name ?? string.Empty;
+        }
+
+        public static bool operator ==(FileFormat left, FileFormat right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(FileFormat left, FileFormat right)
+        {
+            return !left.Equals(right);
         }
     }
 }

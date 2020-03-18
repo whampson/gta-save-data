@@ -12,6 +12,11 @@ namespace GTASaveData.Serialization
     /// </summary>
     public sealed class Serializer : IDisposable
     {
+        public static T Deserialize<T>(byte[] buffer)
+        {
+            return Deserialize<T>(buffer, FileFormat.None);
+        }
+
         /// <summary>
         /// Creates an object from the data stored in a byte array.
         /// </summary>
@@ -20,7 +25,7 @@ namespace GTASaveData.Serialization
         /// <param name="format">The format of the data, if applicable</param>
         /// <returns>An object of type <typeparamref name="T"/>.</returns>
         /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
-        public static T Deserialize<T>(byte[] buffer, FileFormat format = null)
+        public static T Deserialize<T>(byte[] buffer, FileFormat format)
         {
             if (buffer == null)
             {
@@ -33,6 +38,13 @@ namespace GTASaveData.Serialization
             }
         }
 
+        public static byte[] Serialize<T>(T obj,
+            PaddingMode padding = PaddingMode.Zeros,
+            byte[] paddingSequence = null)
+        {
+            return Serialize(obj, FileFormat.None, padding, paddingSequence);
+        }
+
         /// <summary>
         /// Creates a byte array from data in the specified object.
         /// </summary>
@@ -43,7 +55,9 @@ namespace GTASaveData.Serialization
         /// <param name="paddingSequence">The sequence of bytes to use when the padding mode is <see cref="PaddingMode.Sequence"/>.</param>
         /// <returns>A byte array containing the serialized object data.</returns>
         /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
-        public static byte[] Serialize<T>(T obj, FileFormat format = null, PaddingMode padding = PaddingMode.Zeros, byte[] paddingSequence = null)
+        public static byte[] Serialize<T>(T obj, FileFormat format,
+            PaddingMode padding = PaddingMode.Zeros,
+            byte[] paddingSequence = null)
         {
             if (obj == null)
             {
@@ -165,15 +179,6 @@ namespace GTASaveData.Serialization
             WritePadding(num);
         }
 
-        /// <summary>
-        /// Skips ahead or beind the specified number of bytes.
-        /// </summary>
-        /// <param name="amount">The number of bytes by which to skip ahead or back.</param>
-        public void Skip(int amount)
-        {
-            BaseStream.Position += amount;
-        }
-
         public void Mark()
         {
             m_mark = BaseStream.Position;
@@ -187,6 +192,15 @@ namespace GTASaveData.Serialization
         public long Position()
         {
             return BaseStream.Position;
+        }
+
+        /// <summary>
+        /// Skips ahead or beind the specified number of bytes.
+        /// </summary>
+        /// <param name="amount">The number of bytes by which to skip ahead or back.</param>
+        public void Skip(int amount)
+        {
+            BaseStream.Position += amount;
         }
 
         /// <summary>
@@ -387,6 +401,14 @@ namespace GTASaveData.Serialization
             return s;
         }
 
+        public T ReadObject<T>() where T : ISerializable, new()
+        {
+            T obj = new T();
+            obj.ReadObjectData(this);
+
+            return obj;
+        }
+
         /// <summary>
         /// Reads an object.
         /// </summary>
@@ -394,12 +416,19 @@ namespace GTASaveData.Serialization
         /// <param name="format">The data format.</param>
         /// <returns>An object.</returns>
         /// <exception cref="SerializationException">Thrown if an error occurs during deserialization.</exception>
-        public T ReadObject<T>(FileFormat format = null) where T : ISerializable, new()
+        public T ReadObject<T>(FileFormat format) where T : ISerializable, new()
         {
             T obj = new T();
-            obj.ReadObjectData(this, format ?? FileFormat.None);
+            obj.ReadObjectData(this, format);
 
             return obj;
+        }
+
+        public T[] ReadArray<T>(int count,
+            int itemLength = 0,
+            bool unicode = false)
+        {
+            return ReadArray<T>(count, FileFormat.None, itemLength, unicode);
         }
 
         /// <summary>
@@ -413,7 +442,7 @@ namespace GTASaveData.Serialization
         /// <returns>An array of the specified type.</returns>
         /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
         public T[] ReadArray<T>(int count,
-            FileFormat format = null,
+            FileFormat format,
             int itemLength = 0,
             bool unicode = false)
         {
@@ -631,6 +660,11 @@ namespace GTASaveData.Serialization
             WritePadding(numPadding);
         }
 
+        public void Write<T>(T value) where T : ISerializable
+        {
+            Write(value, FileFormat.None);
+        }
+
         /// <summary>
         /// Writes an object.
         /// </summary>
@@ -642,9 +676,18 @@ namespace GTASaveData.Serialization
         /// <param name="value">The object to write</param>
         /// <param name="format">The data format.</param>
         /// <exception cref="SerializationException">Thrown if an error occurs during serialization.</exception>
-        public void Write<T>(T value, FileFormat format = null) where T : ISerializable
+        public void Write<T>(T value, FileFormat format) where T : ISerializable
         {
-            value.WriteObjectData(this, format ?? FileFormat.None);
+            value.WriteObjectData(this, format);
+        }
+
+        public void Write<T>(T[] items,
+            int? count = null,
+            int itemLength = 0,
+            bool unicode = false)
+            where T : new()
+        {
+            Write<T>(items, FileFormat.None, count, itemLength, unicode);
         }
 
         /// <summary>
@@ -663,8 +706,8 @@ namespace GTASaveData.Serialization
         /// <param name="unicode">A value indicating whether to write unicode characters.</param>
         /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
         public void Write<T>(T[] items,
+            FileFormat format,
             int? count = null,
-            FileFormat format = null,
             int itemLength = 0,
             bool unicode = false)
             where T : new()

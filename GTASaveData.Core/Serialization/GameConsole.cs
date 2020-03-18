@@ -2,7 +2,7 @@
 
 namespace GTASaveData.Serialization
 {
-    public class GameConsole : IEquatable<GameConsole>
+    public struct GameConsole : IEquatable<GameConsole>
     {
         public ConsoleType Type { get; }
         public ConsoleFlags Flags { get; }
@@ -28,7 +28,11 @@ namespace GTASaveData.Serialization
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as GameConsole);
+            if (obj == null)
+            {
+                return false;
+            }
+            return Equals((GameConsole) obj);
         }
 
         public bool Equals(GameConsole other)
@@ -39,7 +43,7 @@ namespace GTASaveData.Serialization
 
         public override string ToString()
         {
-            return string.Format("[ Type = {0}, Flags = {1} ]", Type, Flags);
+            return string.Format("GameConsole: {{ Type = {0}, Flags = {1} ] }}", Type, Flags);
         }
     }
 
