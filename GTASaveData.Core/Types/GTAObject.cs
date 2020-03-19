@@ -2,7 +2,7 @@
 using System;
 using WpfEssentials;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
     public abstract class GTAObject : ObservableObject, IGTAObject
     {
