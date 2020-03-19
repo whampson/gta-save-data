@@ -1,10 +1,8 @@
-﻿using GTASaveData.Types.Interfaces;
-using Newtonsoft.Json;
+﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
 namespace GTASaveData
 {
@@ -18,7 +16,7 @@ namespace GTASaveData
         protected WorkBuffer m_workBuf;
         private SaveFileFormat m_fileFormat;
 
-        public SaveFileFormat SaveFormat
+        public SaveFileFormat Format
         {
             get { return m_fileFormat; }
             set { m_fileFormat = value; OnPropertyChanged(); }
@@ -54,20 +52,18 @@ namespace GTASaveData
             Debug.WriteLine("Wrote {0} bytes to disk.", bytesWritten);
         }
 
-        protected abstract bool ReadBlockHeader(string tag, out int size);
-        protected abstract void WriteBlockHeader(string tag, int size);
         protected abstract SaveFileFormat DetectFileFormat();
 
         public override string ToString()
         {
-            return string.Format("{0}: {{ Name = {1}, FileFormat = {2} }}", GetType().Name, Name, m_fileFormat);
+            return string.Format("{0}: {{ Name = {1}, Format = {2} }}", GetType().Name, Name, m_fileFormat);
         }
 
         public static int GetAlignedAddress(int address)
         {
             const int WordSize = 4;
 
-            return (address + WordSize) & ~WordSize;
+            return (address + WordSize - 1) & ~(WordSize - 1);
         }
     }
 }

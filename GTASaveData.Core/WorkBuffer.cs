@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -10,6 +12,8 @@ namespace GTASaveData
 {
     public sealed class WorkBuffer : IDisposable
     {
+        private static readonly byte[] DefaultPadding = new byte[1] { 0 };
+
         private readonly MemoryStream m_buffer;
         private readonly BinaryReader m_reader;
         private readonly BinaryWriter m_writer;
@@ -24,8 +28,8 @@ namespace GTASaveData
         private byte[] _paddingBytes;   // prefer using property
         public byte[] PaddingBytes
         {
-            get { return _paddingBytes; }
-            set { _paddingBytes = value ?? new byte[1] { 0 }; }
+            get { return _paddingBytes ?? DefaultPadding; }
+            set { _paddingBytes = value ?? DefaultPadding; }
         }
 
         public int Mark
@@ -36,8 +40,8 @@ namespace GTASaveData
 
         public int Position
         {
-            get { return (int) m_reader.BaseStream.Position; }
-            set { m_reader.BaseStream.Position = m_writer.BaseStream.Position = value; }
+            get { return (int) m_buffer.Position; }
+            set { m_buffer.Position = value; }
         }
 
         public int Offset
@@ -730,7 +734,7 @@ namespace GTASaveData
             }
             else if (t.GetInterface(nameof(IGTAObject)) != null)
             {
-                MethodInfo readChunk = GetType().GetMethod(nameof(ReadObject)).MakeGenericMethod(t);
+                MethodInfo readChunk = GetType().GetMethod(nameof(ReadObject), new Type[] { typeof(SaveFileFormat) }).MakeGenericMethod(t);
                 ret = readChunk.Invoke(this, new object[] { format });
             }
 
