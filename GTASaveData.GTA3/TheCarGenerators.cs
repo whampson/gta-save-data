@@ -1,26 +1,24 @@
-﻿using GTASaveData.Common;
-using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3.Blocks
 {
-    public class TheCarGenerators : SerializableObject,
-        ICarGeneratorBlock,
+    [Size(0x2D14)]
+    public class TheCarGenerators : GTAObject,
         IEquatable<TheCarGenerators>
     {
         public static class Limits
         {
-            public const int CarGeneratorsCapacity = 160;
+            public const int NumberOfCarGenerators = 160;
         }
 
         private int m_numberOfCarGenerators;
-        private int m_numberOfActiveCarGenerators;
+        private int m_currentActiveCount;
         private int m_processCounter;
         private int m_generateEvenIfPlayerIsCloseCounter;
-        private Array<CarGenerator> m_parkedCars;
+        private Array<CarGenerator> m_carGeneratorArray;
 
         public int NumberOfCarGenerators
         {
@@ -28,10 +26,10 @@ namespace GTASaveData.GTA3.Blocks
             set { m_numberOfCarGenerators = value; OnPropertyChanged(); }
         }
 
-        public int NumberOfActiveCarGenerators
+        public int CurrentActiveCount
         {
-            get { return m_numberOfActiveCarGenerators; }
-            set { m_numberOfActiveCarGenerators = value; OnPropertyChanged(); }
+            get { return m_currentActiveCount; }
+            set { m_currentActiveCount = value; OnPropertyChanged(); }
         }
 
         public int ProcessCounter
@@ -46,54 +44,43 @@ namespace GTASaveData.GTA3.Blocks
             set { m_generateEvenIfPlayerIsCloseCounter = value; OnPropertyChanged(); }
         }
 
-        public Array<CarGenerator> ParkedCars
+        public Array<CarGenerator> CarGeneratorArray
         {
-            get { return m_parkedCars; }
-            set { m_parkedCars = value; OnPropertyChanged(); }
-        }
-
-        IEnumerable<ICarGenerator> ICarGeneratorBlock.ParkedCars
-        {
-            get { return m_parkedCars; }
-        }
-
-        public void SetParkedCar(int index, ICarGenerator cg)
-        {
-            CarGenerator carGen = cg as CarGenerator;
-            // TODO: error if null
-
-            m_parkedCars[index] = carGen;
+            get { return m_carGeneratorArray; }
+            set { m_carGeneratorArray = value; OnPropertyChanged(); }
         }
 
         public TheCarGenerators()
         {
-            m_parkedCars = new Array<CarGenerator>();
+            m_carGeneratorArray = new Array<CarGenerator>();
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            int constant0Ch = r.ReadInt32();
-            Debug.Assert(constant0Ch == 0x0C);
-            m_numberOfCarGenerators = r.ReadInt32();
-            m_numberOfActiveCarGenerators = r.ReadInt32();
-            m_processCounter = r.ReadByte();
-            m_generateEvenIfPlayerIsCloseCounter = r.ReadByte();
-            r.Align();
-            int constant2D00h = r.ReadInt32();
-            Debug.Assert(constant2D00h == 0x2D00);
-            m_parkedCars = r.ReadArray<CarGenerator>(Limits.CarGeneratorsCapacity);
+            int infoSize = buf.ReadInt32();
+            Debug.Assert(infoSize == 0x0C);
+            m_numberOfCarGenerators = buf.ReadInt32();
+            m_currentActiveCount = buf.ReadInt32();
+            m_processCounter = buf.ReadByte();
+            m_generateEvenIfPlayerIsCloseCounter = buf.ReadByte();
+            buf.ReadInt16();
+            int carGensSize = buf.ReadInt32();
+            Debug.Assert(carGensSize == 0x2D00);
+            m_carGeneratorArray = buf.ReadArray<CarGenerator>(Limits.NumberOfCarGenerators);
+
+            Debug.Assert(buf.Offset == SizeOf<TheCarGenerators>());
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write(0x0C);
-            w.Write(m_numberOfCarGenerators);
-            w.Write(m_numberOfActiveCarGenerators);
-            w.Write((byte) m_processCounter);
-            w.Write((byte) m_generateEvenIfPlayerIsCloseCounter);
-            w.Align();
-            w.Write(0x2D00);
-            w.Write(m_parkedCars.ToArray(), Limits.CarGeneratorsCapacity);
+            buf.Write(0x0C);
+            buf.Write(m_numberOfCarGenerators);
+            buf.Write(m_currentActiveCount);
+            buf.Write((byte) m_processCounter);
+            buf.Write((byte) m_generateEvenIfPlayerIsCloseCounter);
+            buf.Write((short) 0);
+            buf.Write(0x2D00);
+            buf.Write(m_carGeneratorArray.ToArray(), Limits.NumberOfCarGenerators);
         }
 
         public override bool Equals(object obj)
@@ -109,10 +96,10 @@ namespace GTASaveData.GTA3.Blocks
             }
 
             return m_numberOfCarGenerators.Equals(other.m_numberOfCarGenerators)
-                && m_numberOfActiveCarGenerators.Equals(other.m_numberOfActiveCarGenerators)
+                && m_currentActiveCount.Equals(other.m_currentActiveCount)
                 && m_processCounter.Equals(other.m_processCounter)
                 && m_generateEvenIfPlayerIsCloseCounter.Equals(other.m_generateEvenIfPlayerIsCloseCounter)
-                && m_parkedCars.SequenceEqual(other.m_parkedCars);
+                && m_carGeneratorArray.SequenceEqual(other.m_carGeneratorArray);
         }
     }
 }

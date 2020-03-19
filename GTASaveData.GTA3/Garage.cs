@@ -1,12 +1,11 @@
-﻿using GTASaveData.Common;
-using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
 using System;
 using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
     [Size(0x8C)]
-    public class Garage : SerializableObject,
+    public class Garage : GTAObject,
         IEquatable<Garage>
     {
         private GarageType m_type;
@@ -232,98 +231,98 @@ namespace GTASaveData.GTA3
             m_storedCar = new StoredCar();
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_type = (GarageType) r.ReadByte();
-            m_state = (GarageState) r.ReadByte();
-            m_field02h = r.ReadByte();
-            m_closingWithoutTargetVehicle = r.ReadBool();
-            m_deactivated = r.ReadBool();
-            m_resprayHappened = r.ReadBool();
-            m_field06h = r.ReadByte();
-            m_field07h = r.ReadByte();
-            m_targetModel = (VehicleType) r.ReadInt32();
-            m_pDoor1 = r.ReadUInt32();
-            m_pDoor2 = r.ReadUInt32();
-            m_isDoor1PoolIndex = r.ReadBool();
-            m_isDoor2PoolIndex = r.ReadBool();
-            m_isDoor1Object = r.ReadBool();
-            m_isDoor2Object = r.ReadBool();
-            m_field24h = r.ReadByte();
-            m_isRotatedDoor = r.ReadBool();
-            m_cameraFollowsPlayer = r.ReadBool();
-            m_field27h = r.ReadByte();
-            m_vecInf.X = r.ReadSingle();
-            m_vecSup.X = r.ReadSingle();
-            m_vecInf.Y = r.ReadSingle();
-            m_vecSup.Y = r.ReadSingle();
-            m_vecInf.Z = r.ReadSingle();
-            m_vecSup.Z = r.ReadSingle();
-            m_doorOpenMinZOffset = r.ReadSingle();
-            m_doorOpenMaxZOffset = r.ReadSingle();
-            m_door1Pos.X = r.ReadSingle();
-            m_door1Pos.Y = r.ReadSingle();
-            m_door2Pos.X = r.ReadSingle();
-            m_door2Pos.Y = r.ReadSingle();
-            m_door1Pos.Z = r.ReadSingle();
-            m_door2Pos.Z = r.ReadSingle();
-            m_doorLastOpenTime = r.ReadUInt32();
-            m_collectedCarsState = r.ReadByte();
-            m_field89h = r.ReadByte();
-            m_field90h = r.ReadByte();
-            m_field91h = r.ReadByte();
-            m_pTargetVehicle = r.ReadUInt32();
-            m_field96h = r.ReadInt32();
-            m_storedCar = r.ReadObject<StoredCar>();
+            m_type = (GarageType) buf.ReadByte();
+            m_state = (GarageState) buf.ReadByte();
+            m_field02h = buf.ReadByte();
+            m_closingWithoutTargetVehicle = buf.ReadBool();
+            m_deactivated = buf.ReadBool();
+            m_resprayHappened = buf.ReadBool();
+            m_field06h = buf.ReadByte();
+            m_field07h = buf.ReadByte();
+            m_targetModel = (VehicleType) buf.ReadInt32();
+            m_pDoor1 = buf.ReadUInt32();
+            m_pDoor2 = buf.ReadUInt32();
+            m_isDoor1PoolIndex = buf.ReadBool();
+            m_isDoor2PoolIndex = buf.ReadBool();
+            m_isDoor1Object = buf.ReadBool();
+            m_isDoor2Object = buf.ReadBool();
+            m_field24h = buf.ReadByte();
+            m_isRotatedDoor = buf.ReadBool();
+            m_cameraFollowsPlayer = buf.ReadBool();
+            m_field27h = buf.ReadByte();
+            m_vecInf.X = buf.ReadSingle();
+            m_vecSup.X = buf.ReadSingle();
+            m_vecInf.Y = buf.ReadSingle();
+            m_vecSup.Y = buf.ReadSingle();
+            m_vecInf.Z = buf.ReadSingle();
+            m_vecSup.Z = buf.ReadSingle();
+            m_doorOpenMinZOffset = buf.ReadSingle();
+            m_doorOpenMaxZOffset = buf.ReadSingle();
+            m_door1Pos.X = buf.ReadSingle();
+            m_door1Pos.Y = buf.ReadSingle();
+            m_door2Pos.X = buf.ReadSingle();
+            m_door2Pos.Y = buf.ReadSingle();
+            m_door1Pos.Z = buf.ReadSingle();
+            m_door2Pos.Z = buf.ReadSingle();
+            m_doorLastOpenTime = buf.ReadUInt32();
+            m_collectedCarsState = buf.ReadByte();
+            m_field89h = buf.ReadByte();
+            m_field90h = buf.ReadByte();
+            m_field91h = buf.ReadByte();
+            m_pTargetVehicle = buf.ReadUInt32();
+            m_field96h = buf.ReadInt32();
+            m_storedCar = buf.ReadObject<StoredCar>();
 
-            Debug.Assert(r.Position() - r.Marked() == SizeOf<Garage>(), "Garage: Invalid read size!");
+            Debug.Assert(buf.Offset == SizeOf<Garage>());
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write((byte) m_type);
-            w.Write((byte) m_state);
-            w.Write(m_field02h);
-            w.Write(m_closingWithoutTargetVehicle);
-            w.Write(m_deactivated);
-            w.Write(m_resprayHappened);
-            w.Write(m_field06h);
-            w.Write(m_field07h);
-            w.Write((int) m_targetModel);
-            w.Write(m_pDoor1);
-            w.Write(m_pDoor2);
-            w.Write(m_isDoor1PoolIndex);
-            w.Write(m_isDoor2PoolIndex);
-            w.Write(m_isDoor1Object);
-            w.Write(m_isDoor2Object);
-            w.Write(m_field24h);
-            w.Write(m_isRotatedDoor);
-            w.Write(m_cameraFollowsPlayer);
-            w.Write(m_field27h);
-            w.Write(m_vecInf.X);
-            w.Write(m_vecSup.X);
-            w.Write(m_vecInf.Y);
-            w.Write(m_vecSup.Y);
-            w.Write(m_vecInf.Z);
-            w.Write(m_vecSup.Z);
-            w.Write(m_doorOpenMinZOffset);
-            w.Write(m_doorOpenMaxZOffset);
-            w.Write(m_door1Pos.X);
-            w.Write(m_door1Pos.Y);
-            w.Write(m_door2Pos.X);
-            w.Write(m_door2Pos.Y);
-            w.Write(m_door1Pos.Z);
-            w.Write(m_door2Pos.Z);
-            w.Write(m_doorLastOpenTime);
-            w.Write(m_collectedCarsState);
-            w.Write(m_field89h);
-            w.Write(m_field90h);
-            w.Write(m_field91h);
-            w.Write(m_pTargetVehicle);
-            w.Write(m_field96h);
-            w.Write(m_storedCar);
+            buf.Write((byte) m_type);
+            buf.Write((byte) m_state);
+            buf.Write(m_field02h);
+            buf.Write(m_closingWithoutTargetVehicle);
+            buf.Write(m_deactivated);
+            buf.Write(m_resprayHappened);
+            buf.Write(m_field06h);
+            buf.Write(m_field07h);
+            buf.Write((int) m_targetModel);
+            buf.Write(m_pDoor1);
+            buf.Write(m_pDoor2);
+            buf.Write(m_isDoor1PoolIndex);
+            buf.Write(m_isDoor2PoolIndex);
+            buf.Write(m_isDoor1Object);
+            buf.Write(m_isDoor2Object);
+            buf.Write(m_field24h);
+            buf.Write(m_isRotatedDoor);
+            buf.Write(m_cameraFollowsPlayer);
+            buf.Write(m_field27h);
+            buf.Write(m_vecInf.X);
+            buf.Write(m_vecSup.X);
+            buf.Write(m_vecInf.Y);
+            buf.Write(m_vecSup.Y);
+            buf.Write(m_vecInf.Z);
+            buf.Write(m_vecSup.Z);
+            buf.Write(m_doorOpenMinZOffset);
+            buf.Write(m_doorOpenMaxZOffset);
+            buf.Write(m_door1Pos.X);
+            buf.Write(m_door1Pos.Y);
+            buf.Write(m_door2Pos.X);
+            buf.Write(m_door2Pos.Y);
+            buf.Write(m_door1Pos.Z);
+            buf.Write(m_door2Pos.Z);
+            buf.Write(m_doorLastOpenTime);
+            buf.Write(m_collectedCarsState);
+            buf.Write(m_field89h);
+            buf.Write(m_field90h);
+            buf.Write(m_field91h);
+            buf.Write(m_pTargetVehicle);
+            buf.Write(m_field96h);
+            buf.Write(m_storedCar);
 
-            Debug.Assert(w.Position() - w.Marked() == SizeOf<Garage>(), "Garage: Invalid write size!");
+            Debug.Assert(buf.Offset == SizeOf<Garage>());
         }
 
         public override bool Equals(object obj)

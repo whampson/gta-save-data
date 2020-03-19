@@ -8,7 +8,7 @@ namespace GTASaveData.GTA3
         HeadRadio,
 
         [Description("Double Cleff FM")]
-        DoubleCleffFM,
+        DoubleCleff,
 
         [Description("Jah Radio")]
         JahRadio,
@@ -26,18 +26,18 @@ namespace GTASaveData.GTA3
         MsxFM,
 
         [Description("Flashback 95.6")]
-        Flashback956,
+        Flashback,
 
         [Description("Chatterbox 109")]
-        Chatterbox109,
+        Chatterbox,
 
         [Description("User Track Player")]
-        UserTrackPlayer,
+        UserTrack,
 
-        [Description("Police Scanner")]
-        PoliceScanner,
+        [Description("Police Radio")]
+        PoliceRadio,
 
-        [Description("(none)")]
+        [Description("Off")]
         None
     }
 }

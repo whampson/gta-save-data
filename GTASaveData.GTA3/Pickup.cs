@@ -1,11 +1,11 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
 using System;
 using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
     [Size(0x1C)]
-    public class Pickup : SerializableObject,
+    public class Pickup : GTAObject,
         IEquatable<Pickup>
     {
         private PickupType m_type;
@@ -70,32 +70,32 @@ namespace GTASaveData.GTA3
             m_position = new Vector();
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_type = (PickupType) r.ReadByte();
-            m_hasBeenPickedUp = r.ReadBool();
-            m_quantity = r.ReadUInt16();
-            m_objectIndex = r.ReadUInt32();
-            m_timer = r.ReadUInt32();
-            m_modelId = r.ReadInt16();
-            m_flags = r.ReadUInt16();
-            m_position = r.ReadObject<Vector>();
+            m_type = (PickupType) buf.ReadByte();
+            m_hasBeenPickedUp = buf.ReadBool();
+            m_quantity = buf.ReadUInt16();
+            m_objectIndex = buf.ReadUInt32();
+            m_timer = buf.ReadUInt32();
+            m_modelId = buf.ReadInt16();
+            m_flags = buf.ReadUInt16();
+            m_position = buf.ReadObject<Vector>();
 
-            Debug.Assert(r.Position() - r.Marked() == SizeOf<Pickup>());
+            Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write((byte) m_type);
-            w.Write(m_hasBeenPickedUp);
-            w.Write((ushort) m_quantity);
-            w.Write(m_objectIndex);
-            w.Write(m_timer);
-            w.Write((short) m_modelId);
-            w.Write((ushort) m_flags);
-            w.Write(m_position);
+            buf.Write((byte) m_type);
+            buf.Write(m_hasBeenPickedUp);
+            buf.Write((ushort) m_quantity);
+            buf.Write(m_objectIndex);
+            buf.Write(m_timer);
+            buf.Write((short) m_modelId);
+            buf.Write((ushort) m_flags);
+            buf.Write(m_position);
 
-            Debug.Assert(w.Position() - w.Marked() == SizeOf<Pickup>());
+            Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
         public override bool Equals(object obj)

@@ -1,10 +1,10 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
 using System;
 
 namespace GTASaveData.GTA3
 {
     [Size(8)]
-    public class Collective : SerializableObject,
+    public class Collective : GTAObject,
         IEquatable<Collective>
     {
         private int m_index;
@@ -28,16 +28,16 @@ namespace GTASaveData.GTA3
             m_field04h = 0;
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_index = r.ReadInt32();
-            m_field04h = r.ReadInt32();
+            m_index = buf.ReadInt32();
+            m_field04h = buf.ReadInt32();
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write(m_index);
-            w.Write(m_field04h);
+            buf.Write(m_index);
+            buf.Write(m_field04h);
         }
 
         public override bool Equals(object obj)

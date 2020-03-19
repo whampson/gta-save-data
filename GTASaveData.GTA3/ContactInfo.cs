@@ -1,10 +1,10 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
 using System;
 
 namespace GTASaveData.GTA3
 {
     [Size(8)]
-    public class ContactInfo : SerializableObject,
+    public class ContactInfo : GTAObject,
         IEquatable<ContactInfo>
     {
         private int m_onAMissionFlag;
@@ -25,16 +25,16 @@ namespace GTASaveData.GTA3
         public ContactInfo()
         { }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_onAMissionFlag = r.ReadInt32();
-            m_baseBriefId = r.ReadInt32();
+            m_onAMissionFlag = buf.ReadInt32();
+            m_baseBriefId = buf.ReadInt32();
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write(m_onAMissionFlag);
-            w.Write(m_baseBriefId);
+            buf.Write(m_onAMissionFlag);
+            buf.Write(m_baseBriefId);
         }
 
         public override bool Equals(object obj)

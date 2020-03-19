@@ -1,12 +1,12 @@
-﻿using GTASaveData.Common;
-using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
 using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
     [Size(0x48)]
-    public class CarGenerator : SerializableObject,
+    public class CarGenerator : GTAObject,
         ICarGenerator,
         IEquatable<CarGenerator>
     {
@@ -149,54 +149,54 @@ namespace GTASaveData.GTA3
             m_vecSup = new Vector();
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_model = (VehicleType) r.ReadInt32();
-            m_position = r.ReadObject<Vector>();
-            m_angle = r.ReadSingle();
-            m_color1 = r.ReadInt16();
-            m_color2 = r.ReadInt16();
-            m_forceSpawn = r.ReadBool();
-            m_alarmChance = r.ReadByte();
-            m_lockedChance = r.ReadByte();
-            r.ReadByte();
-            m_minDelay = r.ReadUInt16();
-            m_maxDelay = r.ReadUInt16();
-            m_timer = r.ReadUInt32();
-            m_vehicleHandle = r.ReadInt32();
-            m_usesRemaining = r.ReadInt16();
-            m_isBlocking = r.ReadBool();
-            r.ReadByte();
-            m_vecInf = r.ReadObject<Vector>();
-            m_vecSup = r.ReadObject<Vector>();
-            m_size = r.ReadSingle();
+            m_model = (VehicleType) buf.ReadInt32();
+            m_position = buf.ReadObject<Vector>();
+            m_angle = buf.ReadSingle();
+            m_color1 = buf.ReadInt16();
+            m_color2 = buf.ReadInt16();
+            m_forceSpawn = buf.ReadBool();
+            m_alarmChance = buf.ReadByte();
+            m_lockedChance = buf.ReadByte();
+            buf.ReadByte();
+            m_minDelay = buf.ReadUInt16();
+            m_maxDelay = buf.ReadUInt16();
+            m_timer = buf.ReadUInt32();
+            m_vehicleHandle = buf.ReadInt32();
+            m_usesRemaining = buf.ReadInt16();
+            m_isBlocking = buf.ReadBool();
+            buf.ReadByte();
+            m_vecInf = buf.ReadObject<Vector>();
+            m_vecSup = buf.ReadObject<Vector>();
+            m_size = buf.ReadSingle();
 
-            Debug.Assert(r.Position() - r.Marked() == SizeOf<CarGenerator>(), "CarGenerator: Invalid read size!");
+            Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write((int) m_model);
-            w.Write(m_position);
-            w.Write(m_angle);
-            w.Write((short) m_color1);
-            w.Write((short) m_color2);
-            w.Write(m_forceSpawn);
-            w.Write((byte) m_alarmChance);
-            w.Write((byte) m_lockedChance);
-            w.Align();
-            w.Write((ushort) m_minDelay);
-            w.Write((ushort) m_maxDelay);
-            w.Write(m_timer);
-            w.Write(m_vehicleHandle);
-            w.Write((short) m_usesRemaining);
-            w.Write(m_isBlocking);
-            w.Align();
-            w.Write(m_vecInf);
-            w.Write(m_vecSup);
-            w.Write(m_size);
+            buf.Write((int) m_model);
+            buf.Write(m_position);
+            buf.Write(m_angle);
+            buf.Write((short) m_color1);
+            buf.Write((short) m_color2);
+            buf.Write(m_forceSpawn);
+            buf.Write((byte) m_alarmChance);
+            buf.Write((byte) m_lockedChance);
+            buf.Write((byte) 0);
+            buf.Write((ushort) m_minDelay);
+            buf.Write((ushort) m_maxDelay);
+            buf.Write(m_timer);
+            buf.Write(m_vehicleHandle);
+            buf.Write((short) m_usesRemaining);
+            buf.Write(m_isBlocking);
+            buf.Write((byte) 0);
+            buf.Write(m_vecInf);
+            buf.Write(m_vecSup);
+            buf.Write(m_size);
 
-            Debug.Assert(w.Position() - w.Marked() == SizeOf<CarGenerator>(), "CarGenerator: Invalid write size!");
+            Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
 
         public override bool Equals(object obj)

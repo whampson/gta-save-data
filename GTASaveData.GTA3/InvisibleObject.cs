@@ -1,10 +1,10 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
 using System;
 
 namespace GTASaveData.GTA3
 {
     [Size(8)]
-    public class InvisibleObject : SerializableObject,
+    public class InvisibleObject : GTAObject,
         IEquatable<InvisibleObject>
     {
         private ObjectType m_type;
@@ -25,16 +25,16 @@ namespace GTASaveData.GTA3
         public InvisibleObject()
         { }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_type = (ObjectType) r.ReadInt32();
-            m_staticIndex = r.ReadInt32();
+            m_type = (ObjectType) buf.ReadInt32();
+            m_staticIndex = buf.ReadInt32();
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write((int) m_type);
-            w.Write(m_staticIndex);
+            buf.Write((int) m_type);
+            buf.Write(m_staticIndex);
         }
 
         public override bool Equals(object obj)

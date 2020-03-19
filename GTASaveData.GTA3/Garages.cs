@@ -1,4 +1,4 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     [Size(0x1478)]
-    public class Garages : SerializableObject,
+    public class Garages : GTAObject,
         IEquatable<Garages>
     {
         public static class Limits
@@ -94,7 +94,7 @@ namespace GTASaveData.GTA3
             set { m_storedCars = value; OnPropertyChanged(); }
         }
 
-        public Array<Garage> GaragesArray
+        public Array<Garage> GarageArray
         { 
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
@@ -106,40 +106,40 @@ namespace GTASaveData.GTA3
             m_garages = new Array<Garage>();
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_numberOfGarages = r.ReadInt32();
-            m_bombsAreFree = r.ReadBool(4);
-            m_respraysAreFree = r.ReadBool(4);
-            m_carsCollected = r.ReadInt32();
-            m_bankVansCollected = r.ReadInt32();
-            m_policeCarsCollected = r.ReadInt32();
-            m_carTypesCollected1 = (CollectCars1) r.ReadInt32();
-            m_carTypesCollected2 = (CollectCars2) r.ReadInt32();
-            m_carTypesCollected3 = (CollectCars3) r.ReadInt32();
-            m_lastTimeHelpMessage = r.ReadInt32();
-            m_storedCars = r.ReadArray<StoredCar>(Limits.NumberOfStoredCars);
-            m_garages = r.ReadArray<Garage>(Limits.NumberOfGarages);
+            m_numberOfGarages = buf.ReadInt32();
+            m_bombsAreFree = buf.ReadBool(4);
+            m_respraysAreFree = buf.ReadBool(4);
+            m_carsCollected = buf.ReadInt32();
+            m_bankVansCollected = buf.ReadInt32();
+            m_policeCarsCollected = buf.ReadInt32();
+            m_carTypesCollected1 = (CollectCars1) buf.ReadInt32();
+            m_carTypesCollected2 = (CollectCars2) buf.ReadInt32();
+            m_carTypesCollected3 = (CollectCars3) buf.ReadInt32();
+            m_lastTimeHelpMessage = buf.ReadInt32();
+            m_storedCars = buf.ReadArray<StoredCar>(Limits.NumberOfStoredCars);
+            m_garages = buf.ReadArray<Garage>(Limits.NumberOfGarages);
 
-            Debug.Assert(r.Position() - r.Marked() == SizeOf<Garages>());
+            Debug.Assert(buf.Offset == SizeOf<Garages>());
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write(m_numberOfGarages);
-            w.Write(m_bombsAreFree, 4);
-            w.Write(m_respraysAreFree, 4);
-            w.Write(m_carsCollected);
-            w.Write(m_bankVansCollected);
-            w.Write(m_policeCarsCollected);
-            w.Write((int) m_carTypesCollected1);
-            w.Write((int) m_carTypesCollected2);
-            w.Write((int) m_carTypesCollected3);
-            w.Write(m_lastTimeHelpMessage);
-            w.Write(m_storedCars.ToArray(), Limits.NumberOfStoredCars);
-            w.Write(m_garages.ToArray(), Limits.NumberOfGarages);
+            buf.Write(m_numberOfGarages);
+            buf.Write(m_bombsAreFree, 4);
+            buf.Write(m_respraysAreFree, 4);
+            buf.Write(m_carsCollected);
+            buf.Write(m_bankVansCollected);
+            buf.Write(m_policeCarsCollected);
+            buf.Write((int) m_carTypesCollected1);
+            buf.Write((int) m_carTypesCollected2);
+            buf.Write((int) m_carTypesCollected3);
+            buf.Write(m_lastTimeHelpMessage);
+            buf.Write(m_storedCars.ToArray(), Limits.NumberOfStoredCars);
+            buf.Write(m_garages.ToArray(), Limits.NumberOfGarages);
 
-            Debug.Assert(w.Position() - w.Marked() == SizeOf<Garages>());
+            Debug.Assert(buf.Offset == SizeOf<Garages>());
         }
 
         public override bool Equals(object obj)

@@ -1,11 +1,11 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
 using System;
 using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
     [Size(0x28)]
-    public class StoredCar : SerializableObject,
+    public class StoredCar : GTAObject,
         IEquatable<StoredCar>
     {
         private VehicleType m_model;
@@ -86,38 +86,38 @@ namespace GTASaveData.GTA3
             m_vecAngle = new Vector();
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_model = (VehicleType) r.ReadInt32();
-            m_vecPos = r.ReadObject<Vector>();
-            m_vecAngle = r.ReadObject<Vector>();
-            m_flags = (StoredCarFlags) r.ReadInt32();
-            m_color1 = r.ReadByte();
-            m_color2 = r.ReadByte();
-            m_radio = (RadioStation) r.ReadByte();
-            m_extra1 = r.ReadSByte();
-            m_extra2 = r.ReadSByte();
-            m_carBombType = (BombType) r.ReadByte();
-            r.Align();
+            m_model = (VehicleType) buf.ReadInt32();
+            m_vecPos = buf.ReadObject<Vector>();
+            m_vecAngle = buf.ReadObject<Vector>();
+            m_flags = (StoredCarFlags) buf.ReadInt32();
+            m_color1 = buf.ReadByte();
+            m_color2 = buf.ReadByte();
+            m_radio = (RadioStation) buf.ReadByte();
+            m_extra1 = buf.ReadSByte();
+            m_extra2 = buf.ReadSByte();
+            m_carBombType = (BombType) buf.ReadByte();
+            buf.Align4Bytes();
 
-            Debug.Assert(r.Position() - r.Marked() == SizeOf<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write((int) m_model);
-            w.Write(m_vecPos);
-            w.Write(m_vecAngle);
-            w.Write((int) m_flags);
-            w.Write(m_color1);
-            w.Write(m_color2);
-            w.Write((byte) m_radio);
-            w.Write(m_extra1);
-            w.Write(m_extra2);
-            w.Write((byte) m_carBombType);
-            w.Align();
+            buf.Write((int) m_model);
+            buf.Write(m_vecPos);
+            buf.Write(m_vecAngle);
+            buf.Write((int) m_flags);
+            buf.Write(m_color1);
+            buf.Write(m_color2);
+            buf.Write((byte) m_radio);
+            buf.Write(m_extra1);
+            buf.Write(m_extra2);
+            buf.Write((byte) m_carBombType);
+            buf.Align4Bytes();
 
-            Debug.Assert(w.Position() - w.Marked() == SizeOf<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
         public override bool Equals(object obj)

@@ -1,4 +1,4 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     [Size(0x2514)]
-    public class Pickups : SerializableObject,
+    public class Pickups : GTAObject,
         IEquatable<Pickups>
     {
         public static class Limits
@@ -43,24 +43,24 @@ namespace GTASaveData.GTA3
             m_pickupsCollected = new Array<int>();
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_pickups = r.ReadArray<Pickup>(Limits.NumberOfPickups);
-            m_lastCollectedIndex = r.ReadUInt16();
-            r.ReadUInt16();
-            m_pickupsCollected = r.ReadArray<int>(Limits.NumberOfPickupsCollected);
+            m_pickups = buf.ReadArray<Pickup>(Limits.NumberOfPickups);
+            m_lastCollectedIndex = buf.ReadUInt16();
+            buf.ReadUInt16();
+            m_pickupsCollected = buf.ReadArray<int>(Limits.NumberOfPickupsCollected);
 
-            Debug.Assert(r.Position() - r.Marked() == SizeOf<Pickups>());
+            Debug.Assert(buf.Offset == SizeOf<Pickups>());
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write(m_pickups.ToArray(), Limits.NumberOfPickups);
-            w.Write((ushort) m_lastCollectedIndex);
-            w.Write((ushort) 0);
-            w.Write(m_pickupsCollected.ToArray(), Limits.NumberOfPickupsCollected);
+            buf.Write(m_pickups.ToArray(), Limits.NumberOfPickups);
+            buf.Write((ushort) m_lastCollectedIndex);
+            buf.Write((ushort) 0);
+            buf.Write(m_pickupsCollected.ToArray(), Limits.NumberOfPickupsCollected);
 
-            Debug.Assert(w.Position() - w.Marked() == SizeOf<Pickups>());
+            Debug.Assert(buf.Offset == SizeOf<Pickups>());
         }
 
         public override bool Equals(object obj)

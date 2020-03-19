@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class SimpleVars : SerializableObject,
+    public class SimpleVars : GTAObject,
         ISimpleVars,
         IEquatable<SimpleVars>
     {
@@ -300,7 +300,7 @@ namespace GTASaveData.GTA3
             m_compileDateAndTime = new Date();
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(Serializer r, SaveFileFormat fmt)
         {
             if (!fmt.SupportsPS2)
             {
@@ -311,7 +311,7 @@ namespace GTASaveData.GTA3
                 }
             }
             m_sizeOfGameInBytes = r.ReadInt32();
-            Debug.Assert(m_sizeOfGameInBytes == (fmt.IsSupported(ConsoleType.PS2, ConsoleFlags.Japan) ? 0x31400 : 0x31401));
+            Debug.Assert(m_sizeOfGameInBytes == (fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Japan) ? 0x31400 : 0x31401));
             m_currLevel = (Level) r.ReadUInt32();
             m_cameraPosition = r.ReadObject<Vector>();
             m_millisecondsPerGameMinute = r.ReadInt32();
@@ -351,7 +351,7 @@ namespace GTASaveData.GTA3
             {
                 m_prefsMusicVolume = r.ReadInt32();
                 m_prefsSfxVolume = r.ReadInt32();
-                if (!fmt.IsSupported(ConsoleType.PS2, ConsoleFlags.Australia))
+                if (!fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Australia))
                 {
                     m_prefsCurrentPadMode = r.ReadInt32();
                 }
@@ -359,7 +359,7 @@ namespace GTASaveData.GTA3
                 m_prefsStereoMono = r.ReadBool(4);
                 m_prefsRadioStation = (RadioStation) r.ReadInt32();
                 m_prefsBrightness = r.ReadInt32();
-                if (!fmt.IsSupported(ConsoleType.PS2, ConsoleFlags.Australia))
+                if (!fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Australia))
                 {
                     m_prefsShowTrails = r.ReadBool(4);
                 }
@@ -373,13 +373,13 @@ namespace GTASaveData.GTA3
             m_weatherTypeInList = r.ReadInt32();
             m_inCarCameraMode = r.ReadSingle();
             m_onFootCameraMode = r.ReadSingle();
-            if (fmt.SupportsMobile)
+            if (fmt.SupportedOnMobile)
             {
                 m_isQuickSave = r.ReadInt32();
             }
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(Serializer w, SaveFileFormat fmt)
         {
             if (!fmt.SupportsPS2)
             {
@@ -429,7 +429,7 @@ namespace GTASaveData.GTA3
             {
                 w.Write(m_prefsMusicVolume);
                 w.Write(m_prefsSfxVolume);
-                if (!fmt.IsSupported(ConsoleType.PS2, ConsoleFlags.Australia))
+                if (!fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Australia))
                 {
                     w.Write(m_prefsCurrentPadMode);
                 }
@@ -437,7 +437,7 @@ namespace GTASaveData.GTA3
                 w.Write(m_prefsStereoMono, 4);
                 w.Write((int) m_prefsRadioStation);
                 w.Write(m_prefsBrightness);
-                if (!fmt.IsSupported(ConsoleType.PS2, ConsoleFlags.Australia))
+                if (!fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Australia))
                 {
                     w.Write(m_prefsShowTrails, 4);
                 }
@@ -451,7 +451,7 @@ namespace GTASaveData.GTA3
             w.Write(m_weatherTypeInList);
             w.Write(m_inCarCameraMode);
             w.Write(m_onFootCameraMode);
-            if (fmt.SupportsMobile)
+            if (fmt.SupportedOnMobile)
             {
                 w.Write(m_isQuickSave);
             }

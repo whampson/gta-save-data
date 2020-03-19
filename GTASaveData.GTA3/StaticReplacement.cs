@@ -1,11 +1,11 @@
-﻿using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
 using System;
 using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
     [Size(16)]
-    public class StaticReplacement : SerializableObject,
+    public class StaticReplacement : GTAObject,
         IEquatable<StaticReplacement>
     {
         private ObjectType m_type;
@@ -45,24 +45,24 @@ namespace GTASaveData.GTA3
             m_oldModelId = -1;
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_type = (ObjectType) r.ReadInt32();
-            m_staticIndex = r.ReadInt32();
-            m_newModelId = r.ReadInt32();
-            m_oldModelId = r.ReadInt32();
+            m_type = (ObjectType) buf.ReadInt32();
+            m_staticIndex = buf.ReadInt32();
+            m_newModelId = buf.ReadInt32();
+            m_oldModelId = buf.ReadInt32();
 
-            Debug.Assert(r.Position() - r.Marked() == SizeOf<StaticReplacement>());
+            Debug.Assert(buf.Offset == SizeOf<StaticReplacement>());
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write((int) m_type);
-            w.Write(m_staticIndex);
-            w.Write(m_newModelId);
-            w.Write(m_oldModelId);
+            buf.Write((int) m_type);
+            buf.Write(m_staticIndex);
+            buf.Write(m_newModelId);
+            buf.Write(m_oldModelId);
 
-            Debug.Assert(w.Position() - w.Marked() == SizeOf<StaticReplacement>());
+            Debug.Assert(buf.Offset == SizeOf<StaticReplacement>());
         }
 
         public override bool Equals(object obj)
