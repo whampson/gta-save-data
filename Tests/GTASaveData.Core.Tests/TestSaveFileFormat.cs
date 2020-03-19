@@ -24,6 +24,26 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(expectedResult, result);
         }
 
-        // TODO :test equal
+        [Theory]
+        [InlineData(ConsoleType.PS2, ConsoleFlags.None, ConsoleType.PS2, ConsoleFlags.None, true)]
+        [InlineData(ConsoleType.PS2, ConsoleFlags.None, ConsoleType.Xbox, ConsoleFlags.None, false)]
+        [InlineData(ConsoleType.PS2, ConsoleFlags.Europe | ConsoleFlags.NorthAmerica, ConsoleType.PS2, ConsoleFlags.Europe, false)]
+        [InlineData(ConsoleType.PS2, ConsoleFlags.Europe | ConsoleFlags.NorthAmerica, ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe, true)]
+        public void TestEquals(ConsoleType typeA, ConsoleFlags flagsA, ConsoleType typeB, ConsoleFlags flagsB, bool expectedResult)
+        {
+            SaveFileFormat f1 = new SaveFileFormat("F1", "Format 1", new GameConsole(typeA, flagsA));
+            SaveFileFormat f2 = new SaveFileFormat("F1", "Format 1", new GameConsole(typeB, flagsB));
+
+            if (expectedResult)
+            {
+                Assert.Equal(f1, f2);
+                Assert.True(f1 == f2);
+            }
+            else
+            {
+                Assert.NotEqual(f1, f2);
+                Assert.True(f1 != f2);
+            }
+        }
     }
 }

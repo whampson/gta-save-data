@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData.Types;
 using System;
 using System.Linq;
 using TestFramework;
