@@ -53,7 +53,7 @@ namespace GTASaveData
         }
         public override bool Equals(object obj)
         {
-            if (obj == null)
+            if (!(obj is SaveFileFormat))
             {
                 return false;
             }

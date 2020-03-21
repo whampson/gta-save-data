@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using WpfEssentials;
 
 namespace GTASaveData.Types
@@ -331,6 +332,11 @@ namespace GTASaveData.Types
         public T[] ToArray()
         {
             return m_items.ToArray();
+        }
+
+        public static Array Create<T>(int count) where T : new()
+        {
+            return Enumerable.Repeat(new T(), count).ToArray();
         }
 
         #region Thread Safety

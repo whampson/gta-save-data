@@ -1,5 +1,4 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Types.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,25 +11,10 @@ namespace GTASaveData
 {
     public sealed class WorkBuffer : IDisposable
     {
-        private static readonly byte[] DefaultPadding = new byte[1] { 0 };
-
         private readonly MemoryStream m_buffer;
         private readonly BinaryReader m_reader;
         private readonly BinaryWriter m_writer;
         private bool m_disposed;
-
-        public PaddingType Padding
-        {
-            get;
-            set;
-        }
-
-        private byte[] _paddingBytes;   // prefer using property
-        public byte[] PaddingBytes
-        {
-            get { return _paddingBytes ?? DefaultPadding; }
-            set { _paddingBytes = value ?? DefaultPadding; }
-        }
 
         public int Mark
         {
@@ -41,7 +25,7 @@ namespace GTASaveData
         public int Position
         {
             get { return (int) m_buffer.Position; }
-            set { m_buffer.Position = value; }
+            //set { m_buffer.Position = value; }
         }
 
         public int Offset
@@ -83,14 +67,22 @@ namespace GTASaveData
             }
         }
 
+        public static int Align4Bytes(int addr)
+        {
+            const int WordSize = 4;
+
+            return (addr + WordSize - 1) & ~(WordSize - 1);
+        }
+
         public void Align4Bytes()
         {
-            WritePadding(SaveFile.GetAlignedAddress(Position) - Position);
+            //WritePadding(SaveFile.GetAlignedAddress(Position) - Position);
+            Skip(Align4Bytes(Position) - Position);
         }
 
         public void Reset()
         {
-            Position = 0;
+            Seek(0);
             ResetMark();
         }
 
@@ -99,9 +91,24 @@ namespace GTASaveData
             Mark = Position;
         }
 
-        public byte[] ToByteArray()
+        public void Seek(int pos)
+        {
+            m_buffer.Position = pos;
+        }
+
+        public void Skip(int count)
+        {
+            m_buffer.Position += count;
+        }
+
+        public byte[] ToArray()
         {
             return m_buffer.ToArray();
+        }
+
+        public byte[] ToArray(int count)
+        {
+            return ToArray().Take(count).ToArray();
         }
 
         /// <summary>
@@ -558,7 +565,7 @@ namespace GTASaveData
             }
 
             Write(encoding.GetBytes(value));
-            WritePadding(numPadding);
+            m_buffer.Position += numPadding;
         }
 
         public void Write<T>(T value) where T : IGTAObject
@@ -625,43 +632,6 @@ namespace GTASaveData
                     GenericWrite(new T(), format, itemLength, unicode);
                 }
             }
-        }
-
-        /// <summary>
-        /// Writes the specified number of padding bytes.
-        /// The exact bytes written depends on the current <see cref="Padding"/>.
-        /// </summary>
-        /// <param name="length">The number of bytes to write.</param>
-        public void WritePadding(int length)
-        {
-            switch (Padding)
-            {
-                case PaddingType.Pattern:
-                {
-                    byte[] pad = new byte[length];
-                    byte[] seq = PaddingBytes;
-
-                    for (int i = 0; i < length; i++)
-                    {
-                        pad[i] = seq[i % seq.Length];
-                    }
-                    Write(pad);
-                    break;
-                }
-
-                case PaddingType.Random:
-                {
-                    byte[] pad = new byte[length];
-                    Random rand = new Random();
-
-                    rand.NextBytes(pad);
-                    Write(pad);
-                    break;
-                }
-
-            }
-
-            Debug.WriteLine("Wrote {0} padding bytes", length);
         }
 
         internal T GenericRead<T>(SaveFileFormat format,

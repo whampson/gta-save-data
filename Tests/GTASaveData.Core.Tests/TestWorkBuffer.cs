@@ -28,7 +28,7 @@ namespace GTASaveData.Core.Tests
                 wb.Align4Bytes();
                 wb.Write(i0);
                 wb.Write(f0);
-                data = wb.ToByteArray();
+                data = wb.ToArray();
             }
 
             using (WorkBuffer wb = new WorkBuffer(data))
@@ -43,36 +43,6 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(i0, i1);
             Assert.Equal(f0, f1);
             Assert.Equal(12, data.Length);
-        }
-
-        [Theory]
-        [InlineData(PaddingType.Pattern, new byte[] { 0 })]
-        [InlineData(PaddingType.Random, null)]
-        [InlineData(PaddingType.Pattern, new byte[] { 0xCA, 0xFE, 0xBA, 0xBE })]
-        public void Padding(PaddingType mode, byte[] seq)
-        {
-            byte[] data;
-
-            using (WorkBuffer wb = new WorkBuffer() { Padding = mode, PaddingBytes = seq })
-            {
-                wb.WritePadding(100);
-                data = wb.ToByteArray();
-            }
-
-            switch (mode)
-            {
-                case PaddingType.Random:
-                    Assert.NotEqual(0, data.Sum(x => x));
-                    break;
-                case PaddingType.Pattern:
-                {
-                    for (int i = 0; i < data.Length; i++)
-                    {
-                        Assert.Equal(seq[i % seq.Length], data[i]);
-                    }
-                    break;
-                }
-            }
         }
 
         [Theory]
@@ -103,7 +73,7 @@ namespace GTASaveData.Core.Tests
             using (WorkBuffer wb = new WorkBuffer())
             {
                 wb.Write(x0, numBytes);
-                data = wb.ToByteArray();
+                data = wb.ToArray();
             }
 
             using (WorkBuffer wb = new WorkBuffer(data))
@@ -185,7 +155,7 @@ namespace GTASaveData.Core.Tests
             using (WorkBuffer wb = new WorkBuffer())
             {
                 wb.Write(x0, true);
-                data = wb.ToByteArray();
+                data = wb.ToArray();
             }
 
             using (WorkBuffer wb = new WorkBuffer(data))
@@ -572,7 +542,7 @@ namespace GTASaveData.Core.Tests
             using (WorkBuffer wb = new WorkBuffer())
             {
                 wb.Write(x, length, unicode, zeroTerminate);
-                return wb.ToByteArray();
+                return wb.ToArray();
             }
         }
 
@@ -593,7 +563,7 @@ namespace GTASaveData.Core.Tests
             using (WorkBuffer wb = new WorkBuffer())
             {
                 wb.Write(items, count, itemLength, unicode);
-                return wb.ToByteArray();
+                return wb.ToArray();
             }
         }
 

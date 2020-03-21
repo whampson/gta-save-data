@@ -1,12 +1,18 @@
 ﻿using GTASaveData.Types.Interfaces;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using WpfEssentials;
 
 namespace GTASaveData.Types
 {
     public abstract class GTAObject : ObservableObject, IGTAObject
     {
+        public static Array<T> CreateArray<T>(int count) where T : new()
+        {
+            return Enumerable.Repeat(new T(), count).ToArray();
+        }
+
         int IGTAObject.ReadObjectData(WorkBuffer buf)
         {
             buf.ResetMark();

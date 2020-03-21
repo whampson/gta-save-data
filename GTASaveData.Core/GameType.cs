@@ -2,7 +2,7 @@
 
 namespace GTASaveData
 {
-    public enum Game
+    public enum GameType
     {
         [Description("GTA 3")]
         III,

@@ -128,7 +128,7 @@
                 <StatusBarItem Grid.Column="4" HorizontalContentAlignment="Center">
                     <TextBlock Text="{Binding SelectedGame, Converter={StaticResource EnumDescriptionConverter}}">
                         <TextBlock.ContextMenu>
-                            <ContextMenu ItemsSource="{eext:EnumValueCollection EnumType=s:Game}">
+                            <ContextMenu ItemsSource="{eext:EnumValueCollection EnumType=s:GameType}">
                                 <ContextMenu.ItemContainerStyle>
                                     <Style TargetType="MenuItem">
                                         <EventSetter Event="Click" Handler="GameMenuItem_Click"/>

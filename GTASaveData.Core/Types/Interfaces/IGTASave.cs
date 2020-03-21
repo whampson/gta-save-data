@@ -2,9 +2,9 @@
 
 namespace GTASaveData.Types.Interfaces
 {
-    public interface IGTASave
+    public interface IGTASave : IDisposable
     {
         string Name { get; set; }
-        DateTime TimeStamp { get; set; }
+        DateTime TimeLastSaved { get; set; }
     }
 }

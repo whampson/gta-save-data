@@ -65,7 +65,7 @@
             using (WorkBuffer wb = new WorkBuffer())
             {
                 Write(wb, obj, fmt);
-                return wb.ToByteArray();
+                return wb.ToArray();
             }
         }
 
@@ -84,7 +84,7 @@
             using (WorkBuffer wb = new WorkBuffer(buf))
             {
                 int count = Write(wb, obj, fmt);
-                data = wb.ToByteArray();
+                data = wb.ToArray();
 
                 return count;
             }

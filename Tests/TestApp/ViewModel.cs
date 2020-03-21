@@ -1,8 +1,6 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
-using GTASaveData.SA;
-using GTASaveData.Serialization;
-using GTASaveData.VC;
+using GTASaveData.Types.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,39 +16,39 @@ namespace TestApp
     {
         public void OnLoadSaveData()
         {
-            IGrandTheftAutoSave s = CurrentSaveDataFile as IGrandTheftAutoSave;
+            //IGTASave s = CurrentSaveDataFile as IGTASave;
 
-            Debug.WriteLine("Last mission passed: {0}", (object) s.SimpleVars.SaveName);
-            Debug.WriteLine("Global timer: {0}", s.SimpleVars.GlobalTimer);
-            Debug.WriteLine("Minute length: {0}", s.SimpleVars.MillisecondsPerGameMinute);
-            Debug.WriteLine("Camera position: <{0:0.####}, {1:0.####}, {2:0.####}>",
-                s.SimpleVars.CameraPosition.X, s.SimpleVars.CameraPosition.Y, s.SimpleVars.CameraPosition.Z);
+            //Debug.WriteLine("Last mission passed: {0}", (object) s.SimpleVars.SaveName);
+            //Debug.WriteLine("Global timer: {0}", s.SimpleVars.GlobalTimer);
+            //Debug.WriteLine("Minute length: {0}", s.SimpleVars.MillisecondsPerGameMinute);
+            //Debug.WriteLine("Camera position: <{0:0.####}, {1:0.####}, {2:0.####}>",
+            //    s.SimpleVars.CameraPosition.X, s.SimpleVars.CameraPosition.Y, s.SimpleVars.CameraPosition.Z);
         }
 
         #region Events, Variables, and Properties
         public EventHandler<FileDialogEventArgs> FileDialogRequested;
         public EventHandler<MessageBoxEventArgs> MessageBoxRequested;
 
-        private GrandTheftAutoSave m_currentSaveDataFile;
-        private FileFormat m_currentFileFormat;
-        private Game m_selectedGame;
+        private SaveFile m_currentSaveFile;
+        private SaveFileFormat m_currentFileFormat;
+        private GameType m_selectedGame;
         private int m_selectedBlockIndex;
         private string m_text;
         private string m_statusText;
 
-        public GrandTheftAutoSave CurrentSaveDataFile
+        public SaveFile CurrentSaveFile
         {
-            get { return m_currentSaveDataFile; }
-            set { m_currentSaveDataFile = value; OnPropertyChanged(); }
+            get { return m_currentSaveFile; }
+            set { m_currentSaveFile = value; OnPropertyChanged(); }
         }
 
-        public FileFormat CurrentFileFormat
+        public SaveFileFormat CurrentFileFormat
         {
             get { return m_currentFileFormat; }
             set { m_currentFileFormat = value; OnPropertyChanged(); }
         }
 
-        public Game SelectedGame
+        public GameType SelectedGame
         {
             get { return m_selectedGame; }
             set { m_selectedGame = value; OnPropertyChanged(); }
@@ -99,7 +97,7 @@ namespace TestApp
                 return new RelayCommand
                 (
                     () => CloseSaveData(),
-                    () => CurrentSaveDataFile != null
+                    () => CurrentSaveFile != null
                 );
             }
         }
@@ -111,7 +109,7 @@ namespace TestApp
                 return new RelayCommand
                 (
                     () => RequestFileDialog(FileDialogType.SaveFileDialog),
-                    () => CurrentSaveDataFile != null
+                    () => CurrentSaveFile != null
                 );
             }
         }
@@ -134,22 +132,30 @@ namespace TestApp
 
         public void LoadSaveData(string path)
         {
+            SaveFileFormat fmt;
             try
             {
                 switch (m_selectedGame)
                 {
-                    case Game.GTA3:
-                        CurrentFileFormat = GrandTheftAutoSave.GetFileFormat<GTA3Save>(path);
-                        CurrentSaveDataFile = GrandTheftAutoSave.Load<GTA3Save>(path, CurrentFileFormat);
+                    case GameType.III:
+
+                        bool valid = SaveFile.GetFileFormat<GTA3Save>(path, out fmt);
+                        if (!valid)
+                        {
+                            RequestMessageBoxError("Invalid save file!");
+                            return;
+                        }
+                        CurrentFileFormat = fmt;
+                        CurrentSaveFile = SaveFile.Load<GTA3Save>(path, fmt);
                         break;
-                    case Game.ViceCity:
-                        CurrentFileFormat = GrandTheftAutoSave.GetFileFormat<ViceCitySave>(path);
-                        CurrentSaveDataFile = GrandTheftAutoSave.Load<ViceCitySave>(path, CurrentFileFormat);
-                        break;
-                    case Game.SanAndreas:
-                        CurrentFileFormat = FileFormat.None;
-                        CurrentSaveDataFile = GrandTheftAutoSave.Load<SanAndreasSave>(path);
-                        break;
+                    //case Game.VC:
+                    //    CurrentFileFormat = SaveFile.GetFileFormat<ViceCitySave>(path);
+                    //    CurrentSaveDataFile = SaveFile.Load<ViceCitySave>(path, CurrentFileFormat);
+                    //    break;
+                    //case Game.SA:
+                    //    CurrentFileFormat = SaveFileFormat.Default;
+                    //    CurrentSaveDataFile = SaveFile.Load<SanAndreasSave>(path);
+                    //    break;
                     default:
                         RequestMessageBoxError("Selected game not yet supported!");
                         return;
@@ -166,7 +172,7 @@ namespace TestApp
                 return;
             }
 
-            if (CurrentSaveDataFile == null)
+            if (CurrentSaveFile == null)
             {
                 RequestMessageBoxError("Failed to open file!");
                 return;
@@ -182,8 +188,8 @@ namespace TestApp
 
         public void CloseSaveData()
         {
-            CurrentSaveDataFile = null;
-            CurrentFileFormat = null;
+            CurrentSaveFile = null;
+            CurrentFileFormat = SaveFileFormat.Default;
             SelectedBlockIndex = -1;
 
             UpdateTextBox();
@@ -192,28 +198,31 @@ namespace TestApp
 
         public void StoreSaveData(string path)
         {
-            if (CurrentSaveDataFile == null)
+            if (CurrentSaveFile == null)
             {
                 RequestMessageBoxError("Please open a file first.");
                 return;
             }
 
-            CurrentSaveDataFile.Save(path);
+            CurrentSaveFile.Write(path);
             StatusText = "File saved.";
         }
 
         public void UpdateTextBox()
         {
-            if (CurrentSaveDataFile == null || SelectedBlockIndex < 0)
+            if (CurrentSaveFile == null || SelectedBlockIndex < 0)
             {
                 Text = "";
                 return;
             }
 
-            IReadOnlyList<SerializableObject> blocks = CurrentSaveDataFile.Blocks;
-            Debug.Assert(CurrentSaveDataFile.Blocks.Count == BlockNames[SelectedGame].Length);
+            //IReadOnlyList<GTAObject> blocks = CurrentSaveDataFile.Blocks;
+            //Debug.Assert(CurrentSaveDataFile.Blocks.Count == BlockNames[SelectedGame].Length);
 
-            Text = blocks[SelectedBlockIndex].ToString();
+            //Text = blocks[SelectedBlockIndex].ToString();
+
+
+            Text = CurrentSaveFile.ToJsonString();
         }
 
         private void RequestFileDialog(FileDialogType type)
@@ -247,11 +256,11 @@ namespace TestApp
         #endregion
 
         #region Misc
-        public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
+        public static Dictionary<GameType, string[]> BlockNames => new Dictionary<GameType, string[]>()
         {
-            { Game.GTA3, GTA3BlockNames },
-            { Game.ViceCity, VCBlockNames },
-            { Game.SanAndreas, SABlockNames },
+            { GameType.III, GTA3BlockNames },
+            { GameType.VC, VCBlockNames },
+            { GameType.SA, SABlockNames },
         };
 
         public static string[] GTA3BlockNames => new[]

@@ -68,6 +68,7 @@ namespace GTASaveData.Types
         }
 
         public SystemTime()
+            : this(DateTime.MinValue)
         { }
 
         public SystemTime(DateTime dateTime)

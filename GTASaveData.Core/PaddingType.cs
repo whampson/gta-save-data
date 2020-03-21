@@ -2,6 +2,7 @@
 {
     public enum PaddingType
     {
+        Default,
         Pattern,
         Random,
     };
