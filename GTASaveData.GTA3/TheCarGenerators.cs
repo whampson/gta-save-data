@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 
-namespace GTASaveData.GTA3.Blocks
+namespace GTASaveData.GTA3
 {
     [Size(0x2D14)]
     public class TheCarGenerators : GTAObject,

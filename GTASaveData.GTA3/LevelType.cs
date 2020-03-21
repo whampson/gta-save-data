@@ -1,6 +1,6 @@
 ﻿namespace GTASaveData.GTA3
 {
-    public enum Level
+    public enum LevelType
     {
         None,
         Industrial,

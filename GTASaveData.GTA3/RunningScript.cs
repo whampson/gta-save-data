@@ -12,7 +12,7 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int NameLength = 8;
+            public const int MaxNameLength = 8;
             public const int MaxStackDepth = 6;
             public const int MaxStackDepthPS2 = 4;
             public const int NumberOfLocalVariables = 16;
@@ -156,7 +156,7 @@ namespace GTASaveData.GTA3
         {
             m_pNextScript = buf.ReadUInt32();
             m_pPrevScript = buf.ReadUInt32();
-            m_scriptName = buf.ReadString(Limits.NameLength);
+            m_scriptName = buf.ReadString(Limits.MaxNameLength);
             m_ip = buf.ReadUInt32();
             m_stack = buf.ReadArray<uint>(GetMaxStackDepth(fmt));
             m_stackPointer = buf.ReadUInt16();
@@ -183,7 +183,7 @@ namespace GTASaveData.GTA3
         {
             buf.Write(m_pNextScript);
             buf.Write(m_pPrevScript);
-            buf.Write(m_scriptName, Limits.NameLength);
+            buf.Write(m_scriptName, Limits.MaxNameLength);
             buf.Write(m_ip);
             buf.Write(m_stack.ToArray(), GetMaxStackDepth(fmt));
             buf.Write(m_stackPointer);

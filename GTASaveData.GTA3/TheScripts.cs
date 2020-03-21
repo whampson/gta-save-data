@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 
-namespace GTASaveData.GTA3.Blocks
+namespace GTASaveData.GTA3
 {
     public class TheScripts : GTAObject,
         IEquatable<TheScripts>
@@ -106,10 +106,10 @@ namespace GTASaveData.GTA3.Blocks
         public TheScripts()
         {
             m_scriptSpace = new Array<byte>();
-            m_contactArray = new Array<ContactInfo>();
-            m_collectiveArray = new Array<Collective>();
-            m_buildingSwapArray = new Array<StaticReplacement>();
-            m_invisibilitySettingArray = new Array<InvisibleObject>();
+            m_contactArray = CreateArray<ContactInfo>(Limits.NumberOfContacts);
+            m_collectiveArray = CreateArray<Collective>(Limits.NumberOfCollectives);
+            m_buildingSwapArray = CreateArray<StaticReplacement>(Limits.NumberOfBuildingSwaps);
+            m_invisibilitySettingArray = CreateArray<InvisibleObject>(Limits.NumberOfInvisibilitySettings);
             m_activeScripts = new Array<RunningScript>();
         }
 

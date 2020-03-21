@@ -1,8 +1,6 @@
-using GTASaveData.Common;
-using GTASaveData.Common.Blocks;
 using GTASaveData.Extensions;
-using GTASaveData.GTA3.Blocks;
-using GTASaveData.Serialization;
+using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -14,10 +12,201 @@ namespace GTASaveData.GTA3
     /// Represents a save file for <i>Grand Theft Auto III</i>.
     /// </summary>
     public class GTA3Save : SaveFile,
-        IGTASave,
-        IEquatable<GTA3Save>
+        IGTASave, IEquatable<GTA3Save>
     {
+        public static class Limits
+        {
+            public const int MaxNameLength = 24;
+        }
+
         public const int SaveHeaderSize = 8;
+        public const int SizeOfOneGameInBytes = 201729;
+        public const int SizeOfSimpleVars = 188;
+        public const int BufferSize = 55000;
+
+        private string m_name;
+        private SystemTime m_timeLastSaved;
+        private int m_saveSize;
+        private Game m_game;
+        private Camera m_theCamera;
+        private Clock m_clock;
+        private Pad m_pad;
+        private Timer m_timer;
+        private TimeStep m_timeStep;
+        private Weather m_weather;
+        private Date m_compileDateAndTime;
+        private int m_isQuickSave;              // TODO: enum?
+
+        private TheScripts m_theScripts;
+
+        public override string Name
+        {
+            get { return m_name; }
+            set { m_name = value; OnPropertyChanged(); }
+        }
+
+        public override DateTime TimeLastSaved
+        {
+            get { return m_timeLastSaved.ToDateTime(); }
+            set { m_timeLastSaved = new SystemTime(value); OnPropertyChanged(); }
+        }
+
+        public int SaveSize
+        {
+            get { return m_saveSize; }
+            set { m_saveSize = value; OnPropertyChanged(); }
+        }
+
+        public Game Game
+        {
+            get { return m_game; }
+            set { m_game = value; OnPropertyChanged(); }
+        }
+
+        public Camera TheCamera
+        {
+            get { return m_theCamera; }
+            set { m_theCamera = value; OnPropertyChanged(); }
+        }
+
+        public Clock Clock
+        {
+            get { return m_clock; }
+            set { m_clock = value; OnPropertyChanged(); }
+        }
+
+        public Pad Pad
+        {
+            get { return m_pad; }
+            set { m_pad = value; OnPropertyChanged(); }
+        }
+
+        public Timer Timer
+        {
+            get { return m_timer; }
+            set { m_timer = value; OnPropertyChanged(); }
+        }
+
+        public TimeStep TimeStep
+        {
+            get { return m_timeStep; }
+            set { m_timeStep = value; OnPropertyChanged(); }
+        }
+
+        public Weather Weather
+        {
+            get { return m_weather; }
+            set { m_weather = value; OnPropertyChanged(); }
+        }
+
+        public Date CompileDateAndTime
+        {
+            get { return m_compileDateAndTime; }
+            set { m_compileDateAndTime = value; OnPropertyChanged(); }
+        }
+
+        public int IsQuickSave
+        {
+            get { return m_isQuickSave; }
+            set { m_isQuickSave = value; OnPropertyChanged(); }
+        }
+
+        // PS2 stuff
+        //private int m_prefsMusicVolume;
+        //private int m_prefsSfxVolume;
+        //private bool m_prefsUseVibration;
+        //private bool m_prefsStereoMono;
+        //private RadioStation m_prefsRadioStation;
+        //private int m_prefsBrightness;
+        //private bool m_prefsUseWideScreen;
+        //private bool m_prefsShowTrails;
+        //private bool m_prefsShowSubtitles;
+        //private Language m_prefsLanguage;
+
+        //public int PrefsMusicVolume
+        //{
+        //    get { return m_prefsMusicVolume; }
+        //    set { m_prefsMusicVolume = value; OnPropertyChanged(); }
+        //}
+
+        //public int PrefsSfxVolume
+        //{
+        //    get { return m_prefsSfxVolume; }
+        //    set { m_prefsSfxVolume = value; OnPropertyChanged(); }
+        //}
+
+        //public bool PrefsUseVibration
+        //{
+        //    get { return m_prefsUseVibration; }
+        //    set { m_prefsUseVibration = value; OnPropertyChanged(); }
+        //}
+
+        //public bool PrefsStereoMono
+        //{
+        //    get { return m_prefsStereoMono; }
+        //    set { m_prefsStereoMono = value; OnPropertyChanged(); }
+        //}
+
+        //public RadioStation PrefsRadioStation
+        //{
+        //    get { return m_prefsRadioStation; }
+        //    set { m_prefsRadioStation = value; OnPropertyChanged(); }
+        //}
+
+        //public int PrefsBrightness
+        //{
+        //    get { return m_prefsBrightness; }
+        //    set { m_prefsBrightness = value; OnPropertyChanged(); }
+        //}
+
+        //public bool PrefsUseWideScreen
+        //{
+        //    get { return m_prefsUseWideScreen; }
+        //    set { m_prefsUseWideScreen = value; OnPropertyChanged(); }
+        //}
+
+        //public bool PrefsShowTrails
+        //{
+        //    get { return m_prefsShowTrails; }
+        //    set { m_prefsShowTrails = value; OnPropertyChanged(); }
+        //}
+
+        //public bool PrefsShowSubtitles
+        //{
+        //    get { return m_prefsShowSubtitles; }
+        //    set { m_prefsShowSubtitles = value; OnPropertyChanged(); }
+        //}
+
+        //public Language PrefsLanguage
+        //{
+        //    get { return m_prefsLanguage; }
+        //    set { m_prefsLanguage = value; OnPropertyChanged(); }
+        //}
+
+
+
+        public TheScripts TheScripts
+        {
+            get { return m_theScripts; }
+            set { m_theScripts = value; OnPropertyChanged(); }
+        }
+
+
+        public GTA3Save()
+        {
+            m_workBuf = new WorkBuffer(new byte[BufferSize]);
+            m_timeLastSaved = new SystemTime();
+            m_game = new Game();
+            m_theCamera = new Camera();
+            m_clock = new Clock();
+            m_pad = new Pad();
+            m_timer = new Timer();
+            m_timeStep = new TimeStep();
+            m_weather = new Weather();
+            m_compileDateAndTime = new Date();
+
+            m_theScripts = new TheScripts();
+        }
 
         public static int ReadSaveHeader(WorkBuffer buf, string tag)
         {
@@ -34,199 +223,98 @@ namespace GTASaveData.GTA3
             buf.Write(size);
         }
 
-
-
-        // Block IDs for tagged blocks.
-        private const string ScrTag = "SCR";
-        private const string RstTag = "RST";
-        private const string RdrTag = "RDR";
-        private const string ZnsTag = "ZNS";
-        private const string GngTag = "GNG";
-        private const string CgnTag = "CGN";
-        private const string AudTag = "AUD";
-        private const string PtpTag = "PTP";
-
-        public SimpleVars SimpleVars
+        private int Save(WorkBuffer buf, GTAObject o, SaveFileFormat fmt)
         {
-            get { return m_blocks[0] as SimpleVars; }
-            set { m_blocks[0] = value; OnPropertyChanged(); }
-        }
-
-        public TheScripts Scripts
-        {
-            get { return m_blocks[1] as TheScripts; }
-            set { m_blocks[1] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy PedPool
-        {
-            get { return m_blocks[2] as Dummy; }
-            set { m_blocks[2] = value; OnPropertyChanged(); }
-        }
-
-        public Garages Garages
-        {
-            get { return m_blocks[3] as Garages; }
-            set { m_blocks[3] = value; OnPropertyChanged(); }
-        }
-
-        public VehiclePool VehiclePool
-        {
-            get { return m_blocks[4] as VehiclePool; }
-            set { m_blocks[4] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy ObjectPool
-        {
-            get { return m_blocks[5] as Dummy; }
-            set { m_blocks[5] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy PathFind
-        {
-            get { return m_blocks[6] as Dummy; }
-            set { m_blocks[6] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy Cranes
-        {
-            get { return m_blocks[7] as Dummy; }
-            set { m_blocks[7] = value; OnPropertyChanged(); }
-        }
-
-        public Pickups Pickups
-        {
-            get { return m_blocks[8] as Pickups; }
-            set { m_blocks[8] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy PhoneInfo
-        {
-            get { return m_blocks[9] as Dummy; }
-            set { m_blocks[9] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy RestartPoints
-        {
-            get { return m_blocks[10] as Dummy; }
-            set { m_blocks[10] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy RadarBlips
-        {
-            get { return m_blocks[11] as Dummy; }
-            set { m_blocks[11] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy Zones
-        {
-            get { return m_blocks[12] as Dummy; }
-            set { m_blocks[12] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy GangData
-        {
-            get { return m_blocks[13] as Dummy; }
-            set { m_blocks[13] = value; OnPropertyChanged(); }
-        }
-
-        public TheCarGenerators CarGenerators
-        {
-            get { return m_blocks[14] as TheCarGenerators; }
-            set { m_blocks[14] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy Particles
-        {
-            get { return m_blocks[15] as Dummy; }
-            set { m_blocks[15] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy AudioScriptObjects
-        {
-            get { return m_blocks[16] as Dummy; }
-            set { m_blocks[16] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy PlayerInfo
-        {
-            get { return m_blocks[17] as Dummy; }
-            set { m_blocks[17] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy Stats
-        {
-            get { return m_blocks[18] as Dummy; }
-            set { m_blocks[18] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy Streaming
-        {
-            get { return m_blocks[19] as Dummy; }
-            set { m_blocks[19] = value; OnPropertyChanged(); }
-        }
-
-        public Dummy PedTypeInfo
-        {
-            get { return m_blocks[20] as Dummy; }
-            set { m_blocks[20] = value; OnPropertyChanged(); }
-        }
-
-        ISimpleVars IGTASave.SimpleVars => SimpleVars;
-
-        //ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators => CarGenerators;
-
-        public override string Name => SimpleVars.SaveName;
-
-        protected override int MaxBlockSize => (Format.SupportsPS2) ? 50000 : 55000;
-
-        protected override int BlockCount => 21;
-
-        protected override int SectionCount => (Format.SupportsPS2) ? 3 : 20;
-
-        protected override int SimpleVarsSize
-        {
-            get
+            int size;
+            int preSize, postData;
+                
+            preSize = buf.Position;
+            buf.Skip(4);
+                
+            size = ((IGTAObject) o).WriteObjectData(buf, fmt);
+            if (size > BufferSize)
             {
-                if (Format.SupportedOnMobile || Format.SupportsPS2)
-                {
-                    return (Format.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Australia)) ? 0xA8 : 0xB0;
-                }
-                else if (Format.SupportsPC || Format.SupportsXbox)
-                {
-                    return 0xBC;
-                }
-
-                throw new InvalidOperationException("Not implemented!");
+                throw new SerializationException(string.Format("Exceeded maximum block size of {0}.", BufferSize));
             }
+
+            postData = buf.Position;
+
+            buf.Seek(preSize);
+            buf.Write(size);
+            buf.Seek(postData);
+            buf.Align4Bytes();
+
+            size = WorkBuffer.Align4Bytes(size);
+            Debug.Assert(size == buf.Offset);
+
+            return size;
         }
 
-        public GTA3Save()
+        protected override int WriteBlock(WorkBuffer buf)
         {
-            m_blocks[0] = new SimpleVars();
-            m_blocks[1] = new TheScripts();
-            m_blocks[2] = new Dummy();
-            m_blocks[3] = new Garages();
-            m_blocks[4] = new VehiclePool();
-            m_blocks[5] = new Dummy();
-            m_blocks[6] = new Dummy();
-            m_blocks[7] = new Dummy();
-            m_blocks[8] = new Pickups();
-            m_blocks[9] = new Dummy();
-            m_blocks[10] = new Dummy();
-            m_blocks[11] = new Dummy();
-            m_blocks[12] = new Dummy();
-            m_blocks[13] = new Dummy();
-            m_blocks[14] = new TheCarGenerators();
-            m_blocks[15] = new Dummy();
-            m_blocks[16] = new Dummy();
-            m_blocks[17] = new Dummy();
-            m_blocks[18] = new Dummy();
-            m_blocks[19] = new Dummy();
-            m_blocks[20] = new Dummy();
+            byte[] data = m_workBuf.ToArray(m_workBuf.Position);
+
+            buf.Write(data.Length);
+            buf.Write(data);
+            buf.Align4Bytes();
+
+            m_checksum += BitConverter.GetBytes(data.Length).Sum(x => x);
+            m_checksum += data.Sum(x => x);
+
+            m_workBuf.Seek(0);
+
+            return buf.Offset;
         }
 
-        protected override SaveFileFormat DetectFileFormat(byte[] data)
+        protected override void LoadAllData(WorkBuffer buf)
+        {
+            //throw new NotImplementedException();
+        }
+
+        protected override void SaveAllData(WorkBuffer buf)
+        {
+            int totalSize = 0;
+            int actualSize = 0;
+
+            m_workBuf.Seek(0);
+            m_checksum = 0;
+
+            m_workBuf.Write(Name, Limits.MaxNameLength, true);
+            m_workBuf.Write(new SystemTime(TimeLastSaved));
+            m_workBuf.Write(SizeOfOneGameInBytes);
+            m_workBuf.Write((int) Game.CurrLevel);
+            m_workBuf.Write(TheCamera.Position);
+            m_workBuf.Write(Clock.MillisecondsPerGameMinute);
+            m_workBuf.Write(Clock.LastClockTick);
+            m_workBuf.Write(Clock.GameClockHours);
+            m_workBuf.Write(Clock.GameClockMinutes);
+            m_workBuf.Write(Pad.Mode);
+            m_workBuf.Write(Timer.TimeInMilliseconds);
+            m_workBuf.Write(Timer.TimeScale);
+            m_workBuf.Write(Timer.TimeStep);
+            m_workBuf.Write(Timer.TimeStepNonClipped);
+            m_workBuf.Write(Timer.FrameCounter);
+            m_workBuf.Write(TimeStep.Step);
+            m_workBuf.Write(TimeStep.FramesPerUpdate);
+            m_workBuf.Write(TimeStep.TimeScale);
+            m_workBuf.Write((short) Weather.OldWeatherType);
+            m_workBuf.Write((short) Weather.NewWeatherType);
+            m_workBuf.Write((short) Weather.ForcedWeatherType);
+            m_workBuf.Write(Weather.InterpolationValue);
+            m_workBuf.Write(CompileDateAndTime);
+            m_workBuf.Write(Weather.WeatherTypeInList);
+            m_workBuf.Write(TheCamera.CarZoomIndicator);
+            m_workBuf.Write(TheCamera.PedZoomIndicator);
+            Debug.Assert(m_workBuf.Offset == SizeOfSimpleVars);
+            totalSize = Save(m_workBuf, m_theScripts, FileFormat);
+            totalSize += SizeOfSimpleVars;
+            actualSize += WriteBlock(buf);
+
+
+
+        }
+
+        protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
         {
             bool isMobile = false;
             bool isPcOrXbox = false;
@@ -236,28 +324,28 @@ namespace GTASaveData.GTA3
             int scr = data.FindFirst("SCR\0".GetAsciiBytes());
 
             int blk1Size;
-            using (Serializer s = new Serializer(new MemoryStream(data)))
+            using (WorkBuffer wb = new WorkBuffer(data))
             {
-                s.Position += s.ReadInt32();
-                blk1Size = s.ReadInt32();
+                wb.Skip(wb.ReadInt32());
+                blk1Size = wb.ReadInt32();
             }
 
             if (scr == 0xB0 && fileId == 0x04)
             {
-                // PS2, Austra
-                return FileFormats.PS2_AU;
+                fmt = FileFormats.PS2_AU;
+                return true;
             }
             else if (scr == 0xB8)
             {
                 if (fileIdJP == 0x04)
                 {
-                    // PS2, Japan
-                    return FileFormats.PS2_JP;
+                    fmt = FileFormats.PS2_JP;
+                    return true;
                 }
                 else if (fileId == 0x04)
                 {
-                    // PS2, North America/Europe
-                    return FileFormats.PS2_NAEU;
+                    fmt = FileFormats.PS2_NAEU;
+                    return true;
                 }
                 else if (fileId == 0x34)
                 {
@@ -273,320 +361,31 @@ namespace GTASaveData.GTA3
             {
                 if (blk1Size == 0x648)
                 {
-                    // iOS
-                    return FileFormats.iOS;
+                    fmt = FileFormats.iOS;
+                    return true;
                 }
                 else if (blk1Size == 0x64C)
                 {
-                    // Android
-                    return FileFormats.Android;
+                    fmt = FileFormats.Android;
+                    return true;
                 }
             }
             else if (isPcOrXbox)
             {
                 if (blk1Size == 0x624)
                 {
-                    // PC (Windows, macOS)
-                    return FileFormats.PC;
+                    fmt = FileFormats.PC;
+                    return true;
                 }
                 else if (blk1Size == 0x628)
                 {
-                    // Xbox
-                    return FileFormats.Xbox;
+                    fmt = FileFormats.Xbox;
+                    return true;
                 }
             }
 
-            return null;
-        }
-
-        protected override byte[] ReadBlock(Serializer r, string tag)
-        {
-            int length = r.ReadInt32();
-            Debug.WriteLineIf(length > MaxBlockSize, "ReadBlock: Maximum block size exceeded!");
-
-            if (tag != null)
-            {
-                string str = r.ReadString(4);
-                int innerLength = r.ReadInt32();
-                Debug.Assert(str == tag, "ReadBlock: Invalid tag!", "Expected: {0}, Actual: {1}", tag, str);
-                Debug.Assert(innerLength == (length - 8));
-                length = innerLength;
-            }
-
-            byte[] data = r.ReadBytes(length);
-            r.Align();
-
-            return data;
-        }
-
-        protected override byte[] CreateBlock(string tag, byte[] data)
-        {
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (Serializer w = CreateSerializer(m))
-                {
-                    int totalLength = data.Length;
-
-                    if (tag != null)
-                    {
-                        totalLength += 8;
-                        w.Write(totalLength);
-                        w.Write(tag, 4);
-                    }
-
-                    w.Write(data.Length);
-                    w.Write(data);
-                    w.Align();
-
-                    Debug.WriteLineIf(totalLength > MaxBlockSize, "CreateBlock: Maximum block size exceeded!");
-                }
-
-                return m.ToArray();
-            }
-        }
-
-        protected override byte[] CreatePadding(int length)
-        {
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (Serializer w = CreateSerializer(m))
-                {
-                    int padLength = Math.Min(length, MaxBlockSize);
-                    w.WritePadding(padLength);
-                }
-
-                return m.ToArray();
-            }
-        }
-
-        protected override void LoadSection(int index, byte[] data)
-        {
-            using (Serializer r = CreateSerializer(new MemoryStream(data)))
-            {
-                if (Format.SupportsPS2)
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            SimpleVars = ReadObject<SimpleVars>(r.ReadBytes(SimpleVarsSize));
-                            Scripts = ReadObject<TheScripts>(ReadBlock(r, ScrTag));
-                            PedPool = ReadBlock(r, null);
-                            Garages = ReadObject<Garages>(ReadBlock(r, null));
-                            VehiclePool = ReadObject<VehiclePool>(ReadBlock(r, null));
-                            break;
-                        case 1:
-                            ObjectPool = ReadBlock(r, null);
-                            PathFind = ReadBlock(r, null);
-                            Cranes = ReadBlock(r, null);
-                            break;
-                        case 2:
-                            Pickups = ReadObject<Pickups>(ReadBlock(r, null));
-                            PhoneInfo = ReadBlock(r, null);
-                            RestartPoints = ReadBlock(r, RstTag);
-                            RadarBlips = ReadBlock(r, RdrTag);
-                            Zones = ReadBlock(r, ZnsTag);
-                            GangData = ReadBlock(r, GngTag);
-                            CarGenerators = ReadObject<TheCarGenerators>(ReadBlock(r, CgnTag));
-                            Particles = ReadBlock(r, null);
-                            AudioScriptObjects = ReadBlock(r, AudTag);
-                            PlayerInfo = ReadBlock(r, null);
-                            Stats = ReadBlock(r, null);
-                            Streaming = ReadBlock(r, null);
-                            PedTypeInfo = ReadBlock(r, PtpTag);
-                            break;
-                    }
-                }
-                else
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            SimpleVars = ReadObject<SimpleVars>(r.ReadBytes(SimpleVarsSize));
-                            Scripts = ReadObject<TheScripts>(ReadBlock(r, ScrTag));
-                            break;
-                        case 1: PedPool = ReadBlock(r, null); break;
-                        case 2: Garages = ReadObject<Garages>(ReadBlock(r, null)); break;
-                        case 3: VehiclePool = ReadObject<VehiclePool>(ReadBlock(r, null)); break;
-                        case 4: ObjectPool = ReadBlock(r, null); break;
-                        case 5: PathFind = ReadBlock(r, null); break;
-                        case 6: Cranes = ReadBlock(r, null); break;
-                        case 7: Pickups = ReadObject<Pickups>(ReadBlock(r, null)); break;
-                        case 8: PhoneInfo = ReadBlock(r, null); break;
-                        case 9: RestartPoints = ReadBlock(r, RstTag); break;
-                        case 10: RadarBlips = ReadBlock(r, RdrTag); break;
-                        case 11: Zones = ReadBlock(r, ZnsTag); break;
-                        case 12: GangData = ReadBlock(r, GngTag); break;
-                        case 13: CarGenerators = ReadObject<TheCarGenerators>(ReadBlock(r, CgnTag)); break;
-                        case 14: Particles = ReadBlock(r, null); break;
-                        case 15: AudioScriptObjects = ReadBlock(r, AudTag); break;
-                        case 16: PlayerInfo = ReadBlock(r, null); break;
-                        case 17: Stats = ReadBlock(r, null); break;
-                        case 18: Streaming = ReadBlock(r, null); break;
-                        case 19: PedTypeInfo = ReadBlock(r, PtpTag); break;
-                    }
-                }
-            }
-        }
-
-        protected override byte[] SaveSection(int index)
-        {
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (Serializer w = CreateSerializer(m))
-                {
-                    if (Format.SupportsPS2)
-                    {
-                        switch (index)
-                        {
-                            case 0:
-                                w.Write(WriteObject(SimpleVars));
-                                w.Write(CreateBlock(ScrTag, Scripts));
-                                w.Write(CreateBlock(null, PedPool));
-                                w.Write(CreateBlock(null, Garages));
-                                w.Write(CreateBlock(null, VehiclePool));
-                                break;
-                            case 1:
-                                w.Write(CreateBlock(null, ObjectPool));
-                                w.Write(CreateBlock(null, PathFind));
-                                w.Write(CreateBlock(null, Cranes));
-                                break;
-                            case 2:
-                                w.Write(CreateBlock(null, Pickups));
-                                w.Write(CreateBlock(null, PhoneInfo));
-                                w.Write(CreateBlock(RstTag, RestartPoints));
-                                w.Write(CreateBlock(RdrTag, RadarBlips));
-                                w.Write(CreateBlock(ZnsTag, Zones));
-                                w.Write(CreateBlock(GngTag, GangData));
-                                w.Write(CreateBlock(CgnTag, CarGenerators));
-                                w.Write(CreateBlock(null, Particles));
-                                w.Write(CreateBlock(AudTag, AudioScriptObjects));
-                                w.Write(CreateBlock(null, PlayerInfo));
-                                w.Write(CreateBlock(null, Stats));
-                                w.Write(CreateBlock(null, Streaming));
-                                w.Write(CreateBlock(PtpTag, PedTypeInfo));
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        switch (index)
-                        {
-                            case 0:
-                                w.Write(WriteObject(SimpleVars));
-                                w.Write(CreateBlock(ScrTag, Scripts));
-                                break;
-                            case 1: w.Write(CreateBlock(null, PedPool)); break;
-                            case 2: w.Write(CreateBlock(null, Garages)); break;
-                            case 3: w.Write(CreateBlock(null, VehiclePool)); break;
-                            case 4: w.Write(CreateBlock(null, ObjectPool)); break;
-                            case 5: w.Write(CreateBlock(null, PathFind)); break;
-                            case 6: w.Write(CreateBlock(null, Cranes)); break;
-                            case 7: w.Write(CreateBlock(null, Pickups)); break;
-                            case 8: w.Write(CreateBlock(null, PhoneInfo)); break;
-                            case 9: w.Write(CreateBlock(RstTag, RestartPoints)); break;
-                            case 10: w.Write(CreateBlock(RdrTag, RadarBlips)); break;
-                            case 11: w.Write(CreateBlock(ZnsTag, Zones)); break;
-                            case 12: w.Write(CreateBlock(GngTag, GangData)); break;
-                            case 13: w.Write(CreateBlock(CgnTag, CarGenerators)); break;
-                            case 14: w.Write(CreateBlock(null, Particles)); break;
-                            case 15: w.Write(CreateBlock(AudTag, AudioScriptObjects)); break;
-                            case 16: w.Write(CreateBlock(null, PlayerInfo)); break;
-                            case 17: w.Write(CreateBlock(null, Stats)); break;
-                            case 18: w.Write(CreateBlock(null, Streaming)); break;
-                            case 19: w.Write(CreateBlock(PtpTag, PedTypeInfo)); break;
-                        }
-                    }
-                }
-
-                return m.ToArray();
-            }
-        }
-
-        protected override void ReadObjectData(Serializer r, SaveFileFormat fmt)
-        {
-            //if (!FileFormats.GetAll().Contains(fmt))
-            //{
-            //    throw new SerializationException(
-            //        string.Format("'{0}' is not a valid file format for GTA VC save data.", fmt));
-            //}
-
-            Format = fmt;
-
-            int index = 0;
-            int numSectionsRead = 0;
-            int bytesRead = 0;
-
-            while (r.BaseStream.Position < r.BaseStream.Length - 4)
-            {
-                int length = r.ReadInt32();
-                byte[] data = r.ReadBytes(length);
-
-                if (index < SectionCount)
-                {
-                    LoadSection(index++, data);
-                }
-
-                numSectionsRead++;
-                bytesRead += data.Length;
-            }
-
-#if DEBUG
-            Debug.WriteLine("Loaded GTA3 -- total bytes: {0}, total sections: {1}, padding: {2}",
-                bytesRead, numSectionsRead, numSectionsRead - index);
-
-            int sizeOfGame = (int) Serializer.GetAlignedAddress(SimpleVars.SizeOfGameInBytes);
-            Debug.Assert(bytesRead == (sizeOfGame - 4));
-            Debug.Assert(r.BaseStream.Position == sizeOfGame + (4 * numSectionsRead) - 4);
-#endif
-        }
-
-        protected override void WriteObjectData(Serializer w, SaveFileFormat fmt)
-        {
-            //if (!FileFormats.GetAll().Contains(fmt))
-            //{
-            //    throw new SerializationException(
-            //        string.Format("'{0}' is not a valid file format for GTA VC save data.", fmt));
-            //}
-
-            Format = fmt;
-
-            int index = 0;
-            int checksum = 0;
-            int numSectionsWritten = 0;
-            int bytesWritten = 0;
-
-            int sizeOfGame = (int) Serializer.GetAlignedAddress(SimpleVars.SizeOfGameInBytes);
-
-            while (bytesWritten < sizeOfGame - 4)
-            {
-                byte[] data;
-                int lengthSum;
-
-                if (index < SectionCount)
-                {
-                    data = SaveSection(index++);
-                }
-                else
-                {
-                    data = CreatePadding(sizeOfGame - bytesWritten - 4);
-                }
-
-                w.Write(data.Length);
-                w.Write(data);
-
-                lengthSum = Serializer.Write(data.Length).Sum(x => x);
-                checksum += data.Sum(x => x) + lengthSum;
-                bytesWritten += data.Length;
-                numSectionsWritten++;
-            }
-
-            Debug.WriteLine("Saved GTA3 -- total bytes: {0}, total sections: {1}, padding: {2}",
-                bytesWritten, numSectionsWritten, numSectionsWritten - index);
-
-            Debug.Assert(bytesWritten == (sizeOfGame - 4));
-            Debug.Assert(w.BaseStream.Position == sizeOfGame + (4 * numSectionsWritten) - 4);
-
-            w.Write(checksum);
+            fmt = SaveFileFormat.Default;
+            return false;
         }
 
         public override bool Equals(object obj)
@@ -601,23 +400,10 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_blocks.SequenceEqual(other.m_blocks);
+            // TODO
+            return false;
         }
 
-        [Flags]
-        public enum FileTypeFlags
-        {
-            None,
-            GTA3_Android = 1 << 0,
-            GTA3_iOS = 1 << 1,
-            GTA3_PC = 1 << 2,
-            GTA3_PS2_AU = 1 << 3,
-            GTA3_PS2_JP = 1 << 4,
-            GTA3_PS2_NAEU = 1 << 5,
-            GTA3_Xbox = 1 << 6
-        }
-
-        // TODO: renamme to FileTypes
         public static class FileFormats
         {
             public static readonly SaveFileFormat Android = new SaveFileFormat(
