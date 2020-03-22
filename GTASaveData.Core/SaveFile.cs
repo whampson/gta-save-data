@@ -1,5 +1,6 @@
 ﻿using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -23,18 +24,21 @@ namespace GTASaveData
         private byte[] m_paddingBytes;
         private bool m_disposed;
 
+        [JsonIgnore]
         public SaveFileFormat FileFormat
         {
             get { return m_fileFormat; }
             set { m_fileFormat = value; OnPropertyChanged(); }
         }
 
+        [JsonIgnore]
         public PaddingType Padding
         {
             get { return m_padding; }
             set { m_padding = value; OnPropertyChanged(); }
         }
 
+        [JsonIgnore]
         public byte[] PaddingBytes
         {
             get { return m_paddingBytes; }

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using GTASaveData.Converters;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace GTASaveData.Types
     {
         private Array<byte> m_data;
 
-        [JsonConverter(typeof(BinaryConverter))]
+        [JsonConverter(typeof(ByteArrayConverter))]
         public Array<byte> Data
         {
             get { return m_data; }
@@ -28,8 +28,13 @@ namespace GTASaveData.Types
         }
 
         public DummyObject()
-            : this(new byte[0])
+            : this(0)
         { }
+
+        public DummyObject(int count)
+        {
+            m_data = new byte[count];
+        }
 
         public DummyObject(byte[] data)
         {
@@ -38,8 +43,8 @@ namespace GTASaveData.Types
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            // nop
-            Debug.WriteLine("Warning: Useless call to DummyObject#ReadObjectData()");
+            byte[] data = buf.ReadBytes(m_data.Count);
+            m_data = data;
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
