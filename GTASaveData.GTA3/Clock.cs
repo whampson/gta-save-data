@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Clock : NonSerializableObject,
+    public class Clock : GTAObject,
         IEquatable<Clock>
     {
         private int m_millisecondsPerGameMinute;

@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Timer : NonSerializableObject,
+    public class Timer : GTAObject,
         IEquatable<Timer>
     {
         private uint m_timeInMilliseconds;

@@ -6,7 +6,7 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     [Size(0x2D14)]
-    public class TheCarGenerators : GTAObject,
+    public class TheCarGenerators : SaveDataObject,
         IEquatable<TheCarGenerators>
     {
         public static class Limits

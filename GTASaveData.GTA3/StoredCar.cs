@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     [Size(0x28)]
-    public class StoredCar : GTAObject,
+    public class StoredCar : SaveDataObject,
         IEquatable<StoredCar>
     {
         private VehicleType m_model;

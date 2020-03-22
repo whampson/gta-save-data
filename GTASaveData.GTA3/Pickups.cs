@@ -6,7 +6,7 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     [Size(0x2514)]
-    public class Pickups : GTAObject,
+    public class Pickups : SaveDataObject,
         IEquatable<Pickups>
     {
         public static class Limits

@@ -4,7 +4,7 @@ using System;
 namespace GTASaveData.GTA3
 {
     [Size(8)]
-    public class InvisibleObject : GTAObject,
+    public class InvisibleObject : SaveDataObject,
         IEquatable<InvisibleObject>
     {
         private ObjectType m_type;

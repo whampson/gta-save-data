@@ -4,7 +4,7 @@ using System;
 namespace GTASaveData.GTA3
 {
     [Size(8)]
-    public class ContactInfo : GTAObject,
+    public class ContactInfo : SaveDataObject,
         IEquatable<ContactInfo>
     {
         private int m_onAMissionFlag;

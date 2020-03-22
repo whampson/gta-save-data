@@ -7,7 +7,7 @@ namespace GTASaveData.GTA3
 {
     // TODO: interface
     [Size(0x88)]
-    public class RunningScript : GTAObject,
+    public class RunningScript : SaveDataObject,
         IEquatable<RunningScript>
     {
         public static class Limits

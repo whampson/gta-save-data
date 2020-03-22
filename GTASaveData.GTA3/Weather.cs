@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Weather : NonSerializableObject,
+    public class Weather : GTAObject,
         IEquatable<Weather>
     {
         private WeatherType m_oldWeatherType;

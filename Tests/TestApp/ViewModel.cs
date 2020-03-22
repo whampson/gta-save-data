@@ -1,9 +1,7 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
-using GTASaveData.Types.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -14,15 +12,9 @@ namespace TestApp
 {
     public class ViewModel : ObservableObject
     {
-        public void OnLoadSaveData()
+        public void OnLoad()
         {
-            //IGTASave s = CurrentSaveDataFile as IGTASave;
-
-            //Debug.WriteLine("Last mission passed: {0}", (object) s.SimpleVars.SaveName);
-            //Debug.WriteLine("Global timer: {0}", s.SimpleVars.GlobalTimer);
-            //Debug.WriteLine("Minute length: {0}", s.SimpleVars.MillisecondsPerGameMinute);
-            //Debug.WriteLine("Camera position: <{0:0.####}, {1:0.####}, {2:0.####}>",
-            //    s.SimpleVars.CameraPosition.X, s.SimpleVars.CameraPosition.Y, s.SimpleVars.CameraPosition.Z);
+            CurrentSaveFile.Padding = PaddingType.Random;
         }
 
         #region Events, Variables, and Properties
@@ -182,7 +174,7 @@ namespace TestApp
             UpdateTextBox();
             StatusText = "Loaded " + path + ".";
 
-            OnLoadSaveData();
+            OnLoad();
             OnPropertyChanged(nameof(BlockNameForCurrentGame));
         }
 
@@ -204,7 +196,7 @@ namespace TestApp
                 return;
             }
 
-            CurrentSaveFile.Write(path);
+            CurrentSaveFile.Save(path);
             StatusText = "File saved.";
         }
 

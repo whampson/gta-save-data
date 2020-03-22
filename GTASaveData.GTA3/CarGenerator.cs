@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     [Size(0x48)]
-    public class CarGenerator : GTAObject,
+    public class CarGenerator : SaveDataObject,
         ICarGenerator,
         IEquatable<CarGenerator>
     {

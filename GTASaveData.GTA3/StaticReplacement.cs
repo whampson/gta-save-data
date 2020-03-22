@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     [Size(16)]
-    public class StaticReplacement : GTAObject,
+    public class StaticReplacement : SaveDataObject,
         IEquatable<StaticReplacement>
     {
         private ObjectType m_type;

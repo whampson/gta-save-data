@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Pad : NonSerializableObject,
+    public class Pad : GTAObject,
         IEquatable<Pad>
     {
         private int m_mode;

@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Camera : NonSerializableObject,
+    public class Camera : GTAObject,
         IEquatable<Camera>
     {
         private Vector m_position;

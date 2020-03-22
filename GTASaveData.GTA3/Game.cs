@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Game : NonSerializableObject,
+    public class Game : GTAObject,
         IEquatable<Game>
     {
         private LevelType m_currLevel;

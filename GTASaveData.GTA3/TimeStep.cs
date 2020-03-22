@@ -3,7 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class TimeStep : NonSerializableObject,
+    public class TimeStep : GTAObject,
         IEquatable<TimeStep>
     {
         private float m_timeStep;

@@ -3,7 +3,6 @@ using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 namespace GTASaveData.GTA3
@@ -12,7 +11,7 @@ namespace GTASaveData.GTA3
     /// Represents a save file for <i>Grand Theft Auto III</i>.
     /// </summary>
     public class GTA3Save : SaveFile,
-        IGTASave, IEquatable<GTA3Save>
+        IGTASaveFile, IEquatable<GTA3Save>
     {
         public static class Limits
         {
@@ -35,8 +34,6 @@ namespace GTASaveData.GTA3
         private TimeStep m_timeStep;
         private Weather m_weather;
         private Date m_compileDateAndTime;
-        private int m_isQuickSave;              // TODO: enum?
-
         private TheScripts m_theScripts;
 
         public override string Name
@@ -105,86 +102,6 @@ namespace GTASaveData.GTA3
             set { m_compileDateAndTime = value; OnPropertyChanged(); }
         }
 
-        public int IsQuickSave
-        {
-            get { return m_isQuickSave; }
-            set { m_isQuickSave = value; OnPropertyChanged(); }
-        }
-
-        // PS2 stuff
-        //private int m_prefsMusicVolume;
-        //private int m_prefsSfxVolume;
-        //private bool m_prefsUseVibration;
-        //private bool m_prefsStereoMono;
-        //private RadioStation m_prefsRadioStation;
-        //private int m_prefsBrightness;
-        //private bool m_prefsUseWideScreen;
-        //private bool m_prefsShowTrails;
-        //private bool m_prefsShowSubtitles;
-        //private Language m_prefsLanguage;
-
-        //public int PrefsMusicVolume
-        //{
-        //    get { return m_prefsMusicVolume; }
-        //    set { m_prefsMusicVolume = value; OnPropertyChanged(); }
-        //}
-
-        //public int PrefsSfxVolume
-        //{
-        //    get { return m_prefsSfxVolume; }
-        //    set { m_prefsSfxVolume = value; OnPropertyChanged(); }
-        //}
-
-        //public bool PrefsUseVibration
-        //{
-        //    get { return m_prefsUseVibration; }
-        //    set { m_prefsUseVibration = value; OnPropertyChanged(); }
-        //}
-
-        //public bool PrefsStereoMono
-        //{
-        //    get { return m_prefsStereoMono; }
-        //    set { m_prefsStereoMono = value; OnPropertyChanged(); }
-        //}
-
-        //public RadioStation PrefsRadioStation
-        //{
-        //    get { return m_prefsRadioStation; }
-        //    set { m_prefsRadioStation = value; OnPropertyChanged(); }
-        //}
-
-        //public int PrefsBrightness
-        //{
-        //    get { return m_prefsBrightness; }
-        //    set { m_prefsBrightness = value; OnPropertyChanged(); }
-        //}
-
-        //public bool PrefsUseWideScreen
-        //{
-        //    get { return m_prefsUseWideScreen; }
-        //    set { m_prefsUseWideScreen = value; OnPropertyChanged(); }
-        //}
-
-        //public bool PrefsShowTrails
-        //{
-        //    get { return m_prefsShowTrails; }
-        //    set { m_prefsShowTrails = value; OnPropertyChanged(); }
-        //}
-
-        //public bool PrefsShowSubtitles
-        //{
-        //    get { return m_prefsShowSubtitles; }
-        //    set { m_prefsShowSubtitles = value; OnPropertyChanged(); }
-        //}
-
-        //public Language PrefsLanguage
-        //{
-        //    get { return m_prefsLanguage; }
-        //    set { m_prefsLanguage = value; OnPropertyChanged(); }
-        //}
-
-
-
         public TheScripts TheScripts
         {
             get { return m_theScripts; }
@@ -204,7 +121,6 @@ namespace GTASaveData.GTA3
             m_timeStep = new TimeStep();
             m_weather = new Weather();
             m_compileDateAndTime = new Date();
-
             m_theScripts = new TheScripts();
         }
 
@@ -213,7 +129,7 @@ namespace GTASaveData.GTA3
             string readTag = buf.ReadString(4);
             int size = buf.ReadInt32();
 
-            Debug.Assert(tag == readTag);
+            Debug.Assert(tag == readTag, "Invalid block tag (expected: {0}, actual: {1})", tag, readTag);
             return size;
         }
 
@@ -223,20 +139,24 @@ namespace GTASaveData.GTA3
             buf.Write(size);
         }
 
-        private int Save(WorkBuffer buf, GTAObject o, SaveFileFormat fmt)
+        private int LoadData<T>(WorkBuffer buf, out T o)
+            where T : SaveDataObject, new()
+        {
+            int size = buf.ReadInt32();
+            Serializer.Read(buf, FileFormat, out o);
+
+            return size;
+        }
+
+        private int SaveData(WorkBuffer buf, SaveDataObject o)
         {
             int size;
             int preSize, postData;
                 
             preSize = buf.Position;
             buf.Skip(4);
-                
-            size = ((IGTAObject) o).WriteObjectData(buf, fmt);
-            if (size > BufferSize)
-            {
-                throw new SerializationException(string.Format("Exceeded maximum block size of {0}.", BufferSize));
-            }
-
+            
+            size = Serializer.Write(buf, o, FileFormat);
             postData = buf.Position;
 
             buf.Seek(preSize);
@@ -245,38 +165,111 @@ namespace GTASaveData.GTA3
             buf.Align4Bytes();
 
             size = WorkBuffer.Align4Bytes(size);
-            Debug.Assert(size == buf.Offset);
-
             return size;
         }
 
-        protected override int WriteBlock(WorkBuffer buf)
+        protected override int ReadBlock(WorkBuffer file)
         {
+            file.MarkPosition();
+            m_workBuf.Reset();
+
+            int size = file.ReadInt32();
+            if (size > BufferSize)
+            {
+                // TODO: BlockSizeChecks flag?
+                Debug.WriteLine("Maximum block size exceeded: {0}", size);
+            }
+
+            m_workBuf.Write(file.ReadBytes(size));
+
+            Debug.Assert(file.Offset == size + 4);
+            Debug.WriteLine("Read {0} bytes of block data.", size);
+
+            m_workBuf.Reset();
+            return size;
+        }
+
+        protected override int WriteBlock(WorkBuffer file)
+        {
+            file.MarkPosition();
+
             byte[] data = m_workBuf.ToArray(m_workBuf.Position);
+            int size = data.Length;
+            if (size > BufferSize)
+            {
+                // TODO: BlockSizeChecks flag?
+                Debug.WriteLine("Maximum block size exceeded: {0}", size);
+            }
 
-            buf.Write(data.Length);
-            buf.Write(data);
-            buf.Align4Bytes();
+            file.Write(size);
+            file.Write(data);
+            file.Align4Bytes();
 
-            m_checksum += BitConverter.GetBytes(data.Length).Sum(x => x);
+            Debug.Assert(file.Offset == size + 4);
+            Debug.WriteLine("Wrote {0} bytes of block data.", size);
+
+            m_checksum += BitConverter.GetBytes(size).Sum(x => x);
             m_checksum += data.Sum(x => x);
 
-            m_workBuf.Seek(0);
-
-            return buf.Offset;
+            m_workBuf.Reset();
+            return size;
         }
 
-        protected override void LoadAllData(WorkBuffer buf)
-        {
-            //throw new NotImplementedException();
-        }
-
-        protected override void SaveAllData(WorkBuffer buf)
+        protected override void LoadAllData(WorkBuffer file)
         {
             int totalSize = 0;
-            int actualSize = 0;
+            int size;
 
-            m_workBuf.Seek(0);
+            m_checksum = 0;
+
+            size = ReadBlock(file);
+            Name = m_workBuf.ReadString(Limits.MaxNameLength, true);
+            TimeLastSaved = m_workBuf.ReadObject<SystemTime>().ToDateTime();
+            SaveSize = m_workBuf.ReadInt32();
+            Game.CurrLevel = (LevelType) m_workBuf.ReadInt32();
+            TheCamera.Position = m_workBuf.ReadObject<Vector>();
+            Clock.MillisecondsPerGameMinute = m_workBuf.ReadInt32();
+            Clock.LastClockTick = m_workBuf.ReadUInt32();
+            Clock.GameClockHours = (byte) m_workBuf.ReadInt32();
+            Clock.GameClockMinutes = (byte) m_workBuf.ReadInt32();
+            Pad.Mode = m_workBuf.ReadInt32();
+            Timer.TimeInMilliseconds = m_workBuf.ReadUInt32();
+            Timer.TimeScale = m_workBuf.ReadSingle();
+            Timer.TimeStep = m_workBuf.ReadSingle();
+            Timer.TimeStepNonClipped = m_workBuf.ReadSingle();
+            Timer.FrameCounter = m_workBuf.ReadInt32();
+            TimeStep.Step = m_workBuf.ReadSingle();
+            TimeStep.FramesPerUpdate = m_workBuf.ReadSingle();
+            TimeStep.TimeScale = m_workBuf.ReadSingle();
+            Weather.OldWeatherType = (WeatherType) m_workBuf.ReadInt32();
+            Weather.NewWeatherType = (WeatherType) m_workBuf.ReadInt32();
+            Weather.ForcedWeatherType = (WeatherType) m_workBuf.ReadInt32();
+            Weather.InterpolationValue = m_workBuf.ReadSingle();
+            CompileDateAndTime = m_workBuf.ReadObject<Date>();
+            Weather.WeatherTypeInList = m_workBuf.ReadInt32();
+            TheCamera.CarZoomIndicator = m_workBuf.ReadSingle();
+            TheCamera.PedZoomIndicator = m_workBuf.ReadSingle();
+            Debug.Assert(m_workBuf.Offset == SizeOfSimpleVars);
+            int scriptsSize = LoadData(m_workBuf, out m_theScripts);
+            Debug.Assert(m_workBuf.Offset - SizeOfSimpleVars == scriptsSize + 4);
+            Debug.Assert(m_workBuf.Offset == size);
+            totalSize += size;
+
+            while (file.Position < file.Length - 4)
+            {
+                totalSize += ReadBlock(file);
+            }
+
+            Debug.WriteLine("Save size: {0}", totalSize);
+            Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
+        }
+
+        protected override void SaveAllData(WorkBuffer file)
+        {
+            int totalSize = 0;
+            int size;
+
+            m_workBuf.Reset();
             m_checksum = 0;
 
             m_workBuf.Write(Name, Limits.MaxNameLength, true);
@@ -297,21 +290,37 @@ namespace GTASaveData.GTA3
             m_workBuf.Write(TimeStep.Step);
             m_workBuf.Write(TimeStep.FramesPerUpdate);
             m_workBuf.Write(TimeStep.TimeScale);
-            m_workBuf.Write((short) Weather.OldWeatherType);
-            m_workBuf.Write((short) Weather.NewWeatherType);
-            m_workBuf.Write((short) Weather.ForcedWeatherType);
+            m_workBuf.Write((int) Weather.OldWeatherType);
+            m_workBuf.Write((int) Weather.NewWeatherType);
+            m_workBuf.Write((int) Weather.ForcedWeatherType);
             m_workBuf.Write(Weather.InterpolationValue);
             m_workBuf.Write(CompileDateAndTime);
             m_workBuf.Write(Weather.WeatherTypeInList);
             m_workBuf.Write(TheCamera.CarZoomIndicator);
             m_workBuf.Write(TheCamera.PedZoomIndicator);
             Debug.Assert(m_workBuf.Offset == SizeOfSimpleVars);
-            totalSize = Save(m_workBuf, m_theScripts, FileFormat);
-            totalSize += SizeOfSimpleVars;
-            actualSize += WriteBlock(buf);
+            SaveData(m_workBuf, m_theScripts);
+            totalSize += WriteBlock(file);
 
+            for (int i = 0; i < 4; i++)
+            {
+                size = WorkBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
+                if (size > BufferSize)
+                {
+                    size = BufferSize;
+                }
+                if (size > 4)
+                {
+                    m_workBuf.Reset();
+                    m_workBuf.Write(GetPaddingBytes(size));
+                    totalSize += WriteBlock(file);
+                }
+            }
 
+            file.Write(m_checksum);
 
+            Debug.WriteLine("Save size: {0}", totalSize);
+            Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
         }
 
         protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)

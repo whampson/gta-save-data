@@ -4,7 +4,7 @@ using System;
 namespace GTASaveData.GTA3
 {
     [Size(8)]
-    public class Collective : GTAObject,
+    public class Collective : SaveDataObject,
         IEquatable<Collective>
     {
         private int m_index;

@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     [Size(0x8C)]
-    public class Garage : GTAObject,
+    public class Garage : SaveDataObject,
         IEquatable<Garage>
     {
         private GarageType m_type;

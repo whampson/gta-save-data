@@ -1,11 +1,13 @@
-﻿using GTASaveData.Types;
+﻿using GTASaveData.Converters;
+using GTASaveData.Types;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class TheScripts : GTAObject,
+    public class TheScripts : SaveDataObject,
         IEquatable<TheScripts>
     {
         public static class Limits
@@ -31,6 +33,7 @@ namespace GTASaveData.GTA3
         private short m_numberOfMissionScripts;
         private Array<RunningScript> m_activeScripts;
 
+        [JsonConverter(typeof(ByteArrayConverter))]
         public Array<byte> ScriptSpace
         {
             get { return m_scriptSpace; }
@@ -151,7 +154,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            int size = GTA3Save.ReadSaveHeader(buf, "SCR\0");
+            int size = GTA3Save.ReadSaveHeader(buf, "SCR");
             int varSpace = buf.ReadInt32();
             m_scriptSpace = buf.ReadArray<byte>(varSpace);
             int scriptDataSize = buf.ReadInt32();
@@ -172,7 +175,8 @@ namespace GTASaveData.GTA3
             int runningScripts = buf.ReadInt32();
             m_activeScripts = buf.ReadArray<RunningScript>(runningScripts, fmt);
 
-            Debug.WriteLine(buf.Offset == size);
+            Debug.Assert(buf.Offset - GTA3Save.SaveHeaderSize == size);
+            Debug.Assert(size + GTA3Save.SaveHeaderSize == GetSerializedSize());
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
@@ -199,7 +203,7 @@ namespace GTASaveData.GTA3
             buf.Write(m_activeScripts.Count);
             buf.Write(m_activeScripts.ToArray(), format: fmt);
 
-            Debug.WriteLine(buf.Offset == size);
+            Debug.Assert(buf.Offset == size);
         }
 
         private int GetSerializedSize()

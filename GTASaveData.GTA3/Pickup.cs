@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     [Size(0x1C)]
-    public class Pickup : GTAObject,
+    public class Pickup : SaveDataObject,
         IEquatable<Pickup>
     {
         private PickupType m_type;
