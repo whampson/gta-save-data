@@ -65,6 +65,11 @@ namespace GTASaveData.Types
 
         protected abstract void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt);
 
+        protected virtual int GetSize(SaveFileFormat fmt)
+        {
+            return Serializer.Write(this, fmt, out byte[] _);
+        }
+
         public static int SizeOf<T>()
             where T : SaveDataObject, new()
         {
@@ -78,15 +83,21 @@ namespace GTASaveData.Types
         }
 
         public static int SizeOf<T>(T obj)
-            where T : SaveDataObject
+            where T : SaveDataObject, new()
         {
             return SizeOf(obj, SaveFileFormat.Default);
         }
 
-        public static int SizeOf<T>(T obj, SaveFileFormat fmt)
-            where T : SaveDataObject
+        public static int SizeOf<T>(SaveFileFormat fmt)
+            where T : SaveDataObject, new()
         {
-            return Serializer.Write(obj, fmt, out byte[] _);
+            return SizeOf(new T(), fmt);
+        }
+
+        public static int SizeOf<T>(T obj, SaveFileFormat fmt)
+            where T : SaveDataObject, new()
+        {
+            return obj.GetSize(fmt);
         }
     }
 }

@@ -25,9 +25,10 @@ namespace GTASaveData.Types
             set { m_y = value; OnPropertyChanged(); }
         }
 
+        [JsonIgnore]
         public float Heading
         {
-            get { return (float) Math.Atan2(-m_x, m_y); }
+            get { return (float) Math.Atan2(-X, Y); }
         }
 
         [JsonIgnore]
@@ -39,7 +40,7 @@ namespace GTASaveData.Types
         [JsonIgnore]
         public float MagnitudeSquared
         {
-            get { return (m_x * m_x) + (m_y * m_y); }
+            get { return (X * X) + (Y * Y); }
         }
 
         [JsonIgnore]
@@ -51,7 +52,7 @@ namespace GTASaveData.Types
         [JsonIgnore]
         public float MagnitudeSquared2D
         {
-            get { return (m_x * m_x) + (m_y * m_y); }
+            get { return (X * X) + (Y * Y); }
         }
 
         public Vector2D()
@@ -60,8 +61,8 @@ namespace GTASaveData.Types
 
         public Vector2D(float x, float y)
         {
-            m_x = x;
-            m_y = y;
+            X = x;
+            Y = y;
         }
 
         public void Normalize()
@@ -70,26 +71,26 @@ namespace GTASaveData.Types
             if (magSquared > 0)
             {
                 float invSqrt = (float) (1.0 / Math.Sqrt(magSquared));
-                m_x *= invSqrt;
-                m_y *= invSqrt;
+                X *= invSqrt;
+                Y *= invSqrt;
             }
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_x = buf.ReadSingle();
-            m_y = buf.ReadSingle();
+            X = buf.ReadSingle();
+            Y = buf.ReadSingle();
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(m_x);
-            buf.Write(m_y);
+            buf.Write(X);
+            buf.Write(Y);
         }
 
         public override string ToString()
         {
-            return string.Format("<{0:0.###},{1:0.###}>", m_x, m_y);
+            return string.Format("<{0:0.###},{1:0.###}>", X, Y);
         }
 
         public override bool Equals(object obj)
@@ -104,8 +105,8 @@ namespace GTASaveData.Types
                 return false;
             }
 
-            return m_x.Equals(other.m_x)
-                && m_y.Equals(other.m_y);
+            return X.Equals(other.X)
+                && Y.Equals(other.Y);
         }
 
         public static float Distance(Vector2D v1, Vector2D v2)
@@ -115,53 +116,53 @@ namespace GTASaveData.Types
 
         public static float DotProduct(Vector2D v1, Vector2D v2)
         {
-            return (v1.m_x * v2.m_x)
-                 + (v1.m_y * v2.m_y);
+            return (v1.X * v2.X)
+                 + (v1.Y * v2.Y);
         }
 
         public static float CrossProduct(Vector2D v1, Vector2D v2)
         {
-            return (v1.m_x * v2.m_y) - (v1.m_y * v2.m_x);
+            return (v1.X * v2.Y) - (v1.Y * v2.X);
         }
 
         public static Vector2D operator -(Vector2D v)
         {
-            return new Vector2D(-v.m_x, -v.m_y);
+            return new Vector2D(-v.X, -v.Y);
         }
 
         public static Vector2D operator +(Vector2D left, Vector2D right)
         {
             return new Vector2D(
-                left.m_x + right.m_x,
-                left.m_y + right.m_y);
+                left.X + right.X,
+                left.Y + right.Y);
         }
 
         public static Vector2D operator -(Vector2D left, Vector2D right)
         {
             return new Vector2D(
-                left.m_x - right.m_x,
-                left.m_y - right.m_y);
+                left.X - right.X,
+                left.Y - right.Y);
         }
 
         public static Vector2D operator *(Vector2D left, float right)
         {
             return new Vector2D(
-                left.m_x * right,
-                left.m_y * right);
+                left.X * right,
+                left.Y * right);
         }
 
         public static Vector2D operator *(float left, Vector2D right)
         {
             return new Vector2D(
-                left * right.m_x,
-                left * right.m_y);
+                left * right.X,
+                left * right.Y);
         }
 
         public static Vector2D operator /(Vector2D left, float right)
         {
             return new Vector2D(
-                left.m_x / right,
-                left.m_y / right);
+                left.X / right,
+                left.Y / right);
         }
     }
 }

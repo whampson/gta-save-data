@@ -17,7 +17,7 @@ namespace GTASaveData
         private static readonly byte[] DefaultPadding = new byte[1] { 0 };
 
         protected WorkBuffer m_workBuf;
-        protected int m_checksum;
+        protected uint m_checksum;
 
         private SaveFileFormat m_fileFormat;
         private PaddingType m_padding;
@@ -50,11 +50,13 @@ namespace GTASaveData
 
         public SaveFile()
         {
-            m_fileFormat = SaveFileFormat.Default;
-            m_workBuf = new WorkBuffer();
-            m_padding = PaddingType.Default;
-            m_paddingBytes = DefaultPadding;
             m_disposed = false;
+            m_workBuf = new WorkBuffer();
+            m_checksum = 0;
+
+            FileFormat = SaveFileFormat.Default;
+            Padding = PaddingType.Default;
+            PaddingBytes = DefaultPadding;
         }
 
         public void Dispose()
@@ -106,7 +108,7 @@ namespace GTASaveData
 
         protected byte[] GetPaddingBytes(int length)
         {
-            switch (m_padding)
+            switch (Padding)
             {
                 case PaddingType.Pattern:
                 {

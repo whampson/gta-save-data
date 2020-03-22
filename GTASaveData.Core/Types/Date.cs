@@ -58,34 +58,34 @@ namespace GTASaveData.Types
 
         public Date(DateTime dateTime)
         {
-            m_second = dateTime.Second;
-            m_minute = dateTime.Minute;
-            m_hour = dateTime.Hour;
-            m_day = dateTime.Day;
-            m_month = dateTime.Month;
-            m_year = dateTime.Year;
+            Second = dateTime.Second;
+            Minute = dateTime.Minute;
+            Hour = dateTime.Hour;
+            Day = dateTime.Day;
+            Month = dateTime.Month;
+            Year = dateTime.Year;
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_second = buf.ReadInt32();
-            m_minute = buf.ReadInt32();
-            m_hour = buf.ReadInt32();
-            m_day = buf.ReadInt32();
-            m_month = buf.ReadInt32();
-            m_year = buf.ReadInt32();
+            Second = buf.ReadInt32();
+            Minute = buf.ReadInt32();
+            Hour = buf.ReadInt32();
+            Day = buf.ReadInt32();
+            Month = buf.ReadInt32();
+            Year = buf.ReadInt32();
 
             Debug.Assert(buf.Offset == SizeOf<Date>());
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(m_second);
-            buf.Write(m_minute);
-            buf.Write(m_hour);
-            buf.Write(m_day);
-            buf.Write(m_month);
-            buf.Write(m_year);
+            buf.Write(Second);
+            buf.Write(Minute);
+            buf.Write(Hour);
+            buf.Write(Day);
+            buf.Write(Month);
+            buf.Write(Year);
 
             Debug.Assert(buf.Offset == SizeOf<Date>());
         }
@@ -93,12 +93,12 @@ namespace GTASaveData.Types
         public DateTime ToDateTime()
         {
             return new DateTime(
-                m_year,
-                m_month,
-                m_day,
-                m_hour,
-                m_minute,
-                m_second);
+                Year,
+                Month,
+                Day,
+                Hour,
+                Minute,
+                Second);
         }
 
         public override string ToString()
@@ -118,12 +118,12 @@ namespace GTASaveData.Types
                 return false;
             }
 
-            return m_year.Equals(other.m_year)
-                && m_month.Equals(other.m_month)
-                && m_day.Equals(other.m_day)
-                && m_hour.Equals(other.m_hour)
-                && m_minute.Equals(other.m_minute)
-                && m_second.Equals(other.m_second);
+            return Year.Equals(other.Year)
+                && Month.Equals(other.Month)
+                && Day.Equals(other.Day)
+                && Hour.Equals(other.Hour)
+                && Minute.Equals(other.Minute)
+                && Second.Equals(other.Second);
         }
 
         public static explicit operator DateTime(Date t)

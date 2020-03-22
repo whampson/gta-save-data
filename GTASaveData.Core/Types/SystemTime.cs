@@ -73,40 +73,40 @@ namespace GTASaveData.Types
 
         public SystemTime(DateTime dateTime)
         {
-            m_year = (ushort) dateTime.Year;
-            m_month = (ushort) dateTime.Month;
-            m_dayOfWeek = (ushort) dateTime.DayOfWeek;
-            m_day = (ushort) dateTime.Day;
-            m_hour = (ushort) dateTime.Hour;
-            m_minute = (ushort) dateTime.Minute;
-            m_second = (ushort) dateTime.Second;
-            m_millisecond = (ushort) dateTime.Millisecond;
+            Year = (ushort) dateTime.Year;
+            Month = (ushort) dateTime.Month;
+            DayOfWeek = (ushort) dateTime.DayOfWeek;
+            Day = (ushort) dateTime.Day;
+            Hour = (ushort) dateTime.Hour;
+            Minute = (ushort) dateTime.Minute;
+            Second = (ushort) dateTime.Second;
+            Millisecond = (ushort) dateTime.Millisecond;
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_year = buf.ReadUInt16();
-            m_month = buf.ReadUInt16();
-            m_dayOfWeek = buf.ReadUInt16();
-            m_day = buf.ReadUInt16();
-            m_hour = buf.ReadUInt16();
-            m_minute = buf.ReadUInt16();
-            m_second = buf.ReadUInt16();
-            m_millisecond = buf.ReadUInt16();
+            Year = buf.ReadUInt16();
+            Month = buf.ReadUInt16();
+            DayOfWeek = buf.ReadUInt16();
+            Day = buf.ReadUInt16();
+            Hour = buf.ReadUInt16();
+            Minute = buf.ReadUInt16();
+            Second = buf.ReadUInt16();
+            Millisecond = buf.ReadUInt16();
 
             Debug.Assert(buf.Offset == SizeOf<SystemTime>());
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(m_year);
-            buf.Write(m_month);
-            buf.Write(m_dayOfWeek);
-            buf.Write(m_day);
-            buf.Write(m_hour);
-            buf.Write(m_minute);
-            buf.Write(m_second);
-            buf.Write(m_millisecond);
+            buf.Write(Year);
+            buf.Write(Month);
+            buf.Write(DayOfWeek);
+            buf.Write(Day);
+            buf.Write(Hour);
+            buf.Write(Minute);
+            buf.Write(Second);
+            buf.Write(Millisecond);
 
             Debug.Assert(buf.Offset == SizeOf<SystemTime>());
         }
@@ -114,13 +114,13 @@ namespace GTASaveData.Types
         public DateTime ToDateTime()
         {
             return new DateTime(
-                m_year,
-                m_month,
-                m_day,
-                m_hour,
-                m_minute,
-                m_second,
-                m_millisecond);
+                Year,
+                Month,
+                Day,
+                Hour,
+                Minute,
+                Second,
+                Millisecond);
         }
 
         public override string ToString()
@@ -140,14 +140,14 @@ namespace GTASaveData.Types
                 return false;
             }
 
-            return m_year.Equals(other.m_year)
-                && m_month.Equals(other.m_month)
-                && m_dayOfWeek.Equals(other.m_dayOfWeek)
-                && m_day.Equals(other.m_day)
-                && m_hour.Equals(other.m_hour)
-                && m_minute.Equals(other.m_minute)
-                && m_second.Equals(other.m_second)
-                && m_millisecond.Equals(other.m_millisecond);
+            return Year.Equals(other.Year)
+                && Month.Equals(other.Month)
+                && DayOfWeek.Equals(other.DayOfWeek)
+                && Day.Equals(other.Day)
+                && Hour.Equals(other.Hour)
+                && Minute.Equals(other.Minute)
+                && Second.Equals(other.Second)
+                && Millisecond.Equals(other.Millisecond);
         }
 
         public static explicit operator DateTime(SystemTime t)

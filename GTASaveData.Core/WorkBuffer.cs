@@ -15,11 +15,7 @@ namespace GTASaveData
         private readonly BinaryWriter m_writer;
         private bool m_disposed;
 
-        public int Mark
-        {
-            get;
-            set;
-        }
+        public int Mark { get; set; }
 
         public int Position
         {
@@ -79,7 +75,6 @@ namespace GTASaveData
 
         public void Align4Bytes()
         {
-            //WritePadding(SaveFile.GetAlignedAddress(Position) - Position);
             Skip(Align4Bytes(Position) - Position);
         }
 
@@ -102,7 +97,14 @@ namespace GTASaveData
 
         public void Skip(int count)
         {
-            m_buffer.Position += count;
+            if (m_buffer.Position + count > m_buffer.Length)
+            {
+                Write(new byte[count]);
+            }
+            else
+            {
+                m_buffer.Position += count;
+            }
         }
 
         public byte[] ToArray()

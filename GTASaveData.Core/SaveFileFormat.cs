@@ -16,13 +16,13 @@ namespace GTASaveData
         public bool SupportedOniOS => IsSupportedOn(ConsoleType.iOS);
         public bool SupportedOnMacOS => IsSupportedOn(ConsoleType.MacOS);
         public bool SupportedOnMobile => SupportedOnAndroid || SupportedOniOS;
-        public bool SupportsPC => SupportedOnMacOS || SupportsWin32;
-        public bool SupportsPS2 => IsSupportedOn(ConsoleType.PS2);
-        public bool SupportsPS3 => IsSupportedOn(ConsoleType.PS3);
-        public bool SupportsPSP => IsSupportedOn(ConsoleType.PSP);
-        public bool SupportsWin32 => IsSupportedOn(ConsoleType.Win32);
-        public bool SupportsXbox => IsSupportedOn(ConsoleType.Xbox);
-        public bool SupportsXbox360 => IsSupportedOn(ConsoleType.Xbox360);
+        public bool SupportedOnPC => SupportedOnMacOS || SupportedOnWin32;
+        public bool SupportedOnPS2 => IsSupportedOn(ConsoleType.PS2);
+        public bool SupportedOnPS3 => IsSupportedOn(ConsoleType.PS3);
+        public bool SupportedOnPSP => IsSupportedOn(ConsoleType.PSP);
+        public bool SupportedOnWin32 => IsSupportedOn(ConsoleType.Win32);
+        public bool SupportedOnXbox => IsSupportedOn(ConsoleType.Xbox);
+        public bool SupportedOnXbox360 => IsSupportedOn(ConsoleType.Xbox360);
 
         public SaveFileFormat(string name, string description, params GameConsole[] supportedConsoles)
         {

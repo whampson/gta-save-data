@@ -35,7 +35,7 @@ namespace GTASaveData.Types
         [JsonIgnore]
         public float Heading
         {
-            get { return (float) Math.Atan2(-m_x, m_y); }
+            get { return (float) Math.Atan2(-X, Y); }
         }
 
         [JsonIgnore]
@@ -47,7 +47,7 @@ namespace GTASaveData.Types
         [JsonIgnore]
         public float MagnitudeSquared
         {
-            get { return (m_x * m_x) + (m_y * m_y) + (m_z * m_z); }
+            get { return (X * X) + (Y * Y) + (Z * Z); }
         }
 
         [JsonIgnore]
@@ -59,7 +59,7 @@ namespace GTASaveData.Types
         [JsonIgnore]
         public float MagnitudeSquared2D
         {
-            get { return (m_x * m_x) + (m_y * m_y); }
+            get { return (X * X) + (Y * Y); }
         }
 
         public Vector()
@@ -68,9 +68,9 @@ namespace GTASaveData.Types
 
         public Vector(float x, float y, float z)
         {
-            m_x = x;
-            m_y = y;
-            m_z = z;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         public void Normalize()
@@ -79,29 +79,29 @@ namespace GTASaveData.Types
             if (magSquared > 0)
             {
                 float invSqrt = (float) (1.0 / Math.Sqrt(magSquared));
-                m_x *= invSqrt;
-                m_y *= invSqrt;
-                m_z *= invSqrt;
+                X *= invSqrt;
+                Y *= invSqrt;
+                Z *= invSqrt;
             }
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_x = buf.ReadSingle();
-            m_y = buf.ReadSingle();
-            m_z = buf.ReadSingle();
+            X = buf.ReadSingle();
+            Y = buf.ReadSingle();
+            Z = buf.ReadSingle();
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(m_x);
-            buf.Write(m_y);
-            buf.Write(m_z);
+            buf.Write(X);
+            buf.Write(Y);
+            buf.Write(Z);
         }
 
         public override string ToString()
         {
-            return string.Format("<{0:0.###},{1:0.###},{2:0.###}>", m_x, m_y, m_z);
+            return string.Format("<{0:0.###},{1:0.###},{2:0.###}>", X, Y, Z);
         }
 
         public override bool Equals(object obj)
@@ -116,9 +116,9 @@ namespace GTASaveData.Types
                 return false;
             }
 
-            return m_x.Equals(other.m_x)
-                && m_y.Equals(other.m_y)
-                && m_z.Equals(other.m_z);
+            return X.Equals(other.X)
+                && Y.Equals(other.Y)
+                && Z.Equals(other.Z);
         }
 
         public static float Distance(Vector v1, Vector v2)
@@ -128,62 +128,62 @@ namespace GTASaveData.Types
 
         public static float DotProduct(Vector v1, Vector v2)
         {
-            return (v1.m_x * v2.m_x)
-                 + (v1.m_y * v2.m_y)
-                 + (v1.m_z * v2.m_z);
+            return (v1.X * v2.X)
+                 + (v1.Y * v2.Y)
+                 + (v1.Z * v2.Z);
         }
 
         public static Vector CrossProduct(Vector v1, Vector v2)
         {
             return new Vector(
-                (v1.m_y * v2.m_z) - (v1.m_z * v2.m_y),
-                (v1.m_z * v2.m_x) - (v1.m_x * v2.m_z),
-                (v1.m_x * v2.m_y) - (v1.m_y * v2.m_x));
+                (v1.Y * v2.Z) - (v1.Z * v2.Y),
+                (v1.Z * v2.X) - (v1.X * v2.Z),
+                (v1.X * v2.Y) - (v1.Y * v2.X));
         }
 
         public static Vector operator -(Vector v)
         {
-            return new Vector(-v.m_x, -v.m_y, -v.m_z);
+            return new Vector(-v.X, -v.Y, -v.Z);
         }
 
         public static Vector operator +(Vector left, Vector right)
         {
             return new Vector(
-                left.m_x + right.m_x,
-                left.m_y + right.m_y,
-                left.m_z + right.m_z);
+                left.X + right.X,
+                left.Y + right.Y,
+                left.Z + right.Z);
         }
 
         public static Vector operator -(Vector left, Vector right)
         {
             return new Vector(
-                left.m_x - right.m_x,
-                left.m_y - right.m_y,
-                left.m_z - right.m_z);
+                left.X - right.X,
+                left.Y - right.Y,
+                left.Z - right.Z);
         }
 
         public static Vector operator *(Vector left, float right)
         {
             return new Vector(
-                left.m_x * right,
-                left.m_y * right,
-                left.m_z * right);
+                left.X * right,
+                left.Y * right,
+                left.Z * right);
         }
 
         public static Vector operator *(float left, Vector right)
         {
             return new Vector(
-                left * right.m_x,
-                left * right.m_y,
-                left * right.m_z);
+                left * right.X,
+                left * right.Y,
+                left * right.Z);
         }
 
         public static Vector operator /(Vector left, float right)
         {
             return new Vector(
-                left.m_x / right,
-                left.m_y / right,
-                left.m_z / right);
+                left.X / right,
+                left.Y / right,
+                left.Z / right);
         }
     }
 }

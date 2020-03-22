@@ -1,7 +1,6 @@
 ﻿using GTASaveData.Converters;
 using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.Types
@@ -33,23 +32,23 @@ namespace GTASaveData.Types
 
         public DummyObject(int count)
         {
-            m_data = new byte[count];
+            Data = new byte[count];
         }
 
         public DummyObject(byte[] data)
         {
-            m_data = data;
+            Data = data;
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            byte[] data = buf.ReadBytes(m_data.Count);
-            m_data = data;
+            int count = Data.Count;
+            Data = buf.ReadBytes(count);
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(m_data.ToArray());
+            buf.Write(Data.ToArray());
         }
 
         public override bool Equals(object obj)
@@ -64,7 +63,7 @@ namespace GTASaveData.Types
                 return false;
             }
 
-            return m_data.SequenceEqual(other.m_data);
+            return Data.SequenceEqual(other.Data);
         }
     }
 }
