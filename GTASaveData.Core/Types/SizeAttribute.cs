@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class SizeAttribute : Attribute
     {
         public int Size { get; set; }

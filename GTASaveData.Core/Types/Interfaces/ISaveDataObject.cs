@@ -1,6 +1,6 @@
 ﻿namespace GTASaveData.Types.Interfaces
 {
-    public interface IGTAObject
+    public interface ISaveDataObject
     {
         int ReadObjectData(WorkBuffer buf);
         int ReadObjectData(WorkBuffer buf, SaveFileFormat fmt);

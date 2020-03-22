@@ -39,12 +39,12 @@
 
         public static int Read<T>(WorkBuffer buf, SaveFileFormat fmt, out T obj)
         {
-            int oldMark = buf.Mark;
-            buf.ResetMark();
+            int oldMark, length;
 
+            oldMark = buf.Mark;
+            buf.MarkPosition();
             obj = buf.GenericRead<T>(fmt);
-            int length = buf.Offset;
-
+            length = buf.Offset;
             buf.Mark = oldMark;
 
             if (obj == null)
@@ -69,19 +69,9 @@
             }
         }
 
-        public static int Write<T>(byte[] buf, T obj)
+        public static int Write<T>(T obj, SaveFileFormat fmt, out byte[] data)
         {
-            return Write(buf, obj, SaveFileFormat.Default);
-        }
-
-        public static int Write<T>(byte[] buf, T obj, SaveFileFormat fmt)
-        {
-            return Write(buf, obj, fmt, out byte[] _);
-        }
-
-        public static int Write<T>(byte[] buf, T obj, SaveFileFormat fmt, out byte[] data)
-        {
-            using (WorkBuffer wb = new WorkBuffer(buf))
+            using (WorkBuffer wb = new WorkBuffer())
             {
                 int count = Write(wb, obj, fmt);
                 data = wb.ToArray();
@@ -97,12 +87,13 @@
 
         public static int Write<T>(WorkBuffer buf, T obj, SaveFileFormat fmt)
         {
-            int oldMark = buf.Mark;
-            buf.ResetMark();
+            bool success;
+            int oldMark, length;
 
-            bool success = buf.GenericWrite(obj, fmt);
-            int length = buf.Offset;
-
+            oldMark = buf.Mark;
+            buf.MarkPosition();
+            success = buf.GenericWrite(obj, fmt);
+            length = buf.Offset;
             buf.Mark = oldMark;
 
             if (!success)

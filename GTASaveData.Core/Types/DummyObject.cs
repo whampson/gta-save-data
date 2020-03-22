@@ -9,8 +9,8 @@ namespace GTASaveData.Types
     /// <summary>
     /// A container for arbitraty data.
     /// </summary>
-    public class Dummy : GTAObject,
-        IEquatable<Dummy>
+    public class DummyObject : SaveDataObject,
+        IEquatable<DummyObject>
     {
         private Array<byte> m_data;
 
@@ -27,11 +27,11 @@ namespace GTASaveData.Types
             get { return m_data.Count; }
         }
 
-        public Dummy()
+        public DummyObject()
             : this(new byte[0])
         { }
 
-        public Dummy(byte[] data)
+        public DummyObject(byte[] data)
         {
             m_data = data;
         }
@@ -39,7 +39,7 @@ namespace GTASaveData.Types
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
             // nop
-            Debug.WriteLine("Useless call to Dummy#ReadObjectData()");
+            Debug.WriteLine("Warning: Useless call to DummyObject#ReadObjectData()");
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
@@ -49,10 +49,10 @@ namespace GTASaveData.Types
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Dummy);
+            return Equals(obj as DummyObject);
         }
 
-        public bool Equals(Dummy other)
+        public bool Equals(DummyObject other)
         {
             if (other == null)
             {
@@ -60,16 +60,6 @@ namespace GTASaveData.Types
             }
 
             return m_data.SequenceEqual(other.m_data);
-        }
-
-        public static implicit operator byte[](Dummy b)
-        {
-            return b.m_data;
-        }
-
-        public static implicit operator Dummy(byte[] data)
-        {
-            return new Dummy(data);
         }
     }
 }

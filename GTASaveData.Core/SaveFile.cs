@@ -11,7 +11,7 @@ namespace GTASaveData
     /// <summary>
     /// Represents a saved <i>Grand Theft Auto</i> game.
     /// </summary>
-    public abstract class SaveFile : GTAObject, IGTASave
+    public abstract class SaveFile : SaveDataObject, IGTASaveFile
     {
         private static readonly byte[] DefaultPadding = new byte[1] { 0 };
 
@@ -62,15 +62,45 @@ namespace GTASaveData
             }
         }
 
-        public void Write(string path)
+        public static T Load<T>(string path)
+            where T : SaveFile, new()
         {
-            byte[] data = Serializer.Write(this, m_fileFormat);
-            File.WriteAllBytes(path, data);
+            bool valid = GetFileFormat<T>(path, out SaveFileFormat fmt);
+            if (!valid)
+            {
+                return null;
+            }
 
-            Debug.WriteLine("Wrote {0} bytes to disk.", data.Length);
+            return Load<T>(path, fmt);
         }
 
-        protected byte[] GetPadding(int length)
+        public static T Load<T>(string path, SaveFileFormat fmt)
+            where T : SaveFile, new()
+        {
+            byte[] data = File.ReadAllBytes(path);
+            int bytesRead = Serializer.Read(data, fmt, out T obj);
+
+            Debug.WriteLine("Read {0} bytes from disk.", bytesRead);
+
+            return obj;
+        }
+
+        public void Save(string path)
+        {
+            int bytesWritten = Serializer.Write(this, FileFormat, out byte[] data);
+            File.WriteAllBytes(path, data);
+
+            Debug.WriteLine("Wrote {0} bytes to disk.", bytesWritten);
+        }
+
+        public static bool GetFileFormat<T>(string path, out SaveFileFormat fmt)
+            where T : SaveFile, new()
+        {
+            byte[] data = File.ReadAllBytes(path);
+            return new T().DetectFileFormat(data, out fmt);
+        }
+
+        protected byte[] GetPaddingBytes(int length)
         {
             switch (m_padding)
             {
@@ -102,54 +132,25 @@ namespace GTASaveData
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_fileFormat = fmt;
+            FileFormat = fmt;
             LoadAllData(buf);
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_fileFormat = fmt;
+            FileFormat = fmt;
             SaveAllData(buf);
         }
 
-        protected abstract void LoadAllData(WorkBuffer buf);
-        protected abstract void SaveAllData(WorkBuffer buf);
+        protected abstract int ReadBlock(WorkBuffer file);
+        protected abstract int WriteBlock(WorkBuffer file);
+        protected abstract void LoadAllData(WorkBuffer file);
+        protected abstract void SaveAllData(WorkBuffer file);
         protected abstract bool DetectFileFormat(byte[] data, out SaveFileFormat fmt);
-        protected abstract int WriteBlock(WorkBuffer buf);
 
         public override string ToString()
         {
-            return string.Format("{0}: {{ Name = {1}, Format = {2} }}", GetType().Name, Name, m_fileFormat);
-        }
-
-        public static bool GetFileFormat<T>(string path, out SaveFileFormat fmt)
-            where T : SaveFile, new()
-        {
-            byte[] data = File.ReadAllBytes(path);
-            return new T().DetectFileFormat(data, out fmt);
-        }
-
-        public static T Load<T>(string path)
-            where T : SaveFile, new()
-        {
-            bool valid = GetFileFormat<T>(path, out SaveFileFormat fmt);
-            if (!valid)
-            {
-                return null;
-            }
-
-            return Load<T>(path, fmt);
-        }
-
-        public static T Load<T>(string path, SaveFileFormat fmt)
-            where T : SaveFile, new()
-        {
-            byte[] data = File.ReadAllBytes(path);
-            WorkBuffer buf = new WorkBuffer(data);
-            T obj = new T();
-            obj.ReadObjectData(buf, fmt);
-
-            return obj;
+            return string.Format("{0}: {{ Name = {1}, FileFormat = {2} }}", GetType().Name, Name, FileFormat);
         }
     }
 }

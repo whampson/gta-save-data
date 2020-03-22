@@ -135,4 +135,11 @@
   <data name="Error_InvalidOperation_NoSerialization" xml:space="preserve">
     <value>The object does not support serialization.</value>
   </data>
+  <data name="Error_JsonSerialization_BinaryUnexpectedEnd" xml:space="preserve">
+    <value>Unexpected end while parsing JSON.</value>
+  </data>
+  <data name="Error_JsonSerialization_BinaryUnexpectedToken" xml:space="preserve">
+    <value>Unexpected token while parsing JSON binary: {0}.</value>
+    <comment>{0} = token type</comment>
+  </data>
 </root>

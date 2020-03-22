@@ -7,7 +7,7 @@ namespace GTASaveData.Types
     /// Represents a 2-dimensional vector.
     /// </summary>
     [Size(8)]
-    public class Vector2D : GTAObject,
+    public class Vector2D : SaveDataObject,
         IEquatable<Vector2D>
     {
         private float m_x;

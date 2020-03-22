@@ -1,7 +1,6 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -25,12 +24,16 @@ namespace GTASaveData
         public int Position
         {
             get { return (int) m_buffer.Position; }
-            //set { m_buffer.Position = value; }
         }
 
         public int Offset
         {
             get { return Position - Mark; }
+        }
+
+        public int Length
+        {
+            get { return (int) m_buffer.Length; }
         }
 
         public int Capacity
@@ -83,12 +86,13 @@ namespace GTASaveData
         public void Reset()
         {
             Seek(0);
-            ResetMark();
+            MarkPosition();
         }
 
-        public void ResetMark()
+        public int MarkPosition()
         {
             Mark = Position;
+            return Mark;
         }
 
         public void Seek(int pos)
@@ -309,7 +313,7 @@ namespace GTASaveData
             return s;
         }
 
-        public T ReadObject<T>() where T : IGTAObject, new()
+        public T ReadObject<T>() where T : ISaveDataObject, new()
         {
             T obj = new T();
             obj.ReadObjectData(this);
@@ -324,7 +328,7 @@ namespace GTASaveData
         /// <param name="format">The data format.</param>
         /// <returns>An object.</returns>
         /// <exception cref="SerializationException">Thrown if an error occurs during deserialization.</exception>
-        public T ReadObject<T>(SaveFileFormat format) where T : IGTAObject, new()
+        public T ReadObject<T>(SaveFileFormat format) where T : ISaveDataObject, new()
         {
             T obj = new T();
             obj.ReadObjectData(this, format);
@@ -568,7 +572,7 @@ namespace GTASaveData
             m_buffer.Position += numPadding;
         }
 
-        public void Write<T>(T value) where T : IGTAObject
+        public void Write<T>(T value) where T : ISaveDataObject
         {
             Write(value, SaveFileFormat.Default);
         }
@@ -577,14 +581,14 @@ namespace GTASaveData
         /// Writes an object.
         /// </summary>
         /// <remarks>
-        /// The object type must implement the <see cref="IGTAObject"/> interface
+        /// The object type must implement the <see cref="ISaveDataObject"/> interface
         /// and specify its serialization.
         /// </remarks>
         /// <typeparam name="T">The type of object to write.</typeparam>
         /// <param name="value">The object to write</param>
         /// <param name="format">The data format.</param>
         /// <exception cref="SerializationException">Thrown if an error occurs during serialization.</exception>
-        public void Write<T>(T value, SaveFileFormat format) where T : IGTAObject
+        public void Write<T>(T value, SaveFileFormat format) where T : ISaveDataObject
         {
             value.WriteObjectData(this, format);
         }
@@ -702,7 +706,7 @@ namespace GTASaveData
             {
                 ret = (length == 0) ? ReadString(unicode) : ReadString(length, unicode);
             }
-            else if (t.GetInterface(nameof(IGTAObject)) != null)
+            else if (t.GetInterface(nameof(ISaveDataObject)) != null)
             {
                 MethodInfo readChunk = GetType().GetMethod(nameof(ReadObject), new Type[] { typeof(SaveFileFormat) }).MakeGenericMethod(t);
                 ret = readChunk.Invoke(this, new object[] { format });
@@ -779,9 +783,9 @@ namespace GTASaveData
             {
                 Write(Convert.ToString(value), length, unicode);
             }
-            else if (t.GetInterface(nameof(IGTAObject)) != null)
+            else if (t.GetInterface(nameof(ISaveDataObject)) != null)
             {
-                Write((IGTAObject) value, format);
+                Write((ISaveDataObject) value, format);
             }
             else
             {

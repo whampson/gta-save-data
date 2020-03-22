@@ -113,5 +113,23 @@ namespace GTASaveData {
                 return ResourceManager.GetString("Error_InvalidOperation_NoSerialization", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected end while parsing JSON..
+        /// </summary>
+        internal static string Error_JsonSerialization_BinaryUnexpectedEnd {
+            get {
+                return ResourceManager.GetString("Error_JsonSerialization_BinaryUnexpectedEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected token while parsing JSON binary: {0}..
+        /// </summary>
+        internal static string Error_JsonSerialization_BinaryUnexpectedToken {
+            get {
+                return ResourceManager.GetString("Error_JsonSerialization_BinaryUnexpectedToken", resourceCulture);
+            }
+        }
     }
 }
