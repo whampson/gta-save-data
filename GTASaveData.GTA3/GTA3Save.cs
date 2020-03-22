@@ -34,7 +34,26 @@ namespace GTASaveData.GTA3
         private TimeStep m_timeStep;
         private Weather m_weather;
         private Date m_compileDateAndTime;
-        private TheScripts m_theScripts;
+        private TheScripts m_scripts;
+        private DummyObject m_pedPool;
+        private DummyObject m_garages;
+        private DummyObject m_vehiclePool;
+        private DummyObject m_objectPool;
+        private DummyObject m_paths;
+        private DummyObject m_cranes;
+        private DummyObject m_pickups;
+        private DummyObject m_phoneInfo;
+        private DummyObject m_restartPoints;
+        private DummyObject m_radarBlips;
+        private DummyObject m_zones;
+        private DummyObject m_gangData;
+        private DummyObject m_carGenerators;
+        private DummyObject m_particleObjects;
+        private DummyObject m_audioScriptObjects;
+        private DummyObject m_playerInfo;
+        private DummyObject m_stats;
+        private DummyObject m_streaming;
+        private DummyObject m_pedTypeInfo;
 
         public override string Name
         {
@@ -102,10 +121,124 @@ namespace GTASaveData.GTA3
             set { m_compileDateAndTime = value; OnPropertyChanged(); }
         }
 
-        public TheScripts TheScripts
+        public TheScripts Scripts
         {
-            get { return m_theScripts; }
-            set { m_theScripts = value; OnPropertyChanged(); }
+            get { return m_scripts; }
+            set { m_scripts = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject PedPool
+        {
+            get { return m_pedPool; }
+            set { m_pedPool = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject Garages
+        {
+            get { return m_garages; }
+            set { m_garages = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject VehiclePool
+        {
+            get { return m_vehiclePool; }
+            set { m_vehiclePool = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject ObjectPool
+        {
+            get { return m_objectPool; }
+            set { m_objectPool = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject Paths
+        {
+            get { return m_paths; }
+            set { m_paths = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject Cranes
+        {
+            get { return m_cranes; }
+            set { m_cranes = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject Pickups
+        {
+            get { return m_pickups; }
+            set { m_pickups = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject PhoneInfo
+        {
+            get { return m_phoneInfo; }
+            set { m_phoneInfo = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject RestartPoints
+        {
+            get { return m_restartPoints; }
+            set { m_restartPoints = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject RadarBlips
+        {
+            get { return m_radarBlips; }
+            set { m_radarBlips = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject Zones
+        {
+            get { return m_zones; }
+            set { m_zones = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject GangData
+        {
+            get { return m_gangData; }
+            set { m_gangData = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject CarGenerators
+        {
+            get { return m_carGenerators; }
+            set { m_carGenerators = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject ParticleObjects
+        {
+            get { return m_particleObjects; }
+            set { m_particleObjects = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject AudioScriptObjects
+        {
+            get { return m_audioScriptObjects; }
+            set { m_audioScriptObjects = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject PlayerInfo
+        {
+            get { return m_playerInfo; }
+            set { m_playerInfo = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject Stats
+        {
+            get { return m_stats; }
+            set { m_stats = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject Streaming
+        {
+            get { return m_streaming; }
+            set { m_streaming = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject PedTypeInfo
+        {
+            get { return m_pedTypeInfo; }
+            set { m_pedTypeInfo = value; OnPropertyChanged(); }
         }
 
 
@@ -121,7 +254,7 @@ namespace GTASaveData.GTA3
             m_timeStep = new TimeStep();
             m_weather = new Weather();
             m_compileDateAndTime = new Date();
-            m_theScripts = new TheScripts();
+            m_scripts = new TheScripts();
         }
 
         public static int ReadSaveHeader(WorkBuffer buf, string tag)
@@ -139,30 +272,39 @@ namespace GTASaveData.GTA3
             buf.Write(size);
         }
 
-        private int LoadData<T>(WorkBuffer buf, out T o)
+        private int LoadData<T>(out T o)
             where T : SaveDataObject, new()
         {
-            int size = buf.ReadInt32();
-            Serializer.Read(buf, FileFormat, out o);
+            int size = m_workBuf.ReadInt32();
+            Serializer.Read(m_workBuf, FileFormat, out o);
 
             return size;
         }
 
-        private int SaveData(WorkBuffer buf, SaveDataObject o)
+        private int LoadDummy(out DummyObject o)
+        {
+            int size = m_workBuf.ReadInt32();
+            o = new DummyObject(size);
+            ((ISaveDataObject) o).ReadObjectData(m_workBuf);
+
+            return size;
+        }
+
+        private int SaveData(SaveDataObject o)
         {
             int size;
             int preSize, postData;
                 
-            preSize = buf.Position;
-            buf.Skip(4);
+            preSize = m_workBuf.Position;
+            m_workBuf.Skip(4);
             
-            size = Serializer.Write(buf, o, FileFormat);
-            postData = buf.Position;
+            size = Serializer.Write(m_workBuf, o, FileFormat);
+            postData = m_workBuf.Position;
 
-            buf.Seek(preSize);
-            buf.Write(size);
-            buf.Seek(postData);
-            buf.Align4Bytes();
+            m_workBuf.Seek(preSize);
+            m_workBuf.Write(size);
+            m_workBuf.Seek(postData);
+            m_workBuf.Align4Bytes();
 
             size = WorkBuffer.Align4Bytes(size);
             return size;
@@ -220,8 +362,7 @@ namespace GTASaveData.GTA3
             int totalSize = 0;
             int size;
 
-            m_checksum = 0;
-
+            // Read simplevars and scripts
             size = ReadBlock(file);
             Name = m_workBuf.ReadString(Limits.MaxNameLength, true);
             TimeLastSaved = m_workBuf.ReadObject<SystemTime>().ToDateTime();
@@ -250,11 +391,54 @@ namespace GTASaveData.GTA3
             TheCamera.CarZoomIndicator = m_workBuf.ReadSingle();
             TheCamera.PedZoomIndicator = m_workBuf.ReadSingle();
             Debug.Assert(m_workBuf.Offset == SizeOfSimpleVars);
-            int scriptsSize = LoadData(m_workBuf, out m_theScripts);
+            int scriptsSize = LoadData(out m_scripts);
             Debug.Assert(m_workBuf.Offset - SizeOfSimpleVars == scriptsSize + 4);
             Debug.Assert(m_workBuf.Offset == size);
             totalSize += size;
 
+            // Read the rest
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_pedPool);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_garages);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_vehiclePool);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_objectPool);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_paths);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_cranes);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_pickups);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_phoneInfo);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_restartPoints);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_radarBlips);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_zones);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_gangData);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_carGenerators);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_particleObjects);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_audioScriptObjects);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_playerInfo);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_stats);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_streaming);
+            totalSize += ReadBlock(file);
+            LoadDummy(out m_pedTypeInfo);
+
+            // TODO: "meta blocks"
+
+            // Read-out remaining bytes
             while (file.Position < file.Length - 4)
             {
                 totalSize += ReadBlock(file);
@@ -272,6 +456,7 @@ namespace GTASaveData.GTA3
             m_workBuf.Reset();
             m_checksum = 0;
 
+            // Write simplevars and scripts
             m_workBuf.Write(Name, Limits.MaxNameLength, true);
             m_workBuf.Write(new SystemTime(TimeLastSaved));
             m_workBuf.Write(SizeOfOneGameInBytes);
@@ -299,9 +484,52 @@ namespace GTASaveData.GTA3
             m_workBuf.Write(TheCamera.CarZoomIndicator);
             m_workBuf.Write(TheCamera.PedZoomIndicator);
             Debug.Assert(m_workBuf.Offset == SizeOfSimpleVars);
-            SaveData(m_workBuf, m_theScripts);
+            SaveData(Scripts);
             totalSize += WriteBlock(file);
 
+            // Write the rest
+            SaveData(PedPool);
+            totalSize += WriteBlock(file);
+            SaveData(Garages);
+            totalSize += WriteBlock(file);
+            SaveData(VehiclePool);
+            totalSize += WriteBlock(file);
+            SaveData(ObjectPool);
+            totalSize += WriteBlock(file);
+            SaveData(Paths);
+            totalSize += WriteBlock(file);
+            SaveData(Cranes);
+            totalSize += WriteBlock(file);
+            SaveData(Pickups);
+            totalSize += WriteBlock(file);
+            SaveData(PhoneInfo);
+            totalSize += WriteBlock(file);
+            SaveData(RestartPoints);
+            totalSize += WriteBlock(file);
+            SaveData(RadarBlips);
+            totalSize += WriteBlock(file);
+            SaveData(Zones);
+            totalSize += WriteBlock(file);
+            SaveData(GangData);
+            totalSize += WriteBlock(file);
+            SaveData(CarGenerators);
+            totalSize += WriteBlock(file);
+            SaveData(ParticleObjects);
+            totalSize += WriteBlock(file);
+            SaveData(AudioScriptObjects);
+            totalSize += WriteBlock(file);
+            SaveData(PlayerInfo);
+            totalSize += WriteBlock(file);
+            SaveData(Stats);
+            totalSize += WriteBlock(file);
+            SaveData(Streaming);
+            totalSize += WriteBlock(file);
+            SaveData(PedTypeInfo);
+            totalSize += WriteBlock(file);
+
+            // TODO: "meta blocks", extra user-defined blocks
+
+            // Write padding
             for (int i = 0; i < 4; i++)
             {
                 size = WorkBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
@@ -317,6 +545,7 @@ namespace GTASaveData.GTA3
                 }
             }
 
+            // Write checksum
             file.Write(m_checksum);
 
             Debug.WriteLine("Save size: {0}", totalSize);
