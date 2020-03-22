@@ -25,11 +25,11 @@ namespace TestFramework
             return Serializer.Read<T>(bytes, fmt);
         }
 
-        public T GenerateTestVector()
+        public T GenerateTestObject()
         {
-            return GenerateTestVector(SaveFileFormat.Default);
+            return GenerateTestObject(SaveFileFormat.Default);
         }
 
-        public abstract T GenerateTestVector(SaveFileFormat format);
+        public abstract T GenerateTestObject(SaveFileFormat format);
     }
 }
