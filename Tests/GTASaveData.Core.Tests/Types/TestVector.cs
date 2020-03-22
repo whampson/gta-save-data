@@ -7,7 +7,7 @@ namespace GTASaveData.Core.Tests.Types
 {
     public class TestVector : SerializableObjectTestBase<Vector>
     {
-        public override Vector GenerateTestVector(SaveFileFormat format)
+        public override Vector GenerateTestObject(SaveFileFormat format)
         {
             Faker<Vector> model = new Faker<Vector>()
                 .RuleFor(x => x.X, f => f.Random.Float(-4000, 4000))
@@ -20,7 +20,7 @@ namespace GTASaveData.Core.Tests.Types
         [Fact]
         public void Serialization()
         {
-            Vector x0 = GenerateTestVector();
+            Vector x0 = GenerateTestObject();
             Vector x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.X, x1.X);

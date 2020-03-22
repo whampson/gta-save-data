@@ -45,7 +45,7 @@ namespace GTASaveData.Core.Tests
                 throw new NotImplementedException();
             }
 
-            protected override void LoadAllData(WorkBuffer buf)
+            protected override int ReadBlock(WorkBuffer file)
             {
                 throw new NotImplementedException();
             }
@@ -55,14 +55,19 @@ namespace GTASaveData.Core.Tests
                 throw new NotImplementedException();
             }
 
+            protected override void LoadAllData(WorkBuffer buf)
+            {
+                throw new NotImplementedException();
+            }
+
             protected override void SaveAllData(WorkBuffer buf)
             {
                 throw new NotImplementedException();
             }
 
-            public byte[] GetPaddingBytes(int length)
+            public new byte[] GetPaddingBytes(int length)
             {
-                return GetPadding(length);
+                return base.GetPaddingBytes(length);
             }
         }
     }

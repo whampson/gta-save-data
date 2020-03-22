@@ -5,7 +5,7 @@ namespace GTASaveData.Types
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class SizeAttribute : Attribute
     {
-        public int Size { get; set; }
+        public int Size { get; }
 
         public SizeAttribute(int size)
         {

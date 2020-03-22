@@ -279,7 +279,7 @@ namespace GTASaveData.Core.Tests
             TestObject x1 = Serializer.Read<TestObject>(data);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GTAObject.SizeOf<TestObject>(), data.Length);
+            Assert.Equal(SaveDataObject.SizeOf<TestObject>(), data.Length);
         }
 
         [Fact]
@@ -430,7 +430,7 @@ namespace GTASaveData.Core.Tests
 
             Assert.Equal(count, x1.Length);
             Assert.Equal(x0, x1);
-            Assert.Equal(GTAObject.SizeOf<TestObject>() * count, data.Length);
+            Assert.Equal(SaveDataObject.SizeOf<TestObject>() * count, data.Length);
         }
 
         [Theory]
@@ -448,7 +448,7 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(initialCount, x0.Length);
             Assert.Equal(expectedCount, x1.Length);
             Assert.Equal(x0.Take(Math.Min(bufferCount, initialCount)), x1.Take(Math.Min(bufferCount, initialCount)));
-            Assert.Equal(GTAObject.SizeOf<TestObject>() * bufferCount, data.Length);
+            Assert.Equal(SaveDataObject.SizeOf<TestObject>() * bufferCount, data.Length);
         }
 
         [Fact]
@@ -469,7 +469,7 @@ namespace GTASaveData.Core.Tests
 
         #region Test Objects
         [Size(9)]
-        public class TestObject : GTAObject, IEquatable<TestObject>
+        public class TestObject : SaveDataObject, IEquatable<TestObject>
         {
             public int Integer { get; set; }
             public bool Boolean { get; set; }

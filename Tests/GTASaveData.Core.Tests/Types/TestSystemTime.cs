@@ -8,7 +8,7 @@ namespace GTASaveData.Core.Tests.Types
 {
     public class TestSystemTime : SerializableObjectTestBase<SystemTime>
     {
-        public override SystemTime GenerateTestVector(SaveFileFormat format)
+        public override SystemTime GenerateTestObject(SaveFileFormat format)
         {
             return new SystemTime(
                 new Faker().Date.Between(new DateTime(1970, 1, 1), DateTime.Now));
@@ -17,7 +17,7 @@ namespace GTASaveData.Core.Tests.Types
         [Fact]
         public void Serialization()
         {
-            SystemTime x0 = GenerateTestVector();
+            SystemTime x0 = GenerateTestObject();
             SystemTime x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Year, x1.Year);
