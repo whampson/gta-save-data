@@ -1,4 +1,5 @@
 ﻿using GTASaveData;
+using GTASaveData.Types;
 
 namespace TestFramework
 {
@@ -31,5 +32,11 @@ namespace TestFramework
         }
 
         public abstract T GenerateTestObject(SaveFileFormat format);
+
+        public static int SizeOf<TSaveDataObject>()
+            where TSaveDataObject : SaveDataObject, new()
+        {
+            return SaveDataObject.SizeOf<TSaveDataObject>();
+        }
     }
 }

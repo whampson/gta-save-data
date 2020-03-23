@@ -29,7 +29,7 @@ namespace GTASaveData.Core.Tests.Types
             Assert.Equal(x0.Second, x1.Second);
             Assert.Equal(x0.Millisecond, x1.Millisecond);
             Assert.Equal(x0, x1);
-            Assert.Equal(16, data.Length);
+            Assert.Equal(SizeOf<SystemTime>(), data.Length);
         }
     }
 }

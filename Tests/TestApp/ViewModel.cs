@@ -14,7 +14,7 @@ namespace TestApp
     {
         public void OnLoad()
         {
-            CurrentSaveFile.Padding = PaddingType.Random;
+            //CurrentSaveFile.Padding = PaddingType.Random;
         }
 
         #region Events, Variables, and Properties

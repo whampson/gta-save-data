@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using GTASaveData.GTA3;
-using GTASaveData.Serialization;
 using TestFramework;
 using Xunit;
 
@@ -8,7 +7,7 @@ namespace GTASaveData.Tests.GTA3
 {
     public class TestInvisibleObject : SerializableObjectTestBase<InvisibleObject>
     {
-        public override InvisibleObject GenerateTestVector(FileFormat format)
+        public override InvisibleObject GenerateTestObject(SaveFileFormat format)
         {
             Faker<InvisibleObject> model = new Faker<InvisibleObject>()
                 .RuleFor(x => x.Type, f => f.PickRandom<ObjectType>())
@@ -20,13 +19,13 @@ namespace GTASaveData.Tests.GTA3
         [Fact]
         public void Serialization()
         {
-            InvisibleObject x0 = GenerateTestVector();
+            InvisibleObject x0 = GenerateTestObject();
             InvisibleObject x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Type, x1.Type);
             Assert.Equal(x0.StaticIndex, x1.StaticIndex);
             Assert.Equal(x0, x1);
-            Assert.Equal(8, data.Length);
+            Assert.Equal(SizeOf<InvisibleObject>(), data.Length);
         }
     }
 }

@@ -37,8 +37,17 @@ namespace GTASaveData.Core.Tests
 
         private class TestSave : SaveFile
         {
-            public override string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-            public override DateTime TimeLastSaved { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+            public override string Name
+            {
+                get => throw new NotImplementedException();
+                set => throw new NotImplementedException();
+            }
+
+            public override DateTime TimeLastSaved
+            {
+                get => throw new NotImplementedException();
+                set => throw new NotImplementedException();
+            }
 
             protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
             {

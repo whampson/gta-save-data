@@ -25,7 +25,7 @@ namespace GTASaveData.Core.Tests.Types
             Assert.Equal(x0.X, x1.X);
             Assert.Equal(x0.Y, x1.Y);
             Assert.Equal(x0, x1);
-            Assert.Equal(8, data.Length);
+            Assert.Equal(SizeOf<Vector2D>(), data.Length);
         }
     }
 }
