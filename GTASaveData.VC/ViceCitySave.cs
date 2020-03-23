@@ -1,4 +1,5 @@
-﻿using GTASaveData.Types;
+﻿using GTASaveData.Extensions;
+using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -471,7 +472,7 @@ namespace GTASaveData.VC
             SaveSize = WorkBuff.ReadInt32();
             Game.CurrLevel = (LevelType) WorkBuff.ReadInt32();
             TheCamera.Position = WorkBuff.ReadObject<Vector>();
-            if (IsSteam) SteamOnlyValue = WorkBuff.ReadInt32();
+            if (IsSteam) SteamOnlyValue = WorkBuff.ReadInt32();         // TODO: constant?
             Clock.MillisecondsPerGameMinute = WorkBuff.ReadInt32();
             Clock.LastClockTick = WorkBuff.ReadUInt32();
             Clock.GameClockHours = (byte) WorkBuff.ReadInt32();
@@ -501,7 +502,7 @@ namespace GTASaveData.VC
             Game.CurrArea = (AreaType) WorkBuff.ReadInt32();
             Game.AllTaxisHaveNitro = WorkBuff.ReadBool();
             WorkBuff.Align4Bytes();
-            Pad.InvertLook4Pad = WorkBuff.ReadBool();
+            Pad.InvertLook = WorkBuff.ReadBool();
             WorkBuff.Align4Bytes();
             TimeCycle.ExtraColour = WorkBuff.ReadInt32();
             TimeCycle.ExtraColourOn = WorkBuff.ReadBool(4);
@@ -590,7 +591,7 @@ namespace GTASaveData.VC
             WorkBuff.Write((int) Game.CurrArea);
             WorkBuff.Write(Game.AllTaxisHaveNitro);
             WorkBuff.Align4Bytes();
-            WorkBuff.Write(Pad.InvertLook4Pad);
+            WorkBuff.Write(Pad.InvertLook);
             WorkBuff.Align4Bytes();
             WorkBuff.Write(TimeCycle.ExtraColour);
             WorkBuff.Write(TimeCycle.ExtraColourOn, 4);
@@ -647,10 +648,33 @@ namespace GTASaveData.VC
 
         protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
         {
-            // TODO: implement
+            int fileId = data.FindFirst(BitConverter.GetBytes(0x31401));
+            int fileIdJP = data.FindFirst(BitConverter.GetBytes(0x31400));  // TODO: confirm
+            int scr = data.FindFirst("SCR\0".GetAsciiBytes());
 
-            fmt = FileFormats.PC_Retail;
-            return true;
+            int blk1Size;
+            using (WorkBuffer wb = new WorkBuffer(data))
+            {
+                wb.Skip(wb.ReadInt32());
+                blk1Size = wb.ReadInt32();
+            }
+
+            if (fileId == 0x44)
+            {
+                if (scr == 0xEC)
+                {
+                    fmt = FileFormats.PC_Retail;
+                    return true;
+                }
+                else if (scr == 0xF0)
+                {
+                    fmt = FileFormats.PC_Steam;
+                    return true;
+                }
+            }
+
+            fmt = SaveFileFormat.Default;
+            return false;
         }
 
         public override bool Equals(object obj)

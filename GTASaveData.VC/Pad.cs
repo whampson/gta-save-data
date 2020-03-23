@@ -14,7 +14,7 @@ namespace GTASaveData.VC
             set { m_mode = value; OnPropertyChanged(); }
         }
 
-        public bool InvertLook4Pad
+        public bool InvertLook
         {
             get { return m_invertLook4Pad; }
             set { m_invertLook4Pad = value; OnPropertyChanged(); }
@@ -33,7 +33,7 @@ namespace GTASaveData.VC
             }
 
             return Mode.Equals(other.Mode)
-                && InvertLook4Pad.Equals(other.InvertLook4Pad);
+                && InvertLook.Equals(other.InvertLook);
         }
     }
 }
