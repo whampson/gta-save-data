@@ -4,8 +4,7 @@ using System;
 namespace GTASaveData.GTA3
 {
     [Size(8)]
-    public class InvisibleObject : SaveDataObject,
-        IEquatable<InvisibleObject>
+    public class InvisibleObject : SaveDataObject, IEquatable<InvisibleObject>
     {
         private ObjectType m_type;
         private int m_staticIndex;
@@ -22,19 +21,16 @@ namespace GTASaveData.GTA3
             set { m_staticIndex = value; OnPropertyChanged(); }
         }
 
-        public InvisibleObject()
-        { }
-
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_type = (ObjectType) buf.ReadInt32();
-            m_staticIndex = buf.ReadInt32();
+            Type = (ObjectType) buf.ReadInt32();
+            StaticIndex = buf.ReadInt32();
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write((int) m_type);
-            buf.Write(m_staticIndex);
+            buf.Write((int) Type);
+            buf.Write(StaticIndex);
         }
 
         public override bool Equals(object obj)
@@ -49,8 +45,8 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_type.Equals(other.m_type)
-                && m_staticIndex.Equals(other.m_staticIndex);
+            return Type.Equals(other.Type)
+                && StaticIndex.Equals(other.StaticIndex);
         }
     }
 }

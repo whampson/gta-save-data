@@ -5,10 +5,7 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    // TODO: interface
-    [Size(0x88)]
-    public class RunningScript : SaveDataObject,
-        IEquatable<RunningScript>
+    public class RunningScript : SaveDataObject, IEquatable<RunningScript>
     {
         public static class Limits
         {
@@ -17,6 +14,9 @@ namespace GTASaveData.GTA3
             public const int MaxStackDepthPS2 = 4;
             public const int NumberOfLocalVariables = 16;
         }
+
+        private const int SizeOfRunningScript = 136;
+        private const int SizeOfRunningScriptPS2 = 128;
 
         private uint m_pNextScript;
         private uint m_pPrevScript;
@@ -176,7 +176,7 @@ namespace GTASaveData.GTA3
             m_missionFlag = buf.ReadBool();
             buf.Align4Bytes();
 
-            Debug.Assert(buf.Offset == SizeOf<RunningScript>());
+            Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
@@ -203,7 +203,14 @@ namespace GTASaveData.GTA3
             buf.Write(m_missionFlag);
             buf.Align4Bytes();
 
-            Debug.Assert(buf.Offset == SizeOf<RunningScript>());
+            Debug.Assert(buf.Offset == GetSize(fmt));
+        }
+
+        protected override int GetSize(SaveFileFormat fmt)
+        {
+            return (fmt.SupportedOnPS2)
+                ? SizeOfRunningScriptPS2
+                : SizeOfRunningScript;
         }
 
         public override bool Equals(object obj)
@@ -240,7 +247,9 @@ namespace GTASaveData.GTA3
 
         public static int GetMaxStackDepth(SaveFileFormat fmt)
         {
-            return (fmt.SupportsPS2) ? Limits.MaxStackDepthPS2 : Limits.MaxStackDepth;
+            return (fmt.SupportedOnPS2)
+                ? Limits.MaxStackDepthPS2
+                : Limits.MaxStackDepth;
         }
     }
 }

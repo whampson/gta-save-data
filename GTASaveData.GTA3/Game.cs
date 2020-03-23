@@ -3,8 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Game : GTAObject,
-        IEquatable<Game>
+    public class Game : GTAObject, IEquatable<Game>
     {
         private LevelType m_currLevel;
 
@@ -26,7 +25,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_currLevel.Equals(other.m_currLevel);
+            return CurrLevel.Equals(other.CurrLevel);
         }
     }
 }

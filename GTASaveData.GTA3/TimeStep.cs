@@ -3,14 +3,13 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class TimeStep : GTAObject,
-        IEquatable<TimeStep>
+    public class TimeStep : GTAObject, IEquatable<TimeStep>
     {
         private float m_timeStep;
         private float m_framesPerUpdate;
         private float m_timeScale;
 
-        public float Step
+        public float TimeStepValue
         {
             get { return m_timeStep; }
             set { m_timeStep = value; OnPropertyChanged(); }
@@ -40,9 +39,9 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_timeStep.Equals(other.m_timeStep)
-                && m_framesPerUpdate.Equals(other.m_framesPerUpdate)
-                && m_timeScale.Equals(other.m_timeScale);
+            return TimeStepValue.Equals(other.TimeStepValue)
+                && FramesPerUpdate.Equals(other.FramesPerUpdate)
+                && TimeScale.Equals(other.TimeScale);
         }
     }
 }

@@ -6,8 +6,7 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     [Size(0x1478)]
-    public class Garages : SaveDataObject,
-        IEquatable<Garages>
+    public class Garages : SaveDataObject, IEquatable<Garages>
     {
         public static class Limits
         {
@@ -102,42 +101,42 @@ namespace GTASaveData.GTA3
 
         public Garages()
         {
-            m_storedCars = new Array<StoredCar>();
-            m_garages = new Array<Garage>();
+            StoredCars = new Array<StoredCar>();
+            GarageArray = new Array<Garage>();
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_numberOfGarages = buf.ReadInt32();
-            m_bombsAreFree = buf.ReadBool(4);
-            m_respraysAreFree = buf.ReadBool(4);
-            m_carsCollected = buf.ReadInt32();
-            m_bankVansCollected = buf.ReadInt32();
-            m_policeCarsCollected = buf.ReadInt32();
-            m_carTypesCollected1 = (CollectCars1) buf.ReadInt32();
-            m_carTypesCollected2 = (CollectCars2) buf.ReadInt32();
-            m_carTypesCollected3 = (CollectCars3) buf.ReadInt32();
-            m_lastTimeHelpMessage = buf.ReadInt32();
-            m_storedCars = buf.ReadArray<StoredCar>(Limits.NumberOfStoredCars);
-            m_garages = buf.ReadArray<Garage>(Limits.NumberOfGarages);
+            NumberOfGarages = buf.ReadInt32();
+            BombsAreFree = buf.ReadBool(4);
+            RespraysAreFree = buf.ReadBool(4);
+            CarsCollected = buf.ReadInt32();
+            BankVansCollected = buf.ReadInt32();
+            PoliceCarsCollected = buf.ReadInt32();
+            CarTypesCollected1 = (CollectCars1) buf.ReadInt32();
+            CarTypesCollected2 = (CollectCars2) buf.ReadInt32();
+            CarTypesCollected3 = (CollectCars3) buf.ReadInt32();
+            LastTimeHelpMessage = buf.ReadInt32();
+            StoredCars = buf.ReadArray<StoredCar>(Limits.NumberOfStoredCars);
+            GarageArray = buf.ReadArray<Garage>(Limits.NumberOfGarages);
 
             Debug.Assert(buf.Offset == SizeOf<Garages>());
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(m_numberOfGarages);
-            buf.Write(m_bombsAreFree, 4);
-            buf.Write(m_respraysAreFree, 4);
-            buf.Write(m_carsCollected);
-            buf.Write(m_bankVansCollected);
-            buf.Write(m_policeCarsCollected);
-            buf.Write((int) m_carTypesCollected1);
-            buf.Write((int) m_carTypesCollected2);
-            buf.Write((int) m_carTypesCollected3);
-            buf.Write(m_lastTimeHelpMessage);
-            buf.Write(m_storedCars.ToArray(), Limits.NumberOfStoredCars);
-            buf.Write(m_garages.ToArray(), Limits.NumberOfGarages);
+            buf.Write(NumberOfGarages);
+            buf.Write(BombsAreFree, 4);
+            buf.Write(RespraysAreFree, 4);
+            buf.Write(CarsCollected);
+            buf.Write(BankVansCollected);
+            buf.Write(PoliceCarsCollected);
+            buf.Write((int) CarTypesCollected1);
+            buf.Write((int) CarTypesCollected2);
+            buf.Write((int) CarTypesCollected3);
+            buf.Write(LastTimeHelpMessage);
+            buf.Write(StoredCars.ToArray(), Limits.NumberOfStoredCars);
+            buf.Write(GarageArray.ToArray(), Limits.NumberOfGarages);
 
             Debug.Assert(buf.Offset == SizeOf<Garages>());
         }
@@ -154,18 +153,18 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_numberOfGarages.Equals(other.m_numberOfGarages)
-                && m_bombsAreFree.Equals(other.m_bombsAreFree)
-                && m_respraysAreFree.Equals(other.m_respraysAreFree)
-                && m_carsCollected.Equals(other.m_carsCollected)
-                && m_bankVansCollected.Equals(other.m_bankVansCollected)
-                && m_policeCarsCollected.Equals(other.m_policeCarsCollected)
-                && m_carTypesCollected1.Equals(other.m_carTypesCollected1)
-                && m_carTypesCollected2.Equals(other.m_carTypesCollected2)
-                && m_carTypesCollected3.Equals(other.m_carTypesCollected3)
-                && m_lastTimeHelpMessage.Equals(other.m_lastTimeHelpMessage)
-                && m_storedCars.SequenceEqual(other.m_storedCars)
-                && m_garages.SequenceEqual(other.m_garages);
+            return NumberOfGarages.Equals(other.NumberOfGarages)
+                && BombsAreFree.Equals(other.BombsAreFree)
+                && RespraysAreFree.Equals(other.RespraysAreFree)
+                && CarsCollected.Equals(other.CarsCollected)
+                && BankVansCollected.Equals(other.BankVansCollected)
+                && PoliceCarsCollected.Equals(other.PoliceCarsCollected)
+                && CarTypesCollected1.Equals(other.CarTypesCollected1)
+                && CarTypesCollected2.Equals(other.CarTypesCollected2)
+                && CarTypesCollected3.Equals(other.CarTypesCollected3)
+                && LastTimeHelpMessage.Equals(other.LastTimeHelpMessage)
+                && StoredCars.SequenceEqual(other.StoredCars)
+                && GarageArray.SequenceEqual(other.GarageArray);
         }
     }
 }

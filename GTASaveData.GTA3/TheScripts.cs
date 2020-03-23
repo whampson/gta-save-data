@@ -7,8 +7,7 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class TheScripts : SaveDataObject,
-        IEquatable<TheScripts>
+    public class TheScripts : SaveDataObject, IEquatable<TheScripts>
     {
         public static class Limits
         {
@@ -20,7 +19,7 @@ namespace GTASaveData.GTA3
 
         private const int ScriptDataSize = 968;
 
-        private Array<byte> m_scriptSpace;
+        private Array<byte> m_scriptSpace;          // TODO: hmmm, keep this a byte array or make it uint32s?
         private int m_onAMissionFlag;
         private Array<ContactInfo> m_contactArray;
         private Array<Collective> m_collectiveArray;
@@ -46,13 +45,13 @@ namespace GTASaveData.GTA3
             set { m_onAMissionFlag = value; OnPropertyChanged(); }
         }
 
-        public Array<ContactInfo> Contacts
+        public Array<ContactInfo> ContactArray
         {
             get { return m_contactArray; }
             set { m_contactArray = value; OnPropertyChanged(); }
         }
 
-        public Array<Collective> Collectives
+        public Array<Collective> CollectiveArray
         {
             get { return m_collectiveArray; }
             set { m_collectiveArray = value; OnPropertyChanged(); }
@@ -64,13 +63,13 @@ namespace GTASaveData.GTA3
             set { m_nextFreeCollectiveIndex = value; OnPropertyChanged(); }
         }
 
-        public Array<StaticReplacement> BuildingSwaps
+        public Array<StaticReplacement> BuildingSwapArray
         {
             get { return m_buildingSwapArray; }
             set { m_buildingSwapArray = value; OnPropertyChanged(); }
         }
 
-        public Array<InvisibleObject> InvisibilitySettings
+        public Array<InvisibleObject> InvisibilitySettingArray
         {
             get { return m_invisibilitySettingArray; }
             set { m_invisibilitySettingArray = value; OnPropertyChanged(); }
@@ -100,7 +99,7 @@ namespace GTASaveData.GTA3
             set { m_numberOfMissionScripts = value; OnPropertyChanged(); }
         }
 
-        public Array<RunningScript> RunningScripts
+        public Array<RunningScript> ActiveScripts
         {
             get { return m_activeScripts; }
             set { m_activeScripts = value; OnPropertyChanged(); }
@@ -108,30 +107,30 @@ namespace GTASaveData.GTA3
 
         public TheScripts()
         {
-            m_scriptSpace = new Array<byte>();
-            m_contactArray = CreateArray<ContactInfo>(Limits.NumberOfContacts);
-            m_collectiveArray = CreateArray<Collective>(Limits.NumberOfCollectives);
-            m_buildingSwapArray = CreateArray<StaticReplacement>(Limits.NumberOfBuildingSwaps);
-            m_invisibilitySettingArray = CreateArray<InvisibleObject>(Limits.NumberOfInvisibilitySettings);
-            m_activeScripts = new Array<RunningScript>();
+            ScriptSpace = new Array<byte>();
+            ContactArray = CreateArray<ContactInfo>(Limits.NumberOfContacts);
+            CollectiveArray = CreateArray<Collective>(Limits.NumberOfCollectives);
+            BuildingSwapArray = CreateArray<StaticReplacement>(Limits.NumberOfBuildingSwaps);
+            InvisibilitySettingArray = CreateArray<InvisibleObject>(Limits.NumberOfInvisibilitySettings);
+            ActiveScripts = new Array<RunningScript>();
         }
 
         public int GetVariable(int index)
         {
-            return m_scriptSpace[index + 3] << 24
-                 | m_scriptSpace[index + 2] << 16
-                 | m_scriptSpace[index + 1] << 8
-                 | m_scriptSpace[index];
+            return ScriptSpace[index + 3] << 24
+                 | ScriptSpace[index + 2] << 16
+                 | ScriptSpace[index + 1] << 8
+                 | ScriptSpace[index];
         }
 
         public float GetVariableAsFloat(int index)
         {
             byte[] floatBits = new byte[]
             {
-                m_scriptSpace[index + 3],
-                m_scriptSpace[index + 2],
-                m_scriptSpace[index + 1],
-                m_scriptSpace[index]
+                ScriptSpace[index + 3],
+                ScriptSpace[index + 2],
+                ScriptSpace[index + 1],
+                ScriptSpace[index]
             };
 
             return BitConverter.ToSingle(floatBits, 0);
@@ -139,76 +138,78 @@ namespace GTASaveData.GTA3
 
         public void SetVariable(int index, int value)
         {
-            m_scriptSpace[index + 3] = (byte) (value >> 24);
-            m_scriptSpace[index + 2] = (byte) (value >> 16);
-            m_scriptSpace[index + 1] = (byte) (value >> 8);
-            m_scriptSpace[index] = (byte) value;
+            ScriptSpace[index + 3] = (byte) (value >> 24);
+            ScriptSpace[index + 2] = (byte) (value >> 16);
+            ScriptSpace[index + 1] = (byte) (value >> 8);
+            ScriptSpace[index] = (byte) value;
         }
 
         public void SetVariable(int index, float value)
         {
             // TODO: test this
             byte[] floatBits = BitConverter.GetBytes(value);
-            Array.Copy(floatBits, 0, m_scriptSpace, index, 4);
+            Array.Copy(floatBits, 0, ScriptSpace, index, 4);
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "SCR");
             int varSpace = buf.ReadInt32();
-            m_scriptSpace = buf.ReadArray<byte>(varSpace);
+            ScriptSpace = buf.ReadArray<byte>(varSpace);
+            buf.Align4Bytes();
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
-            m_onAMissionFlag = buf.ReadInt32();
-            m_contactArray = buf.ReadArray<ContactInfo>(Limits.NumberOfContacts);
-            m_collectiveArray = buf.ReadArray<Collective>(Limits.NumberOfCollectives);
-            m_nextFreeCollectiveIndex = buf.ReadInt32();
-            m_buildingSwapArray = buf.ReadArray<StaticReplacement>(Limits.NumberOfBuildingSwaps);
-            m_invisibilitySettingArray = buf.ReadArray<InvisibleObject>(Limits.NumberOfInvisibilitySettings);
-            m_usingAMultiScriptFile = buf.ReadBool();
+            OnAMissionFlag = buf.ReadInt32();
+            ContactArray = buf.ReadArray<ContactInfo>(Limits.NumberOfContacts);
+            CollectiveArray = buf.ReadArray<Collective>(Limits.NumberOfCollectives);
+            NextFreeCollectiveIndex = buf.ReadInt32();
+            BuildingSwapArray = buf.ReadArray<StaticReplacement>(Limits.NumberOfBuildingSwaps);
+            InvisibilitySettingArray = buf.ReadArray<InvisibleObject>(Limits.NumberOfInvisibilitySettings);
+            UsingAMultiScriptFile = buf.ReadBool();
             buf.ReadByte();
             buf.ReadUInt16();
-            m_mainScriptSize = buf.ReadInt32();
-            m_largestMissionScriptSize = buf.ReadInt32();
-            m_numberOfMissionScripts = buf.ReadInt16();
+            MainScriptSize = buf.ReadInt32();
+            LargestMissionScriptSize = buf.ReadInt32();
+            NumberOfMissionScripts = buf.ReadInt16();
             buf.ReadUInt16();
             int runningScripts = buf.ReadInt32();
-            m_activeScripts = buf.ReadArray<RunningScript>(runningScripts, fmt);
+            ActiveScripts = buf.ReadArray<RunningScript>(runningScripts, fmt);
 
             Debug.Assert(buf.Offset - GTA3Save.SaveHeaderSize == size);
-            Debug.Assert(size + GTA3Save.SaveHeaderSize == GetSerializedSize());
+            Debug.Assert(size + GTA3Save.SaveHeaderSize == GetSerializedSize(fmt));
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            int size = GetSerializedSize();
+            int size = GetSerializedSize(fmt);
 
             GTA3Save.WriteSaveHeader(buf, "SCR\0", size - GTA3Save.SaveHeaderSize);
-            buf.Write(m_scriptSpace.Count);
-            buf.Write(m_scriptSpace.ToArray());
+            buf.Write(ScriptSpace.Count);
+            buf.Write(ScriptSpace.ToArray());
+            buf.Align4Bytes();
             buf.Write(ScriptDataSize);
-            buf.Write(m_onAMissionFlag);
-            buf.Write(m_contactArray.ToArray(), Limits.NumberOfContacts);
-            buf.Write(m_collectiveArray.ToArray(), Limits.NumberOfCollectives);
-            buf.Write(m_nextFreeCollectiveIndex);
-            buf.Write(m_buildingSwapArray.ToArray(), Limits.NumberOfBuildingSwaps);
-            buf.Write(m_invisibilitySettingArray.ToArray(), Limits.NumberOfInvisibilitySettings);
-            buf.Write(m_usingAMultiScriptFile);
+            buf.Write(OnAMissionFlag);
+            buf.Write(ContactArray.ToArray(), Limits.NumberOfContacts);
+            buf.Write(CollectiveArray.ToArray(), Limits.NumberOfCollectives);
+            buf.Write(NextFreeCollectiveIndex);
+            buf.Write(BuildingSwapArray.ToArray(), Limits.NumberOfBuildingSwaps);
+            buf.Write(InvisibilitySettingArray.ToArray(), Limits.NumberOfInvisibilitySettings);
+            buf.Write(UsingAMultiScriptFile);
             buf.Write((byte) 0);
             buf.Write((short) 0);
-            buf.Write(m_mainScriptSize);
-            buf.Write(m_largestMissionScriptSize);
-            buf.Write(m_numberOfMissionScripts);
+            buf.Write(MainScriptSize);
+            buf.Write(LargestMissionScriptSize);
+            buf.Write(NumberOfMissionScripts);
             buf.Write((short) 0);
-            buf.Write(m_activeScripts.Count);
-            buf.Write(m_activeScripts.ToArray(), format: fmt);
+            buf.Write(ActiveScripts.Count);
+            buf.Write(ActiveScripts.ToArray(), format: fmt);
 
             Debug.Assert(buf.Offset == size);
         }
 
-        private int GetSerializedSize()
+        public int GetSerializedSize(SaveFileFormat fmt)
         {
-            return SizeOf<RunningScript>() * m_activeScripts.Count + m_scriptSpace.Count + ScriptDataSize + GTA3Save.SaveHeaderSize + 3 * sizeof(int);
+            return SizeOf<RunningScript>(fmt) * ActiveScripts.Count + WorkBuffer.Align4Bytes(ScriptSpace.Count) + ScriptDataSize + GTA3Save.SaveHeaderSize + 3 * sizeof(int);
         }
 
         public override bool Equals(object obj)
@@ -223,18 +224,18 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_scriptSpace.SequenceEqual(other.m_scriptSpace)
-                && m_onAMissionFlag.Equals(other.m_onAMissionFlag)
-                && m_contactArray.SequenceEqual(other.m_contactArray)
-                && m_collectiveArray.SequenceEqual(other.m_collectiveArray)
-                && m_nextFreeCollectiveIndex.Equals(other.m_nextFreeCollectiveIndex)
-                && m_buildingSwapArray.SequenceEqual(other.m_buildingSwapArray)
-                && m_invisibilitySettingArray.SequenceEqual(other.m_invisibilitySettingArray)
-                && m_usingAMultiScriptFile.Equals(other.m_usingAMultiScriptFile)
-                && m_mainScriptSize.Equals(other.m_mainScriptSize)
-                && m_largestMissionScriptSize.Equals(other.m_largestMissionScriptSize)
-                && m_numberOfMissionScripts.Equals(other.m_numberOfMissionScripts)
-                && m_activeScripts.SequenceEqual(other.m_activeScripts);
+            return ScriptSpace.SequenceEqual(other.ScriptSpace)
+                && OnAMissionFlag.Equals(other.OnAMissionFlag)
+                && ContactArray.SequenceEqual(other.ContactArray)
+                && CollectiveArray.SequenceEqual(other.CollectiveArray)
+                && NextFreeCollectiveIndex.Equals(other.NextFreeCollectiveIndex)
+                && BuildingSwapArray.SequenceEqual(other.BuildingSwapArray)
+                && InvisibilitySettingArray.SequenceEqual(other.InvisibilitySettingArray)
+                && UsingAMultiScriptFile.Equals(other.UsingAMultiScriptFile)
+                && MainScriptSize.Equals(other.MainScriptSize)
+                && LargestMissionScriptSize.Equals(other.LargestMissionScriptSize)
+                && NumberOfMissionScripts.Equals(other.NumberOfMissionScripts)
+                && ActiveScripts.SequenceEqual(other.ActiveScripts);
         }
     }
 }

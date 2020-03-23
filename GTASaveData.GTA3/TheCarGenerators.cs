@@ -6,18 +6,20 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     [Size(0x2D14)]
-    public class TheCarGenerators : SaveDataObject,
-        IEquatable<TheCarGenerators>
+    public class TheCarGenerators : SaveDataObject, IEquatable<TheCarGenerators>
     {
         public static class Limits
         {
             public const int NumberOfCarGenerators = 160;
         }
 
+        private const int SizeOfCarGeneratorData = 12;
+        private const int SizeOfCarGeneratorArray = 0x2D00;
+
         private int m_numberOfCarGenerators;
         private int m_currentActiveCount;
-        private int m_processCounter;
-        private int m_generateEvenIfPlayerIsCloseCounter;
+        private byte m_processCounter;
+        private byte m_generateEvenIfPlayerIsCloseCounter;
         private Array<CarGenerator> m_carGeneratorArray;
 
         public int NumberOfCarGenerators
@@ -32,13 +34,13 @@ namespace GTASaveData.GTA3
             set { m_currentActiveCount = value; OnPropertyChanged(); }
         }
 
-        public int ProcessCounter
+        public byte ProcessCounter
         {
             get { return m_processCounter; }
             set { m_processCounter = value; OnPropertyChanged(); }
         }
 
-        public int GenerateEvenIfPlayerIsCloseCounter
+        public byte GenerateEvenIfPlayerIsCloseCounter
         {
             get { return m_generateEvenIfPlayerIsCloseCounter; }
             set { m_generateEvenIfPlayerIsCloseCounter = value; OnPropertyChanged(); }
@@ -52,35 +54,35 @@ namespace GTASaveData.GTA3
 
         public TheCarGenerators()
         {
-            m_carGeneratorArray = new Array<CarGenerator>();
+            CarGeneratorArray = new Array<CarGenerator>();
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
             int infoSize = buf.ReadInt32();
-            Debug.Assert(infoSize == 0x0C);
-            m_numberOfCarGenerators = buf.ReadInt32();
-            m_currentActiveCount = buf.ReadInt32();
-            m_processCounter = buf.ReadByte();
-            m_generateEvenIfPlayerIsCloseCounter = buf.ReadByte();
+            Debug.Assert(infoSize == SizeOfCarGeneratorData);
+            NumberOfCarGenerators = buf.ReadInt32();
+            CurrentActiveCount = buf.ReadInt32();
+            ProcessCounter = buf.ReadByte();
+            GenerateEvenIfPlayerIsCloseCounter = buf.ReadByte();
             buf.ReadInt16();
             int carGensSize = buf.ReadInt32();
-            Debug.Assert(carGensSize == 0x2D00);
-            m_carGeneratorArray = buf.ReadArray<CarGenerator>(Limits.NumberOfCarGenerators);
+            Debug.Assert(carGensSize == SizeOfCarGeneratorArray);
+            CarGeneratorArray = buf.ReadArray<CarGenerator>(Limits.NumberOfCarGenerators);
 
             Debug.Assert(buf.Offset == SizeOf<TheCarGenerators>());
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(0x0C);
-            buf.Write(m_numberOfCarGenerators);
-            buf.Write(m_currentActiveCount);
-            buf.Write((byte) m_processCounter);
-            buf.Write((byte) m_generateEvenIfPlayerIsCloseCounter);
+            buf.Write(SizeOfCarGeneratorData);
+            buf.Write(NumberOfCarGenerators);
+            buf.Write(CurrentActiveCount);
+            buf.Write(ProcessCounter);
+            buf.Write(GenerateEvenIfPlayerIsCloseCounter);
             buf.Write((short) 0);
-            buf.Write(0x2D00);
-            buf.Write(m_carGeneratorArray.ToArray(), Limits.NumberOfCarGenerators);
+            buf.Write(SizeOfCarGeneratorArray);
+            buf.Write(CarGeneratorArray.ToArray(), Limits.NumberOfCarGenerators);
         }
 
         public override bool Equals(object obj)
@@ -95,11 +97,11 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_numberOfCarGenerators.Equals(other.m_numberOfCarGenerators)
-                && m_currentActiveCount.Equals(other.m_currentActiveCount)
-                && m_processCounter.Equals(other.m_processCounter)
-                && m_generateEvenIfPlayerIsCloseCounter.Equals(other.m_generateEvenIfPlayerIsCloseCounter)
-                && m_carGeneratorArray.SequenceEqual(other.m_carGeneratorArray);
+            return NumberOfCarGenerators.Equals(other.NumberOfCarGenerators)
+                && CurrentActiveCount.Equals(other.CurrentActiveCount)
+                && ProcessCounter.Equals(other.ProcessCounter)
+                && GenerateEvenIfPlayerIsCloseCounter.Equals(other.GenerateEvenIfPlayerIsCloseCounter)
+                && CarGeneratorArray.SequenceEqual(other.CarGeneratorArray);
         }
     }
 }

@@ -5,8 +5,7 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     [Size(0x8C)]
-    public class Garage : SaveDataObject,
-        IEquatable<Garage>
+    public class Garage : SaveDataObject, IEquatable<Garage>
     {
         private GarageType m_type;
         private GarageState m_state;
@@ -16,7 +15,7 @@ namespace GTASaveData.GTA3
         private bool m_resprayHappened;
         private byte m_field06h;
         private byte m_field07h;
-        private VehicleType m_targetModel;
+        private int m_targetModelIndex;
         private uint m_pDoor1;
         private uint m_pDoor2;
         private bool m_isDoor1PoolIndex;
@@ -78,19 +77,31 @@ namespace GTASaveData.GTA3
             set { m_resprayHappened = value; OnPropertyChanged(); }
         }
 
-        public VehicleType TargetVehicle
+        public byte Field06h
         {
-            get { return m_targetModel; }
-            set { m_targetModel = value; OnPropertyChanged(); }
+            get { return m_field06h; }
+            set { m_field06h = value; OnPropertyChanged(); }
         }
 
-        public uint Door1
+        public byte Field07h
+        {
+            get { return m_field07h; }
+            set { m_field07h = value; OnPropertyChanged(); }
+        }
+
+        public int TargetModelIndex
+        {
+            get { return m_targetModelIndex; }
+            set { m_targetModelIndex = value; OnPropertyChanged(); }
+        }
+
+        public uint Door1Pointer
         {
             get { return m_pDoor1; }
             set { m_pDoor1 = value; OnPropertyChanged(); }
         }
 
-        public uint Door2
+        public uint Door2Pointer
         {
             get { return m_pDoor2; }
             set { m_pDoor2 = value; OnPropertyChanged(); }
@@ -138,13 +149,19 @@ namespace GTASaveData.GTA3
             set { m_cameraFollowsPlayer = value; OnPropertyChanged(); }
         }
 
-        public Vector PosInf
+        public byte Field27h
+        {
+            get { return m_field27h; }
+            set { m_field27h = value; OnPropertyChanged(); }
+        }
+
+        public Vector VecInf
         {
             get { return m_vecInf; }
             set { m_vecInf = value; OnPropertyChanged(); }
         }
 
-        public Vector PosSup
+        public Vector VecSup
         {
             get { return m_vecSup; }
             set { m_vecSup = value; OnPropertyChanged(); }
@@ -224,103 +241,103 @@ namespace GTASaveData.GTA3
 
         public Garage()
         {
-            m_vecInf = new Vector();
-            m_vecSup = new Vector();
-            m_door1Pos = new Vector();
-            m_door2Pos = new Vector();
-            m_storedCar = new StoredCar();
+            VecInf = new Vector();
+            VecSup = new Vector();
+            Door1Pos = new Vector();
+            Door2Pos = new Vector();
+            StoredCar = new StoredCar();
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_type = (GarageType) buf.ReadByte();
-            m_state = (GarageState) buf.ReadByte();
-            m_field02h = buf.ReadByte();
-            m_closingWithoutTargetVehicle = buf.ReadBool();
-            m_deactivated = buf.ReadBool();
-            m_resprayHappened = buf.ReadBool();
-            m_field06h = buf.ReadByte();
-            m_field07h = buf.ReadByte();
-            m_targetModel = (VehicleType) buf.ReadInt32();
-            m_pDoor1 = buf.ReadUInt32();
-            m_pDoor2 = buf.ReadUInt32();
-            m_isDoor1PoolIndex = buf.ReadBool();
-            m_isDoor2PoolIndex = buf.ReadBool();
-            m_isDoor1Object = buf.ReadBool();
-            m_isDoor2Object = buf.ReadBool();
-            m_field24h = buf.ReadByte();
-            m_isRotatedDoor = buf.ReadBool();
-            m_cameraFollowsPlayer = buf.ReadBool();
-            m_field27h = buf.ReadByte();
-            m_vecInf.X = buf.ReadSingle();
-            m_vecSup.X = buf.ReadSingle();
-            m_vecInf.Y = buf.ReadSingle();
-            m_vecSup.Y = buf.ReadSingle();
-            m_vecInf.Z = buf.ReadSingle();
-            m_vecSup.Z = buf.ReadSingle();
-            m_doorOpenMinZOffset = buf.ReadSingle();
-            m_doorOpenMaxZOffset = buf.ReadSingle();
-            m_door1Pos.X = buf.ReadSingle();
-            m_door1Pos.Y = buf.ReadSingle();
-            m_door2Pos.X = buf.ReadSingle();
-            m_door2Pos.Y = buf.ReadSingle();
-            m_door1Pos.Z = buf.ReadSingle();
-            m_door2Pos.Z = buf.ReadSingle();
-            m_doorLastOpenTime = buf.ReadUInt32();
-            m_collectedCarsState = buf.ReadByte();
-            m_field89h = buf.ReadByte();
-            m_field90h = buf.ReadByte();
-            m_field91h = buf.ReadByte();
-            m_pTargetVehicle = buf.ReadUInt32();
-            m_field96h = buf.ReadInt32();
-            m_storedCar = buf.ReadObject<StoredCar>();
+            Type = (GarageType) buf.ReadByte();
+            State = (GarageState) buf.ReadByte();
+            Field02h = buf.ReadByte();
+            ClosingWithoutTargetVehicle = buf.ReadBool();
+            Deactivated = buf.ReadBool();
+            ResprayHappened = buf.ReadBool();
+            Field06h = buf.ReadByte();
+            Field07h = buf.ReadByte();
+            TargetModelIndex = buf.ReadInt32();
+            Door1Pointer = buf.ReadUInt32();
+            Door2Pointer = buf.ReadUInt32();
+            IsDoor1PoolIndex = buf.ReadBool();
+            IsDoor2PoolIndex = buf.ReadBool();
+            IsDoor1Object = buf.ReadBool();
+            IsDoor2Object = buf.ReadBool();
+            Field24h = buf.ReadByte();
+            IsRotatedDoor = buf.ReadBool();
+            CameraFollowsPlayer = buf.ReadBool();
+            Field27h = buf.ReadByte();
+            VecInf.X = buf.ReadSingle();
+            VecSup.X = buf.ReadSingle();
+            VecInf.Y = buf.ReadSingle();
+            VecSup.Y = buf.ReadSingle();
+            VecInf.Z = buf.ReadSingle();
+            VecSup.Z = buf.ReadSingle();
+            DoorOpenMinZOffset = buf.ReadSingle();
+            DoorOpenMaxZOffset = buf.ReadSingle();
+            Door1Pos.X = buf.ReadSingle();
+            Door1Pos.Y = buf.ReadSingle();
+            Door2Pos.X = buf.ReadSingle();
+            Door2Pos.Y = buf.ReadSingle();
+            Door1Pos.Z = buf.ReadSingle();
+            Door2Pos.Z = buf.ReadSingle();
+            DoorLastOpenTime = buf.ReadUInt32();
+            CollectedCarsState = buf.ReadByte();
+            Field89h = buf.ReadByte();
+            Field90h = buf.ReadByte();
+            Field91h = buf.ReadByte();
+            TargetVehiclePointer = buf.ReadUInt32();
+            Field96h = buf.ReadInt32();
+            StoredCar = buf.ReadObject<StoredCar>();
 
             Debug.Assert(buf.Offset == SizeOf<Garage>());
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write((byte) m_type);
-            buf.Write((byte) m_state);
-            buf.Write(m_field02h);
-            buf.Write(m_closingWithoutTargetVehicle);
-            buf.Write(m_deactivated);
-            buf.Write(m_resprayHappened);
-            buf.Write(m_field06h);
-            buf.Write(m_field07h);
-            buf.Write((int) m_targetModel);
-            buf.Write(m_pDoor1);
-            buf.Write(m_pDoor2);
-            buf.Write(m_isDoor1PoolIndex);
-            buf.Write(m_isDoor2PoolIndex);
-            buf.Write(m_isDoor1Object);
-            buf.Write(m_isDoor2Object);
-            buf.Write(m_field24h);
-            buf.Write(m_isRotatedDoor);
-            buf.Write(m_cameraFollowsPlayer);
-            buf.Write(m_field27h);
-            buf.Write(m_vecInf.X);
-            buf.Write(m_vecSup.X);
-            buf.Write(m_vecInf.Y);
-            buf.Write(m_vecSup.Y);
-            buf.Write(m_vecInf.Z);
-            buf.Write(m_vecSup.Z);
-            buf.Write(m_doorOpenMinZOffset);
-            buf.Write(m_doorOpenMaxZOffset);
-            buf.Write(m_door1Pos.X);
-            buf.Write(m_door1Pos.Y);
-            buf.Write(m_door2Pos.X);
-            buf.Write(m_door2Pos.Y);
-            buf.Write(m_door1Pos.Z);
-            buf.Write(m_door2Pos.Z);
-            buf.Write(m_doorLastOpenTime);
-            buf.Write(m_collectedCarsState);
-            buf.Write(m_field89h);
-            buf.Write(m_field90h);
-            buf.Write(m_field91h);
-            buf.Write(m_pTargetVehicle);
-            buf.Write(m_field96h);
-            buf.Write(m_storedCar);
+            buf.Write((byte) Type);
+            buf.Write((byte) State);
+            buf.Write(Field02h);
+            buf.Write(ClosingWithoutTargetVehicle);
+            buf.Write(Deactivated);
+            buf.Write(ResprayHappened);
+            buf.Write(Field06h);
+            buf.Write(Field07h);
+            buf.Write(TargetModelIndex);
+            buf.Write(Door1Pointer);
+            buf.Write(Door2Pointer);
+            buf.Write(IsDoor1PoolIndex);
+            buf.Write(IsDoor2PoolIndex);
+            buf.Write(IsDoor1Object);
+            buf.Write(IsDoor2Object);
+            buf.Write(Field24h);
+            buf.Write(IsRotatedDoor);
+            buf.Write(CameraFollowsPlayer);
+            buf.Write(Field27h);
+            buf.Write(VecInf.X);
+            buf.Write(VecSup.X);
+            buf.Write(VecInf.Y);
+            buf.Write(VecSup.Y);
+            buf.Write(VecInf.Z);
+            buf.Write(VecSup.Z);
+            buf.Write(DoorOpenMinZOffset);
+            buf.Write(DoorOpenMaxZOffset);
+            buf.Write(Door1Pos.X);
+            buf.Write(Door1Pos.Y);
+            buf.Write(Door2Pos.X);
+            buf.Write(Door2Pos.Y);
+            buf.Write(Door1Pos.Z);
+            buf.Write(Door2Pos.Z);
+            buf.Write(DoorLastOpenTime);
+            buf.Write(CollectedCarsState);
+            buf.Write(Field89h);
+            buf.Write(Field90h);
+            buf.Write(Field91h);
+            buf.Write(TargetVehiclePointer);
+            buf.Write(Field96h);
+            buf.Write(StoredCar);
 
             Debug.Assert(buf.Offset == SizeOf<Garage>());
         }
@@ -337,39 +354,39 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_type.Equals(other.m_type)
-                && m_state.Equals(other.m_state)
-                && m_field02h.Equals(other.m_field02h)
-                && m_closingWithoutTargetVehicle.Equals(other.m_closingWithoutTargetVehicle)
-                && m_deactivated.Equals(other.m_deactivated)
-                && m_resprayHappened.Equals(other.m_resprayHappened)
-                && m_field06h.Equals(other.m_field06h)
-                && m_field07h.Equals(other.m_field07h)
-                && m_targetModel.Equals(other.m_targetModel)
-                && m_pDoor1.Equals(other.m_pDoor1)
-                && m_pDoor2.Equals(other.m_pDoor2)
-                && m_isDoor1PoolIndex.Equals(other.m_isDoor1PoolIndex)
-                && m_isDoor2PoolIndex.Equals(other.m_isDoor2PoolIndex)
-                && m_isDoor1Object.Equals(other.m_isDoor1Object)
-                && m_isDoor2Object.Equals(other.m_isDoor2Object)
-                && m_field24h.Equals(other.m_field24h)
-                && m_isRotatedDoor.Equals(other.m_isRotatedDoor)
-                && m_cameraFollowsPlayer.Equals(other.m_cameraFollowsPlayer)
-                && m_field27h.Equals(other.m_field27h)
-                && m_vecInf.Equals(other.m_vecInf)
-                && m_vecSup.Equals(other.m_vecSup)
-                && m_doorOpenMinZOffset.Equals(other.m_doorOpenMinZOffset)
-                && m_doorOpenMaxZOffset.Equals(other.m_doorOpenMaxZOffset)
-                && m_door1Pos.Equals(other.m_door1Pos)
-                && m_door2Pos.Equals(other.m_door2Pos)
-                && m_doorLastOpenTime.Equals(other.m_doorLastOpenTime)
-                && m_collectedCarsState.Equals(other.m_collectedCarsState)
-                && m_field89h.Equals(other.m_field89h)
-                && m_field90h.Equals(other.m_field90h)
-                && m_field91h.Equals(other.m_field91h)
-                && m_pTargetVehicle.Equals(other.m_pTargetVehicle)
-                && m_field96h.Equals(other.m_field96h)
-                && m_storedCar.Equals(other.m_storedCar);
+            return Type.Equals(other.Type)
+                && State.Equals(other.State)
+                && Field02h.Equals(other.Field02h)
+                && ClosingWithoutTargetVehicle.Equals(other.ClosingWithoutTargetVehicle)
+                && Deactivated.Equals(other.Deactivated)
+                && ResprayHappened.Equals(other.ResprayHappened)
+                && Field06h.Equals(other.Field06h)
+                && Field07h.Equals(other.Field07h)
+                && TargetModelIndex.Equals(other.TargetModelIndex)
+                && Door1Pointer.Equals(other.Door1Pointer)
+                && Door2Pointer.Equals(other.Door2Pointer)
+                && IsDoor1PoolIndex.Equals(other.IsDoor1PoolIndex)
+                && IsDoor2PoolIndex.Equals(other.IsDoor2PoolIndex)
+                && IsDoor1Object.Equals(other.IsDoor1Object)
+                && IsDoor2Object.Equals(other.IsDoor2Object)
+                && Field24h.Equals(other.Field24h)
+                && IsRotatedDoor.Equals(other.IsRotatedDoor)
+                && CameraFollowsPlayer.Equals(other.CameraFollowsPlayer)
+                && Field27h.Equals(other.Field27h)
+                && VecInf.Equals(other.VecInf)
+                && VecSup.Equals(other.VecSup)
+                && DoorOpenMinZOffset.Equals(other.DoorOpenMinZOffset)
+                && DoorOpenMaxZOffset.Equals(other.DoorOpenMaxZOffset)
+                && Door1Pos.Equals(other.Door1Pos)
+                && Door2Pos.Equals(other.Door2Pos)
+                && DoorLastOpenTime.Equals(other.DoorLastOpenTime)
+                && CollectedCarsState.Equals(other.CollectedCarsState)
+                && Field89h.Equals(other.Field89h)
+                && Field90h.Equals(other.Field90h)
+                && Field91h.Equals(other.Field91h)
+                && TargetVehiclePointer.Equals(other.TargetVehiclePointer)
+                && Field96h.Equals(other.Field96h)
+                && StoredCar.Equals(other.StoredCar);
         }
     }
 }

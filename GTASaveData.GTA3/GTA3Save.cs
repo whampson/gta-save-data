@@ -10,8 +10,7 @@ namespace GTASaveData.GTA3
     /// <summary>
     /// Represents a save file for <i>Grand Theft Auto III</i>.
     /// </summary>
-    public class GTA3Save : SaveFile,
-        IGTASaveFile, IEquatable<GTA3Save>
+    public class GTA3Save : SaveFile, IGTASaveFile, IEquatable<GTA3Save>
     {
         public static class Limits
         {
@@ -241,20 +240,39 @@ namespace GTASaveData.GTA3
             set { m_pedTypeInfo = value; OnPropertyChanged(); }
         }
 
-
         public GTA3Save()
         {
-            m_workBuf = new WorkBuffer(new byte[BufferSize]);
-            m_timeLastSaved = new SystemTime();
-            m_game = new Game();
-            m_theCamera = new Camera();
-            m_clock = new Clock();
-            m_pad = new Pad();
-            m_timer = new Timer();
-            m_timeStep = new TimeStep();
-            m_weather = new Weather();
-            m_compileDateAndTime = new Date();
-            m_scripts = new TheScripts();
+            WorkBuff = new WorkBuffer(new byte[BufferSize]);
+            Name = string.Empty;
+            TimeLastSaved = DateTime.Now;
+            Game = new Game();
+            TheCamera = new Camera();
+            Clock = new Clock();
+            Pad = new Pad();
+            Timer = new Timer();
+            TimeStep = new TimeStep();
+            Weather = new Weather();
+            CompileDateAndTime = new Date();
+            Scripts = new TheScripts();
+            PedPool = new DummyObject();
+            Garages = new DummyObject();
+            VehiclePool = new DummyObject();
+            ObjectPool = new DummyObject();
+            Paths = new DummyObject();
+            Cranes = new DummyObject();
+            Pickups = new DummyObject();
+            PhoneInfo = new DummyObject();
+            RestartPoints = new DummyObject();
+            RadarBlips = new DummyObject();
+            Zones = new DummyObject();
+            GangData = new DummyObject();
+            CarGenerators = new DummyObject();
+            ParticleObjects = new DummyObject();
+            AudioScriptObjects = new DummyObject();
+            PlayerInfo = new DummyObject();
+            Stats = new DummyObject();
+            Streaming = new DummyObject();
+            PedTypeInfo = new DummyObject();
         }
 
         public static int ReadSaveHeader(WorkBuffer buf, string tag)
@@ -272,48 +290,55 @@ namespace GTASaveData.GTA3
             buf.Write(size);
         }
 
-        private int LoadData<T>(out T o)
-            where T : SaveDataObject, new()
+        private T LoadData<T>() where T : SaveDataObject, new()
         {
-            int size = m_workBuf.ReadInt32();
-            Serializer.Read(m_workBuf, FileFormat, out o);
-
-            return size;
+            return LoadData<T>(out int _);
         }
 
-        private int LoadDummy(out DummyObject o)
+        private T LoadData<T>(out int size) where T : SaveDataObject, new()
         {
-            int size = m_workBuf.ReadInt32();
-            o = new DummyObject(size);
-            ((ISaveDataObject) o).ReadObjectData(m_workBuf);
+            size = WorkBuff.ReadInt32();
+            int bytesRead = Serializer.Read(WorkBuff, FileFormat, out T obj);
 
-            return size;
+            Debug.Assert(size == bytesRead);
+            return obj;
         }
 
-        private int SaveData(SaveDataObject o)
+        private DummyObject LoadDummy()
+        {
+            return LoadDummy(out int _);
+        }
+
+        private DummyObject LoadDummy(out int size)
+        {
+            size = WorkBuff.ReadInt32();
+            DummyObject obj = new DummyObject(size);
+            ((ISaveDataObject) obj).ReadObjectData(WorkBuff);
+
+            return obj;
+        }
+
+        private void SaveData(SaveDataObject o)
         {
             int size;
             int preSize, postData;
                 
-            preSize = m_workBuf.Position;
-            m_workBuf.Skip(4);
+            preSize = WorkBuff.Position;
+            WorkBuff.Skip(4);
             
-            size = Serializer.Write(m_workBuf, o, FileFormat);
-            postData = m_workBuf.Position;
+            size = Serializer.Write(WorkBuff, o, FileFormat);
+            postData = WorkBuff.Position;
 
-            m_workBuf.Seek(preSize);
-            m_workBuf.Write(size);
-            m_workBuf.Seek(postData);
-            m_workBuf.Align4Bytes();
-
-            size = WorkBuffer.Align4Bytes(size);
-            return size;
+            WorkBuff.Seek(preSize);
+            WorkBuff.Write(size);
+            WorkBuff.Seek(postData);
+            WorkBuff.Align4Bytes();
         }
 
         protected override int ReadBlock(WorkBuffer file)
         {
             file.MarkPosition();
-            m_workBuf.Reset();
+            WorkBuff.Reset();
 
             int size = file.ReadInt32();
             if (size > BufferSize)
@@ -322,12 +347,12 @@ namespace GTASaveData.GTA3
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
             }
 
-            m_workBuf.Write(file.ReadBytes(size));
+            WorkBuff.Write(file.ReadBytes(size));
 
             Debug.Assert(file.Offset == size + 4);
             Debug.WriteLine("Read {0} bytes of block data.", size);
 
-            m_workBuf.Reset();
+            WorkBuff.Reset();
             return size;
         }
 
@@ -335,7 +360,7 @@ namespace GTASaveData.GTA3
         {
             file.MarkPosition();
 
-            byte[] data = m_workBuf.ToArray(m_workBuf.Position);
+            byte[] data = WorkBuff.ToArray(WorkBuff.Position);
             int size = data.Length;
             if (size > BufferSize)
             {
@@ -350,10 +375,10 @@ namespace GTASaveData.GTA3
             Debug.Assert(file.Offset == size + 4);
             Debug.WriteLine("Wrote {0} bytes of block data.", size);
 
-            m_checksum += BitConverter.GetBytes(size).Sum(x => x);
-            m_checksum += data.Sum(x => x);
+            CheckSum += (uint) BitConverter.GetBytes(size).Sum(x => x);
+            CheckSum += (uint) data.Sum(x => x);
 
-            m_workBuf.Reset();
+            WorkBuff.Reset();
             return size;
         }
 
@@ -362,79 +387,57 @@ namespace GTASaveData.GTA3
             int totalSize = 0;
             int size;
 
-            // Read simplevars and scripts
             size = ReadBlock(file);
-            Name = m_workBuf.ReadString(Limits.MaxNameLength, true);
-            TimeLastSaved = m_workBuf.ReadObject<SystemTime>().ToDateTime();
-            SaveSize = m_workBuf.ReadInt32();
-            Game.CurrLevel = (LevelType) m_workBuf.ReadInt32();
-            TheCamera.Position = m_workBuf.ReadObject<Vector>();
-            Clock.MillisecondsPerGameMinute = m_workBuf.ReadInt32();
-            Clock.LastClockTick = m_workBuf.ReadUInt32();
-            Clock.GameClockHours = (byte) m_workBuf.ReadInt32();
-            Clock.GameClockMinutes = (byte) m_workBuf.ReadInt32();
-            Pad.Mode = m_workBuf.ReadInt32();
-            Timer.TimeInMilliseconds = m_workBuf.ReadUInt32();
-            Timer.TimeScale = m_workBuf.ReadSingle();
-            Timer.TimeStep = m_workBuf.ReadSingle();
-            Timer.TimeStepNonClipped = m_workBuf.ReadSingle();
-            Timer.FrameCounter = m_workBuf.ReadInt32();
-            TimeStep.Step = m_workBuf.ReadSingle();
-            TimeStep.FramesPerUpdate = m_workBuf.ReadSingle();
-            TimeStep.TimeScale = m_workBuf.ReadSingle();
-            Weather.OldWeatherType = (WeatherType) m_workBuf.ReadInt32();
-            Weather.NewWeatherType = (WeatherType) m_workBuf.ReadInt32();
-            Weather.ForcedWeatherType = (WeatherType) m_workBuf.ReadInt32();
-            Weather.InterpolationValue = m_workBuf.ReadSingle();
-            CompileDateAndTime = m_workBuf.ReadObject<Date>();
-            Weather.WeatherTypeInList = m_workBuf.ReadInt32();
-            TheCamera.CarZoomIndicator = m_workBuf.ReadSingle();
-            TheCamera.PedZoomIndicator = m_workBuf.ReadSingle();
-            Debug.Assert(m_workBuf.Offset == SizeOfSimpleVars);
-            int scriptsSize = LoadData(out m_scripts);
-            Debug.Assert(m_workBuf.Offset - SizeOfSimpleVars == scriptsSize + 4);
-            Debug.Assert(m_workBuf.Offset == size);
+            Name = WorkBuff.ReadString(Limits.MaxNameLength, true);
+            TimeLastSaved = WorkBuff.ReadObject<SystemTime>().ToDateTime();
+            SaveSize = WorkBuff.ReadInt32();
+            Game.CurrLevel = (LevelType) WorkBuff.ReadInt32();
+            TheCamera.Position = WorkBuff.ReadObject<Vector>();
+            Clock.MillisecondsPerGameMinute = WorkBuff.ReadInt32();
+            Clock.LastClockTick = WorkBuff.ReadUInt32();
+            Clock.GameClockHours = (byte) WorkBuff.ReadInt32();
+            Clock.GameClockMinutes = (byte) WorkBuff.ReadInt32();
+            Pad.Mode = WorkBuff.ReadInt16();
+            Timer.TimeInMilliseconds = WorkBuff.ReadUInt32();
+            Timer.TimeScale = WorkBuff.ReadSingle();
+            Timer.TimeStep = WorkBuff.ReadSingle();
+            Timer.TimeStepNonClipped = WorkBuff.ReadSingle();
+            Timer.FrameCounter = WorkBuff.ReadUInt32();
+            TimeStep.TimeStepValue = WorkBuff.ReadSingle();
+            TimeStep.FramesPerUpdate = WorkBuff.ReadSingle();
+            TimeStep.TimeScale = WorkBuff.ReadSingle();
+            Weather.OldWeatherType = (WeatherType) WorkBuff.ReadInt32();
+            Weather.NewWeatherType = (WeatherType) WorkBuff.ReadInt32();
+            Weather.ForcedWeatherType = (WeatherType) WorkBuff.ReadInt32();
+            Weather.InterpolationValue = WorkBuff.ReadSingle();
+            CompileDateAndTime = WorkBuff.ReadObject<Date>();
+            Weather.WeatherTypeInList = WorkBuff.ReadInt32();
+            TheCamera.CarZoomIndicator = WorkBuff.ReadSingle();
+            TheCamera.PedZoomIndicator = WorkBuff.ReadSingle();
+            Debug.Assert(WorkBuff.Offset == SizeOfSimpleVars);
+            Scripts = LoadData<TheScripts>(out int scriptsSize);
+            Debug.Assert(WorkBuff.Offset - SizeOfSimpleVars == scriptsSize + 4);
+            Debug.Assert(WorkBuff.Offset == size);
             totalSize += size;
-
-            // Read the rest
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_pedPool);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_garages);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_vehiclePool);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_objectPool);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_paths);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_cranes);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_pickups);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_phoneInfo);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_restartPoints);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_radarBlips);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_zones);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_gangData);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_carGenerators);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_particleObjects);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_audioScriptObjects);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_playerInfo);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_stats);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_streaming);
-            totalSize += ReadBlock(file);
-            LoadDummy(out m_pedTypeInfo);
+            totalSize += ReadBlock(file); PedPool = LoadDummy();
+            totalSize += ReadBlock(file); Garages = LoadDummy();
+            totalSize += ReadBlock(file); VehiclePool = LoadDummy();
+            totalSize += ReadBlock(file); ObjectPool = LoadDummy();
+            totalSize += ReadBlock(file); Paths = LoadDummy();
+            totalSize += ReadBlock(file); Cranes = LoadDummy();
+            totalSize += ReadBlock(file); Pickups = LoadDummy();
+            totalSize += ReadBlock(file); PhoneInfo = LoadDummy();
+            totalSize += ReadBlock(file); RestartPoints = LoadDummy();
+            totalSize += ReadBlock(file); RadarBlips = LoadDummy();
+            totalSize += ReadBlock(file); Zones = LoadDummy();
+            totalSize += ReadBlock(file); GangData = LoadDummy();
+            totalSize += ReadBlock(file); CarGenerators = LoadDummy();
+            totalSize += ReadBlock(file); ParticleObjects = LoadDummy();
+            totalSize += ReadBlock(file); AudioScriptObjects = LoadDummy();
+            totalSize += ReadBlock(file); PlayerInfo = LoadDummy();
+            totalSize += ReadBlock(file); Stats = LoadDummy();
+            totalSize += ReadBlock(file); Streaming = LoadDummy();
+            totalSize += ReadBlock(file); PedTypeInfo = LoadDummy();
 
             // TODO: "meta blocks"
 
@@ -453,83 +456,60 @@ namespace GTASaveData.GTA3
             int totalSize = 0;
             int size;
 
-            m_workBuf.Reset();
-            m_checksum = 0;
+            WorkBuff.Reset();
+            CheckSum = 0;
 
-            // Write simplevars and scripts
-            m_workBuf.Write(Name, Limits.MaxNameLength, true);
-            m_workBuf.Write(new SystemTime(TimeLastSaved));
-            m_workBuf.Write(SizeOfOneGameInBytes);
-            m_workBuf.Write((int) Game.CurrLevel);
-            m_workBuf.Write(TheCamera.Position);
-            m_workBuf.Write(Clock.MillisecondsPerGameMinute);
-            m_workBuf.Write(Clock.LastClockTick);
-            m_workBuf.Write(Clock.GameClockHours);
-            m_workBuf.Write(Clock.GameClockMinutes);
-            m_workBuf.Write(Pad.Mode);
-            m_workBuf.Write(Timer.TimeInMilliseconds);
-            m_workBuf.Write(Timer.TimeScale);
-            m_workBuf.Write(Timer.TimeStep);
-            m_workBuf.Write(Timer.TimeStepNonClipped);
-            m_workBuf.Write(Timer.FrameCounter);
-            m_workBuf.Write(TimeStep.Step);
-            m_workBuf.Write(TimeStep.FramesPerUpdate);
-            m_workBuf.Write(TimeStep.TimeScale);
-            m_workBuf.Write((int) Weather.OldWeatherType);
-            m_workBuf.Write((int) Weather.NewWeatherType);
-            m_workBuf.Write((int) Weather.ForcedWeatherType);
-            m_workBuf.Write(Weather.InterpolationValue);
-            m_workBuf.Write(CompileDateAndTime);
-            m_workBuf.Write(Weather.WeatherTypeInList);
-            m_workBuf.Write(TheCamera.CarZoomIndicator);
-            m_workBuf.Write(TheCamera.PedZoomIndicator);
-            Debug.Assert(m_workBuf.Offset == SizeOfSimpleVars);
-            SaveData(Scripts);
-            totalSize += WriteBlock(file);
-
-            // Write the rest
-            SaveData(PedPool);
-            totalSize += WriteBlock(file);
-            SaveData(Garages);
-            totalSize += WriteBlock(file);
-            SaveData(VehiclePool);
-            totalSize += WriteBlock(file);
-            SaveData(ObjectPool);
-            totalSize += WriteBlock(file);
-            SaveData(Paths);
-            totalSize += WriteBlock(file);
-            SaveData(Cranes);
-            totalSize += WriteBlock(file);
-            SaveData(Pickups);
-            totalSize += WriteBlock(file);
-            SaveData(PhoneInfo);
-            totalSize += WriteBlock(file);
-            SaveData(RestartPoints);
-            totalSize += WriteBlock(file);
-            SaveData(RadarBlips);
-            totalSize += WriteBlock(file);
-            SaveData(Zones);
-            totalSize += WriteBlock(file);
-            SaveData(GangData);
-            totalSize += WriteBlock(file);
-            SaveData(CarGenerators);
-            totalSize += WriteBlock(file);
-            SaveData(ParticleObjects);
-            totalSize += WriteBlock(file);
-            SaveData(AudioScriptObjects);
-            totalSize += WriteBlock(file);
-            SaveData(PlayerInfo);
-            totalSize += WriteBlock(file);
-            SaveData(Stats);
-            totalSize += WriteBlock(file);
-            SaveData(Streaming);
-            totalSize += WriteBlock(file);
-            SaveData(PedTypeInfo);
-            totalSize += WriteBlock(file);
+            WorkBuff.Write(Name, Limits.MaxNameLength, true);
+            WorkBuff.Write(new SystemTime(TimeLastSaved));
+            WorkBuff.Write(SizeOfOneGameInBytes);
+            WorkBuff.Write((int) Game.CurrLevel);
+            WorkBuff.Write(TheCamera.Position);
+            WorkBuff.Write(Clock.MillisecondsPerGameMinute);
+            WorkBuff.Write(Clock.LastClockTick);
+            WorkBuff.Write(Clock.GameClockHours);
+            WorkBuff.Write(Clock.GameClockMinutes);
+            WorkBuff.Write(Pad.Mode);
+            WorkBuff.Write(Timer.TimeInMilliseconds);
+            WorkBuff.Write(Timer.TimeScale);
+            WorkBuff.Write(Timer.TimeStep);
+            WorkBuff.Write(Timer.TimeStepNonClipped);
+            WorkBuff.Write(Timer.FrameCounter);
+            WorkBuff.Write(TimeStep.TimeStepValue);
+            WorkBuff.Write(TimeStep.FramesPerUpdate);
+            WorkBuff.Write(TimeStep.TimeScale);
+            WorkBuff.Write((int) Weather.OldWeatherType);
+            WorkBuff.Write((int) Weather.NewWeatherType);
+            WorkBuff.Write((int) Weather.ForcedWeatherType);
+            WorkBuff.Write(Weather.InterpolationValue);
+            WorkBuff.Write(CompileDateAndTime);
+            WorkBuff.Write(Weather.WeatherTypeInList);
+            WorkBuff.Write(TheCamera.CarZoomIndicator);
+            WorkBuff.Write(TheCamera.PedZoomIndicator);
+            Debug.Assert(WorkBuff.Offset == SizeOfSimpleVars);
+            SaveData(Scripts); totalSize += WriteBlock(file);
+            SaveData(PedPool); totalSize += WriteBlock(file);
+            SaveData(Garages); totalSize += WriteBlock(file);
+            SaveData(VehiclePool); totalSize += WriteBlock(file);
+            SaveData(ObjectPool); totalSize += WriteBlock(file);
+            SaveData(Paths); totalSize += WriteBlock(file);
+            SaveData(Cranes); totalSize += WriteBlock(file);
+            SaveData(Pickups); totalSize += WriteBlock(file);
+            SaveData(PhoneInfo); totalSize += WriteBlock(file);
+            SaveData(RestartPoints); totalSize += WriteBlock(file);
+            SaveData(RadarBlips); totalSize += WriteBlock(file);
+            SaveData(Zones); totalSize += WriteBlock(file);
+            SaveData(GangData); totalSize += WriteBlock(file);
+            SaveData(CarGenerators); totalSize += WriteBlock(file);
+            SaveData(ParticleObjects); totalSize += WriteBlock(file);
+            SaveData(AudioScriptObjects); totalSize += WriteBlock(file);
+            SaveData(PlayerInfo); totalSize += WriteBlock(file);
+            SaveData(Stats); totalSize += WriteBlock(file);
+            SaveData(Streaming); totalSize += WriteBlock(file);
+            SaveData(PedTypeInfo); totalSize += WriteBlock(file);
 
             // TODO: "meta blocks", extra user-defined blocks
 
-            // Write padding
+            // Padding
             for (int i = 0; i < 4; i++)
             {
                 size = WorkBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
@@ -539,14 +519,13 @@ namespace GTASaveData.GTA3
                 }
                 if (size > 4)
                 {
-                    m_workBuf.Reset();
-                    m_workBuf.Write(GetPaddingBytes(size));
+                    WorkBuff.Reset();
+                    WorkBuff.Write(GetPaddingBytes(size));
                     totalSize += WriteBlock(file);
                 }
             }
 
-            // Write checksum
-            file.Write(m_checksum);
+            file.Write(CheckSum);
 
             Debug.WriteLine("Save size: {0}", totalSize);
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
@@ -638,8 +617,37 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            // TODO
-            return false;
+            return Name.Equals(other.Name)
+                && TimeLastSaved.Equals(other.TimeLastSaved)
+                && SaveSize.Equals(other.SaveSize)
+                && Game.Equals(other.Game)
+                && TheCamera.Equals(other.TheCamera)
+                && Clock.Equals(other.Clock)
+                && Pad.Equals(other.Pad)
+                && Timer.Equals(other.Timer)
+                && TimeStep.Equals(other.TimeStep)
+                && Weather.Equals(other.Weather)
+                && CompileDateAndTime.Equals(other.CompileDateAndTime)
+                && Scripts.Equals(other.Scripts)
+                && PedPool.Equals(other.PedPool)
+                && Garages.Equals(other.Garages)
+                && VehiclePool.Equals(other.VehiclePool)
+                && ObjectPool.Equals(other.ObjectPool)
+                && Paths.Equals(other.Paths)
+                && Cranes.Equals(other.Cranes)
+                && Pickups.Equals(other.Pickups)
+                && PhoneInfo.Equals(other.PhoneInfo)
+                && RestartPoints.Equals(other.RestartPoints)
+                && RadarBlips.Equals(other.RadarBlips)
+                && Zones.Equals(other.Zones)
+                && GangData.Equals(other.GangData)
+                && CarGenerators.Equals(other.CarGenerators)
+                && ParticleObjects.Equals(other.ParticleObjects)
+                && AudioScriptObjects.Equals(other.AudioScriptObjects)
+                && PlayerInfo.Equals(other.PlayerInfo)
+                && Stats.Equals(other.Stats)
+                && Streaming.Equals(other.Streaming)
+                && PedTypeInfo.Equals(other.PedTypeInfo);
         }
 
         public static class FileFormats

@@ -5,16 +5,15 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     [Size(0x1C)]
-    public class Pickup : SaveDataObject,
-        IEquatable<Pickup>
+    public class Pickup : SaveDataObject, IEquatable<Pickup>
     {
         private PickupType m_type;
         private bool m_hasBeenPickedUp;
-        private int m_quantity;
-        private uint m_objectIndex;
+        private ushort m_quantity;
+        private uint m_pObject;
         private uint m_timer;
-        private int m_modelId;
-        private int m_flags;
+        private short m_modelIndex;
+        private short m_index;
         private Vector m_position;
 
         public PickupType Type
@@ -29,7 +28,7 @@ namespace GTASaveData.GTA3
             set { m_hasBeenPickedUp = value; OnPropertyChanged(); }
         }
 
-        public int Amount
+        public ushort Quantity
         {
             get { return m_quantity; }
             set { m_quantity = value; OnPropertyChanged(); }
@@ -37,26 +36,26 @@ namespace GTASaveData.GTA3
 
         public uint ObjectIndex
         {
-            get { return m_objectIndex; }
-            set { m_objectIndex = value; OnPropertyChanged(); }
+            get { return m_pObject; }
+            set { m_pObject = value; OnPropertyChanged(); }
         }
 
-        public uint RegenerationTime
+        public uint Timer
         {
             get { return m_timer; }
             set { m_timer = value; OnPropertyChanged(); }
         }
 
-        public int ModelId
+        public short ModelIndex
         {
-            get { return m_modelId; }
-            set { m_modelId = value; OnPropertyChanged(); }
+            get { return m_modelIndex; }
+            set { m_modelIndex = value; OnPropertyChanged(); }
         }
 
-        public int Flags
+        public short Index
         {
-            get { return m_flags; }
-            set { m_flags = value; OnPropertyChanged(); }
+            get { return m_index; }
+            set { m_index = value; OnPropertyChanged(); }
         }
 
         public Vector Position
@@ -67,33 +66,33 @@ namespace GTASaveData.GTA3
 
         public Pickup()
         {
-            m_position = new Vector();
+            Position = new Vector();
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_type = (PickupType) buf.ReadByte();
-            m_hasBeenPickedUp = buf.ReadBool();
-            m_quantity = buf.ReadUInt16();
-            m_objectIndex = buf.ReadUInt32();
-            m_timer = buf.ReadUInt32();
-            m_modelId = buf.ReadInt16();
-            m_flags = buf.ReadUInt16();
-            m_position = buf.ReadObject<Vector>();
+            Type = (PickupType) buf.ReadByte();
+            HasBeenPickedUp = buf.ReadBool();
+            Quantity = buf.ReadUInt16();
+            ObjectIndex = buf.ReadUInt32();
+            Timer = buf.ReadUInt32();
+            ModelIndex = buf.ReadInt16();
+            Index = buf.ReadInt16();
+            Position = buf.ReadObject<Vector>();
 
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write((byte) m_type);
-            buf.Write(m_hasBeenPickedUp);
-            buf.Write((ushort) m_quantity);
-            buf.Write(m_objectIndex);
-            buf.Write(m_timer);
-            buf.Write((short) m_modelId);
-            buf.Write((ushort) m_flags);
-            buf.Write(m_position);
+            buf.Write((byte) Type);
+            buf.Write(HasBeenPickedUp);
+            buf.Write(Quantity);
+            buf.Write(ObjectIndex);
+            buf.Write(Timer);
+            buf.Write(ModelIndex);
+            buf.Write(Index);
+            buf.Write(Position);
 
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
@@ -110,14 +109,14 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_type.Equals(other.m_type)
-                && m_hasBeenPickedUp.Equals(other.m_hasBeenPickedUp)
-                && m_quantity.Equals(other.m_quantity)
-                && m_objectIndex.Equals(other.m_objectIndex)
-                && m_timer.Equals(other.m_timer)
-                && m_modelId.Equals(other.m_modelId)
-                && m_flags.Equals(other.m_flags)
-                && m_position.Equals(other.m_position);
+            return Type.Equals(other.Type)
+                && HasBeenPickedUp.Equals(other.HasBeenPickedUp)
+                && Quantity.Equals(other.Quantity)
+                && ObjectIndex.Equals(other.ObjectIndex)
+                && Timer.Equals(other.Timer)
+                && ModelIndex.Equals(other.ModelIndex)
+                && Index.Equals(other.Index)
+                && Position.Equals(other.Position);
         }
     }
 }

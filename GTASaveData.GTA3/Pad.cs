@@ -3,12 +3,11 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Pad : GTAObject,
-        IEquatable<Pad>
+    public class Pad : GTAObject, IEquatable<Pad>
     {
-        private int m_mode;
+        private short m_mode;
 
-        public int Mode
+        public short Mode
         {
             get { return m_mode; }
             set { m_mode = value; OnPropertyChanged(); }
@@ -26,7 +25,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_mode.Equals(other.m_mode);
+            return Mode.Equals(other.Mode);
         }
     }
 }

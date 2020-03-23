@@ -5,13 +5,12 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     [Size(16)]
-    public class StaticReplacement : SaveDataObject,
-        IEquatable<StaticReplacement>
+    public class StaticReplacement : SaveDataObject, IEquatable<StaticReplacement>
     {
         private ObjectType m_type;
         private int m_staticIndex;
-        private int m_newModelId;
-        private int m_oldModelId;
+        private int m_newModelIndex;
+        private int m_oldModelIndex;
 
         public ObjectType Type
         {
@@ -25,42 +24,42 @@ namespace GTASaveData.GTA3
             set { m_staticIndex = value; OnPropertyChanged(); }
         }
 
-        public int NewModelId
+        public int NewModelIndex
         {
-            get { return m_newModelId; }
-            set { m_newModelId = value; OnPropertyChanged(); }
+            get { return m_newModelIndex; }
+            set { m_newModelIndex = value; OnPropertyChanged(); }
         }
 
-        public int OldModelId
+        public int OldModelIndex
         {
-            get { return m_oldModelId; }
-            set { m_oldModelId = value; OnPropertyChanged(); }
+            get { return m_oldModelIndex; }
+            set { m_oldModelIndex = value; OnPropertyChanged(); }
         }
 
         public StaticReplacement()
         {
-            m_type = ObjectType.None;
-            m_staticIndex = 0;
-            m_newModelId = -1;
-            m_oldModelId = -1;
+            Type = ObjectType.None;
+            StaticIndex = 0;
+            NewModelIndex = -1;
+            OldModelIndex = -1;
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_type = (ObjectType) buf.ReadInt32();
-            m_staticIndex = buf.ReadInt32();
-            m_newModelId = buf.ReadInt32();
-            m_oldModelId = buf.ReadInt32();
+            Type = (ObjectType) buf.ReadInt32();
+            StaticIndex = buf.ReadInt32();
+            NewModelIndex = buf.ReadInt32();
+            OldModelIndex = buf.ReadInt32();
 
             Debug.Assert(buf.Offset == SizeOf<StaticReplacement>());
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write((int) m_type);
-            buf.Write(m_staticIndex);
-            buf.Write(m_newModelId);
-            buf.Write(m_oldModelId);
+            buf.Write((int) Type);
+            buf.Write(StaticIndex);
+            buf.Write(NewModelIndex);
+            buf.Write(OldModelIndex);
 
             Debug.Assert(buf.Offset == SizeOf<StaticReplacement>());
         }
@@ -77,10 +76,10 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_type.Equals(other.m_type)
-                && m_staticIndex.Equals(other.m_staticIndex)
-                && m_newModelId.Equals(other.m_newModelId)
-                && m_oldModelId.Equals(other.m_oldModelId);
+            return Type.Equals(other.Type)
+                && StaticIndex.Equals(other.StaticIndex)
+                && NewModelIndex.Equals(other.NewModelIndex)
+                && OldModelIndex.Equals(other.OldModelIndex);
         }
     }
 }

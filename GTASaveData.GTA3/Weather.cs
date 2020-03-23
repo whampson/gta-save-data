@@ -3,8 +3,7 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Weather : GTAObject,
-        IEquatable<Weather>
+    public class Weather : GTAObject, IEquatable<Weather>
     {
         private WeatherType m_oldWeatherType;
         private WeatherType m_newWeatherType;
@@ -54,11 +53,11 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_oldWeatherType.Equals(other.m_oldWeatherType)
-                && m_newWeatherType.Equals(other.m_newWeatherType)
-                && m_forcedWeatherType.Equals(other.m_forcedWeatherType)
-                && m_interpolationValue.Equals(other.m_interpolationValue)
-                && m_weatherTypeInList.Equals(other.m_weatherTypeInList);
+            return OldWeatherType.Equals(other.OldWeatherType)
+                && NewWeatherType.Equals(other.NewWeatherType)
+                && ForcedWeatherType.Equals(other.ForcedWeatherType)
+                && InterpolationValue.Equals(other.InterpolationValue)
+                && WeatherTypeInList.Equals(other.WeatherTypeInList);
         }
     }
 }

@@ -3,13 +3,12 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Clock : GTAObject,
-        IEquatable<Clock>
+    public class Clock : GTAObject, IEquatable<Clock>
     {
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
-        private int m_gameClockHours;
-        private int m_gameClockMinutes;
+        private byte m_gameClockHours;
+        private byte m_gameClockMinutes;
 
         public int MillisecondsPerGameMinute
         {
@@ -23,13 +22,13 @@ namespace GTASaveData.GTA3
             set { m_lastClockTick = value; OnPropertyChanged(); }
         }
 
-        public int GameClockHours
+        public byte GameClockHours
         {
             get { return m_gameClockHours; }
             set { m_gameClockHours = value; OnPropertyChanged(); }
         }
 
-        public int GameClockMinutes
+        public byte GameClockMinutes
         {
             get { return m_gameClockMinutes; }
             set { m_gameClockMinutes = value; OnPropertyChanged(); }
@@ -47,10 +46,10 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_millisecondsPerGameMinute.Equals(other.m_millisecondsPerGameMinute)
-                && m_lastClockTick.Equals(other.m_lastClockTick)
-                && m_gameClockHours.Equals(other.m_gameClockHours)
-                && m_gameClockMinutes.Equals(other.m_gameClockMinutes);
+            return MillisecondsPerGameMinute.Equals(other.MillisecondsPerGameMinute)
+                && LastClockTick.Equals(other.LastClockTick)
+                && GameClockHours.Equals(other.GameClockHours)
+                && GameClockMinutes.Equals(other.GameClockMinutes);
         }
     }
 }

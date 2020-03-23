@@ -6,44 +6,30 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     [Size(0x48)]
-    public class CarGenerator : SaveDataObject,
-        ICarGenerator,
-        IEquatable<CarGenerator>
+    public class CarGenerator : SaveDataObject, ICarGenerator, IEquatable<CarGenerator>
     {
-        private VehicleType m_model;
+        private int m_modelIndex;
         private Vector m_position;
         private float m_angle;
-        private int m_color1;
-        private int m_color2;
+        private short m_color1;
+        private short m_color2;
         private bool m_forceSpawn;
-        private int m_alarmChance;
-        private int m_lockedChance;
-        private int m_minDelay;
-        private int m_maxDelay;
+        private byte m_alarmChance;
+        private byte m_lockedChance;
+        private ushort m_minDelay;
+        private ushort m_maxDelay;
         private uint m_timer;
         private int m_vehicleHandle;
-        private int m_usesRemaining;
+        private short m_usesRemaining;
         private bool m_isBlocking;
         private Vector m_vecInf;
         private Vector m_vecSup;
         private float m_size;
 
-        int ICarGenerator.Model
+        public int ModelIndex
         {
-            get { return (int) m_model; }
-            set { m_model = (VehicleType) value; OnPropertyChanged(); }
-        }
-
-        bool ICarGenerator.Enabled
-        {
-            get { return m_usesRemaining > 0; }
-            set { m_usesRemaining = (value) ? 101 : 0; OnPropertyChanged(); }
-        }
-
-        public VehicleType Model
-        {
-            get { return m_model; }
-            set { m_model =  value; OnPropertyChanged(); }
+            get { return m_modelIndex; }
+            set { m_modelIndex = value; OnPropertyChanged(); }
         }
 
         public Vector Position
@@ -58,13 +44,13 @@ namespace GTASaveData.GTA3
             set { m_angle = value; OnPropertyChanged(); }
         }
 
-        public int Color1
+        public short Color1
         {
             get { return m_color1; }
             set { m_color1 = value; OnPropertyChanged(); }
         }
 
-        public int Color2
+        public short Color2
         {
             get { return m_color2; }
             set { m_color2 = value; OnPropertyChanged(); }
@@ -76,25 +62,25 @@ namespace GTASaveData.GTA3
             set { m_forceSpawn = value; OnPropertyChanged(); }
         }
 
-        public int AlarmChance
+        public byte AlarmChance
         {
             get { return m_alarmChance; }
             set { m_alarmChance = value; OnPropertyChanged(); }
         }
 
-        public int LockedChance
+        public byte LockedChance
         {
             get { return m_lockedChance; }
             set { m_lockedChance = value; OnPropertyChanged(); }
         }
 
-        public int MinDelay
+        public ushort MinDelay
         {
             get { return m_minDelay; }
             set { m_minDelay = value; OnPropertyChanged(); }
         }
 
-        public int MaxDelay
+        public ushort MaxDelay
         {
             get { return m_maxDelay; }
             set { m_maxDelay = value; OnPropertyChanged(); }
@@ -112,7 +98,7 @@ namespace GTASaveData.GTA3
             set { m_vehicleHandle = value; OnPropertyChanged(); }
         }
 
-        public int UsesRemaining
+        public short UsesRemaining
         {
             get { return m_usesRemaining; }
             set { m_usesRemaining = value; OnPropertyChanged(); }
@@ -142,59 +128,77 @@ namespace GTASaveData.GTA3
             set { m_size= value; OnPropertyChanged(); }
         }
 
+        bool ICarGenerator.Enabled
+        {
+            get { return UsesRemaining > 0; }
+            set { UsesRemaining = (short) ((value) ? 101 : 0); OnPropertyChanged(); }
+        }
+
+        int ICarGenerator.Color1
+        {
+            get { return Color1; }
+            set { Color1 = (short) value; OnPropertyChanged(); }
+        }
+
+        int ICarGenerator.Color2
+        {
+            get { return Color2; }
+            set { Color2 = (short) value; OnPropertyChanged(); }
+        }
+
         public CarGenerator()
         {
-            m_position = new Vector();
-            m_vecInf = new Vector();
-            m_vecSup = new Vector();
+            Position = new Vector();
+            VecInf = new Vector();
+            VecSup = new Vector();
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_model = (VehicleType) buf.ReadInt32();
-            m_position = buf.ReadObject<Vector>();
-            m_angle = buf.ReadSingle();
-            m_color1 = buf.ReadInt16();
-            m_color2 = buf.ReadInt16();
-            m_forceSpawn = buf.ReadBool();
-            m_alarmChance = buf.ReadByte();
-            m_lockedChance = buf.ReadByte();
+            ModelIndex = buf.ReadInt32();
+            Position = buf.ReadObject<Vector>();
+            Angle = buf.ReadSingle();
+            Color1 = buf.ReadInt16();
+            Color2 = buf.ReadInt16();
+            ForceSpawn = buf.ReadBool();
+            AlarmChance = buf.ReadByte();
+            LockedChance = buf.ReadByte();
             buf.ReadByte();
-            m_minDelay = buf.ReadUInt16();
-            m_maxDelay = buf.ReadUInt16();
-            m_timer = buf.ReadUInt32();
-            m_vehicleHandle = buf.ReadInt32();
-            m_usesRemaining = buf.ReadInt16();
-            m_isBlocking = buf.ReadBool();
+            MinDelay = buf.ReadUInt16();
+            MaxDelay = buf.ReadUInt16();
+            Timer = buf.ReadUInt32();
+            VehicleHandle = buf.ReadInt32();
+            UsesRemaining = buf.ReadInt16();
+            IsBlocking = buf.ReadBool();
             buf.ReadByte();
-            m_vecInf = buf.ReadObject<Vector>();
-            m_vecSup = buf.ReadObject<Vector>();
-            m_size = buf.ReadSingle();
+            VecInf = buf.ReadObject<Vector>();
+            VecSup = buf.ReadObject<Vector>();
+            Size = buf.ReadSingle();
 
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write((int) m_model);
-            buf.Write(m_position);
-            buf.Write(m_angle);
-            buf.Write((short) m_color1);
-            buf.Write((short) m_color2);
-            buf.Write(m_forceSpawn);
-            buf.Write((byte) m_alarmChance);
-            buf.Write((byte) m_lockedChance);
+            buf.Write(ModelIndex);
+            buf.Write(Position);
+            buf.Write(Angle);
+            buf.Write(Color1);
+            buf.Write(Color2);
+            buf.Write(ForceSpawn);
+            buf.Write(AlarmChance);
+            buf.Write(LockedChance);
             buf.Write((byte) 0);
-            buf.Write((ushort) m_minDelay);
-            buf.Write((ushort) m_maxDelay);
-            buf.Write(m_timer);
-            buf.Write(m_vehicleHandle);
-            buf.Write((short) m_usesRemaining);
-            buf.Write(m_isBlocking);
+            buf.Write(MinDelay);
+            buf.Write(MaxDelay);
+            buf.Write(Timer);
+            buf.Write(VehicleHandle);
+            buf.Write(UsesRemaining);
+            buf.Write(IsBlocking);
             buf.Write((byte) 0);
-            buf.Write(m_vecInf);
-            buf.Write(m_vecSup);
-            buf.Write(m_size);
+            buf.Write(VecInf);
+            buf.Write(VecSup);
+            buf.Write(Size);
 
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
@@ -211,23 +215,23 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_model.Equals(other.m_model)
-                && m_position.Equals(other.m_position)
-                && m_angle.Equals(other.m_angle)
-                && m_color1.Equals(other.m_color1)
-                && m_color2.Equals(other.m_color2)
-                && m_forceSpawn.Equals(other.m_forceSpawn)
-                && m_alarmChance.Equals(other.m_alarmChance)
-                && m_lockedChance.Equals(other.m_lockedChance)
-                && m_minDelay.Equals(other.m_minDelay)
-                && m_maxDelay.Equals(other.m_maxDelay)
-                && m_timer.Equals(other.m_timer)
-                && m_vehicleHandle.Equals(other.m_vehicleHandle)
-                && m_usesRemaining.Equals(other.m_usesRemaining)
-                && m_isBlocking.Equals(other.m_isBlocking)
-                && m_vecInf.Equals(other.m_vecInf)
-                && m_vecSup.Equals(other.m_vecSup)
-                && m_size.Equals(other.m_size);
+            return ModelIndex.Equals(other.ModelIndex)
+                && Position.Equals(other.Position)
+                && Angle.Equals(other.Angle)
+                && Color1.Equals(other.Color1)
+                && Color2.Equals(other.Color2)
+                && ForceSpawn.Equals(other.ForceSpawn)
+                && AlarmChance.Equals(other.AlarmChance)
+                && LockedChance.Equals(other.LockedChance)
+                && MinDelay.Equals(other.MinDelay)
+                && MaxDelay.Equals(other.MaxDelay)
+                && Timer.Equals(other.Timer)
+                && VehicleHandle.Equals(other.VehicleHandle)
+                && UsesRemaining.Equals(other.UsesRemaining)
+                && IsBlocking.Equals(other.IsBlocking)
+                && VecInf.Equals(other.VecInf)
+                && VecSup.Equals(other.VecSup)
+                && Size.Equals(other.Size);
         }
     }
 }

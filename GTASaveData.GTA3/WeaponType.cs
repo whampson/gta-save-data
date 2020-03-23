@@ -1,10 +1,10 @@
 ﻿namespace GTASaveData.GTA3
 {
-    public enum Weapon
+    public enum WeaponType
     {
         None,
-        Bat,
-        Pistol,
+        BaseballBat,
+        Colt45,
         Uzi,
         Shotgun,
         AK47,

@@ -3,17 +3,11 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Camera : GTAObject,
-        IEquatable<Camera>
+    public class Camera : GTAObject, IEquatable<Camera>
     {
         private Vector m_position;
         private float m_carZoomIndicator;
         private float m_pedZoomIndicator;
-
-        public Camera()
-        {
-            m_position = new Vector();
-        }
 
         public Vector Position
         {
@@ -33,6 +27,11 @@ namespace GTASaveData.GTA3
             set { m_pedZoomIndicator = value; OnPropertyChanged(); }
         }
 
+        public Camera()
+        {
+            Position = new Vector();
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as Camera);
@@ -45,9 +44,9 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_position.Equals(other.m_position)
-                && m_carZoomIndicator.Equals(other.m_carZoomIndicator)
-                && m_pedZoomIndicator.Equals(other.m_pedZoomIndicator);
+            return Position.Equals(other.Position)
+                && CarZoomIndicator.Equals(other.CarZoomIndicator)
+                && PedZoomIndicator.Equals(other.PedZoomIndicator);
         }
     }
 }

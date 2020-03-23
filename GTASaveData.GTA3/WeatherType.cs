@@ -1,6 +1,6 @@
 ﻿namespace GTASaveData.GTA3
 {
-    public enum WeatherType : short
+    public enum WeatherType
     {
         None = -1,
         Sunny,

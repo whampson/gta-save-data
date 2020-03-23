@@ -3,14 +3,13 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public class Timer : GTAObject,
-        IEquatable<Timer>
+    public class Timer : GTAObject, IEquatable<Timer>
     {
         private uint m_timeInMilliseconds;
         private float m_timeScale;
         private float m_timeStep;
         private float m_timeStepNonClipped;
-        private int m_frameCounter;
+        private uint m_frameCounter;
 
         public uint TimeInMilliseconds
         {
@@ -36,7 +35,7 @@ namespace GTASaveData.GTA3
             set { m_timeStepNonClipped = value; OnPropertyChanged(); }
         }
 
-        public int FrameCounter
+        public uint FrameCounter
         {
             get { return m_frameCounter; }
             set { m_frameCounter = value; OnPropertyChanged(); }
@@ -54,11 +53,11 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_timeInMilliseconds.Equals(other.m_timeInMilliseconds)
-                && m_timeScale.Equals(other.m_timeScale)
-                && m_timeStep.Equals(other.m_timeStep)
-                && m_timeStepNonClipped.Equals(other.m_timeStepNonClipped)
-                && m_frameCounter.Equals(other.m_frameCounter);
+            return TimeInMilliseconds.Equals(other.TimeInMilliseconds)
+                && TimeScale.Equals(other.TimeScale)
+                && TimeStep.Equals(other.TimeStep)
+                && TimeStepNonClipped.Equals(other.TimeStepNonClipped)
+                && FrameCounter.Equals(other.FrameCounter);
         }
     }
 }

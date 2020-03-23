@@ -4,8 +4,7 @@ using System;
 namespace GTASaveData.GTA3
 {
     [Size(8)]
-    public class ContactInfo : SaveDataObject,
-        IEquatable<ContactInfo>
+    public class ContactInfo : SaveDataObject, IEquatable<ContactInfo>
     {
         private int m_onAMissionFlag;
         private int m_baseBriefId;
@@ -22,19 +21,16 @@ namespace GTASaveData.GTA3
             set { m_baseBriefId = value; OnPropertyChanged(); }
         }
 
-        public ContactInfo()
-        { }
-
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_onAMissionFlag = buf.ReadInt32();
-            m_baseBriefId = buf.ReadInt32();
+            OnAMissionFlag = buf.ReadInt32();
+            BaseBriefId = buf.ReadInt32();
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(m_onAMissionFlag);
-            buf.Write(m_baseBriefId);
+            buf.Write(OnAMissionFlag);
+            buf.Write(BaseBriefId);
         }
 
         public override bool Equals(object obj)
@@ -49,8 +45,8 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_onAMissionFlag.Equals(other.m_onAMissionFlag)
-                && m_baseBriefId.Equals(other.m_baseBriefId);
+            return OnAMissionFlag.Equals(other.OnAMissionFlag)
+                && BaseBriefId.Equals(other.BaseBriefId);
         }
     }
 }

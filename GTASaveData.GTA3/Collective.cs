@@ -4,8 +4,7 @@ using System;
 namespace GTASaveData.GTA3
 {
     [Size(8)]
-    public class Collective : SaveDataObject,
-        IEquatable<Collective>
+    public class Collective : SaveDataObject, IEquatable<Collective>
     {
         private int m_index;
         private int m_field04h;
@@ -24,20 +23,20 @@ namespace GTASaveData.GTA3
 
         public Collective()
         {
-            m_index = -1;
-            m_field04h = 0;
+            Index = -1;
+            Field04h = 0;
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_index = buf.ReadInt32();
-            m_field04h = buf.ReadInt32();
+            Index = buf.ReadInt32();
+            Field04h = buf.ReadInt32();
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(m_index);
-            buf.Write(m_field04h);
+            buf.Write(Index);
+            buf.Write(Field04h);
         }
 
         public override bool Equals(object obj)
@@ -52,8 +51,8 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_index.Equals(other.m_index)
-                && m_field04h.Equals(other.m_field04h);
+            return Index.Equals(other.Index)
+                && Field04h.Equals(other.Field04h);
         }
     }
 }

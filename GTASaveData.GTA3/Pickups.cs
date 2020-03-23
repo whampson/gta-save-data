@@ -6,8 +6,7 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     [Size(0x2514)]
-    public class Pickups : SaveDataObject,
-        IEquatable<Pickups>
+    public class Pickups : SaveDataObject, IEquatable<Pickups>
     {
         public static class Limits
         {
@@ -16,7 +15,7 @@ namespace GTASaveData.GTA3
         }
 
         private Array<Pickup> m_pickups;
-        private int m_lastCollectedIndex;
+        private short m_lastCollectedIndex;
         private Array<int> m_pickupsCollected;
 
         public Array<Pickup> PickupArray
@@ -25,7 +24,7 @@ namespace GTASaveData.GTA3
             set { m_pickups = value; OnPropertyChanged(); }
         }
 
-        public int LastCollectedIndex
+        public short LastCollectedIndex
         {
             get { return m_lastCollectedIndex; }
             set { m_lastCollectedIndex = value; OnPropertyChanged(); }
@@ -39,26 +38,26 @@ namespace GTASaveData.GTA3
 
         public Pickups()
         {
-            m_pickups = new Array<Pickup>();
-            m_pickupsCollected = new Array<int>();
+            PickupArray = new Array<Pickup>();
+            PickupsCollected = new Array<int>();
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_pickups = buf.ReadArray<Pickup>(Limits.NumberOfPickups);
-            m_lastCollectedIndex = buf.ReadUInt16();
-            buf.ReadUInt16();
-            m_pickupsCollected = buf.ReadArray<int>(Limits.NumberOfPickupsCollected);
+            PickupArray = buf.ReadArray<Pickup>(Limits.NumberOfPickups);
+            LastCollectedIndex = buf.ReadInt16();
+            buf.ReadInt16();
+            PickupsCollected = buf.ReadArray<int>(Limits.NumberOfPickupsCollected);
 
             Debug.Assert(buf.Offset == SizeOf<Pickups>());
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(m_pickups.ToArray(), Limits.NumberOfPickups);
-            buf.Write((ushort) m_lastCollectedIndex);
-            buf.Write((ushort) 0);
-            buf.Write(m_pickupsCollected.ToArray(), Limits.NumberOfPickupsCollected);
+            buf.Write(PickupArray.ToArray(), Limits.NumberOfPickups);
+            buf.Write(LastCollectedIndex);
+            buf.Write((short) 0);
+            buf.Write(PickupsCollected.ToArray(), Limits.NumberOfPickupsCollected);
 
             Debug.Assert(buf.Offset == SizeOf<Pickups>());
         }
@@ -75,9 +74,9 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_pickups.SequenceEqual(other.m_pickups)
-                && m_lastCollectedIndex.Equals(other.m_lastCollectedIndex)
-                && m_pickupsCollected.SequenceEqual(other.m_pickupsCollected);
+            return PickupArray.SequenceEqual(other.PickupArray)
+                && LastCollectedIndex.Equals(other.LastCollectedIndex)
+                && PickupsCollected.SequenceEqual(other.PickupsCollected);
         }
     }
 }

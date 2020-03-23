@@ -5,10 +5,9 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     [Size(0x28)]
-    public class StoredCar : SaveDataObject,
-        IEquatable<StoredCar>
+    public class StoredCar : SaveDataObject, IEquatable<StoredCar>
     {
-        private VehicleType m_model;
+        private int m_modelIndex;
         private Vector m_vecPos;
         private Vector m_vecAngle;
         private StoredCarFlags m_flags;
@@ -19,10 +18,10 @@ namespace GTASaveData.GTA3
         private sbyte m_extra2;
         private BombType m_carBombType;
 
-        public VehicleType Model
+        public int ModelIndex
         {
-            get { return m_model; }
-            set { m_model = value; OnPropertyChanged(); }
+            get { return m_modelIndex; }
+            set { m_modelIndex = value; OnPropertyChanged(); }
         }
 
         public Vector Position
@@ -73,31 +72,30 @@ namespace GTASaveData.GTA3
             set { m_extra2 = value; OnPropertyChanged(); }
         }
 
-        public BombType Bomb
+        public BombType CarBombType
         {
             get { return m_carBombType; }
             set { m_carBombType = value; OnPropertyChanged(); }
         }
 
-
         public StoredCar()
         {
-            m_vecPos = new Vector();
-            m_vecAngle = new Vector();
+            Position = new Vector();
+            Angle = new Vector();
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_model = (VehicleType) buf.ReadInt32();
-            m_vecPos = buf.ReadObject<Vector>();
-            m_vecAngle = buf.ReadObject<Vector>();
-            m_flags = (StoredCarFlags) buf.ReadInt32();
-            m_color1 = buf.ReadByte();
-            m_color2 = buf.ReadByte();
-            m_radio = (RadioStation) buf.ReadByte();
-            m_extra1 = buf.ReadSByte();
-            m_extra2 = buf.ReadSByte();
-            m_carBombType = (BombType) buf.ReadByte();
+            ModelIndex = buf.ReadInt32();
+            Position = buf.ReadObject<Vector>();
+            Angle = buf.ReadObject<Vector>();
+            Flags = (StoredCarFlags) buf.ReadInt32();
+            Color1 = buf.ReadByte();
+            Color2 = buf.ReadByte();
+            Radio = (RadioStation) buf.ReadByte();
+            Extra1 = buf.ReadSByte();
+            Extra2 = buf.ReadSByte();
+            CarBombType = (BombType) buf.ReadByte();
             buf.Align4Bytes();
 
             Debug.Assert(buf.Offset == SizeOf<StoredCar>());
@@ -105,16 +103,16 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write((int) m_model);
-            buf.Write(m_vecPos);
-            buf.Write(m_vecAngle);
-            buf.Write((int) m_flags);
-            buf.Write(m_color1);
-            buf.Write(m_color2);
-            buf.Write((byte) m_radio);
-            buf.Write(m_extra1);
-            buf.Write(m_extra2);
-            buf.Write((byte) m_carBombType);
+            buf.Write(ModelIndex);
+            buf.Write(Position);
+            buf.Write(Angle);
+            buf.Write((int) Flags);
+            buf.Write(Color1);
+            buf.Write(Color2);
+            buf.Write((byte) Radio);
+            buf.Write(Extra1);
+            buf.Write(Extra2);
+            buf.Write((byte) CarBombType);
             buf.Align4Bytes();
 
             Debug.Assert(buf.Offset == SizeOf<StoredCar>());
@@ -132,16 +130,16 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_model.Equals(other.m_model)
-                && m_vecPos.Equals(other.m_vecPos)
-                && m_vecAngle.Equals(other.m_vecAngle)
-                && m_flags.Equals(other.m_flags)
-                && m_color1.Equals(other.m_color1)
-                && m_color2.Equals(other.m_color2)
-                && m_radio.Equals(other.m_radio)
-                && m_extra1.Equals(other.m_extra1)
-                && m_extra2.Equals(other.m_extra2)
-                && m_carBombType.Equals(other.m_carBombType);
+            return ModelIndex.Equals(other.ModelIndex)
+                && Position.Equals(other.Position)
+                && Angle.Equals(other.Angle)
+                && Flags.Equals(other.Flags)
+                && Color1.Equals(other.Color1)
+                && Color2.Equals(other.Color2)
+                && Radio.Equals(other.Radio)
+                && Extra1.Equals(other.Extra1)
+                && Extra2.Equals(other.Extra2)
+                && CarBombType.Equals(other.CarBombType);
         }
     }
 }
