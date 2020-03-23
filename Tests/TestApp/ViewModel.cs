@@ -14,7 +14,11 @@ namespace TestApp
     {
         public void OnLoad()
         {
-            //CurrentSaveFile.Padding = PaddingType.Random;
+            SaveFile sf = CurrentSaveFile;
+            var scr = sf.Blocks[0] as TheScripts;
+
+            RequestMessageBoxError(scr.ActiveScripts[0].Name);
+
         }
 
         #region Events, Variables, and Properties

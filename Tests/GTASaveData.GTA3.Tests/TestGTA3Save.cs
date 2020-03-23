@@ -53,7 +53,7 @@ namespace GTASaveData.Tests.GTA3
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.Name, f => !format.SupportedOnPS2 ? Generator.RandomWords(f, GTA3Save.Limits.MaxNameLength - 1) : string.Empty)
                 .RuleFor(x => x.TimeLastSaved, (format.SupportedOnPC || format.SupportedOnXbox) ? Generator.Generate<SystemTime, TestSystemTime>().ToDateTime() : new DateTime())
-                .RuleFor(x => x.SaveSize, format.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Japan) ? 0x31400 : 0x31401)
+                .RuleFor(x => x.SaveSize, format.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Japan) ? 201728 : 201729)
                 .RuleFor(x => x.Game, gameFaker.Generate())
                 .RuleFor(x => x.TheCamera, cameraFaker.Generate())
                 .RuleFor(x => x.Clock, clockFaker.Generate())

@@ -2,13 +2,12 @@
 using GTASaveData.Types.Interfaces;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
 namespace GTASaveData
 {
-    // TODO: add ability to add/remove blocks after main game data (make use of padding space)?
-
     /// <summary>
     /// Represents a saved <i>Grand Theft Auto</i> game.
     /// </summary>
@@ -20,6 +19,9 @@ namespace GTASaveData
         private PaddingType m_padding;
         private byte[] m_paddingBytes;
         private bool m_disposed;
+
+        protected WorkBuffer WorkBuff { get; set; }
+        protected uint CheckSum { get; set; }
 
         [JsonIgnore]
         public SaveFileFormat FileFormat
@@ -42,9 +44,8 @@ namespace GTASaveData
             set { m_paddingBytes = value ?? DefaultPadding; }
         }
 
-        protected WorkBuffer WorkBuff { get; set; }
-        protected uint CheckSum { get; set; }
-
+        [JsonIgnore]
+        public abstract IReadOnlyList<SaveDataObject> Blocks { get; }
         public abstract string Name { get; set;  }
         public abstract DateTime TimeLastSaved { get; set; }
 

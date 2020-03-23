@@ -2,6 +2,7 @@ using GTASaveData.Extensions;
 using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -21,6 +22,7 @@ namespace GTASaveData.GTA3
         public const int SizeOfOneGameInBytes = 201729;
         public const int SizeOfSimpleVars = 188;
         public const int BufferSize = 55000;
+        public const int NumberOfBlocks = 20;
 
         private string m_name;
         private SystemTime m_timeLastSaved;
@@ -240,6 +242,29 @@ namespace GTASaveData.GTA3
             set { m_pedTypeInfo = value; OnPropertyChanged(); }
         }
 
+        public override IReadOnlyList<SaveDataObject> Blocks => new SaveDataObject[]
+        {
+            Scripts,
+            PedPool,
+            Garages,
+            VehiclePool,
+            ObjectPool,
+            Paths,
+            Cranes,
+            Pickups,
+            PhoneInfo,
+            RestartPoints,
+            RadarBlips,
+            Zones,
+            GangData,
+            CarGenerators,
+            AudioScriptObjects,
+            PlayerInfo,
+            Stats,
+            Streaming,
+            PedTypeInfo
+        };
+
         public GTA3Save()
         {
             WorkBuff = new WorkBuffer(new byte[BufferSize]);
@@ -445,7 +470,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); Streaming = LoadDummy();
             totalSize += ReadBlock(file); PedTypeInfo = LoadDummy();
 
-            // TODO: "meta blocks"
+            // TODO: user-defined blocks
 
             // Read-out remaining bytes
             while (file.Position < file.Length - 4)
@@ -519,7 +544,7 @@ namespace GTASaveData.GTA3
             SaveData(Streaming); totalSize += WriteBlock(file);
             SaveData(PedTypeInfo); totalSize += WriteBlock(file);
 
-            // TODO: "meta blocks", extra user-defined blocks
+            // TODO: user-defined blocks            
 
             // Padding
             for (int i = 0; i < 4; i++)
