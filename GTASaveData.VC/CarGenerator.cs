@@ -1,59 +1,53 @@
-﻿using GTASaveData.Common;
-using GTASaveData.Serialization;
+﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
+using System.Diagnostics;
 
 namespace GTASaveData.VC
 {
-    public sealed class CarGenerator : SerializableObject,
-        ICarGenerator,
-        IEquatable<CarGenerator>
+    [Size(0x2C)]
+    public class CarGenerator : SaveDataObject, ICarGenerator, IEquatable<CarGenerator>
     {
-        private VehicleModel m_model;
-        private Vector3d m_position;
-        private float m_heading;
-        private int m_color1;
-        private int m_color2;
+        private int m_modelIndex;
+        private Vector m_position;
+        private float m_angle;
+        private short m_color1;
+        private short m_color2;
         private bool m_forceSpawn;
-        private int m_alarmChance;
-        private int m_lockedChance;
-        private int m_minDelay;
-        private int m_maxDelay;
+        private byte m_alarmChance;
+        private byte m_lockedChance;
+        private ushort m_minDelay;
+        private ushort m_maxDelay;
         private uint m_timer;
-        private int m_vehiclePoolIndex;
-        private bool m_enabled;
-        private bool m_hasRecentlyBeenStolen;
+        private int m_vehicleHandle;
+        private short m_usesRemaining;
+        private bool m_isBlocking;
 
-        int ICarGenerator.Model
+        public int ModelIndex
         {
-            get { return (int) m_model; }
-            set { m_model = (VehicleModel) value; OnPropertyChanged(); }
+            get { return m_modelIndex; }
+            set { m_modelIndex = value; OnPropertyChanged(); }
         }
 
-        public VehicleModel Model
-        {
-            get { return m_model; }
-            set { m_model = value; OnPropertyChanged(); }
-        }
-
-        public Vector3d Position
+        public Vector Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
         }
 
-        public float Heading
+        public float Angle
         {
-            get { return m_heading; }
-            set { m_heading = value; OnPropertyChanged(); }
+            get { return m_angle; }
+            set { m_angle = value; OnPropertyChanged(); }
         }
 
-        public int Color1
+        public short Color1
         {
             get { return m_color1; }
             set { m_color1 = value; OnPropertyChanged(); }
         }
 
-        public int Color2
+        public short Color2
         {
             get { return m_color2; }
             set { m_color2 = value; OnPropertyChanged(); }
@@ -65,25 +59,25 @@ namespace GTASaveData.VC
             set { m_forceSpawn = value; OnPropertyChanged(); }
         }
 
-        public int AlarmChance
+        public byte AlarmChance
         {
             get { return m_alarmChance; }
             set { m_alarmChance = value; OnPropertyChanged(); }
         }
 
-        public int LockedChance
+        public byte LockedChance
         {
             get { return m_lockedChance; }
             set { m_lockedChance = value; OnPropertyChanged(); }
         }
 
-        public int MinDelay
+        public ushort MinDelay
         {
             get { return m_minDelay; }
             set { m_minDelay = value; OnPropertyChanged(); }
         }
 
-        public int MaxDelay
+        public ushort MaxDelay
         {
             get { return m_maxDelay; }
             set { m_maxDelay = value; OnPropertyChanged(); }
@@ -95,67 +89,89 @@ namespace GTASaveData.VC
             set { m_timer = value; OnPropertyChanged(); }
         }
 
-        public int VehiclePoolIndex
+        public int VehicleHandle
         {
-            get { return m_vehiclePoolIndex; }
-            set { m_vehiclePoolIndex = value; OnPropertyChanged(); }
+            get { return m_vehicleHandle; }
+            set { m_vehicleHandle = value; OnPropertyChanged(); }
         }
 
-        public bool Enabled
+        public short UsesRemaining
         {
-            get { return m_enabled; }
-            set { m_enabled = value; OnPropertyChanged(); }
+            get { return m_usesRemaining; }
+            set { m_usesRemaining = value; OnPropertyChanged(); }
         }
 
-        public bool HasRecentlyBeenStolen
+        public bool IsBlocking
         {
-            get { return m_hasRecentlyBeenStolen; }
-            set { m_hasRecentlyBeenStolen = value; OnPropertyChanged(); }
+            get { return m_isBlocking; }
+            set { m_isBlocking = value; OnPropertyChanged(); }
+        }
+
+        bool ICarGenerator.Enabled
+        {
+            get { return UsesRemaining > 0; }
+            set { UsesRemaining = (short) ((value) ? 101 : 0); OnPropertyChanged(); }
+        }
+
+        int ICarGenerator.Color1
+        {
+            get { return Color1; }
+            set { Color1 = (short) value; OnPropertyChanged(); }
+        }
+
+        int ICarGenerator.Color2
+        {
+            get { return Color2; }
+            set { Color2 = (short) value; OnPropertyChanged(); }
         }
 
         public CarGenerator()
         {
-            m_position = new Vector3d();
+            Position = new Vector();
         }
 
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
+        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            m_model = (VehicleModel) r.ReadInt32();
-            m_position = r.ReadObject<Vector3d>();
-            m_heading = r.ReadSingle();
-            m_color1 = r.ReadInt16();
-            m_color2 = r.ReadInt16();
-            m_forceSpawn = r.ReadBool();
-            m_alarmChance = r.ReadByte();
-            m_lockedChance = r.ReadByte();
-            r.Align();
-            m_minDelay = r.ReadUInt16();
-            m_maxDelay = r.ReadUInt16();
-            m_timer = r.ReadUInt32();
-            m_vehiclePoolIndex = r.ReadInt32();
-            m_enabled = r.ReadBool(2);
-            m_hasRecentlyBeenStolen = r.ReadBool();
-            r.Align();
+            ModelIndex = buf.ReadInt32();
+            Position = buf.ReadObject<Vector>();
+            Angle = buf.ReadSingle();
+            Color1 = buf.ReadInt16();
+            Color2 = buf.ReadInt16();
+            ForceSpawn = buf.ReadBool();
+            AlarmChance = buf.ReadByte();
+            LockedChance = buf.ReadByte();
+            buf.ReadByte();
+            MinDelay = buf.ReadUInt16();
+            MaxDelay = buf.ReadUInt16();
+            Timer = buf.ReadUInt32();
+            VehicleHandle = buf.ReadInt32();
+            UsesRemaining = buf.ReadInt16();
+            IsBlocking = buf.ReadBool();
+            buf.ReadByte();
+
+            Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
 
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
+        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            w.Write((int) m_model);
-            w.Write(m_position);
-            w.Write(m_heading);
-            w.Write((short) m_color1);
-            w.Write((short) m_color2);
-            w.Write(m_forceSpawn);
-            w.Write((byte) m_alarmChance);
-            w.Write((byte) m_lockedChance);
-            w.Align();
-            w.Write((ushort) m_minDelay);
-            w.Write((ushort) m_maxDelay);
-            w.Write(m_timer);
-            w.Write(m_vehiclePoolIndex);
-            w.Write(m_enabled, 2);
-            w.Write(m_hasRecentlyBeenStolen);
-            w.Align();
+            buf.Write(ModelIndex);
+            buf.Write(Position);
+            buf.Write(Angle);
+            buf.Write(Color1);
+            buf.Write(Color2);
+            buf.Write(ForceSpawn);
+            buf.Write(AlarmChance);
+            buf.Write(LockedChance);
+            buf.Write((byte) 0);
+            buf.Write(MinDelay);
+            buf.Write(MaxDelay);
+            buf.Write(Timer);
+            buf.Write(VehicleHandle);
+            buf.Write(UsesRemaining);
+            buf.Write(IsBlocking);
+            buf.Write((byte) 0);
+
+            Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
 
         public override bool Equals(object obj)
@@ -170,21 +186,20 @@ namespace GTASaveData.VC
                 return false;
             }
 
-            return m_model.Equals(other.m_model)
-                && m_position.Equals(other.m_position)
-                && m_heading.Equals(other.m_heading)
-                && m_color1.Equals(other.m_color1)
-                && m_color2.Equals(other.m_color2)
-                && m_forceSpawn.Equals(other.m_forceSpawn)
-                && m_alarmChance.Equals(other.m_alarmChance)
-                && m_lockedChance.Equals(other.m_lockedChance)
-                && m_minDelay.Equals(other.m_minDelay)
-                && m_maxDelay.Equals(other.m_maxDelay)
-                && m_timer.Equals(other.m_timer)
-                && m_vehiclePoolIndex.Equals(other.m_vehiclePoolIndex)
-                && m_enabled.Equals(other.m_enabled)
-                && m_hasRecentlyBeenStolen.Equals(other.m_hasRecentlyBeenStolen);
+            return ModelIndex.Equals(other.ModelIndex)
+                && Position.Equals(other.Position)
+                && Angle.Equals(other.Angle)
+                && Color1.Equals(other.Color1)
+                && Color2.Equals(other.Color2)
+                && ForceSpawn.Equals(other.ForceSpawn)
+                && AlarmChance.Equals(other.AlarmChance)
+                && LockedChance.Equals(other.LockedChance)
+                && MinDelay.Equals(other.MinDelay)
+                && MaxDelay.Equals(other.MaxDelay)
+                && Timer.Equals(other.Timer)
+                && VehicleHandle.Equals(other.VehicleHandle)
+                && UsesRemaining.Equals(other.UsesRemaining)
+                && IsBlocking.Equals(other.IsBlocking);
         }
-
     }
 }

@@ -1,11 +1,8 @@
-﻿using GTASaveData.Common;
-using GTASaveData.Common.Blocks;
-using GTASaveData.Extensions;
-using GTASaveData.Serialization;
-using GTASaveData.VC.Blocks;
+﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 namespace GTASaveData.VC
@@ -13,476 +10,647 @@ namespace GTASaveData.VC
     /// <summary>
     /// Represents a save file for <i>Grand Theft Auto: Vice City</i>.
     /// </summary>
-    public sealed class ViceCitySave : GrandTheftAutoSave,
-        IGrandTheftAutoSave,
-        IEquatable<ViceCitySave>
+    public class ViceCitySave : SaveFile, IGTASaveFile, IEquatable<ViceCitySave>
     {
-        // Block IDs for tagged blocks.
-        private const string ScrTag = "SCR";
-        private const string RstTag = "RST";
-        private const string RdrTag = "RDR";
-        private const string ZnsTag = "ZNS";
-        private const string GngTag = "GNG";
-        private const string CgnTag = "CGN";
-        private const string AudTag = "AUD";
-        private const string PtpTag = "PTP";
-
-        public SimpleVars SimpleVars
+        public static class Limits
         {
-            get { return m_blocks[0] as SimpleVars; }
-            set { m_blocks[0] = value; OnPropertyChanged(); }
+            public const int MaxNameLength = 24;
+            public const int RadioStationListCount = 10;
         }
 
-        public Block Scripts
+        public const int SaveHeaderSize = 8;
+        public const int SizeOfOneGameInBytes = 201729;
+        public const int BufferSize = 0x10000;
+        public const int NumberOfBlocks = 23;
+
+        private string m_name;
+        private SystemTime m_timeLastSaved;
+        private int m_saveSize;
+        private int m_steamOnlyValue;
+        private Game m_game;
+        private Camera m_theCamera;
+        private Clock m_clock;
+        private Pad m_pad;
+        private Timer m_timer;
+        private TimeStep m_timeStep;
+        private Weather m_weather;
+        private TimeCycle m_timeCycle;
+        private Array<int> m_radioStationPositionList;
+        private DummyObject m_scripts;
+        private DummyObject m_pedPool;
+        private DummyObject m_garages;
+        private DummyObject m_gameLogic;
+        private DummyObject m_vehiclePool;
+        private DummyObject m_objectPool;
+        private DummyObject m_paths;
+        private DummyObject m_cranes;
+        private DummyObject m_pickups;
+        private DummyObject m_phoneInfo;
+        private DummyObject m_restartPoints;
+        private DummyObject m_radarBlips;
+        private DummyObject m_zones;
+        private DummyObject m_gangData;
+        private DummyObject m_carGenerators;
+        private DummyObject m_particleObjects;
+        private DummyObject m_audioScriptObjects;
+        private DummyObject m_scriptPaths;
+        private DummyObject m_playerInfo;
+        private DummyObject m_stats;
+        private DummyObject m_setPieces;
+        private DummyObject m_streaming;
+        private DummyObject m_pedTypeInfo;
+
+        public override string Name
         {
-            get { return m_blocks[1] as Block; }
-            set { m_blocks[1] = value; OnPropertyChanged(); }
+            get { return m_name; }
+            set { m_name = value; OnPropertyChanged(); }
         }
 
-        public Block PedPool
+        public override DateTime TimeLastSaved
         {
-            get { return m_blocks[2] as Block; }
-            set { m_blocks[2] = value; OnPropertyChanged(); }
+            get { return m_timeLastSaved.ToDateTime(); }
+            set { m_timeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
 
-        public Block Garages
+        public int SaveSize
         {
-            get { return m_blocks[3] as Block; }
-            set { m_blocks[3] = value; OnPropertyChanged(); }
+            get { return m_saveSize; }
+            set { m_saveSize = value; OnPropertyChanged(); }
         }
 
-        public Block GameLogic
+        public int SteamOnlyValue
         {
-            get { return m_blocks[4] as Block; }
-            set { m_blocks[4] = value; OnPropertyChanged(); }
+            get { return m_steamOnlyValue; }
+            set { m_steamOnlyValue = value; OnPropertyChanged(); }
         }
 
-        public Block VehiclePool
+        public Game Game
         {
-            get { return m_blocks[5] as Block; }
-            set { m_blocks[5] = value; OnPropertyChanged(); }
+            get { return m_game; }
+            set { m_game = value; OnPropertyChanged(); }
         }
 
-        public Block ObjectPool
+        public Camera TheCamera
         {
-            get { return m_blocks[6] as Block; }
-            set { m_blocks[6] = value; OnPropertyChanged(); }
+            get { return m_theCamera; }
+            set { m_theCamera = value; OnPropertyChanged(); }
         }
 
-        public Block PathFind
+        public Clock Clock
         {
-            get { return m_blocks[7] as Block; }
-            set { m_blocks[7] = value; OnPropertyChanged(); }
+            get { return m_clock; }
+            set { m_clock = value; OnPropertyChanged(); }
         }
 
-        public Block Cranes
+        public Pad Pad
         {
-            get { return m_blocks[8] as Block; }
-            set { m_blocks[8] = value; OnPropertyChanged(); }
+            get { return m_pad; }
+            set { m_pad = value; OnPropertyChanged(); }
         }
 
-        public Block Pickups
+        public Timer Timer
         {
-            get { return m_blocks[9] as Block; }
-            set { m_blocks[9] = value; OnPropertyChanged(); }
+            get { return m_timer; }
+            set { m_timer = value; OnPropertyChanged(); }
         }
 
-        public Block PhoneInfo
+        public TimeStep TimeStep
         {
-            get { return m_blocks[10] as Block; }
-            set { m_blocks[10] = value; OnPropertyChanged(); }
+            get { return m_timeStep; }
+            set { m_timeStep = value; OnPropertyChanged(); }
         }
 
-        public Block RestartPoints
+        public Weather Weather
         {
-            get { return m_blocks[11] as Block; }
-            set { m_blocks[11] = value; OnPropertyChanged(); }
+            get { return m_weather; }
+            set { m_weather = value; OnPropertyChanged(); }
         }
 
-        public Block RadarBlips
+        public TimeCycle TimeCycle
         {
-            get { return m_blocks[12] as Block; }
-            set { m_blocks[12] = value; OnPropertyChanged(); }
+            get { return m_timeCycle; }
+            set { m_timeCycle = value; OnPropertyChanged(); }
         }
 
-        public Block Zones
+        public Array<int> RadioStationPositionList
         {
-            get { return m_blocks[13] as Block; }
-            set { m_blocks[13] = value; OnPropertyChanged(); }
+            get { return m_radioStationPositionList; }
+            set { m_radioStationPositionList = value; OnPropertyChanged(); }
         }
 
-        public Block GangData
+        public DummyObject Scripts
         {
-            get { return m_blocks[14] as Block; }
-            set { m_blocks[14] = value; OnPropertyChanged(); }
+            get { return m_scripts; }
+            set { m_scripts = value; OnPropertyChanged(); }
         }
 
-        public CarGeneratorBlock CarGenerators
+        public DummyObject PedPool
         {
-            get { return m_blocks[15] as CarGeneratorBlock; }
-            set { m_blocks[15] = value; OnPropertyChanged(); }
+            get { return m_pedPool; }
+            set { m_pedPool = value; OnPropertyChanged(); }
         }
 
-        public Block Particles
+        public DummyObject Garages
         {
-            get { return m_blocks[16] as Block; }
-            set { m_blocks[16] = value; OnPropertyChanged(); }
+            get { return m_garages; }
+            set { m_garages = value; OnPropertyChanged(); }
         }
 
-        public Block AudioScriptObjects
+        public DummyObject GameLogic
         {
-            get { return m_blocks[17] as Block; }
-            set { m_blocks[17] = value; OnPropertyChanged(); }
+            get { return m_gameLogic; }
+            set { m_gameLogic = value; OnPropertyChanged(); }
         }
 
-        public Block ScriptPaths
+        public DummyObject VehiclePool
         {
-            get { return m_blocks[18] as Block; }
-            set { m_blocks[18] = value; OnPropertyChanged(); }
+            get { return m_vehiclePool; }
+            set { m_vehiclePool = value; OnPropertyChanged(); }
         }
 
-        public Block PlayerInfo
+        public DummyObject ObjectPool
         {
-            get { return m_blocks[19] as Block; }
-            set { m_blocks[19] = value; OnPropertyChanged(); }
+            get { return m_objectPool; }
+            set { m_objectPool = value; OnPropertyChanged(); }
         }
 
-        public Block Stats
+        public DummyObject Paths
         {
-            get { return m_blocks[20] as Block; }
-            set { m_blocks[20] = value; OnPropertyChanged(); }
+            get { return m_paths; }
+            set { m_paths = value; OnPropertyChanged(); }
         }
 
-        public Block SetPieces
+        public DummyObject Cranes
         {
-            get { return m_blocks[21] as Block; }
-            set { m_blocks[21] = value; OnPropertyChanged(); }
+            get { return m_cranes; }
+            set { m_cranes = value; OnPropertyChanged(); }
         }
 
-        public Block Streaming
+        public DummyObject Pickups
         {
-            get { return m_blocks[22] as Block; }
-            set { m_blocks[22] = value; OnPropertyChanged(); }
+            get { return m_pickups; }
+            set { m_pickups = value; OnPropertyChanged(); }
         }
 
-        public Block PedTypeInfo
+        public DummyObject PhoneInfo
         {
-            get { return m_blocks[23] as Block; }
-            set { m_blocks[23] = value; OnPropertyChanged(); }
+            get { return m_phoneInfo; }
+            set { m_phoneInfo = value; OnPropertyChanged(); }
         }
 
-        ISimpleVars IGrandTheftAutoSave.SimpleVars => SimpleVars;
-
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-        public override string Name => SimpleVars.LastMissionPassedName;
-=======
-        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators => CarGenerators;
-
-        public override string Name => SimpleVars.SaveName;
->>>>>>> Stashed changes
-=======
-=======
-        ICarGeneratorBlock IGrandTheftAutoSave.CarGenerators => CarGenerators;
-
->>>>>>> Stashed changes
-        public override string Name => SimpleVars.SaveName;
->>>>>>> san-andreas
-
-        protected override int MaxBlockSize => 0xD6D8;      // TODO: PS2 
-
-        protected override int BlockCount => 24;
-
-        protected override int SectionCount
+        public DummyObject RestartPoints
         {
-            get
-            {
-                if (FileFormat.SupportsPC)
-                {
-                    return 23;
-                }
-
-                throw new InvalidOperationException("Not implemented!");
-            }
+            get { return m_restartPoints; }
+            set { m_restartPoints = value; OnPropertyChanged(); }
         }
 
-        protected override int SimpleVarsSize
+        public DummyObject RadarBlips
         {
-            get
-            {
-                if (FileFormat == FileFormats.PCRetail)
-                {
-                    return 0xE4;
-                }
-                else if (FileFormat == FileFormats.PCSteam)
-                {
-                    return 0xE8;
-                }
-
-                throw new InvalidOperationException("Not implemented!");
-            }
+            get { return m_radarBlips; }
+            set { m_radarBlips = value; OnPropertyChanged(); }
         }
+
+        public DummyObject Zones
+        {
+            get { return m_zones; }
+            set { m_zones = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject GangData
+        {
+            get { return m_gangData; }
+            set { m_gangData = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject CarGenerators
+        {
+            get { return m_carGenerators; }
+            set { m_carGenerators = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject ParticleObjects
+        {
+            get { return m_particleObjects; }
+            set { m_particleObjects = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject AudioScriptObjects
+        {
+            get { return m_audioScriptObjects; }
+            set { m_audioScriptObjects = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject ScriptPaths
+        {
+            get { return m_scriptPaths; }
+            set { m_scriptPaths = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject PlayerInfo
+        {
+            get { return m_playerInfo; }
+            set { m_playerInfo = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject Stats
+        {
+            get { return m_stats; }
+            set { m_stats = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject SetPieces
+        {
+            get { return m_setPieces; }
+            set { m_setPieces = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject Streaming
+        {
+            get { return m_streaming; }
+            set { m_streaming = value; OnPropertyChanged(); }
+        }
+
+        public DummyObject PedTypeInfo
+        {
+            get { return m_pedTypeInfo; }
+            set { m_pedTypeInfo = value; OnPropertyChanged(); }
+        }
+
+        public override IReadOnlyList<SaveDataObject> Blocks => new SaveDataObject[]
+        {
+            Scripts,
+            PedPool,
+            GameLogic,
+            Garages,
+            VehiclePool,
+            ObjectPool,
+            Paths,
+            Cranes,
+            Pickups,
+            PhoneInfo,
+            RestartPoints,
+            RadarBlips,
+            Zones,
+            GangData,
+            CarGenerators,
+            ParticleObjects,
+            AudioScriptObjects,
+            ScriptPaths,
+            PlayerInfo,
+            Stats,
+            SetPieces,
+            Streaming,
+            PedTypeInfo
+        };
 
         public ViceCitySave()
         {
-            m_blocks[0] = new SimpleVars();
-            m_blocks[1] = new Block();
-            m_blocks[2] = new Block();
-            m_blocks[3] = new Block();
-            m_blocks[4] = new Block();
-            m_blocks[5] = new Block();
-            m_blocks[6] = new Block();
-            m_blocks[7] = new Block();
-            m_blocks[8] = new Block();
-            m_blocks[9] = new Block();
-            m_blocks[10] = new Block();
-            m_blocks[11] = new Block();
-            m_blocks[12] = new Block();
-            m_blocks[13] = new Block();
-            m_blocks[14] = new Block();
-            m_blocks[15] = new CarGeneratorBlock();
-            m_blocks[16] = new Block();
-            m_blocks[17] = new Block();
-            m_blocks[18] = new Block();
-            m_blocks[19] = new Block();
-            m_blocks[20] = new Block();
-            m_blocks[21] = new Block();
-            m_blocks[22] = new Block();
-            m_blocks[23] = new Block();
+            WorkBuff = new WorkBuffer(new byte[BufferSize]);
+            Name = string.Empty;
+            TimeLastSaved = DateTime.Now;
+            Game = new Game();
+            TheCamera = new Camera();
+            Clock = new Clock();
+            Pad = new Pad();
+            Timer = new Timer();
+            TimeStep = new TimeStep();
+            Weather = new Weather();
+            TimeCycle = new TimeCycle();
+            RadioStationPositionList = CreateArray<int>(Limits.RadioStationListCount);
+            Scripts = new DummyObject();
+            PedPool = new DummyObject();
+            Garages = new DummyObject();
+            GameLogic = new DummyObject();
+            VehiclePool = new DummyObject();
+            ObjectPool = new DummyObject();
+            Paths = new DummyObject();
+            Cranes = new DummyObject();
+            Pickups = new DummyObject();
+            PhoneInfo = new DummyObject();
+            RestartPoints = new DummyObject();
+            RadarBlips = new DummyObject();
+            Zones = new DummyObject();
+            GangData = new DummyObject();
+            CarGenerators = new DummyObject();
+            ParticleObjects = new DummyObject();
+            AudioScriptObjects = new DummyObject();
+            ScriptPaths = new DummyObject();
+            PlayerInfo = new DummyObject();
+            Stats = new DummyObject();
+            SetPieces = new DummyObject();
+            Streaming = new DummyObject();
+            PedTypeInfo = new DummyObject();
         }
 
-        protected override FileFormat DetectFileFormat(byte[] data)
+        private bool IsSteam
         {
-            int fileId = data.FindFirst(BitConverter.GetBytes(0x31401));
-            int scr = data.FindFirst("SCR\0".GetAsciiBytes());
+            get { return FileFormat.IsSupportedOn(ConsoleType.Win32, ConsoleFlags.Steam); }
+        }
 
-            // Likely PS2 if block count is 8
+        public int GetSizeOfSimpleVars()
+        {
+            // TODO: other platforms
+            return (IsSteam) ? 232 : 228;
+        }
 
-            if (fileId == 0x44)
+        public static int ReadSaveHeader(WorkBuffer buf, string tag)
+        {
+            string readTag = buf.ReadString(4);
+            int size = buf.ReadInt32();
+
+            Debug.Assert(tag == readTag, "Invalid block tag (expected: {0}, actual: {1})", tag, readTag);
+            return size;
+        }
+
+        public static void WriteSaveHeader(WorkBuffer buf, string tag, int size)
+        {
+            buf.Write(tag, 4);
+            buf.Write(size);
+        }
+
+        private T LoadData<T>() where T : SaveDataObject, new()
+        {
+            return LoadData<T>(out int _);
+        }
+
+        private T LoadData<T>(out int size) where T : SaveDataObject, new()
+        {
+            size = WorkBuff.ReadInt32();
+            int bytesRead = Serializer.Read(WorkBuff, FileFormat, out T obj);
+
+            Debug.Assert(size == bytesRead);
+            return obj;
+        }
+
+        private DummyObject LoadDummy()
+        {
+            return LoadDummy(out int _);
+        }
+
+        private DummyObject LoadDummy(out int size)
+        {
+            size = WorkBuff.ReadInt32();
+            DummyObject obj = new DummyObject(size);
+            ((ISaveDataObject) obj).ReadObjectData(WorkBuff);
+
+            return obj;
+        }
+
+        private void SaveData(SaveDataObject o)
+        {
+            int size;
+            int preSize, postData;
+
+            preSize = WorkBuff.Position;
+            WorkBuff.Skip(4);
+
+            size = Serializer.Write(WorkBuff, o, FileFormat);
+            postData = WorkBuff.Position;
+
+            WorkBuff.Seek(preSize);
+            WorkBuff.Write(size);
+            WorkBuff.Seek(postData);
+            WorkBuff.Align4Bytes();
+        }
+
+        protected override int ReadBlock(WorkBuffer file)
+        {
+            file.MarkPosition();
+            WorkBuff.Reset();
+
+            int size = file.ReadInt32();
+            if (size > BufferSize)
             {
-                if (scr == 0xEC)
+                // TODO: BlockSizeChecks flag?
+                Debug.WriteLine("Maximum block size exceeded: {0}", size);
+            }
+
+            WorkBuff.Write(file.ReadBytes(size));
+
+            Debug.Assert(file.Offset == size + 4);
+            Debug.WriteLine("Read {0} bytes of block data.", size);
+
+            WorkBuff.Reset();
+            return size;
+        }
+
+        protected override int WriteBlock(WorkBuffer file)
+        {
+            file.MarkPosition();
+
+            byte[] data = WorkBuff.ToArray(WorkBuff.Position);
+            int size = data.Length;
+            if (size > BufferSize)
+            {
+                // TODO: BlockSizeChecks flag?
+                Debug.WriteLine("Maximum block size exceeded: {0}", size);
+            }
+
+            file.Write(size);
+            file.Write(data);
+            file.Align4Bytes();
+
+            Debug.Assert(file.Offset == size + 4);
+            Debug.WriteLine("Wrote {0} bytes of block data.", size);
+
+            CheckSum += (uint) BitConverter.GetBytes(size).Sum(x => x);
+            CheckSum += (uint) data.Sum(x => x);
+
+            WorkBuff.Reset();
+            return size;
+        }
+
+        protected override void LoadAllData(WorkBuffer file)
+        {
+            int totalSize = 0;
+            int size;
+
+            size = ReadBlock(file);
+            Name = WorkBuff.ReadString(Limits.MaxNameLength, true);
+            TimeLastSaved = WorkBuff.ReadObject<SystemTime>().ToDateTime();
+            SaveSize = WorkBuff.ReadInt32();
+            Game.CurrLevel = (LevelType) WorkBuff.ReadInt32();
+            TheCamera.Position = WorkBuff.ReadObject<Vector>();
+            if (IsSteam) SteamOnlyValue = WorkBuff.ReadInt32();
+            Clock.MillisecondsPerGameMinute = WorkBuff.ReadInt32();
+            Clock.LastClockTick = WorkBuff.ReadUInt32();
+            Clock.GameClockHours = (byte) WorkBuff.ReadInt32();
+            WorkBuff.Align4Bytes();
+            Clock.GameClockMinutes = (byte) WorkBuff.ReadInt32();
+            WorkBuff.Align4Bytes();
+            Pad.Mode = WorkBuff.ReadInt16();
+            WorkBuff.Align4Bytes();
+            Timer.TimeInMilliseconds = WorkBuff.ReadUInt32();
+            Timer.TimeScale = WorkBuff.ReadSingle();
+            Timer.TimeStep = WorkBuff.ReadSingle();
+            Timer.TimeStepNonClipped = WorkBuff.ReadSingle();
+            Timer.FrameCounter = WorkBuff.ReadUInt32();
+            TimeStep.TimeStepValue = WorkBuff.ReadSingle();
+            TimeStep.FramesPerUpdate = WorkBuff.ReadSingle();
+            TimeStep.TimeScale = WorkBuff.ReadSingle();
+            Weather.OldWeatherType = (WeatherType) WorkBuff.ReadInt16();
+            WorkBuff.Align4Bytes();
+            Weather.NewWeatherType = (WeatherType) WorkBuff.ReadInt16();
+            WorkBuff.Align4Bytes();
+            Weather.ForcedWeatherType = (WeatherType) WorkBuff.ReadInt16();
+            WorkBuff.Align4Bytes();
+            Weather.InterpolationValue = WorkBuff.ReadSingle();
+            Weather.WeatherTypeInList = WorkBuff.ReadInt32();
+            TheCamera.CarZoomIndicator = WorkBuff.ReadSingle();
+            TheCamera.PedZoomIndicator = WorkBuff.ReadSingle();
+            Game.CurrArea = (AreaType) WorkBuff.ReadInt32();
+            Game.AllTaxisHaveNitro = WorkBuff.ReadBool();
+            WorkBuff.Align4Bytes();
+            Pad.InvertLook4Pad = WorkBuff.ReadBool();
+            WorkBuff.Align4Bytes();
+            TimeCycle.ExtraColour = WorkBuff.ReadInt32();
+            TimeCycle.ExtraColourOn = WorkBuff.ReadBool(4);
+            TimeCycle.ExtraColourInter = WorkBuff.ReadSingle();
+            RadioStationPositionList = WorkBuff.ReadArray<int>(Limits.RadioStationListCount);
+            Debug.Assert(WorkBuff.Offset == GetSizeOfSimpleVars());
+            Scripts = LoadDummy(out int scriptsSize);
+            Debug.Assert(WorkBuff.Offset - GetSizeOfSimpleVars() == scriptsSize + 4);
+            Debug.Assert(WorkBuff.Offset == size);
+            totalSize += size;
+            totalSize += ReadBlock(file); PedPool = LoadDummy();
+            totalSize += ReadBlock(file); Garages = LoadDummy();
+            totalSize += ReadBlock(file); GameLogic = LoadDummy();
+            totalSize += ReadBlock(file); VehiclePool = LoadDummy();
+            totalSize += ReadBlock(file); ObjectPool = LoadDummy();
+            totalSize += ReadBlock(file); Paths = LoadDummy();
+            totalSize += ReadBlock(file); Cranes = LoadDummy();
+            totalSize += ReadBlock(file); Pickups = LoadDummy();
+            totalSize += ReadBlock(file); PhoneInfo = LoadDummy();
+            totalSize += ReadBlock(file); RestartPoints = LoadDummy();
+            totalSize += ReadBlock(file); RadarBlips = LoadDummy();
+            totalSize += ReadBlock(file); Zones = LoadDummy();
+            totalSize += ReadBlock(file); GangData = LoadDummy();
+            totalSize += ReadBlock(file); CarGenerators = LoadDummy();
+            totalSize += ReadBlock(file); ParticleObjects = LoadDummy();
+            totalSize += ReadBlock(file); AudioScriptObjects = LoadDummy();
+            totalSize += ReadBlock(file); ScriptPaths = LoadDummy();
+            totalSize += ReadBlock(file); PlayerInfo = LoadDummy();
+            totalSize += ReadBlock(file); Stats = LoadDummy();
+            totalSize += ReadBlock(file); SetPieces = LoadDummy();
+            totalSize += ReadBlock(file); Streaming = LoadDummy();
+            totalSize += ReadBlock(file); PedTypeInfo = LoadDummy();
+
+            // TODO: user-defined blocks
+
+            // Read-out remaining bytes
+            while (file.Position < file.Length - 4)
+            {
+                totalSize += ReadBlock(file);
+            }
+
+            Debug.WriteLine("Save size: {0}", totalSize);
+            Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
+        }
+
+        protected override void SaveAllData(WorkBuffer file)
+        {
+            int totalSize = 0;
+            int size;
+
+            WorkBuff.Reset();
+            CheckSum = 0;
+
+            WorkBuff.Write(Name, Limits.MaxNameLength, true);
+            WorkBuff.Write(new SystemTime(TimeLastSaved));
+            WorkBuff.Write(SizeOfOneGameInBytes);
+            WorkBuff.Write((int) Game.CurrLevel);
+            WorkBuff.Write(TheCamera.Position);
+            if (IsSteam) WorkBuff.Write(SteamOnlyValue);
+            WorkBuff.Write(Clock.MillisecondsPerGameMinute);
+            WorkBuff.Write(Clock.LastClockTick);
+            WorkBuff.Write(Clock.GameClockHours);
+            WorkBuff.Align4Bytes();
+            WorkBuff.Write(Clock.GameClockMinutes);
+            WorkBuff.Align4Bytes();
+            WorkBuff.Write(Pad.Mode);
+            WorkBuff.Align4Bytes();
+            WorkBuff.Write(Timer.TimeInMilliseconds);
+            WorkBuff.Write(Timer.TimeScale);
+            WorkBuff.Write(Timer.TimeStep);
+            WorkBuff.Write(Timer.TimeStepNonClipped);
+            WorkBuff.Write(Timer.FrameCounter);
+            WorkBuff.Write(TimeStep.TimeStepValue);
+            WorkBuff.Write(TimeStep.FramesPerUpdate);
+            WorkBuff.Write(TimeStep.TimeScale);
+            WorkBuff.Write((short) Weather.OldWeatherType);
+            WorkBuff.Align4Bytes();
+            WorkBuff.Write((short) Weather.NewWeatherType);
+            WorkBuff.Align4Bytes();
+            WorkBuff.Write((short) Weather.ForcedWeatherType);
+            WorkBuff.Align4Bytes();
+            WorkBuff.Write(Weather.InterpolationValue);
+            WorkBuff.Write(Weather.WeatherTypeInList);
+            WorkBuff.Write(TheCamera.CarZoomIndicator);
+            WorkBuff.Write(TheCamera.PedZoomIndicator);
+            WorkBuff.Write((int) Game.CurrArea);
+            WorkBuff.Write(Game.AllTaxisHaveNitro);
+            WorkBuff.Align4Bytes();
+            WorkBuff.Write(Pad.InvertLook4Pad);
+            WorkBuff.Align4Bytes();
+            WorkBuff.Write(TimeCycle.ExtraColour);
+            WorkBuff.Write(TimeCycle.ExtraColourOn, 4);
+            WorkBuff.Write(TimeCycle.ExtraColourInter);
+            WorkBuff.Write(RadioStationPositionList.ToArray(), Limits.RadioStationListCount);
+            Debug.Assert(WorkBuff.Offset == GetSizeOfSimpleVars());
+            SaveData(Scripts); totalSize += WriteBlock(file);
+            SaveData(PedPool); totalSize += WriteBlock(file);
+            SaveData(Garages); totalSize += WriteBlock(file);
+            SaveData(GameLogic); totalSize += WriteBlock(file);
+            SaveData(VehiclePool); totalSize += WriteBlock(file);
+            SaveData(ObjectPool); totalSize += WriteBlock(file);
+            SaveData(Paths); totalSize += WriteBlock(file);
+            SaveData(Cranes); totalSize += WriteBlock(file);
+            SaveData(Pickups); totalSize += WriteBlock(file);
+            SaveData(PhoneInfo); totalSize += WriteBlock(file);
+            SaveData(RestartPoints); totalSize += WriteBlock(file);
+            SaveData(RadarBlips); totalSize += WriteBlock(file);
+            SaveData(Zones); totalSize += WriteBlock(file);
+            SaveData(GangData); totalSize += WriteBlock(file);
+            SaveData(CarGenerators); totalSize += WriteBlock(file);
+            SaveData(ParticleObjects); totalSize += WriteBlock(file);
+            SaveData(AudioScriptObjects); totalSize += WriteBlock(file);
+            SaveData(ScriptPaths); totalSize += WriteBlock(file);
+            SaveData(PlayerInfo); totalSize += WriteBlock(file);
+            SaveData(Stats); totalSize += WriteBlock(file);
+            SaveData(SetPieces); totalSize += WriteBlock(file);
+            SaveData(Streaming); totalSize += WriteBlock(file);
+            SaveData(PedTypeInfo); totalSize += WriteBlock(file);
+
+            // TODO: user-defined blocks            
+
+            // Padding
+            for (int i = 0; i < 4; i++)
+            {
+                size = WorkBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
+                if (size > BufferSize)
                 {
-                    return FileFormats.PCRetail;
+                    size = BufferSize;
                 }
-                else if (scr == 0xF0)
+                if (size > 4)
                 {
-                    return FileFormats.PCSteam;
+                    WorkBuff.Reset();
+                    WorkBuff.Write(GetPaddingBytes(size));
+                    totalSize += WriteBlock(file);
                 }
             }
 
-            throw new InvalidOperationException("Not implemented!");
+            file.Write(CheckSum);
+
+            Debug.WriteLine("Save size: {0}", totalSize);
+            Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
         }
 
-        protected override byte[] ReadBlock(Serializer r, string tag)
+        protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
         {
-            int length = r.ReadInt32();
-            Debug.WriteLineIf(length > MaxBlockSize, "ReadBlock: Maximum block size exceeded!");
+            // TODO: implement
 
-            if (tag != null)
-            {
-                string str = r.ReadString(4);
-                int innerLength = r.ReadInt32();
-                Debug.Assert(str == tag, "ReadBlock: Invalid tag!", "Expected: {0}, Actual: {1}", tag, str);
-                Debug.Assert(innerLength == (length - 8));
-                length = innerLength;
-            }
-
-            byte[] data = r.ReadBytes(length);
-            r.Align();
-
-            return data;
-        }
-
-        protected override byte[] CreateBlock(string tag, byte[] data)
-        {
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (Serializer w = CreateSerializer(m))
-                {
-                    int totalLength = data.Length;
-
-                    if (tag != null)
-                    {
-                        totalLength += 8;
-                        w.Write(totalLength);
-                        w.Write(tag, 4);
-                    }
-
-                    w.Write(data.Length);
-                    w.Write(data);
-                    w.Align();
-
-                    Debug.WriteLineIf(totalLength > MaxBlockSize, "CreateBlock: Maximum block size exceeded!");
-                }
-
-                return m.ToArray();
-            }
-        }
-
-        protected override void LoadSection(int index, byte[] data)
-        {
-            using (Serializer r = CreateSerializer(new MemoryStream(data)))
-            {
-                // TODO: PS2
-                switch (index)
-                {
-                    case 0:
-                        SimpleVars = Deserialize<SimpleVars>(r.ReadBytes(SimpleVarsSize));
-                        Scripts = ReadBlock(r, ScrTag);
-                        break;
-                    case 1: PedPool = ReadBlock(r, null); break;
-                    case 2: Garages = ReadBlock(r, null); break;
-                    case 3: GameLogic = ReadBlock(r, null); break;
-                    case 4: VehiclePool = ReadBlock(r, null); break;
-                    case 5: ObjectPool = ReadBlock(r, null); break;
-                    case 6: PathFind = ReadBlock(r, null); break;
-                    case 7: Cranes = ReadBlock(r, null); break;
-                    case 8: Pickups = ReadBlock(r, null); break;
-                    case 9: PhoneInfo = ReadBlock(r, null); break;
-                    case 10: RestartPoints = ReadBlock(r, RstTag); break;
-                    case 11: RadarBlips = ReadBlock(r, RdrTag); break;
-                    case 12: Zones = ReadBlock(r, ZnsTag); break;
-                    case 13: GangData = ReadBlock(r, GngTag); break;
-                    case 14: CarGenerators = Deserialize<CarGeneratorBlock>(ReadBlock(r, CgnTag)); break;
-                    case 15: Particles = ReadBlock(r, null); break;
-                    case 16: AudioScriptObjects = ReadBlock(r, AudTag); break;
-                    case 17: ScriptPaths = ReadBlock(r, null); break;
-                    case 18: PlayerInfo = ReadBlock(r, null); break;
-                    case 19: Stats = ReadBlock(r, null); break;
-                    case 20: SetPieces = ReadBlock(r, null); break;
-                    case 21: Streaming = ReadBlock(r, null); break;
-                    case 22: PedTypeInfo = ReadBlock(r, PtpTag); break;
-                }
-            }
-        }
-
-        protected override byte[] SaveSection(int index)
-        {
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (Serializer w = CreateSerializer(m))
-                {
-                    // TODO: PS2
-                    switch (index)
-                    {
-                        case 0:
-                            w.Write(Serialize(SimpleVars));
-                            w.Write(CreateBlock(ScrTag, Scripts));
-                            break;
-                        case 1: w.Write(CreateBlock(null, PedPool)); break;
-                        case 2: w.Write(CreateBlock(null, Garages)); break;
-                        case 3: w.Write(CreateBlock(null, GameLogic)); break;
-                        case 4: w.Write(CreateBlock(null, VehiclePool)); break;
-                        case 5: w.Write(CreateBlock(null, ObjectPool)); break;
-                        case 6: w.Write(CreateBlock(null, PathFind)); break;
-                        case 7: w.Write(CreateBlock(null, Cranes)); break;
-                        case 8: w.Write(CreateBlock(null, Pickups)); break;
-                        case 9: w.Write(CreateBlock(null, PhoneInfo)); break;
-                        case 10: w.Write(CreateBlock(RstTag, RestartPoints)); break;
-                        case 11: w.Write(CreateBlock(RdrTag, RadarBlips)); break;
-                        case 12: w.Write(CreateBlock(ZnsTag, Zones)); break;
-                        case 13: w.Write(CreateBlock(GngTag, GangData)); break;
-                        case 14: w.Write(CreateBlock(CgnTag, Serialize(CarGenerators))); break;
-                        case 15: w.Write(CreateBlock(null, Particles)); break;
-                        case 16: w.Write(CreateBlock(AudTag, AudioScriptObjects)); break;
-                        case 17: w.Write(CreateBlock(null, ScriptPaths)); break;
-                        case 18: w.Write(CreateBlock(null, PlayerInfo)); break;
-                        case 19: w.Write(CreateBlock(null, Stats)); break;
-                        case 20: w.Write(CreateBlock(null, SetPieces)); break;
-                        case 21: w.Write(CreateBlock(null, Streaming)); break;
-                        case 22: w.Write(CreateBlock(PtpTag, PedTypeInfo)); break;
-                    }
-                }
-
-                return m.ToArray();
-            }
-        }
-
-        protected override void ReadObjectData(Serializer r, FileFormat fmt)
-        {
-            //if (!FileFormats.GetAll().Contains(fmt))
-            //{
-            //    throw new SerializationException(
-            //        string.Format("'{0}' is not a valid file format for GTA VC save data.", fmt));
-            //}
-
-            FileFormat = fmt;
-            int index = 0;
-            int numSectionsRead = 0;
-            int bytesRead = 0;
-
-            while (r.BaseStream.Position < r.BaseStream.Length - 4)
-            {
-                int length = r.ReadInt32();
-                byte[] data = r.ReadBytes(length);
-
-                if (index < SectionCount)
-                {
-                    LoadSection(index++, data);
-                }
-
-                numSectionsRead++;
-                bytesRead += data.Length;
-            }
-
-#if DEBUG
-            Debug.WriteLine("Loaded Vice City -- total bytes: {0}, total sections: {1}, padding: {2}",
-                bytesRead, numSectionsRead, numSectionsRead - index);
-
-            int sizeOfGame = (int) Serializer.GetAlignedAddress(SimpleVars.SizeOfGameInBytes);
-            Debug.Assert(bytesRead == (sizeOfGame - 4));
-            Debug.Assert(r.BaseStream.Position == sizeOfGame + (4 * numSectionsRead) - 4);
-#endif
-        }
-
-        protected override void WriteObjectData(Serializer w, FileFormat fmt)
-        {
-            //if (!FileFormats.GetAll().Contains(fmt))
-            //{
-            //    throw new SerializationException(
-            //        string.Format("'{0}' is not a valid file format for GTA VC save data.", fmt));
-            //}
-
-            FileFormat = fmt;
-
-            int index = 0;
-            int checksum = 0;
-            int numSectionsWritten = 0;
-            int bytesWritten = 0;
-
-            int sizeOfGame = (int) Serializer.GetAlignedAddress(SimpleVars.SizeOfGameInBytes);
-
-            while (bytesWritten < sizeOfGame - 4)
-            {
-                byte[] data;
-                int lengthSum;
-
-                if (index < SectionCount)
-                {
-                    data = SaveSection(index++);
-                }
-                else
-                {
-                    data = CreatePadding(sizeOfGame - bytesWritten - 4);
-                }
-
-                w.Write(data.Length);
-                w.Write(data);
-
-                lengthSum = Serializer.Serialize(data.Length).Sum(x => x);
-                checksum += data.Sum(x => x);
-                bytesWritten += data.Length;
-                numSectionsWritten++;
-            }
-
-            Debug.WriteLine("Saved Vice City -- total bytes: {0}, total sections: {1}, padding: {2}",
-                bytesWritten, numSectionsWritten, numSectionsWritten - index);
-
-            Debug.Assert(bytesWritten == (sizeOfGame - 4));
-            Debug.Assert(w.BaseStream.Position == sizeOfGame + (4 * numSectionsWritten) - 4);
-
-            w.Write(checksum);
+            fmt = FileFormats.PC_Retail;
+            return true;
         }
 
         public override bool Equals(object obj)
@@ -497,25 +665,57 @@ namespace GTASaveData.VC
                 return false;
             }
 
-            return m_blocks.SequenceEqual(other.m_blocks);
+            return Name.Equals(other.Name)
+                && TimeLastSaved.Equals(other.TimeLastSaved)
+                && SaveSize.Equals(other.SaveSize)
+                && SteamOnlyValue.Equals(other.SteamOnlyValue)
+                && Game.Equals(other.Game)
+                && TheCamera.Equals(other.TheCamera)
+                && Clock.Equals(other.Clock)
+                && Pad.Equals(other.Pad)
+                && Timer.Equals(other.Timer)
+                && TimeStep.Equals(other.TimeStep)
+                && Weather.Equals(other.Weather)
+                && TimeCycle.Equals(other.TimeCycle)
+                && RadioStationPositionList.SequenceEqual(other.RadioStationPositionList)
+                && Scripts.Equals(other.Scripts)
+                && PedPool.Equals(other.PedPool)
+                && Garages.Equals(other.Garages)
+                && VehiclePool.Equals(other.VehiclePool)
+                && ObjectPool.Equals(other.ObjectPool)
+                && Paths.Equals(other.Paths)
+                && Cranes.Equals(other.Cranes)
+                && Pickups.Equals(other.Pickups)
+                && PhoneInfo.Equals(other.PhoneInfo)
+                && RestartPoints.Equals(other.RestartPoints)
+                && RadarBlips.Equals(other.RadarBlips)
+                && Zones.Equals(other.Zones)
+                && GangData.Equals(other.GangData)
+                && CarGenerators.Equals(other.CarGenerators)
+                && ParticleObjects.Equals(other.ParticleObjects)
+                && AudioScriptObjects.Equals(other.AudioScriptObjects)
+                && PlayerInfo.Equals(other.PlayerInfo)
+                && Stats.Equals(other.Stats)
+                && Streaming.Equals(other.Streaming)
+                && PedTypeInfo.Equals(other.PedTypeInfo);
         }
 
         public static class FileFormats
         {
-            public static readonly FileFormat PCRetail = new FileFormat(
+            public static readonly SaveFileFormat PC_Retail = new SaveFileFormat(
                 "PC_Retail", "PC (Windows/macOS)",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.MacOS, ConsoleFlags.Steam)
             );
 
-            public static readonly FileFormat PCSteam = new FileFormat(
+            public static readonly SaveFileFormat PC_Steam = new SaveFileFormat(
                 "PC_Steam", "PC (Windows, Steam)",
                 new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam)
             );
 
-            public static FileFormat[] GetAll()
+            public static SaveFileFormat[] GetAll()
             {
-                return new FileFormat[] { PCRetail, PCSteam };
+                return new SaveFileFormat[] { PC_Retail, PC_Steam };
             }
         }
     }

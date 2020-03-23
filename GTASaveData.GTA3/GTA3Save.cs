@@ -258,6 +258,7 @@ namespace GTASaveData.GTA3
             Zones,
             GangData,
             CarGenerators,
+            ParticleObjects,
             AudioScriptObjects,
             PlayerInfo,
             Stats,

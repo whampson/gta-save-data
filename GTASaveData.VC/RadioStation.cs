@@ -36,7 +36,7 @@ namespace GTASaveData.VC
         [Description("MP3 Player")]
         MP3Player,
 
-        [Description("(radio off)")]
+        [Description("Off")]
         Off,
 
         [Description("Police Radio")]

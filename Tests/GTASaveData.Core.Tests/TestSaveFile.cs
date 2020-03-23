@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GTASaveData.Types;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -48,6 +50,8 @@ namespace GTASaveData.Core.Tests
                 get => throw new NotImplementedException();
                 set => throw new NotImplementedException();
             }
+
+            public override IReadOnlyList<SaveDataObject> Blocks => throw new NotImplementedException();
 
             protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
             {

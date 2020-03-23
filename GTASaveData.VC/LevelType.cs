@@ -1,6 +1,6 @@
 ﻿namespace GTASaveData.VC
 {
-    public enum Level
+    public enum LevelType
     {
         None,
         Beach,

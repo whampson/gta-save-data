@@ -64,7 +64,6 @@
         <Grid DockPanel.Dock="Bottom">
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"/>
-                <RowDefinition Height="35"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="25"/>
             </Grid.RowDefinitions>
@@ -81,12 +80,6 @@
                 Content="Block:"
                 IsEnabled="{Binding CurrentSaveDataFile, Converter={StaticResource NullBooleanConverter}}"/>
 
-            <Label Grid.Row="1" Grid.Column="0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Content="Name:"
-                IsEnabled="{Binding CurrentSaveDataFile, Converter={StaticResource NullBooleanConverter}}"/>
-
             <ComboBox Grid.Row="0" Grid.Column="1"
                 Style="{StaticResource ComboBoxStyle}"
                 ItemsSource="{Binding BlockNameForCurrentGame, Mode=OneWay}"
@@ -94,22 +87,20 @@
                 SelectionChanged="BlockComboBox_SelectionChanged"
                 IsEnabled="{Binding CurrentSaveDataFile, Converter={StaticResource NullBooleanConverter}}"/>
 
-            <TextBox Grid.Row="1" Grid.Column="1"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Margin="5,7.5,5,7.5"
-                Text="{Binding CurrentSaveDataFile.SimpleVars.SaveName}"
-                IsEnabled="{Binding CurrentSaveDataFile, Converter={StaticResource NullBooleanConverter}}"
-                LostFocus="TextBox_LostFocus"/>
+            <CheckBox Grid.Row="0" Grid.Column="2"
+                Margin="5,5,5,5"
+                VerticalAlignment="Center"
+                Content="Show entire file"
+                IsChecked="{Binding ShowEntireFileChecked}"/>
 
-            <TextBox Grid.Row="2" Grid.ColumnSpan="3"
+            <TextBox Grid.Row="1" Grid.ColumnSpan="3"
                 IsReadOnly="True"
                 FontFamily="Consolas"
                 VerticalScrollBarVisibility="Auto"
                 TextWrapping="Wrap"
                 Text="{Binding Text}"/>
 
-            <StatusBar Grid.Row="3" Grid.ColumnSpan="3">
+            <StatusBar Grid.Row="2" Grid.ColumnSpan="3">
                 <StatusBar.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid>

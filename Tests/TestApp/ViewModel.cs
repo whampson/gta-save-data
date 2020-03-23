@@ -1,7 +1,10 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
+using GTASaveData.Types;
+using GTASaveData.VC;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -13,13 +16,7 @@ namespace TestApp
     public class ViewModel : ObservableObject
     {
         public void OnLoad()
-        {
-            SaveFile sf = CurrentSaveFile;
-            var scr = sf.Blocks[0] as TheScripts;
-
-            RequestMessageBoxError(scr.ActiveScripts[0].Name);
-
-        }
+        { }
 
         #region Events, Variables, and Properties
         public EventHandler<FileDialogEventArgs> FileDialogRequested;
@@ -29,6 +26,7 @@ namespace TestApp
         private SaveFileFormat m_currentFileFormat;
         private GameType m_selectedGame;
         private int m_selectedBlockIndex;
+        private bool m_showEntireFileChecked;
         private string m_text;
         private string m_statusText;
 
@@ -54,6 +52,12 @@ namespace TestApp
         {
             get { return m_selectedBlockIndex; }
             set { m_selectedBlockIndex = value; OnPropertyChanged(); }
+        }
+
+        public bool ShowEntireFileChecked
+        {
+            get { return m_showEntireFileChecked; }
+            set { m_showEntireFileChecked = value; UpdateTextBox();  OnPropertyChanged(); }
         }
 
         public string Text
@@ -128,58 +132,54 @@ namespace TestApp
 
         public void LoadSaveData(string path)
         {
-            SaveFileFormat fmt;
-            try
+            switch (SelectedGame)
             {
-                switch (m_selectedGame)
-                {
-                    case GameType.III:
+                case GameType.III: DoLoad<GTA3Save>(path); break;
+                case GameType.VC: DoLoad<ViceCitySave>(path); break;
+                //case GameType.SA: DoLoad<SanAndreasSave>(path); break;
+                //case GameType.LCS: DoLoad<LibertyCityStoriesSave>(path); break;
+                //case GameType.VCS: DoLoad<ViceCityStoriesSave>(path); break;
+                //case GameType.IV: DoLoad<GTA4Save>(path); break;
+                //case GameType.TLAD: DoLoad<LostAndDamnedSave>(path); break;
+                //case GameType.TBOGT: DoLoad<BalladOfGayTonySave>(path); break;
+                default: RequestMessageBoxError("Selected game not yet supported!"); return;
+            }
 
-                        bool valid = SaveFile.GetFileFormat<GTA3Save>(path, out fmt);
-                        if (!valid)
-                        {
-                            RequestMessageBoxError("Invalid save file!");
-                            return;
-                        }
-                        CurrentFileFormat = fmt;
-                        CurrentSaveFile = SaveFile.Load<GTA3Save>(path, fmt);
-                        break;
-                    //case Game.VC:
-                    //    CurrentFileFormat = SaveFile.GetFileFormat<ViceCitySave>(path);
-                    //    CurrentSaveDataFile = SaveFile.Load<ViceCitySave>(path, CurrentFileFormat);
-                    //    break;
-                    //case Game.SA:
-                    //    CurrentFileFormat = SaveFileFormat.Default;
-                    //    CurrentSaveDataFile = SaveFile.Load<SanAndreasSave>(path);
-                    //    break;
-                    default:
-                        RequestMessageBoxError("Selected game not yet supported!");
-                        return;
+            if (CurrentSaveFile != null)
+            {
+                SelectedBlockIndex = 0;
+                UpdateTextBox();
+                StatusText = "Loaded " + path + ".";
+
+                OnLoad();
+                OnPropertyChanged(nameof(BlockNameForCurrentGame));
+            }
+   
+        }
+
+        private bool DoLoad<T>(string path) where T : SaveFile, new()
+        {
+            try {
+                if (!SaveFile.GetFileFormat<T>(path, out SaveFileFormat fmt))
+                {
+                    RequestMessageBoxError(string.Format("Invalid save file! (Game: {0})", SelectedGame));
+                    return false;
                 }
+
+                CurrentFileFormat = fmt;
+                CurrentSaveFile = SaveFile.Load<T>(path, fmt);
+                return true;
             }
             catch (IOException e)
             {
                 RequestMessageBoxError("Failed to open file: " + e.Message);
-                return;
+                return false;
             }
             catch (SerializationException e)
             {
                 RequestMessageBoxError("Failed to open file: " + e.Message);
-                return;
+                return false;
             }
-
-            if (CurrentSaveFile == null)
-            {
-                RequestMessageBoxError("Failed to open file!");
-                return;
-            }
-            
-            SelectedBlockIndex = 0;
-            UpdateTextBox();
-            StatusText = "Loaded " + path + ".";
-
-            OnLoad();
-            OnPropertyChanged(nameof(BlockNameForCurrentGame));
         }
 
         public void CloseSaveData()
@@ -212,13 +212,16 @@ namespace TestApp
                 return;
             }
 
-            //IReadOnlyList<GTAObject> blocks = CurrentSaveDataFile.Blocks;
-            //Debug.Assert(CurrentSaveDataFile.Blocks.Count == BlockNames[SelectedGame].Length);
-
-            //Text = blocks[SelectedBlockIndex].ToString();
-
-
-            Text = CurrentSaveFile.ToJsonString();
+            if (!ShowEntireFileChecked)
+            {
+                IReadOnlyList<SaveDataObject> blocks = CurrentSaveFile.Blocks;
+                Debug.Assert(CurrentSaveFile.Blocks.Count == BlockNames[SelectedGame].Length);
+                Text = blocks[SelectedBlockIndex].ToJsonString();
+            }
+            else
+            {
+                Text = CurrentSaveFile.ToJsonString();
+            }
         }
 
         private void RequestFileDialog(FileDialogType type)
@@ -261,10 +264,34 @@ namespace TestApp
 
         public static string[] GTA3BlockNames => new[]
         {
-            "0: SimpleVars",
-            "1: Scripts",
-            "2: PedPool",
-            "3: Garages",
+            "0: Scripts",
+            "1: PedPool",
+            "2: Garages",
+            "3: Vehicles",
+            "4: Objects",
+            "5: PathFind",
+            "6: Cranes",
+            "7: Pickups",
+            "8: PhoneInfo",
+            "9: RestartPoints",
+            "10: RadarBlips",
+            "11: Zones",
+            "12: GangData",
+            "13: CarGenerators",
+            "14: Particles",
+            "15: AudioScriptObjects",
+            "16: PlayerInfo",
+            "17: Stats",
+            "18: Streaming",
+            "19: PedTypeInfo"
+        };
+
+        public static string[] VCBlockNames => new[]
+        {
+            "0: Scripts",
+            "1: PedPool",
+            "2: Garages",
+            "3: GameLogic",
             "4: Vehicles",
             "5: Objects",
             "6: PathFind",
@@ -278,38 +305,12 @@ namespace TestApp
             "14: CarGenerators",
             "15: Particles",
             "16: AudioScriptObjects",
-            "17: PlayerInfo",
-            "18: Stats",
-            "19: Streaming",
-            "20: PedTypeInfo"
-        };
-
-        public static string[] VCBlockNames => new[]
-        {
-            "0: SimpleVars",
-            "1: Scripts",
-            "2: PedPool",
-            "3: Garages",
-            "4: GameLogic",
-            "5: Vehicles",
-            "6: Objects",
-            "7: PathFind",
-            "8: Cranes",
-            "9: Pickups",
-            "10: PhoneInfo",
-            "11: RestartPoints",
-            "12: RadarBlips",
-            "13: Zones",
-            "14: GangData",
-            "15: CarGenerators",
-            "16: Particles",
-            "17: AudioScriptObjects",
-            "18: ScriptPaths",
-            "19: PlayerInfo",
-            "20: Stats",
-            "21: SetPieces",
-            "22: Streaming",
-            "23: PedTypeInfo"
+            "17: ScriptPaths",
+            "18: PlayerInfo",
+            "29: Stats",
+            "20: SetPieces",
+            "21: Streaming",
+            "22: PedTypeInfo"
         };
 
         public static string[] SABlockNames => new[]
