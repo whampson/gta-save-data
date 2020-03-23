@@ -155,13 +155,13 @@ namespace GTASaveData.GTA3
             set { m_field27h = value; OnPropertyChanged(); }
         }
 
-        public Vector VecInf
+        public Vector PositionInf
         {
             get { return m_vecInf; }
             set { m_vecInf = value; OnPropertyChanged(); }
         }
 
-        public Vector VecSup
+        public Vector PositionSup
         {
             get { return m_vecSup; }
             set { m_vecSup = value; OnPropertyChanged(); }
@@ -241,8 +241,8 @@ namespace GTASaveData.GTA3
 
         public Garage()
         {
-            VecInf = new Vector();
-            VecSup = new Vector();
+            PositionInf = new Vector();
+            PositionSup = new Vector();
             Door1Pos = new Vector();
             Door2Pos = new Vector();
             StoredCar = new StoredCar();
@@ -269,12 +269,12 @@ namespace GTASaveData.GTA3
             IsRotatedDoor = buf.ReadBool();
             CameraFollowsPlayer = buf.ReadBool();
             Field27h = buf.ReadByte();
-            VecInf.X = buf.ReadSingle();
-            VecSup.X = buf.ReadSingle();
-            VecInf.Y = buf.ReadSingle();
-            VecSup.Y = buf.ReadSingle();
-            VecInf.Z = buf.ReadSingle();
-            VecSup.Z = buf.ReadSingle();
+            PositionInf.X = buf.ReadSingle();
+            PositionSup.X = buf.ReadSingle();
+            PositionInf.Y = buf.ReadSingle();
+            PositionSup.Y = buf.ReadSingle();
+            PositionInf.Z = buf.ReadSingle();
+            PositionSup.Z = buf.ReadSingle();
             DoorOpenMinZOffset = buf.ReadSingle();
             DoorOpenMaxZOffset = buf.ReadSingle();
             Door1Pos.X = buf.ReadSingle();
@@ -316,12 +316,12 @@ namespace GTASaveData.GTA3
             buf.Write(IsRotatedDoor);
             buf.Write(CameraFollowsPlayer);
             buf.Write(Field27h);
-            buf.Write(VecInf.X);
-            buf.Write(VecSup.X);
-            buf.Write(VecInf.Y);
-            buf.Write(VecSup.Y);
-            buf.Write(VecInf.Z);
-            buf.Write(VecSup.Z);
+            buf.Write(PositionInf.X);
+            buf.Write(PositionSup.X);
+            buf.Write(PositionInf.Y);
+            buf.Write(PositionSup.Y);
+            buf.Write(PositionInf.Z);
+            buf.Write(PositionSup.Z);
             buf.Write(DoorOpenMinZOffset);
             buf.Write(DoorOpenMaxZOffset);
             buf.Write(Door1Pos.X);
@@ -373,8 +373,8 @@ namespace GTASaveData.GTA3
                 && IsRotatedDoor.Equals(other.IsRotatedDoor)
                 && CameraFollowsPlayer.Equals(other.CameraFollowsPlayer)
                 && Field27h.Equals(other.Field27h)
-                && VecInf.Equals(other.VecInf)
-                && VecSup.Equals(other.VecSup)
+                && PositionInf.Equals(other.PositionInf)
+                && PositionSup.Equals(other.PositionSup)
                 && DoorOpenMinZOffset.Equals(other.DoorOpenMinZOffset)
                 && DoorOpenMaxZOffset.Equals(other.DoorOpenMaxZOffset)
                 && Door1Pos.Equals(other.Door1Pos)
