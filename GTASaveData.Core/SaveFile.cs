@@ -16,9 +16,6 @@ namespace GTASaveData
     {
         private static readonly byte[] DefaultPadding = new byte[1] { 0 };
 
-        protected WorkBuffer m_workBuf;
-        protected uint m_checksum;
-
         private SaveFileFormat m_fileFormat;
         private PaddingType m_padding;
         private byte[] m_paddingBytes;
@@ -45,15 +42,17 @@ namespace GTASaveData
             set { m_paddingBytes = value ?? DefaultPadding; }
         }
 
+        protected WorkBuffer WorkBuff { get; set; }
+        protected uint CheckSum { get; set; }
+
         public abstract string Name { get; set;  }
         public abstract DateTime TimeLastSaved { get; set; }
 
         public SaveFile()
         {
             m_disposed = false;
-            m_workBuf = new WorkBuffer();
-            m_checksum = 0;
-
+            WorkBuff = new WorkBuffer();
+            CheckSum = 0;
             FileFormat = SaveFileFormat.Default;
             Padding = PaddingType.Default;
             PaddingBytes = DefaultPadding;
@@ -63,7 +62,7 @@ namespace GTASaveData
         {
             if (!m_disposed)
             {
-                m_workBuf.Dispose();
+                WorkBuff.Dispose();
                 m_disposed = true;
             }
         }
@@ -133,7 +132,7 @@ namespace GTASaveData
                 }
             }
 
-            return m_workBuf.ToArray(length);
+            return WorkBuff.ToArray(length);
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)

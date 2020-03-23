@@ -7,8 +7,7 @@ namespace GTASaveData.Types
     /// A .NET version of the Win32 <c>SYSTEMTIME</c> structure.
     /// </summary>
     [Size(16)]
-    public class SystemTime : SaveDataObject,
-        IEquatable<SystemTime>
+    public class SystemTime : SaveDataObject, IEquatable<SystemTime>
     {
         private ushort m_year;
         private ushort m_month;

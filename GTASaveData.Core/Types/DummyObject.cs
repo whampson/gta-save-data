@@ -8,8 +8,7 @@ namespace GTASaveData.Types
     /// <summary>
     /// A container for arbitraty data.
     /// </summary>
-    public class DummyObject : SaveDataObject,
-        IEquatable<DummyObject>
+    public class DummyObject : SaveDataObject, IEquatable<DummyObject>
     {
         private Array<byte> m_data;
 

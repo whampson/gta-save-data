@@ -7,8 +7,7 @@ namespace GTASaveData.Types
     /// Represents a 3-dimensional vector.
     /// </summary>
     [Size(12)]
-    public class Vector : SaveDataObject,
-        IEquatable<Vector>
+    public class Vector : SaveDataObject, IEquatable<Vector>
     {
         private float m_x;
         private float m_y;
