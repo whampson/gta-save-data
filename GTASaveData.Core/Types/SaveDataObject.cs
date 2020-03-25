@@ -1,5 +1,6 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.Diagnostics;
 
 namespace GTASaveData.Types
 {
@@ -67,6 +68,7 @@ namespace GTASaveData.Types
 
         protected virtual int GetSize(SaveFileFormat fmt)
         {
+            Debug.WriteLine("Warning: Size not defined for {0}. Serializing data to compute size.", GetType().Name);
             return Serializer.Write(this, fmt, out byte[] _);
         }
 
