@@ -176,12 +176,12 @@ namespace GTASaveData.GTA3
             ActiveScripts = buf.ReadArray<RunningScript>(runningScripts, fmt);
 
             Debug.Assert(buf.Offset - GTA3Save.SaveHeaderSize == size);
-            Debug.Assert(size + GTA3Save.SaveHeaderSize == GetSerializedSize(fmt));
+            Debug.Assert(size + GTA3Save.SaveHeaderSize == GetSize(fmt));
         }
 
         protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
         {
-            int size = GetSerializedSize(fmt);
+            int size = GetSize(fmt);
 
             GTA3Save.WriteSaveHeader(buf, "SCR\0", size - GTA3Save.SaveHeaderSize);
             buf.Write(ScriptSpace.Count);
@@ -207,7 +207,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == size);
         }
 
-        public int GetSerializedSize(SaveFileFormat fmt)
+        protected override int GetSize(SaveFileFormat fmt)
         {
             return SizeOf<RunningScript>(fmt) * ActiveScripts.Count + WorkBuffer.Align4Bytes(ScriptSpace.Count) + ScriptDataSize + GTA3Save.SaveHeaderSize + 3 * sizeof(int);
         }
