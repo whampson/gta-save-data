@@ -53,6 +53,7 @@ namespace GTASaveData.Types
         }
 
         public Date()
+            : this(DateTime.MinValue)
         { }
 
         public Date(DateTime dateTime)
