@@ -63,7 +63,16 @@ namespace GTASaveData.Converters
             }
             else
             {
-                writer.WriteValue(value.ToArray());
+                if (value.Count < 100)
+                {
+                    // Regular ol' array
+                    serializer.Serialize(writer, value);
+                }
+                else
+                {
+                    // Base64 string
+                    writer.WriteValue(value.ToArray());
+                }
             }
         }
     }
