@@ -51,7 +51,10 @@ namespace GTASaveData.Core.Tests
                 set => throw new NotImplementedException();
             }
 
-            public override IReadOnlyList<SaveDataObject> Blocks => throw new NotImplementedException();
+            public new byte[] GetPaddingBytes(int length)
+            {
+                return base.GetPaddingBytes(length);
+            }
 
             protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
             {
@@ -78,9 +81,9 @@ namespace GTASaveData.Core.Tests
                 throw new NotImplementedException();
             }
 
-            public new byte[] GetPaddingBytes(int length)
+            public override IReadOnlyList<SaveDataObject> GetAllBlocks()
             {
-                return base.GetPaddingBytes(length);
+                throw new NotImplementedException();
             }
         }
     }

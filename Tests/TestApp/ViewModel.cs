@@ -16,7 +16,9 @@ namespace TestApp
     public class ViewModel : ObservableObject
     {
         public void OnLoad()
-        { }
+        {
+            
+        }
 
         #region Events, Variables, and Properties
         public EventHandler<FileDialogEventArgs> FileDialogRequested;

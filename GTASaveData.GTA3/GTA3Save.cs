@@ -177,30 +177,42 @@ namespace GTASaveData.GTA3
             set { m_pedTypeInfo = value; OnPropertyChanged(); }
         }
 
-        public override IReadOnlyList<SaveDataObject> Blocks => new SaveDataObject[]
+        public SaveDataObject GetBlock(Block b)
         {
-            SimpleVars,
-            Scripts,
-            PedPool,
-            Garages,
-            VehiclePool,
-            ObjectPool,
-            Paths,
-            Cranes,
-            Pickups,
-            PhoneInfo,
-            RestartPoints,
-            RadarBlips,
-            Zones,
-            GangData,
-            CarGenerators,
-            ParticleObjects,
-            AudioScriptObjects,
-            PlayerInfo,
-            Stats,
-            Streaming,
-            PedTypeInfo
-        };
+            return GetBlock((int) b);
+        }
+
+        public override IReadOnlyList<SaveDataObject> GetAllBlocks()
+        {
+            List<SaveDataObject> blocks = new List<SaveDataObject>()
+            {
+                SimpleVars,
+                Scripts,
+                PedPool,
+                Garages,
+                VehiclePool,
+                ObjectPool,
+                Paths,
+                Cranes,
+                Pickups,
+                PhoneInfo,
+                RestartPoints,
+                RadarBlips,
+                Zones,
+                GangData,
+                CarGenerators,
+                ParticleObjects,
+                AudioScriptObjects,
+                PlayerInfo,
+                Stats,
+                Streaming,
+                PedTypeInfo
+            };
+
+            // TODO: add user-defined
+
+            return blocks;
+        }
 
         public GTA3Save()
         {
