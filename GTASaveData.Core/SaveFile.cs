@@ -44,15 +44,22 @@ namespace GTASaveData
             set { m_paddingBytes = value ?? DefaultPadding; }
         }
 
+        public List<SaveDataObject> UserDefinedBlocks { get; }
+
         [JsonIgnore]
         public abstract IReadOnlyList<SaveDataObject> Blocks { get; }
+
+        [JsonIgnore]
         public abstract string Name { get; set;  }
+
+        [JsonIgnore]
         public abstract DateTime TimeLastSaved { get; set; }
 
         public SaveFile()
         {
             m_disposed = false;
             WorkBuff = new WorkBuffer();
+            UserDefinedBlocks = new List<SaveDataObject>();
             CheckSum = 0;
             FileFormat = SaveFileFormat.Default;
             Padding = PaddingType.Default;
@@ -66,6 +73,35 @@ namespace GTASaveData
                 WorkBuff.Dispose();
                 m_disposed = true;
             }
+        }
+
+        protected void RegisterUserDefinedBlock<T>() where T : SaveDataObject, new()
+        {
+            UserDefinedBlocks.Add(new T());
+        }
+
+        protected int LoadUserDefinedBlocks(WorkBuffer buf)
+        {
+            int size = 0;
+            foreach (var block in UserDefinedBlocks)
+            {
+                size += ReadBlock(buf);
+                ((ISaveDataObject) block).ReadObjectData(WorkBuff, FileFormat);
+            }
+
+            return size;
+        }
+
+        protected int SaveUserDefinedBlocks(WorkBuffer buf)
+        {
+            int size = 0;
+            foreach (var block in UserDefinedBlocks)
+            {
+                ((ISaveDataObject) block).WriteObjectData(WorkBuff, FileFormat);
+                size += WriteBlock(buf);
+            }
+
+            return size;
         }
 
         public static T Load<T>(string path)
@@ -83,12 +119,19 @@ namespace GTASaveData
         public static T Load<T>(string path, SaveFileFormat fmt)
             where T : SaveFile, new()
         {
-            byte[] data = File.ReadAllBytes(path);
-            int bytesRead = Serializer.Read(data, fmt, out T obj);
-
-            Debug.WriteLine("Read {0} bytes from disk.", bytesRead);
+            T obj = new T();
+            obj.FileFormat = fmt;
+            obj.Load(path);
 
             return obj;
+        }
+
+        public void Load(string path)
+        {
+            byte[] data = File.ReadAllBytes(path);
+            int bytesRead = Serializer.Read(this, data, FileFormat);
+
+            Debug.WriteLine("Read {0} bytes from disk.", bytesRead);
         }
 
         public void Save(string path)

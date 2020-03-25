@@ -39,18 +39,6 @@ namespace GTASaveData.GTA3
         private DummyObject m_streaming;
         private DummyObject m_pedTypeInfo;
 
-        public override string Name
-        {
-            get { return SimpleVars.SaveName; }
-            set { SimpleVars.SaveName = value; OnPropertyChanged(); }
-        }
-
-        public override DateTime TimeLastSaved
-        {
-            get { return SimpleVars.TimeLastSaved.ToDateTime(); }
-            set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
-        }
-
         public SimpleVariables SimpleVars
         {
             get { return m_simpleVars; }
@@ -177,41 +165,50 @@ namespace GTASaveData.GTA3
             set { m_pedTypeInfo = value; OnPropertyChanged(); }
         }
 
-        public SaveDataObject GetBlock(Block b)
+        public override IReadOnlyList<SaveDataObject> Blocks
         {
-            return GetBlock((int) b);
+            get
+            {
+                List<SaveDataObject> blocks = new List<SaveDataObject>()
+                {
+                    SimpleVars,
+                    Scripts,
+                    PedPool,
+                    Garages,
+                    VehiclePool,
+                    ObjectPool,
+                    Paths,
+                    Cranes,
+                    Pickups,
+                    PhoneInfo,
+                    RestartPoints,
+                    RadarBlips,
+                    Zones,
+                    GangData,
+                    CarGenerators,
+                    ParticleObjects,
+                    AudioScriptObjects,
+                    PlayerInfo,
+                    Stats,
+                    Streaming,
+                    PedTypeInfo
+                };
+
+                blocks.AddRange(UserDefinedBlocks);
+                return blocks;
+            }
         }
 
-        public override IReadOnlyList<SaveDataObject> GetAllBlocks()
+        public override string Name
         {
-            List<SaveDataObject> blocks = new List<SaveDataObject>()
-            {
-                SimpleVars,
-                Scripts,
-                PedPool,
-                Garages,
-                VehiclePool,
-                ObjectPool,
-                Paths,
-                Cranes,
-                Pickups,
-                PhoneInfo,
-                RestartPoints,
-                RadarBlips,
-                Zones,
-                GangData,
-                CarGenerators,
-                ParticleObjects,
-                AudioScriptObjects,
-                PlayerInfo,
-                Stats,
-                Streaming,
-                PedTypeInfo
-            };
+            get { return SimpleVars.SaveName; }
+            set { SimpleVars.SaveName = value; OnPropertyChanged(); }
+        }
 
-            // TODO: add user-defined
-
-            return blocks;
+        public override DateTime TimeLastSaved
+        {
+            get { return SimpleVars.TimeLastSaved.ToDateTime(); }
+            set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
 
         public GTA3Save()
@@ -383,8 +380,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); Stats = LoadDummy();
             totalSize += ReadBlock(file); Streaming = LoadDummy();
             totalSize += ReadBlock(file); PedTypeInfo = LoadDummy();
-
-            // TODO: user-defined blocks
+            totalSize += LoadUserDefinedBlocks(file);
 
             // Read-out remaining bytes
             while (file.Position < file.Length - 4)
@@ -425,8 +421,7 @@ namespace GTASaveData.GTA3
             SaveData(Stats); totalSize += WriteBlock(file);
             SaveData(Streaming); totalSize += WriteBlock(file);
             SaveData(PedTypeInfo); totalSize += WriteBlock(file);
-
-            // TODO: user-defined blocks            
+            totalSize += SaveUserDefinedBlocks(file);
 
             // Padding
             for (int i = 0; i < 4; i++)

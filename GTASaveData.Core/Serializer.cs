@@ -1,4 +1,7 @@
-﻿namespace GTASaveData
+﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
+
+namespace GTASaveData
 {
     public static class Serializer
     {
@@ -53,6 +56,15 @@
             }
 
             return length;
+        }
+
+        public static int Read<T>(T obj, byte[] buf, SaveFileFormat fmt)
+             where T : ISaveDataObject
+        {
+            using (WorkBuffer wb = new WorkBuffer(buf))
+            {
+                return obj.ReadObjectData(wb, fmt);
+            }
         }
 
         public static byte[] Write<T>(T obj)

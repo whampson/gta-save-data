@@ -39,6 +39,11 @@ namespace GTASaveData.Core.Tests
 
         private class TestSave : SaveFile
         {
+            public override IReadOnlyList<SaveDataObject> Blocks
+            {
+                get => throw new NotImplementedException();
+            }
+
             public override string Name
             {
                 get => throw new NotImplementedException();
@@ -77,11 +82,6 @@ namespace GTASaveData.Core.Tests
             }
 
             protected override void SaveAllData(WorkBuffer buf)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override IReadOnlyList<SaveDataObject> GetAllBlocks()
             {
                 throw new NotImplementedException();
             }

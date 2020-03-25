@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using WpfEssentials;
@@ -17,7 +18,6 @@ namespace TestApp
     {
         public void OnLoad()
         {
-            
         }
 
         #region Events, Variables, and Properties
@@ -169,7 +169,10 @@ namespace TestApp
                 }
 
                 CurrentFileFormat = fmt;
-                CurrentSaveFile = SaveFile.Load<T>(path, fmt);
+                CurrentSaveFile = new T();
+                //CurrentSaveFile.FileFormat = CurrentFileFormat;
+                //CurrentSaveFile.Load(path);
+
                 return true;
             }
             catch (IOException e)
@@ -217,7 +220,6 @@ namespace TestApp
             if (!ShowEntireFileChecked)
             {
                 IReadOnlyList<SaveDataObject> blocks = CurrentSaveFile.Blocks;
-                Debug.Assert(CurrentSaveFile.Blocks.Count == BlockNames[SelectedGame].Length);
                 Text = blocks[SelectedBlockIndex].ToJsonString();
             }
             else
@@ -264,29 +266,8 @@ namespace TestApp
             { GameType.SA, SABlockNames },
         };
 
-        public static string[] GTA3BlockNames => new[]
-        {
-            "0: Scripts",
-            "1: PedPool",
-            "2: Garages",
-            "3: Vehicles",
-            "4: Objects",
-            "5: PathFind",
-            "6: Cranes",
-            "7: Pickups",
-            "8: PhoneInfo",
-            "9: RestartPoints",
-            "10: RadarBlips",
-            "11: Zones",
-            "12: GangData",
-            "13: CarGenerators",
-            "14: Particles",
-            "15: AudioScriptObjects",
-            "16: PlayerInfo",
-            "17: Stats",
-            "18: Streaming",
-            "19: PedTypeInfo"
-        };
+        public static string[] GTA3BlockNames =>
+            Enum.GetNames(typeof(Block));
 
         public static string[] VCBlockNames => new[]
         {

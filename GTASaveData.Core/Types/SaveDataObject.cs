@@ -68,7 +68,7 @@ namespace GTASaveData.Types
 
         protected virtual int GetSize(SaveFileFormat fmt)
         {
-            Debug.WriteLine("Warning: Size not defined for {0}. Serializing data to compute size.", GetType().Name);
+            Debug.WriteLine("Warning: GetSize() not overridden. Calling WriteObjectData() to compute size.", GetType().Name);
             return Serializer.Write(this, fmt, out byte[] _);
         }
 
