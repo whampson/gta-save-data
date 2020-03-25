@@ -1,11 +1,9 @@
 ﻿using Bogus;
-using GTASaveData.GTA3;
-using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.GTA3
+namespace GTASaveData.GTA3.Tests
 {
-    public class TestCollective : SerializableObjectTestBase<Collective>
+    public class TestCollective : GTA3SaveDataObjectTestBase<Collective>
     {
         public override Collective GenerateTestObject(SaveFileFormat format)
         {
@@ -25,7 +23,7 @@ namespace GTASaveData.Tests.GTA3
             Assert.Equal(x0.Index, x1.Index);
             Assert.Equal(x0.Field04h, x1.Field04h);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<Collective>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
     }
 }

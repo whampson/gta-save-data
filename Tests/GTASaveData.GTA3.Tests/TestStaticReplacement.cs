@@ -1,11 +1,9 @@
 ﻿using Bogus;
-using GTASaveData.GTA3;
-using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.GTA3
+namespace GTASaveData.GTA3.Tests
 {
-    public class TestStaticReplacement : SerializableObjectTestBase<StaticReplacement>
+    public class TestStaticReplacement : GTA3SaveDataObjectTestBase<StaticReplacement>
     {
         public override StaticReplacement GenerateTestObject(SaveFileFormat format)
         {
@@ -29,7 +27,7 @@ namespace GTASaveData.Tests.GTA3
             Assert.Equal(x0.NewModelIndex, x1.NewModelIndex);
             Assert.Equal(x0.OldModelIndex, x1.OldModelIndex);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<StaticReplacement>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
     }
 }

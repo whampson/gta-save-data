@@ -7,7 +7,7 @@ using GTASaveData.Core.Tests.Types;
 
 namespace GTASaveData.Tests.VC
 {
-    public class TestCarGenerator : SerializableObjectTestBase<CarGenerator>
+    public class TestCarGenerator : SaveDataObjectTestBase<CarGenerator>
     {
         public override CarGenerator GenerateTestObject(SaveFileFormat format)
         {
@@ -51,7 +51,7 @@ namespace GTASaveData.Tests.VC
             Assert.Equal(x0.UsesRemaining, x1.UsesRemaining);
             Assert.Equal(x0.IsBlocking, x1.IsBlocking);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<CarGenerator>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject<CarGenerator>(), data.Length);
         }
     }
 }

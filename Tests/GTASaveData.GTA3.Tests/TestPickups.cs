@@ -1,11 +1,10 @@
 ﻿using Bogus;
-using GTASaveData.GTA3;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.GTA3
+namespace GTASaveData.GTA3.Tests
 {
-    public class TestPickups : SerializableObjectTestBase<Pickups>
+    public class TestPickups : GTA3SaveDataObjectTestBase<Pickups>
     {
         public override Pickups GenerateTestObject(SaveFileFormat format)
         {
@@ -27,7 +26,7 @@ namespace GTASaveData.Tests.GTA3
             Assert.Equal(x0.LastCollectedIndex, x1.LastCollectedIndex);
             Assert.Equal(x0.PickupsCollected, x1.PickupsCollected);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<Pickups>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
     }
 }

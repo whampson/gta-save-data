@@ -10,7 +10,7 @@ using GTASaveData.Core.Tests.Types;
 
 namespace GTASaveData.Tests.VC
 {
-    public class TestViceCitySave : SerializableObjectTestBase<ViceCitySave>
+    public class TestViceCitySave : SaveDataObjectTestBase<ViceCitySave>
     {
         public override ViceCitySave GenerateTestObject(SaveFileFormat format)
         {

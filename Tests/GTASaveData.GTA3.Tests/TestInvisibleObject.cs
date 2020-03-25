@@ -1,11 +1,9 @@
 ﻿using Bogus;
-using GTASaveData.GTA3;
-using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.GTA3
+namespace GTASaveData.GTA3.Tests
 {
-    public class TestInvisibleObject : SerializableObjectTestBase<InvisibleObject>
+    public class TestInvisibleObject : GTA3SaveDataObjectTestBase<InvisibleObject>
     {
         public override InvisibleObject GenerateTestObject(SaveFileFormat format)
         {
@@ -25,7 +23,7 @@ namespace GTASaveData.Tests.GTA3
             Assert.Equal(x0.Type, x1.Type);
             Assert.Equal(x0.StaticIndex, x1.StaticIndex);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<InvisibleObject>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
     }
 }

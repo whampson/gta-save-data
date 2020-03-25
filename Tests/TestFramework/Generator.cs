@@ -41,19 +41,19 @@ namespace TestFramework
         }
 
         public static T Generate<T, U>()
-            where T : SaveDataObject
-            where U : SerializableObjectTestBase<T>
+            where T : SaveDataObject, new()
+            where U : SaveDataObjectTestBase<T>
         {
             return Generate<T, U>(SaveFileFormat.Default);
         }
 
         public static T Generate<T, U>(SaveFileFormat format)
-            where T : SaveDataObject
-            where U : SerializableObjectTestBase<T>
+            where T : SaveDataObject, new()
+            where U : SaveDataObjectTestBase<T>
         {
             var testGen = Activator.CreateInstance(typeof(U));
             MethodInfo m = typeof(U).GetMethod(
-                nameof(SerializableObjectTestBase<T>.GenerateTestObject),
+                nameof(SaveDataObjectTestBase<T>.GenerateTestObject),
                 BindingFlags.Public | BindingFlags.Instance,
                 null,
                 new Type[] { typeof(SaveFileFormat) },

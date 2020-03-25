@@ -1,11 +1,9 @@
 ﻿using Bogus;
-using GTASaveData.GTA3;
-using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.GTA3
+namespace GTASaveData.GTA3.Tests
 {
-    public class TestContactInfo : SerializableObjectTestBase<ContactInfo>
+    public class TestContactInfo : GTA3SaveDataObjectTestBase<ContactInfo>
     {
         public override ContactInfo GenerateTestObject(SaveFileFormat format)
         {
@@ -25,7 +23,7 @@ namespace GTASaveData.Tests.GTA3
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
             Assert.Equal(x0.BaseBriefId, x1.BaseBriefId);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<ContactInfo>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
     }
 }

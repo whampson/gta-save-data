@@ -1,11 +1,10 @@
 ﻿using Bogus;
-using GTASaveData.GTA3;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.GTA3
+namespace GTASaveData.GTA3.Tests
 {
-    public class TestTheCarGenerators : SerializableObjectTestBase<TheCarGenerators>
+    public class TestTheCarGenerators : GTA3SaveDataObjectTestBase<TheCarGenerators>
     {
         public override TheCarGenerators GenerateTestObject(SaveFileFormat format)
         {
@@ -31,7 +30,7 @@ namespace GTASaveData.Tests.GTA3
             Assert.Equal(x0.GenerateEvenIfPlayerIsCloseCounter, x1.GenerateEvenIfPlayerIsCloseCounter);
             Assert.Equal(x0.CarGeneratorArray, x1.CarGeneratorArray);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<TheCarGenerators>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
     }
 }

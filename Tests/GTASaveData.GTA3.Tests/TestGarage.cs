@@ -1,13 +1,12 @@
 ﻿using Bogus;
 using GTASaveData.Core.Tests.Types;
-using GTASaveData.GTA3;
 using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.GTA3
+namespace GTASaveData.GTA3.Tests
 {
-    public class TestGarage : SerializableObjectTestBase<Garage>
+    public class TestGarage : GTA3SaveDataObjectTestBase<Garage>
     {
         public override Garage GenerateTestObject(SaveFileFormat format)
         {
@@ -89,7 +88,7 @@ namespace GTASaveData.Tests.GTA3
             Assert.Equal(x0.Field96h, x1.Field96h);
             Assert.Equal(x0.StoredCar, x1.StoredCar);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<Garage>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
     }
 }

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests.Types
 {
-    public class TestDate : SerializableObjectTestBase<Date>
+    public class TestDate : SaveDataObjectTestBase<Date>
     {
         public override Date GenerateTestObject(SaveFileFormat format)
         {
@@ -27,7 +27,7 @@ namespace GTASaveData.Core.Tests.Types
             Assert.Equal(x0.Minute, x1.Minute);
             Assert.Equal(x0.Second, x1.Second);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<Date>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
     }
 }

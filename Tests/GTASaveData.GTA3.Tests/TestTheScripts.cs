@@ -1,12 +1,10 @@
 ﻿using Bogus;
-using GTASaveData.GTA3;
-using System.Collections.Generic;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Tests.GTA3
+namespace GTASaveData.GTA3.Tests
 {
-    public class TestTheScripts : SerializableObjectTestBase<TheScripts>
+    public class TestTheScripts : GTA3SaveDataObjectTestBase<TheScripts>
     {
         public override TheScripts GenerateTestObject(SaveFileFormat format)
         {
@@ -33,13 +31,11 @@ namespace GTASaveData.Tests.GTA3
         }
 
         [Theory]
-        [MemberData(nameof(SerializationData))]
+        [MemberData(nameof(FileFormats))]
         public void Serialization(SaveFileFormat format)
         {
             TheScripts x0 = GenerateTestObject(format);
             TheScripts x1 = CreateSerializedCopy(x0, format, out byte[] data);
-
-            int expectedSize = x0.GetSerializedSize(format);
 
             Assert.Equal(x0.ScriptSpace, x1.ScriptSpace);
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
@@ -54,18 +50,7 @@ namespace GTASaveData.Tests.GTA3
             Assert.Equal(x0.NumberOfMissionScripts, x1.NumberOfMissionScripts);
             Assert.Equal(x0.ActiveScripts, x1.ActiveScripts);
             Assert.Equal(x0, x1);
-            Assert.Equal(expectedSize, data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
-
-        public static IEnumerable<object[]> SerializationData => new[]
-        {
-            new object[] { GTA3Save.FileFormats.Android },
-            new object[] { GTA3Save.FileFormats.iOS },
-            new object[] { GTA3Save.FileFormats.PC },
-            new object[] { GTA3Save.FileFormats.PS2_NAEU },
-            new object[] { GTA3Save.FileFormats.PS2_AU },
-            new object[] { GTA3Save.FileFormats.PS2_JP },
-            new object[] { GTA3Save.FileFormats.Xbox },
-        };
     }
 }

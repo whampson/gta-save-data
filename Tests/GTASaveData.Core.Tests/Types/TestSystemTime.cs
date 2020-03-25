@@ -6,7 +6,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests.Types
 {
-    public class TestSystemTime : SerializableObjectTestBase<SystemTime>
+    public class TestSystemTime : SaveDataObjectTestBase<SystemTime>
     {
         public override SystemTime GenerateTestObject(SaveFileFormat format)
         {
@@ -29,7 +29,7 @@ namespace GTASaveData.Core.Tests.Types
             Assert.Equal(x0.Second, x1.Second);
             Assert.Equal(x0.Millisecond, x1.Millisecond);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<SystemTime>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
     }
 }

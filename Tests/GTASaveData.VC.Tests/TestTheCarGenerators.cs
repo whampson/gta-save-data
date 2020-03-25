@@ -5,7 +5,7 @@ using Xunit;
 
 namespace GTASaveData.Tests.VC
 {
-    public class TestTheCarGenerators : SerializableObjectTestBase<TheCarGenerators>
+    public class TestTheCarGenerators : SaveDataObjectTestBase<TheCarGenerators>
     {
         public override TheCarGenerators GenerateTestObject(SaveFileFormat format)
         {
@@ -31,7 +31,7 @@ namespace GTASaveData.Tests.VC
             Assert.Equal(x0.GenerateEvenIfPlayerIsCloseCounter, x1.GenerateEvenIfPlayerIsCloseCounter);
             Assert.Equal(x0.CarGeneratorArray, x1.CarGeneratorArray);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<TheCarGenerators>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject<TheCarGenerators>(), data.Length);
         }
     }
 }

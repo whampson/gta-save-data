@@ -5,7 +5,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests.Types
 {
-    public class TestVector : SerializableObjectTestBase<Vector>
+    public class TestVector : SaveDataObjectTestBase<Vector>
     {
         public override Vector GenerateTestObject(SaveFileFormat format)
         {
@@ -27,7 +27,7 @@ namespace GTASaveData.Core.Tests.Types
             Assert.Equal(x0.Y, x1.Y);
             Assert.Equal(x0.Z, x1.Z);
             Assert.Equal(x0, x1);
-            Assert.Equal(SizeOf<Vector>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
     }
 }
