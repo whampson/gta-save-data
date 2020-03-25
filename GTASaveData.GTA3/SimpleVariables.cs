@@ -200,6 +200,8 @@ namespace GTASaveData.GTA3
         {
             SaveName = string.Empty;
             TimeLastSaved = new SystemTime();
+            CameraPosition = new Vector();
+            CompileDateAndTime = new Date();
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
