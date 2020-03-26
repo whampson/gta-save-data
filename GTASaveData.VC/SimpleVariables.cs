@@ -1,23 +1,28 @@
 ﻿using GTASaveData.Types;
 using System;
 using System.Diagnostics;
+using System.Linq;
 
-namespace GTASaveData.GTA3
+namespace GTASaveData.VC
 {
     public class SimpleVariables : SaveDataObject, IEquatable<SimpleVariables>
     {
         public static class Limits
         {
             public const int MaxSaveNameLength = 24;
+            public const int RadioStationListCount = 10;
         }
 
-        private const int SizeOfSimpleVariablesPC = 0xBC;
+        public const int SteamWin32OnlyValue = 0x3DF5C2FD;
+        private const int SizeOfSimpleVariablesPC = 0xE4;
+        private const int SizeOfSimpleVariablesSteamWin32 = 0xE8;
 
         private string m_saveName;
         private SystemTime m_timeLastSaved;
         private int m_saveSize;
         private LevelType m_currLevel;
         private Vector m_cameraPosition;
+        private int m_steamWin32Only;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
         private byte m_gameClockHours;
@@ -35,10 +40,16 @@ namespace GTASaveData.GTA3
         private WeatherType m_newWeatherType;
         private WeatherType m_forcedWeatherType;
         private float m_weatherInterpolationValue;
-        private Date m_compileDateAndTime;
         private int m_weatherTypeInList;
         private float m_cameraCarZoomIndicator;
         private float m_cameraPedZoomIndicator;
+        private AreaType m_currArea;
+        private bool m_allTaxisHaveNitro;
+        private bool m_invertLook4Pad;
+        private int m_extraColour;
+        private bool m_extraColourOn;
+        private float m_extraColourInter;
+        private Array<int> m_radioStationPositionList;
 
         public string SaveName
         {
@@ -68,6 +79,12 @@ namespace GTASaveData.GTA3
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
+        }
+
+        public int SteamWin32Only
+        {
+            get { return m_steamWin32Only; }
+            set { m_steamWin32Only = value; OnPropertyChanged(); }
         }
 
         public int MillisecondsPerGameMinute
@@ -172,12 +189,6 @@ namespace GTASaveData.GTA3
             set { m_weatherInterpolationValue = value; OnPropertyChanged(); }
         }
 
-        public Date CompileDateAndTime
-        {
-            get { return m_compileDateAndTime; }
-            set { m_compileDateAndTime = value; OnPropertyChanged(); }
-        }
-
         public int WeatherTypeInList
         {
             get { return m_weatherTypeInList; }
@@ -196,12 +207,54 @@ namespace GTASaveData.GTA3
             set { m_cameraPedZoomIndicator = value; OnPropertyChanged(); }
         }
 
+        public AreaType CurrArea
+        {
+            get { return m_currArea; }
+            set { m_currArea = value; OnPropertyChanged(); }
+        }
+
+        public bool AllTaxisHaveNitro
+        {
+            get { return m_allTaxisHaveNitro; }
+            set { m_allTaxisHaveNitro = value; OnPropertyChanged(); }
+        }
+
+        public bool InvertLook4Pad
+        {
+            get { return m_invertLook4Pad; }
+            set { m_invertLook4Pad = value; OnPropertyChanged(); }
+        }
+
+        public int ExtraColour
+        {
+            get { return m_extraColour; }
+            set { m_extraColour = value; OnPropertyChanged(); }
+        }
+
+        public bool ExtraColourOn
+        {
+            get { return m_extraColourOn; }
+            set { m_extraColourOn = value; OnPropertyChanged(); }
+        }
+
+        public float ExtraColourInterpolation
+        {
+            get { return m_extraColourInter; }
+            set { m_extraColourInter = value; OnPropertyChanged(); }
+        }
+
+        public Array<int> RadioStationPositionList
+        {
+            get { return m_radioStationPositionList; }
+            set { m_radioStationPositionList = value; OnPropertyChanged(); }
+        }
+
         public SimpleVariables()
         {
             SaveName = string.Empty;
             TimeLastSaved = new SystemTime();
             CameraPosition = new Vector();
-            CompileDateAndTime = new Date();
+            RadioStationPositionList = CreateArray<int>(Limits.RadioStationListCount);
         }
 
         protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
@@ -211,6 +264,7 @@ namespace GTASaveData.GTA3
             SaveSize = buf.ReadInt32();
             CurrLevel = (LevelType) buf.ReadInt32();
             CameraPosition = buf.ReadObject<Vector>();
+            if (IsSteamWin32(fmt)) SteamWin32Only = buf.ReadInt32();         // TODO: constant?
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockHours = (byte) buf.ReadInt32();
@@ -234,10 +288,18 @@ namespace GTASaveData.GTA3
             ForcedWeatherType = (WeatherType) buf.ReadInt16();
             buf.Align4Bytes();
             WeatherInterpolation = buf.ReadSingle();
-            CompileDateAndTime = buf.ReadObject<Date>();
             WeatherTypeInList = buf.ReadInt32();
             CameraCarZoomIndicator = buf.ReadSingle();
             CameraPedZoomIndicator = buf.ReadSingle();
+            CurrArea = (AreaType) buf.ReadInt32();
+            AllTaxisHaveNitro = buf.ReadBool();
+            buf.Align4Bytes();
+            InvertLook4Pad = buf.ReadBool();
+            buf.Align4Bytes();
+            ExtraColour = buf.ReadInt32();
+            ExtraColourOn = buf.ReadBool(4);
+            ExtraColourInterpolation = buf.ReadSingle();
+            RadioStationPositionList = buf.ReadArray<int>(Limits.RadioStationListCount);
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
@@ -249,6 +311,7 @@ namespace GTASaveData.GTA3
             buf.Write(SaveSize);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
+            if (IsSteamWin32(fmt)) buf.Write(SteamWin32Only);        // TODO: constant?
             buf.Write(MillisecondsPerGameMinute);
             buf.Write(LastClockTick);
             buf.Write(GameClockHours);
@@ -272,10 +335,18 @@ namespace GTASaveData.GTA3
             buf.Write((short) ForcedWeatherType);
             buf.Align4Bytes();
             buf.Write(WeatherInterpolation);
-            buf.Write(CompileDateAndTime);
             buf.Write(WeatherTypeInList);
             buf.Write(CameraCarZoomIndicator);
             buf.Write(CameraPedZoomIndicator);
+            buf.Write((int) CurrArea);
+            buf.Write(AllTaxisHaveNitro);
+            buf.Align4Bytes();
+            buf.Write(InvertLook4Pad);
+            buf.Align4Bytes();
+            buf.Write(ExtraColour);
+            buf.Write(ExtraColourOn, 4);
+            buf.Write(ExtraColourInterpolation);
+            buf.Write(RadioStationPositionList.ToArray(), Limits.RadioStationListCount);
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
@@ -284,10 +355,19 @@ namespace GTASaveData.GTA3
         {
             if (fmt.SupportedOnPC)
             {
+                if (IsSteamWin32(fmt))
+                {
+                    return SizeOfSimpleVariablesSteamWin32;
+                }
                 return SizeOfSimpleVariablesPC;
             }
 
             throw new NotSupportedException();
+        }
+
+        public static bool IsSteamWin32(SaveFileFormat fmt)
+        {
+            return fmt.IsSupportedOn(ConsoleType.Win32, ConsoleFlags.Steam);
         }
 
         public override bool Equals(object obj)
@@ -307,6 +387,7 @@ namespace GTASaveData.GTA3
                 && SaveSize.Equals(other.SaveSize)
                 && CurrLevel.Equals(other.CurrLevel)
                 && CameraPosition.Equals(other.CameraPosition)
+                && SteamWin32Only.Equals(other.SteamWin32Only)
                 && MillisecondsPerGameMinute.Equals(other.MillisecondsPerGameMinute)
                 && LastClockTick.Equals(other.LastClockTick)
                 && GameClockHours.Equals(other.GameClockHours)
@@ -324,10 +405,16 @@ namespace GTASaveData.GTA3
                 && NewWeatherType.Equals(other.NewWeatherType)
                 && ForcedWeatherType.Equals(other.ForcedWeatherType)
                 && WeatherInterpolation.Equals(other.WeatherInterpolation)
-                && CompileDateAndTime.Equals(other.CompileDateAndTime)
                 && WeatherTypeInList.Equals(other.WeatherTypeInList)
                 && CameraCarZoomIndicator.Equals(other.CameraCarZoomIndicator)
-                && CameraPedZoomIndicator.Equals(other.CameraPedZoomIndicator);
+                && CameraPedZoomIndicator.Equals(other.CameraPedZoomIndicator)
+                && CurrArea.Equals(other.CurrArea)
+                && AllTaxisHaveNitro.Equals(other.AllTaxisHaveNitro)
+                && InvertLook4Pad.Equals(other.InvertLook4Pad)
+                && ExtraColour.Equals(other.ExtraColour)
+                && ExtraColourOn.Equals(other.ExtraColourOn)
+                && ExtraColourInterpolation.Equals(other.ExtraColourInterpolation)
+                && RadioStationPositionList.SequenceEqual(other.RadioStationPositionList);
         }
     }
 }

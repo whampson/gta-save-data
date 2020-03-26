@@ -4,9 +4,9 @@ using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.GTA3.Tests
+namespace GTASaveData.VC.Tests
 {
-    public class TestSimpleVariables : GTA3SaveDataObjectTestBase<SimpleVariables>
+    public class TestSimpleVariables : ViceCitySaveDataObjectTestBase<SimpleVariables>
     {
         public override SimpleVariables GenerateTestObject(SaveFileFormat format)
         {
@@ -16,6 +16,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.SaveSize, f => f.Random.Int())
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<LevelType>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector, TestVector>())
+                .RuleFor(x => x.SteamWin32Only, (SimpleVariables.IsSteamWin32(format)) ? SimpleVariables.SteamWin32OnlyValue : 0)
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
                 .RuleFor(x => x.GameClockHours, f => f.Random.Byte())
@@ -33,10 +34,16 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.NewWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.ForcedWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.WeatherInterpolation, f => f.Random.Float())
-                .RuleFor(x => x.CompileDateAndTime, f => Generator.Generate<Date, TestDate>())
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
                 .RuleFor(x => x.CameraCarZoomIndicator, f => f.Random.Float())
-                .RuleFor(x => x.CameraPedZoomIndicator, f => f.Random.Float());
+                .RuleFor(x => x.CameraPedZoomIndicator, f => f.Random.Float())
+                .RuleFor(x => x.CurrArea, f => f.PickRandom<AreaType>())
+                .RuleFor(x => x.AllTaxisHaveNitro, f => f.Random.Bool())
+                .RuleFor(x => x.InvertLook4Pad, f => f.Random.Bool())
+                .RuleFor(x => x.ExtraColour, f => f.Random.Int())
+                .RuleFor(x => x.ExtraColourOn, f => f.Random.Bool())
+                .RuleFor(x => x.ExtraColourInterpolation, f => f.Random.Float())
+                .RuleFor(x => x.RadioStationPositionList, f => Generator.CreateArray(SimpleVariables.Limits.RadioStationListCount, g => f.Random.Int()));
 
             return model.Generate();
         }
@@ -53,6 +60,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.SaveSize, x1.SaveSize);
             Assert.Equal(x0.CurrLevel, x1.CurrLevel);
             Assert.Equal(x0.CameraPosition, x1.CameraPosition);
+            Assert.Equal(x0.SteamWin32Only, x1.SteamWin32Only);
             Assert.Equal(x0.MillisecondsPerGameMinute, x1.MillisecondsPerGameMinute);
             Assert.Equal(x0.LastClockTick, x1.LastClockTick);
             Assert.Equal(x0.GameClockHours, x1.GameClockHours);
@@ -70,14 +78,18 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.NewWeatherType, x1.NewWeatherType);
             Assert.Equal(x0.ForcedWeatherType, x1.ForcedWeatherType);
             Assert.Equal(x0.WeatherInterpolation, x1.WeatherInterpolation);
-            Assert.Equal(x0.CompileDateAndTime, x1.CompileDateAndTime);
             Assert.Equal(x0.WeatherTypeInList, x1.WeatherTypeInList);
             Assert.Equal(x0.CameraCarZoomIndicator, x1.CameraCarZoomIndicator);
             Assert.Equal(x0.CameraPedZoomIndicator, x1.CameraPedZoomIndicator);
+            Assert.Equal(x0.CurrArea, x1.CurrArea);
+            Assert.Equal(x0.AllTaxisHaveNitro, x1.AllTaxisHaveNitro);
+            Assert.Equal(x0.InvertLook4Pad, x1.InvertLook4Pad);
+            Assert.Equal(x0.ExtraColour, x1.ExtraColour);
+            Assert.Equal(x0.ExtraColourOn, x1.ExtraColourOn);
+            Assert.Equal(x0.ExtraColourInterpolation, x1.ExtraColourInterpolation);
+            Assert.Equal(x0.RadioStationPositionList, x1.RadioStationPositionList);
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(format), data.Length);
         }
-
-        
     }
 }

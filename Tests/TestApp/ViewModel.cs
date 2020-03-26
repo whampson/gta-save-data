@@ -12,6 +12,9 @@ using System.Windows.Input;
 using WpfEssentials;
 using WpfEssentials.Win32;
 
+using GTA3Block = GTASaveData.GTA3.Block;
+using VCBlock = GTASaveData.VC.Block;
+
 namespace TestApp
 {
     public class ViewModel : ObservableObject
@@ -170,8 +173,8 @@ namespace TestApp
 
                 CurrentFileFormat = fmt;
                 CurrentSaveFile = new T();
-                //CurrentSaveFile.FileFormat = CurrentFileFormat;
-                //CurrentSaveFile.Load(path);
+                CurrentSaveFile.FileFormat = CurrentFileFormat;
+                CurrentSaveFile.Load(path);
 
                 return true;
             }
@@ -261,72 +264,42 @@ namespace TestApp
         #region Misc
         public static Dictionary<GameType, string[]> BlockNames => new Dictionary<GameType, string[]>()
         {
-            { GameType.III, GTA3BlockNames },
-            { GameType.VC, VCBlockNames },
-            { GameType.SA, SABlockNames },
+            { GameType.III, Enum.GetNames(typeof(GTA3Block)) },
+            { GameType.VC, Enum.GetNames(typeof(VCBlock)) },
+            //{ GameType.SA, SABlockNames },
         };
 
-        public static string[] GTA3BlockNames =>
-            Enum.GetNames(typeof(Block));
-
-        public static string[] VCBlockNames => new[]
-        {
-            "0: Scripts",
-            "1: PedPool",
-            "2: Garages",
-            "3: GameLogic",
-            "4: Vehicles",
-            "5: Objects",
-            "6: PathFind",
-            "7: Cranes",
-            "8: Pickups",
-            "9: PhoneInfo",
-            "10: RestartPoints",
-            "11: RadarBlips",
-            "12: Zones",
-            "13: GangData",
-            "14: CarGenerators",
-            "15: Particles",
-            "16: AudioScriptObjects",
-            "17: ScriptPaths",
-            "18: PlayerInfo",
-            "29: Stats",
-            "20: SetPieces",
-            "21: Streaming",
-            "22: PedTypeInfo"
-        };
-
-        public static string[] SABlockNames => new[]
-        {
-            "0: SimpleVars",
-            "1: Scripts",
-            "2: Players&Objects",
-            "3: Garages",
-            "4: GameLogic",
-            "5: PathFind",
-            "6: Pickups",
-            "7: PhoneInfo",
-            "8: RestartPoints",
-            "9: RadarBlips",
-            "10: Zones",
-            "11: GangData",
-            "12: CarGenerators",
-            "13: PedGenerators",
-            "14: AudioScriptObjects",
-            "15: PlayerInfo",
-            "16: Stats",
-            "17: SetPieces",
-            "18: Models",
-            "19: PedRelationships",
-            "20: Tags",
-            "21: IPL",
-            "22: Shopping",
-            "23: GangWars",
-            "24: UniqueStuntJumps",
-            "25: ENEX",
-            "26: RadioData",
-            "27: 3DMarkers"
-        };
+        //public static string[] SABlockNames => new[]
+        //{
+        //    "0: SimpleVars",
+        //    "1: Scripts",
+        //    "2: Players&Objects",
+        //    "3: Garages",
+        //    "4: GameLogic",
+        //    "5: PathFind",
+        //    "6: Pickups",
+        //    "7: PhoneInfo",
+        //    "8: RestartPoints",
+        //    "9: RadarBlips",
+        //    "10: Zones",
+        //    "11: GangData",
+        //    "12: CarGenerators",
+        //    "13: PedGenerators",
+        //    "14: AudioScriptObjects",
+        //    "15: PlayerInfo",
+        //    "16: Stats",
+        //    "17: SetPieces",
+        //    "18: Models",
+        //    "19: PedRelationships",
+        //    "20: Tags",
+        //    "21: IPL",
+        //    "22: Shopping",
+        //    "23: GangWars",
+        //    "24: UniqueStuntJumps",
+        //    "25: ENEX",
+        //    "26: RadioData",
+        //    "27: 3DMarkers"
+        //};
     }
     #endregion
 }

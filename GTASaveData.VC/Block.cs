@@ -1,0 +1,30 @@
+﻿namespace GTASaveData.VC
+{
+    public enum Block
+    {
+        SimpleVars,
+        Scripts,
+        PedPool,
+        Garages,
+        GameLogic,
+        VehiclePool,
+        ObjectPool,
+        Paths,
+        Cranes,
+        Pickups,
+        PhoneInfo,
+        RestartPoints,
+        RadarBlips,
+        Zones,
+        GangData,
+        CarGenerators,
+        ParticleObjects,
+        AudioScriptObjects,
+        ScriptPaths,
+        PlayerInfo,
+        Stats,
+        SetPieces,
+        Streaming,
+        PedTypeInfo
+    }
+}

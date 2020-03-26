@@ -1,13 +1,12 @@
 ﻿using Bogus;
-using GTASaveData.VC;
 using Xunit;
 using TestFramework;
 using GTASaveData.Types;
 using GTASaveData.Core.Tests.Types;
 
-namespace GTASaveData.Tests.VC
+namespace GTASaveData.VC.Tests
 {
-    public class TestCarGenerator : SaveDataObjectTestBase<CarGenerator>
+    public class TestCarGenerator : ViceCitySaveDataObjectTestBase<CarGenerator>
     {
         public override CarGenerator GenerateTestObject(SaveFileFormat format)
         {
@@ -51,7 +50,7 @@ namespace GTASaveData.Tests.VC
             Assert.Equal(x0.UsesRemaining, x1.UsesRemaining);
             Assert.Equal(x0.IsBlocking, x1.IsBlocking);
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject<CarGenerator>(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
     }
 }
