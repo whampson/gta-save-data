@@ -21,13 +21,13 @@ namespace GTASaveData.GTA3
             set { m_staticIndex = value; OnPropertyChanged(); }
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             Type = (ObjectType) buf.ReadInt32();
             StaticIndex = buf.ReadInt32();
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write((int) Type);
             buf.Write(StaticIndex);

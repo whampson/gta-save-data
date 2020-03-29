@@ -32,14 +32,14 @@ namespace GTASaveData.Core.Tests.Types
             private float m_field04h;
             private bool m_field08h;
 
-            protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+            protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
             {
                 m_field00h = buf.ReadInt32();
                 m_field04h = buf.ReadSingle();
                 m_field08h = buf.ReadBool(4);
             }
 
-            protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+            protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
             {
                 buf.Write(m_field00h);
                 buf.Write(m_field04h);

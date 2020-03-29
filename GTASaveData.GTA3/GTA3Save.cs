@@ -15,7 +15,6 @@ namespace GTASaveData.GTA3
     {
         public const int SaveHeaderSize = 8;
         public const int SizeOfOneGameInBytes = 201729;
-        public const int BufferSize = 55000;
 
         private SimpleVariables m_simpleVars;
         private TheScripts m_scripts;
@@ -195,7 +194,7 @@ namespace GTASaveData.GTA3
                 };
 
                 blocks.AddRange(UserDefinedBlocks);
-                return blocks;
+                return blocks.AsReadOnly();
             }
         }
 
@@ -213,8 +212,6 @@ namespace GTASaveData.GTA3
 
         public GTA3Save()
         {
-            WorkBuff = new WorkBuffer(new byte[BufferSize]);
-            
             SimpleVars = new SimpleVariables();
             Scripts = new TheScripts();
             PedPool = new DummyObject();
@@ -238,7 +235,7 @@ namespace GTASaveData.GTA3
             PedTypeInfo = new DummyObject();
         }
 
-        public static int ReadSaveHeader(WorkBuffer buf, string tag)
+        public static int ReadSaveHeader(DataBuffer buf, string tag)
         {
             string readTag = buf.ReadString(4);
             int size = buf.ReadInt32();
@@ -247,9 +244,9 @@ namespace GTASaveData.GTA3
             return size;
         }
 
-        public static void WriteSaveHeader(WorkBuffer buf, string tag, int size)
+        public static void WriteSaveHeader(DataBuffer buf, string tag, int size)
         {
-            buf.Write(tag, 4);
+            buf.Write(tag, 4, zeroTerminate: true);
             buf.Write(size);
         }
 
@@ -309,13 +306,13 @@ namespace GTASaveData.GTA3
             WorkBuff.Write(SimpleVars, FileFormat);
         }
 
-        protected override int ReadBlock(WorkBuffer file)
+        protected override int ReadBlock(DataBuffer file)
         {
             file.MarkPosition();
             WorkBuff.Reset();
 
             int size = file.ReadInt32();
-            if (size > BufferSize)
+            if (size > GetBufferSize())
             {
                 // TODO: BlockSizeChecks flag?
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
@@ -330,13 +327,13 @@ namespace GTASaveData.GTA3
             return size;
         }
 
-        protected override int WriteBlock(WorkBuffer file)
+        protected override int WriteBlock(DataBuffer file)
         {
             file.MarkPosition();
 
-            byte[] data = WorkBuff.ToArray(WorkBuff.Position);
+            byte[] data = WorkBuff.GetBytesUpToCursor();
             int size = data.Length;
-            if (size > BufferSize)
+            if (size > GetBufferSize())
             {
                 // TODO: BlockSizeChecks flag?
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
@@ -356,7 +353,7 @@ namespace GTASaveData.GTA3
             return size;
         }
 
-        protected override void LoadAllData(WorkBuffer file)
+        protected override void LoadAllData(DataBuffer file)
         {
             int totalSize = 0;
 
@@ -382,7 +379,6 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); PedTypeInfo = LoadDummy();
             totalSize += LoadUserDefinedBlocks(file);
 
-            // Read-out remaining bytes
             while (file.Position < file.Length - 4)
             {
                 totalSize += ReadBlock(file);
@@ -392,7 +388,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
         }
 
-        protected override void SaveAllData(WorkBuffer file)
+        protected override void SaveAllData(DataBuffer file)
         {
             int totalSize = 0;
             int size;
@@ -423,20 +419,16 @@ namespace GTASaveData.GTA3
             SaveData(PedTypeInfo); totalSize += WriteBlock(file);
             totalSize += SaveUserDefinedBlocks(file);
 
-            // Padding
             for (int i = 0; i < 4; i++)
             {
-                size = WorkBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
-                if (size > BufferSize)
-                {
-                    size = BufferSize;
-                }
-                if (size > 4)
+                size = DataBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
+                if (Padding != PaddingType.Default)
                 {
                     WorkBuff.Reset();
                     WorkBuff.Write(GetPaddingBytes(size));
-                    totalSize += WriteBlock(file);
                 }
+                WorkBuff.Seek(size);
+                totalSize += WriteBlock(file);
             }
 
             file.Write(CheckSum);
@@ -455,7 +447,7 @@ namespace GTASaveData.GTA3
             int scr = data.FindFirst("SCR\0".GetAsciiBytes());
 
             int blk1Size;
-            using (WorkBuffer wb = new WorkBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 wb.Skip(wb.ReadInt32());
                 blk1Size = wb.ReadInt32();
@@ -517,6 +509,16 @@ namespace GTASaveData.GTA3
 
             fmt = SaveFileFormat.Default;
             return false;
+        }
+
+        protected override int GetBufferSize()
+        {
+            if (FileFormat.SupportedOnPS2)
+            {
+                return 50000;
+            }
+
+            return 55000;
         }
 
         public override bool Equals(object obj)

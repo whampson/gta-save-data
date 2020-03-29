@@ -152,7 +152,7 @@ namespace GTASaveData.GTA3
             m_localVariables = new Array<uint>();
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             m_pNextScript = buf.ReadUInt32();
             m_pPrevScript = buf.ReadUInt32();
@@ -179,7 +179,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write(m_pNextScript);
             buf.Write(m_pPrevScript);

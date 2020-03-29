@@ -8,7 +8,7 @@ using System.Text;
 
 namespace GTASaveData
 {
-    public sealed class WorkBuffer : IDisposable
+    public sealed class DataBuffer : IDisposable
     {
         private readonly MemoryStream m_buffer;
         private readonly BinaryReader m_reader;
@@ -37,24 +37,27 @@ namespace GTASaveData
             get { return m_buffer.Capacity; }
         }
 
-        private WorkBuffer(MemoryStream buffer)
+        /// <summary>
+        /// Creates a new <see cref="DataBuffer"/> with an expandable capacity initialized to zero.
+        /// </summary>
+        public DataBuffer()
+            : this(new MemoryStream())
+        { }
+
+        /// <summary>
+        /// Creates a new non-resizable <see cref="DataBuffer"/> with data from the specified byte array.
+        /// </summary>
+        /// <param name="data">The data with which to initialize the buffer.</param>
+        public DataBuffer(byte[] data)
+            : this(new MemoryStream(data))
+        { }
+
+        private DataBuffer(MemoryStream buffer)
         {
             m_buffer = buffer;
             m_reader = new BinaryReader(m_buffer, Encoding.ASCII, true);
             m_writer = new BinaryWriter(m_buffer, Encoding.ASCII, true);
         }
-
-        public WorkBuffer()
-            : this(new MemoryStream())
-        { }
-
-        public WorkBuffer(byte[] data)
-            : this(new MemoryStream(data))
-        { }
-
-        public WorkBuffer(int capacity)
-            : this(new MemoryStream(capacity))
-        { }
 
         public void Dispose()
         {
@@ -107,14 +110,14 @@ namespace GTASaveData
             }
         }
 
-        public byte[] ToArray()
+        public byte[] GetBytes()
         {
             return m_buffer.ToArray();
         }
 
-        public byte[] ToArray(int count)
+        public byte[] GetBytesUpToCursor()
         {
-            return ToArray().Take(count).ToArray();
+            return GetBytes().Take(Position).ToArray();
         }
 
         /// <summary>

@@ -13,6 +13,7 @@ namespace GTASaveData
     /// </summary>
     public abstract class SaveFile : SaveDataObject, IGTASaveFile
     {
+        private const int MaxBufferCapacity = 0x20000;
         private static readonly byte[] DefaultPadding = new byte[1] { 0 };
 
         private SaveFileFormat m_fileFormat;
@@ -20,7 +21,7 @@ namespace GTASaveData
         private byte[] m_paddingBytes;
         private bool m_disposed;
 
-        protected WorkBuffer WorkBuff { get; set; }
+        protected DataBuffer WorkBuff { get; set; }
         protected uint CheckSum { get; set; }
 
         [JsonIgnore]
@@ -58,7 +59,7 @@ namespace GTASaveData
         public SaveFile()
         {
             m_disposed = false;
-            WorkBuff = new WorkBuffer();
+            WorkBuff = new DataBuffer(new byte[MaxBufferCapacity]);
             UserDefinedBlocks = new List<SaveDataObject>();
             CheckSum = 0;
             FileFormat = SaveFileFormat.Default;
@@ -80,7 +81,7 @@ namespace GTASaveData
             UserDefinedBlocks.Add(new T());
         }
 
-        protected int LoadUserDefinedBlocks(WorkBuffer buf)
+        protected int LoadUserDefinedBlocks(DataBuffer buf)
         {
             int size = 0;
             foreach (var block in UserDefinedBlocks)
@@ -92,7 +93,7 @@ namespace GTASaveData
             return size;
         }
 
-        protected int SaveUserDefinedBlocks(WorkBuffer buf)
+        protected int SaveUserDefinedBlocks(DataBuffer buf)
         {
             int size = 0;
             foreach (var block in UserDefinedBlocks)
@@ -176,26 +177,27 @@ namespace GTASaveData
                 }
             }
 
-            return WorkBuff.ToArray(length);
+            throw new InvalidOperationException("Unknown padding type.");
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected abstract int ReadBlock(DataBuffer file);
+        protected abstract int WriteBlock(DataBuffer file);
+        protected abstract void LoadAllData(DataBuffer file);
+        protected abstract void SaveAllData(DataBuffer file);
+        protected abstract bool DetectFileFormat(byte[] data, out SaveFileFormat fmt);
+        protected abstract int GetBufferSize();
+
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             FileFormat = fmt;
             LoadAllData(buf);
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             FileFormat = fmt;
             SaveAllData(buf);
         }
-
-        protected abstract int ReadBlock(WorkBuffer file);
-        protected abstract int WriteBlock(WorkBuffer file);
-        protected abstract void LoadAllData(WorkBuffer file);
-        protected abstract void SaveAllData(WorkBuffer file);
-        protected abstract bool DetectFileFormat(byte[] data, out SaveFileFormat fmt);
 
         public override string ToString()
         {

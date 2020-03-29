@@ -39,13 +39,13 @@ namespace GTASaveData.Types
             Data = data;
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             int count = Data.Count;
             Data = buf.ReadBytes(count);
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write(Data.ToArray());
         }

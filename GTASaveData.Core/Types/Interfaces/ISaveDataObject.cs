@@ -2,10 +2,10 @@
 {
     public interface ISaveDataObject
     {
-        int ReadObjectData(WorkBuffer buf);
-        int ReadObjectData(WorkBuffer buf, SaveFileFormat fmt);
+        int ReadObjectData(DataBuffer buf);
+        int ReadObjectData(DataBuffer buf, SaveFileFormat fmt);
 
-        int WriteObjectData(WorkBuffer buf);
-        int WriteObjectData(WorkBuffer buf, SaveFileFormat fmt);
+        int WriteObjectData(DataBuffer buf);
+        int WriteObjectData(DataBuffer buf, SaveFileFormat fmt);
     }
 }

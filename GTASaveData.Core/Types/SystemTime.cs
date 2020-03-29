@@ -67,7 +67,7 @@ namespace GTASaveData.Types
         }
 
         public SystemTime()
-            : this(DateTime.MinValue)
+            : this(DateTime.Now)
         { }
 
         public SystemTime(DateTime dateTime)
@@ -82,7 +82,7 @@ namespace GTASaveData.Types
             Millisecond = (ushort) dateTime.Millisecond;
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             Year = buf.ReadUInt16();
             Month = buf.ReadUInt16();
@@ -96,7 +96,7 @@ namespace GTASaveData.Types
             Debug.Assert(buf.Offset == SizeOf<SystemTime>());
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write(Year);
             buf.Write(Month);

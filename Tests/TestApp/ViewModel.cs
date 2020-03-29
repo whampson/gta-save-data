@@ -4,9 +4,7 @@ using GTASaveData.Types;
 using GTASaveData.VC;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using WpfEssentials;
@@ -14,6 +12,8 @@ using WpfEssentials.Win32;
 
 using GTA3Block = GTASaveData.GTA3.Block;
 using VCBlock = GTASaveData.VC.Block;
+using SABlock = GTASaveData.VC.Block;
+using GTASaveData.SA;
 
 namespace TestApp
 {
@@ -62,7 +62,7 @@ namespace TestApp
         public bool ShowEntireFileChecked
         {
             get { return m_showEntireFileChecked; }
-            set { m_showEntireFileChecked = value; UpdateTextBox();  OnPropertyChanged(); }
+            set { m_showEntireFileChecked = value; UpdateTextBox(); OnPropertyChanged(); }
         }
 
         public string Text
@@ -141,7 +141,7 @@ namespace TestApp
             {
                 case GameType.III: DoLoad<GTA3Save>(path); break;
                 case GameType.VC: DoLoad<ViceCitySave>(path); break;
-                //case GameType.SA: DoLoad<SanAndreasSave>(path); break;
+                case GameType.SA: DoLoad<SanAndreasSave>(path); break;
                 //case GameType.LCS: DoLoad<LibertyCityStoriesSave>(path); break;
                 //case GameType.VCS: DoLoad<ViceCityStoriesSave>(path); break;
                 //case GameType.IV: DoLoad<GTA4Save>(path); break;
@@ -159,12 +159,13 @@ namespace TestApp
                 OnLoad();
                 OnPropertyChanged(nameof(BlockNameForCurrentGame));
             }
-   
+
         }
 
         private bool DoLoad<T>(string path) where T : SaveFile, new()
         {
-            try {
+            try
+            {
                 if (!SaveFile.GetFileFormat<T>(path, out SaveFileFormat fmt))
                 {
                     RequestMessageBoxError(string.Format("Invalid save file! (Game: {0})", SelectedGame));
@@ -266,40 +267,8 @@ namespace TestApp
         {
             { GameType.III, Enum.GetNames(typeof(GTA3Block)) },
             { GameType.VC, Enum.GetNames(typeof(VCBlock)) },
-            //{ GameType.SA, SABlockNames },
+            { GameType.SA, Enum.GetNames(typeof(SABlock)) },
         };
-
-        //public static string[] SABlockNames => new[]
-        //{
-        //    "0: SimpleVars",
-        //    "1: Scripts",
-        //    "2: Players&Objects",
-        //    "3: Garages",
-        //    "4: GameLogic",
-        //    "5: PathFind",
-        //    "6: Pickups",
-        //    "7: PhoneInfo",
-        //    "8: RestartPoints",
-        //    "9: RadarBlips",
-        //    "10: Zones",
-        //    "11: GangData",
-        //    "12: CarGenerators",
-        //    "13: PedGenerators",
-        //    "14: AudioScriptObjects",
-        //    "15: PlayerInfo",
-        //    "16: Stats",
-        //    "17: SetPieces",
-        //    "18: Models",
-        //    "19: PedRelationships",
-        //    "20: Tags",
-        //    "21: IPL",
-        //    "22: Shopping",
-        //    "23: GangWars",
-        //    "24: UniqueStuntJumps",
-        //    "25: ENEX",
-        //    "26: RadioData",
-        //    "27: 3DMarkers"
-        //};
+        #endregion
     }
-    #endregion
 }

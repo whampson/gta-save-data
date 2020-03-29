@@ -61,27 +61,32 @@ namespace GTASaveData.Core.Tests
                 return base.GetPaddingBytes(length);
             }
 
+            protected override int ReadBlock(DataBuffer file)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override int WriteBlock(DataBuffer buf)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void LoadAllData(DataBuffer buf)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void SaveAllData(DataBuffer buf)
+            {
+                throw new NotImplementedException();
+            }
+
             protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
             {
                 throw new NotImplementedException();
             }
 
-            protected override int ReadBlock(WorkBuffer file)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override int WriteBlock(WorkBuffer buf)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override void LoadAllData(WorkBuffer buf)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override void SaveAllData(WorkBuffer buf)
+            protected override int GetBufferSize()
             {
                 throw new NotImplementedException();
             }

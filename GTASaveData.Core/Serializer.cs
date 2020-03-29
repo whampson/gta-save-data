@@ -18,18 +18,18 @@ namespace GTASaveData
 
         public static int Read<T>(byte[] buf, SaveFileFormat fmt, out T obj)
         {
-            using (WorkBuffer wb = new WorkBuffer(buf))
+            using (DataBuffer wb = new DataBuffer(buf))
             {
                 return Read(wb, fmt, out obj);
             }
         }
 
-        public static T Read<T>(WorkBuffer buf)
+        public static T Read<T>(DataBuffer buf)
         {
             return Read<T>(buf, SaveFileFormat.Default);
         }
 
-        public static T Read<T>(WorkBuffer buf, SaveFileFormat fmt)
+        public static T Read<T>(DataBuffer buf, SaveFileFormat fmt)
         {
             T obj = buf.GenericRead<T>(fmt);
             if (obj == null)
@@ -40,7 +40,7 @@ namespace GTASaveData
             return obj;
         }
 
-        public static int Read<T>(WorkBuffer buf, SaveFileFormat fmt, out T obj)
+        public static int Read<T>(DataBuffer buf, SaveFileFormat fmt, out T obj)
         {
             int oldMark, length;
 
@@ -61,7 +61,7 @@ namespace GTASaveData
         public static int Read<T>(T obj, byte[] buf, SaveFileFormat fmt)
              where T : ISaveDataObject
         {
-            using (WorkBuffer wb = new WorkBuffer(buf))
+            using (DataBuffer wb = new DataBuffer(buf))
             {
                 return obj.ReadObjectData(wb, fmt);
             }
@@ -74,30 +74,30 @@ namespace GTASaveData
 
         public static byte[] Write<T>(T obj, SaveFileFormat fmt)
         {
-            using (WorkBuffer wb = new WorkBuffer())
+            using (DataBuffer wb = new DataBuffer())
             {
                 Write(wb, obj, fmt);
-                return wb.ToArray();
+                return wb.GetBytes();
             }
         }
 
         public static int Write<T>(T obj, SaveFileFormat fmt, out byte[] data)
         {
-            using (WorkBuffer wb = new WorkBuffer())
+            using (DataBuffer wb = new DataBuffer())
             {
                 int count = Write(wb, obj, fmt);
-                data = wb.ToArray();
+                data = wb.GetBytes();
 
                 return count;
             }
         }
 
-        public static int Write<T>(WorkBuffer buf, T obj)
+        public static int Write<T>(DataBuffer buf, T obj)
         {
             return Write(buf, obj, SaveFileFormat.Default);
         }
 
-        public static int Write<T>(WorkBuffer buf, T obj, SaveFileFormat fmt)
+        public static int Write<T>(DataBuffer buf, T obj, SaveFileFormat fmt)
         {
             bool success;
             int oldMark, length;

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestWorkBuffer
+    public class TestDataBuffer
     {
         [Fact]
         public void Alignment()
@@ -22,16 +22,16 @@ namespace GTASaveData.Core.Tests
             bool b1;
             float f1;
 
-            using (WorkBuffer wb = new WorkBuffer())
+            using (DataBuffer wb = new DataBuffer())
             {
                 wb.Write(b0);
                 wb.Align4Bytes();
                 wb.Write(i0);
                 wb.Write(f0);
-                data = wb.ToArray();
+                data = wb.GetBytes();
             }
 
-            using (WorkBuffer wb = new WorkBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 b1 = wb.ReadBool();
                 wb.Align4Bytes();
@@ -70,13 +70,13 @@ namespace GTASaveData.Core.Tests
             byte[] data;
             bool x1;
 
-            using (WorkBuffer wb = new WorkBuffer())
+            using (DataBuffer wb = new DataBuffer())
             {
                 wb.Write(x0, numBytes);
-                data = wb.ToArray();
+                data = wb.GetBytes();
             }
 
-            using (WorkBuffer wb = new WorkBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 x1 = wb.ReadBool(numBytes);
             }
@@ -121,7 +121,7 @@ namespace GTASaveData.Core.Tests
             byte[] data = Serializer.Write(x0);
             byte[] x1;
 
-            using (WorkBuffer wb = new WorkBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 x1 = wb.ReadBytes(data.Length);
             }
@@ -152,13 +152,13 @@ namespace GTASaveData.Core.Tests
             byte[] data;
             char x1;
 
-            using (WorkBuffer wb = new WorkBuffer())
+            using (DataBuffer wb = new DataBuffer())
             {
                 wb.Write(x0, true);
-                data = wb.ToArray();
+                data = wb.GetBytes();
             }
 
-            using (WorkBuffer wb = new WorkBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 x1 = wb.ReadChar(true);
             }
@@ -478,14 +478,14 @@ namespace GTASaveData.Core.Tests
             public TestObject()
             { }
 
-            protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+            protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
             {
                 Integer = buf.ReadInt32();
                 Boolean = buf.ReadBool();
                 Single = buf.ReadSingle();
             }
 
-            protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+            protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
             {
                 buf.Write(Integer);
                 buf.Write(Boolean);
@@ -539,16 +539,16 @@ namespace GTASaveData.Core.Tests
             bool unicode = false,
             bool zeroTerminate = true)
         {
-            using (WorkBuffer wb = new WorkBuffer())
+            using (DataBuffer wb = new DataBuffer())
             {
                 wb.Write(x, length, unicode, zeroTerminate);
-                return wb.ToArray();
+                return wb.GetBytes();
             }
         }
 
         public static string BytesToString(byte[] data, int length = 0, bool unicode = false)
         {
-            using (WorkBuffer wb = new WorkBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 return wb.ReadString(length, unicode);
             }
@@ -560,10 +560,10 @@ namespace GTASaveData.Core.Tests
             bool unicode = false)
             where T : new()
         {
-            using (WorkBuffer wb = new WorkBuffer())
+            using (DataBuffer wb = new DataBuffer())
             {
                 wb.Write(items, count, itemLength, unicode);
-                return wb.ToArray();
+                return wb.GetBytes();
             }
         }
 
@@ -571,7 +571,7 @@ namespace GTASaveData.Core.Tests
             int itemLength = 0,
             bool unicode = false)
         {
-            using (WorkBuffer wb = new WorkBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 return wb.ReadArray<T>(count, itemLength, unicode);
             }

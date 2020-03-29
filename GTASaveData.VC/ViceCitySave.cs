@@ -15,7 +15,8 @@ namespace GTASaveData.VC
     {
         public const int SaveHeaderSize = 8;
         public const int SizeOfOneGameInBytes = 201729;
-        public const int BufferSize = 0x10000;
+        public const int BufferSizeAndroid = 0x10000;
+        public const int BufferSizePC = 0xD6D8;
 
         private SimpleVariables m_simpleVars;
         private DummyObject m_scripts;
@@ -219,7 +220,7 @@ namespace GTASaveData.VC
                 };
 
                 blocks.AddRange(UserDefinedBlocks);
-                return blocks;
+                return blocks.AsReadOnly();
             }
         }
 
@@ -237,8 +238,6 @@ namespace GTASaveData.VC
 
         public ViceCitySave()
         {
-            WorkBuff = new WorkBuffer(new byte[BufferSize]);
-
             SimpleVars = new SimpleVariables();
             Scripts = new DummyObject();
             PedPool = new DummyObject();
@@ -265,7 +264,7 @@ namespace GTASaveData.VC
             PedTypeInfo = new DummyObject();
         }
 
-        public static int ReadSaveHeader(WorkBuffer buf, string tag)
+        public static int ReadSaveHeader(DataBuffer buf, string tag)
         {
             string readTag = buf.ReadString(4);
             int size = buf.ReadInt32();
@@ -274,7 +273,7 @@ namespace GTASaveData.VC
             return size;
         }
 
-        public static void WriteSaveHeader(WorkBuffer buf, string tag, int size)
+        public static void WriteSaveHeader(DataBuffer buf, string tag, int size)
         {
             buf.Write(tag, 4);
             buf.Write(size);
@@ -336,13 +335,13 @@ namespace GTASaveData.VC
             WorkBuff.Write(SimpleVars, FileFormat);
         }
 
-        protected override int ReadBlock(WorkBuffer file)
+        protected override int ReadBlock(DataBuffer file)
         {
             file.MarkPosition();
             WorkBuff.Reset();
 
             int size = file.ReadInt32();
-            if (size > BufferSize)
+            if (size > GetBufferSize())
             {
                 // TODO: BlockSizeChecks flag?
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
@@ -357,13 +356,13 @@ namespace GTASaveData.VC
             return size;
         }
 
-        protected override int WriteBlock(WorkBuffer file)
+        protected override int WriteBlock(DataBuffer file)
         {
             file.MarkPosition();
 
-            byte[] data = WorkBuff.ToArray(WorkBuff.Position);
+            byte[] data = WorkBuff.GetBytesUpToCursor();
             int size = data.Length;
-            if (size > BufferSize)
+            if (size > GetBufferSize())
             {
                 // TODO: BlockSizeChecks flag?
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
@@ -383,7 +382,7 @@ namespace GTASaveData.VC
             return size;
         }
 
-        protected override void LoadAllData(WorkBuffer file)
+        protected override void LoadAllData(DataBuffer file)
         {
             int totalSize = 0;
 
@@ -412,7 +411,6 @@ namespace GTASaveData.VC
             totalSize += ReadBlock(file); PedTypeInfo = LoadDummy();
             totalSize += LoadUserDefinedBlocks(file);
 
-            // Read-out remaining bytes
             while (file.Position < file.Length - 4)
             {
                 totalSize += ReadBlock(file);
@@ -422,7 +420,7 @@ namespace GTASaveData.VC
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
         }
 
-        protected override void SaveAllData(WorkBuffer file)
+        protected override void SaveAllData(DataBuffer file)
         {
             int totalSize = 0;
             int size;
@@ -454,22 +452,18 @@ namespace GTASaveData.VC
             SaveData(SetPieces); totalSize += WriteBlock(file);
             SaveData(Streaming); totalSize += WriteBlock(file);
             SaveData(PedTypeInfo); totalSize += WriteBlock(file);
-            totalSize += SaveUserDefinedBlocks(file);        
+            totalSize += SaveUserDefinedBlocks(file);
 
-            // Padding
             for (int i = 0; i < 4; i++)
             {
-                size = WorkBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
-                if (size > BufferSize)
-                {
-                    size = BufferSize;
-                }
-                if (size > 4)
+                size = DataBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
+                if (Padding != PaddingType.Default)
                 {
                     WorkBuff.Reset();
                     WorkBuff.Write(GetPaddingBytes(size));
-                    totalSize += WriteBlock(file);
                 }
+                WorkBuff.Seek(size);
+                totalSize += WriteBlock(file);
             }
 
             file.Write(CheckSum);
@@ -481,11 +475,11 @@ namespace GTASaveData.VC
         protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
         {
             int fileId = data.FindFirst(BitConverter.GetBytes(0x31401));
-            int fileIdJP = data.FindFirst(BitConverter.GetBytes(0x31400));  // TODO: confirm
+            int fileIdJP = data.FindFirst(BitConverter.GetBytes(0x31400));  // TODO: confirm this even exists
             int scr = data.FindFirst("SCR\0".GetAsciiBytes());
 
             int blk1Size;
-            using (WorkBuffer wb = new WorkBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 wb.Skip(wb.ReadInt32());
                 blk1Size = wb.ReadInt32();
@@ -507,6 +501,20 @@ namespace GTASaveData.VC
 
             fmt = SaveFileFormat.Default;
             return false;
+        }
+
+        protected override int GetBufferSize()
+        {
+            if (FileFormat.SupportedOnPS2)
+            {
+                return 50000;
+            }
+            else if (FileFormat.SupportedOnMobile)
+            {
+                return 0x10000;
+            }
+
+            return 55000;
         }
 
         public override bool Equals(object obj)

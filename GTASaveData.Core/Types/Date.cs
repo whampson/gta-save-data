@@ -53,7 +53,7 @@ namespace GTASaveData.Types
         }
 
         public Date()
-            : this(DateTime.MinValue)
+            : this(DateTime.Now)
         { }
 
         public Date(DateTime dateTime)
@@ -66,7 +66,7 @@ namespace GTASaveData.Types
             Year = dateTime.Year;
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             Second = buf.ReadInt32();
             Minute = buf.ReadInt32();
@@ -78,7 +78,7 @@ namespace GTASaveData.Types
             Debug.Assert(buf.Offset == SizeOf<Date>());
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write(Second);
             buf.Write(Minute);

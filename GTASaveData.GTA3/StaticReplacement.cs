@@ -44,7 +44,7 @@ namespace GTASaveData.GTA3
             OldModelIndex = -1;
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             Type = (ObjectType) buf.ReadInt32();
             StaticIndex = buf.ReadInt32();
@@ -54,7 +54,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<StaticReplacement>());
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write((int) Type);
             buf.Write(StaticIndex);

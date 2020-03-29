@@ -105,7 +105,7 @@ namespace GTASaveData.GTA3
             GarageArray = new Array<Garage>();
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             NumberOfGarages = buf.ReadInt32();
             BombsAreFree = buf.ReadBool(4);
@@ -123,7 +123,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Garages>());
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write(NumberOfGarages);
             buf.Write(BombsAreFree, 4);

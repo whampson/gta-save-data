@@ -57,7 +57,7 @@ namespace GTASaveData.GTA3
             CarGeneratorArray = new Array<CarGenerator>();
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             int infoSize = buf.ReadInt32();
             Debug.Assert(infoSize == SizeOfCarGeneratorData);
@@ -73,7 +73,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<TheCarGenerators>());
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write(SizeOfCarGeneratorData);
             buf.Write(NumberOfCarGenerators);

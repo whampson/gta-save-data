@@ -6,7 +6,7 @@ namespace GTASaveData.Types
 {
     public abstract class SaveDataObject : GTAObject, ISaveDataObject
     {
-        int ISaveDataObject.ReadObjectData(WorkBuffer buf)
+        int ISaveDataObject.ReadObjectData(DataBuffer buf)
         {
 #if DEBUG
             int oldMark = buf.Mark;
@@ -20,7 +20,7 @@ namespace GTASaveData.Types
             return buf.Offset;
         }
 
-        int ISaveDataObject.ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        int ISaveDataObject.ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
 #if DEBUG
             int oldMark = buf.Mark;
@@ -34,9 +34,9 @@ namespace GTASaveData.Types
             return buf.Offset;
         }
 
-        protected abstract void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt);
+        protected abstract void ReadObjectData(DataBuffer buf, SaveFileFormat fmt);
 
-        int ISaveDataObject.WriteObjectData(WorkBuffer buf)
+        int ISaveDataObject.WriteObjectData(DataBuffer buf)
         {
 #if DEBUG
             int oldMark = buf.Mark;
@@ -50,7 +50,7 @@ namespace GTASaveData.Types
             return buf.Offset;
         }
 
-        int ISaveDataObject.WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        int ISaveDataObject.WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
 #if DEBUG
             int oldMark = buf.Mark;
@@ -64,7 +64,7 @@ namespace GTASaveData.Types
             return buf.Offset;
         }
 
-        protected abstract void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt);
+        protected abstract void WriteObjectData(DataBuffer buf, SaveFileFormat fmt);
 
         protected virtual int GetSize(SaveFileFormat fmt)
         {

@@ -84,14 +84,14 @@ namespace GTASaveData.Types
             }
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             X = buf.ReadSingle();
             Y = buf.ReadSingle();
             Z = buf.ReadSingle();
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write(X);
             buf.Write(Y);

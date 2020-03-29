@@ -248,7 +248,7 @@ namespace GTASaveData.GTA3
             StoredCar = new StoredCar();
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             Type = (GarageType) buf.ReadByte();
             State = (GarageState) buf.ReadByte();
@@ -295,7 +295,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Garage>());
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write((byte) Type);
             buf.Write((byte) State);

@@ -257,9 +257,9 @@ namespace GTASaveData.VC
             RadioStationPositionList = CreateArray<int>(Limits.RadioStationListCount);
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            SaveName = buf.ReadString(Limits.MaxSaveNameLength, true);
+            SaveName = buf.ReadString(Limits.MaxSaveNameLength, unicode: true);
             TimeLastSaved = buf.ReadObject<SystemTime>();
             SaveSize = buf.ReadInt32();
             CurrLevel = (LevelType) buf.ReadInt32();
@@ -304,9 +304,9 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(SaveName, Limits.MaxSaveNameLength, true);
+            buf.Write(SaveName, Limits.MaxSaveNameLength, unicode: true);
             buf.Write(TimeLastSaved);
             buf.Write(SaveSize);
             buf.Write((int) CurrLevel);

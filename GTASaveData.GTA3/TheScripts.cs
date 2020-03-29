@@ -19,7 +19,7 @@ namespace GTASaveData.GTA3
 
         private const int ScriptDataSize = 968;
 
-        private Array<byte> m_scriptSpace;          // TODO: hmmm, keep this a byte array or make it uint32s?
+        private Array<byte> m_scriptSpace;
         private int m_onAMissionFlag;
         private Array<ContactInfo> m_contactArray;
         private Array<Collective> m_collectiveArray;
@@ -151,7 +151,7 @@ namespace GTASaveData.GTA3
             Array.Copy(floatBits, 0, ScriptSpace, index, 4);
         }
 
-        protected override void ReadObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "SCR");
             int varSpace = buf.ReadInt32();
@@ -179,11 +179,11 @@ namespace GTASaveData.GTA3
             Debug.Assert(size + GTA3Save.SaveHeaderSize == GetSize(fmt));
         }
 
-        protected override void WriteObjectData(WorkBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             int size = GetSize(fmt);
 
-            GTA3Save.WriteSaveHeader(buf, "SCR\0", size - GTA3Save.SaveHeaderSize);
+            GTA3Save.WriteSaveHeader(buf, "SCR", size - GTA3Save.SaveHeaderSize);
             buf.Write(ScriptSpace.Count);
             buf.Write(ScriptSpace.ToArray());
             buf.Align4Bytes();
@@ -209,7 +209,7 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(SaveFileFormat fmt)
         {
-            return SizeOf<RunningScript>(fmt) * ActiveScripts.Count + WorkBuffer.Align4Bytes(ScriptSpace.Count) + ScriptDataSize + GTA3Save.SaveHeaderSize + 3 * sizeof(int);
+            return SizeOf<RunningScript>(fmt) * ActiveScripts.Count + DataBuffer.Align4Bytes(ScriptSpace.Count) + ScriptDataSize + GTA3Save.SaveHeaderSize + 3 * sizeof(int);
         }
 
         public override bool Equals(object obj)
