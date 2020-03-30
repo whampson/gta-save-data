@@ -271,6 +271,16 @@ namespace GTASaveData.SA
             return obj;
         }
 
+        private int SaveObject(SaveDataObject o)
+        {
+            int count = Serializer.Write(o, FileFormat, out byte[] data);
+            int written = SaveDataToWorkBuffer(data, count);
+
+            Debug.Assert(written == count);
+
+            return written;
+        }
+
         private void LoadWorkBuffer()
         {
             int count;
@@ -425,6 +435,88 @@ namespace GTASaveData.SA
 
         protected override void SaveAllData(DataBuffer file)
         {
+            int index;
+            int size;
+
+            m_file = file;
+            CheckSum = 0;
+            WorkBuff.Seek(0);
+
+            for (index = 0; index < 28; index++)            // TODO: 29 on android?
+            {
+                SaveDataToWorkBuffer(BlockTagName.GetAsciiBytes(), 5);
+
+                size = 0;
+                switch (index)
+                {
+                    case 0: size = SaveObject(SimpleVars); break;
+                    case 1: size = SaveObject(Scripts); break;
+                    case 2: size = SaveObject(Pools); break;
+                    case 3: size = SaveObject(Garages); break;
+                    case 4: size = SaveObject(GameLogic); break;
+                    case 5: size = SaveObject(PathFind); break;
+                    case 6: size = SaveObject(Pickups); break;
+                    case 7: size = SaveObject(PhoneInfo); break;
+                    case 8: size = SaveObject(Restart); break;
+                    case 9: size = SaveObject(Radar); break;
+                    case 10: size = SaveObject(Zones); break;
+                    case 11: size = SaveObject(Gangs); break;
+                    case 12: size = SaveObject(CarGenerators); break;
+                    case 13: size = SaveObject(PedGenerators); break;
+                    case 14: size = SaveObject(AudioScriptObjects); break;
+                    case 15: size = SaveObject(PlayerInfo); break;
+                    case 16: size = SaveObject(Stats); break;
+                    case 17: size = SaveObject(SetPieces); break;
+                    case 18: size = SaveObject(Streaming); break;
+                    case 19: size = SaveObject(PedTypeInfo); break;
+                    case 20: size = SaveObject(TagManager); break;
+                    case 21: size = SaveObject(IplStore); break;
+                    case 22: size = SaveObject(Shopping); break;
+                    case 23: size = SaveObject(GangWars); break;
+                    case 24: size = SaveObject(StuntJumpManager); break;
+                    case 25: size = SaveObject(EntryExitManager); break;
+                    case 26: size = SaveObject(RadioTrackManager); break;
+                    case 27: size = SaveObject(User3dMarkers); break;
+                    case 28: size = SaveObject(PostEffects); break;      // ???
+                }
+                Debug.WriteLine("Wrote {0} bytes of block data.", size);
+            }
+
+            //// Android
+            //{
+            //    // Padding
+            //    if (WorkBuff.Position > BufferSize - 4)
+            //    {
+            //        WorkBuff.Seek(BufferSize);
+            //        SaveWorkBuffer(false);
+            //    }
+            //    else
+            //    {
+            //        WorkBuff.Seek(BufferSize - 4);
+            //    }
+
+            //    // Checksum
+            //    SaveWorkBuffer(true);
+            //}
+
+            size = WorkBuff.Position + file.Position;
+            while (size < SizeOfOneGameInBytes - 4)
+            {
+                int remaining = SizeOfOneGameInBytes - file.Position - WorkBuff.Position - 4;
+                if (WorkBuff.Position + remaining < BufferSize)
+                {
+                    WorkBuff.Skip(remaining);
+                    break;
+                }
+
+                WorkBuff.Seek(BufferSize);
+                SaveWorkBuffer(false);
+                size = WorkBuff.Position + file.Position;
+            }
+
+            SaveWorkBuffer(true);
+
+            Debug.Assert(m_file.Position == SizeOfOneGameInBytes);
         }
 
         protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
