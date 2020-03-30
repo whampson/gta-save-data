@@ -92,30 +92,6 @@ namespace GTASaveData
             UserDefinedBlocks.Add(new T());
         }
 
-        protected int LoadUserDefinedBlocks(DataBuffer buf)
-        {
-            int size = 0;
-            foreach (var block in UserDefinedBlocks)
-            {
-                size += ReadBlock(buf);
-                ((ISaveDataObject) block).ReadObjectData(WorkBuff, FileFormat);
-            }
-
-            return size;
-        }
-
-        protected int SaveUserDefinedBlocks(DataBuffer buf)
-        {
-            int size = 0;
-            foreach (var block in UserDefinedBlocks)
-            {
-                ((ISaveDataObject) block).WriteObjectData(WorkBuff, FileFormat);
-                size += WriteBlock(buf);
-            }
-
-            return size;
-        }
-
         public static T Load<T>(string path)
             where T : SaveFile, new()
         {
@@ -191,8 +167,6 @@ namespace GTASaveData
             throw new InvalidOperationException("Invalid padding type.");
         }
 
-        protected abstract int ReadBlock(DataBuffer file);
-        protected abstract int WriteBlock(DataBuffer file);
         protected abstract void LoadAllData(DataBuffer file);
         protected abstract void SaveAllData(DataBuffer file);
         protected abstract bool DetectFileFormat(byte[] data, out SaveFileFormat fmt);

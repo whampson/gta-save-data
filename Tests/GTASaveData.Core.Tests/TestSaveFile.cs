@@ -58,16 +58,6 @@ namespace GTASaveData.Core.Tests
                 return GenerateSpecialPadding(length);
             }
 
-            protected override int ReadBlock(DataBuffer file)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override int WriteBlock(DataBuffer buf)
-            {
-                throw new NotImplementedException();
-            }
-
             protected override void LoadAllData(DataBuffer buf)
             {
                 throw new NotImplementedException();

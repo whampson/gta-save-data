@@ -15,8 +15,6 @@ namespace GTASaveData.VC
     {
         public const int SaveHeaderSize = 8;
         public const int SizeOfOneGameInBytes = 201729;
-        public const int BufferSizeAndroid = 0x10000;
-        public const int BufferSizePC = 0xD6D8;
 
         private SimpleVariables m_simpleVars;
         private DummyObject m_scripts;
@@ -187,43 +185,6 @@ namespace GTASaveData.VC
             set { m_pedTypeInfo = value; OnPropertyChanged(); }
         }
 
-        public override IReadOnlyList<SaveDataObject> Blocks
-        {
-            get
-            {
-                List<SaveDataObject> blocks = new List<SaveDataObject>()
-                {
-                    SimpleVars,
-                    Scripts,
-                    PedPool,
-                    Garages,
-                    GameLogic,
-                    VehiclePool,
-                    ObjectPool,
-                    Paths,
-                    Cranes,
-                    Pickups,
-                    PhoneInfo,
-                    RestartPoints,
-                    RadarBlips,
-                    Zones,
-                    GangData,
-                    CarGenerators,
-                    ParticleObjects,
-                    AudioScriptObjects,
-                    ScriptPaths,
-                    PlayerInfo,
-                    Stats,
-                    SetPieces,
-                    Streaming,
-                    PedTypeInfo
-                };
-
-                blocks.AddRange(UserDefinedBlocks);
-                return blocks.AsReadOnly();
-            }
-        }
-
         public override string Name
         {
             get { return SimpleVars.SaveName; }
@@ -235,6 +196,8 @@ namespace GTASaveData.VC
             get { return SimpleVars.TimeLastSaved.ToDateTime(); }
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
+
+        protected override int BufferSize => (FileFormat.SupportedOnMobile) ? 65536 : 55000;
 
         public ViceCitySave()
         {
@@ -335,13 +298,13 @@ namespace GTASaveData.VC
             WorkBuff.Write(SimpleVars, FileFormat);
         }
 
-        protected override int ReadBlock(DataBuffer file)
+        private int ReadBlock(DataBuffer file)
         {
             file.MarkPosition();
             WorkBuff.Reset();
 
             int size = file.ReadInt32();
-            if (size > GetBufferSize())
+            if (size > BufferSize)
             {
                 // TODO: BlockSizeChecks flag?
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
@@ -356,13 +319,13 @@ namespace GTASaveData.VC
             return size;
         }
 
-        protected override int WriteBlock(DataBuffer file)
+        private int WriteBlock(DataBuffer file)
         {
             file.MarkPosition();
 
             byte[] data = WorkBuff.GetBytesUpToCursor();
             int size = data.Length;
-            if (size > GetBufferSize())
+            if (size > BufferSize)
             {
                 // TODO: BlockSizeChecks flag?
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
@@ -457,19 +420,50 @@ namespace GTASaveData.VC
             for (int i = 0; i < 4; i++)
             {
                 size = DataBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
-                if (Padding != PaddingType.Default)
+                if (size > BufferSize)
                 {
-                    WorkBuff.Reset();
-                    WorkBuff.Write(GetPaddingBytes(size));
+                    size = BufferSize;
                 }
-                WorkBuff.Seek(size);
-                totalSize += WriteBlock(file);
+                if (size > 4)
+                {
+                    if (Padding != PaddingType.Default)
+                    {
+                        WorkBuff.Reset();
+                        WorkBuff.Write(GenerateSpecialPadding(size));
+                    }
+                    WorkBuff.Seek(size);
+                    totalSize += WriteBlock(file);
+                }
             }
 
             file.Write(CheckSum);
 
             Debug.WriteLine("Save size: {0}", totalSize);
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
+        }
+
+        private int LoadUserDefinedBlocks(DataBuffer buf)
+        {
+            int size = 0;
+            foreach (var block in UserDefinedBlocks)
+            {
+                size += ReadBlock(buf);
+                ((ISaveDataObject) block).ReadObjectData(WorkBuff, FileFormat);
+            }
+
+            return size;
+        }
+
+        private int SaveUserDefinedBlocks(DataBuffer buf)
+        {
+            int size = 0;
+            foreach (var block in UserDefinedBlocks)
+            {
+                ((ISaveDataObject) block).WriteObjectData(WorkBuff, FileFormat);
+                size += WriteBlock(buf);
+            }
+
+            return size;
         }
 
         protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
@@ -503,18 +497,35 @@ namespace GTASaveData.VC
             return false;
         }
 
-        protected override int GetBufferSize()
+        protected override List<SaveDataObject> GetBlocks()
         {
-            if (FileFormat.SupportedOnPS2)
+            return new List<SaveDataObject>()
             {
-                return 50000;
-            }
-            else if (FileFormat.SupportedOnMobile)
-            {
-                return 0x10000;
-            }
-
-            return 55000;
+                SimpleVars,
+                Scripts,
+                PedPool,
+                Garages,
+                GameLogic,
+                VehiclePool,
+                ObjectPool,
+                Paths,
+                Cranes,
+                Pickups,
+                PhoneInfo,
+                RestartPoints,
+                RadarBlips,
+                Zones,
+                GangData,
+                CarGenerators,
+                ParticleObjects,
+                AudioScriptObjects,
+                ScriptPaths,
+                PlayerInfo,
+                Stats,
+                SetPieces,
+                Streaming,
+                PedTypeInfo
+            };
         }
 
         public override bool Equals(object obj)

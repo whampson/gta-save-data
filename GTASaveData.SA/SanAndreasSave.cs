@@ -482,7 +482,7 @@ namespace GTASaveData.SA
                 Debug.WriteLine("Wrote {0} bytes of block data.", size);
             }
 
-            //// Android
+            // Android
             //{
             //    // Padding
             //    if (WorkBuff.Position > BufferSize - 4)
@@ -603,18 +603,6 @@ namespace GTASaveData.SA
                 && RadioTrackManager.Equals(other.RadioTrackManager)
                 && User3dMarkers.Equals(other.User3dMarkers)
                 && PostEffects.Equals(other.PostEffects);
-        }
-
-        // TODO :REMOVE
-        protected override int ReadBlock(DataBuffer file)
-        {
-            throw new NotImplementedException();
-        }
-
-        // TODO :REMOVE
-        protected override int WriteBlock(DataBuffer file)
-        {
-            throw new NotImplementedException();
         }
     }
 
