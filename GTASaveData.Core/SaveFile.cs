@@ -21,7 +21,7 @@ namespace GTASaveData
         private byte[] m_paddingBytes;
         private bool m_disposed;
 
-        protected DataBuffer WorkBuff { get; set; }
+        protected DataBuffer WorkBuff { get; }
         protected uint CheckSum { get; set; }
 
         [JsonIgnore]
@@ -45,16 +45,27 @@ namespace GTASaveData
             set { m_paddingBytes = value ?? DefaultPadding; }
         }
 
-        public List<SaveDataObject> UserDefinedBlocks { get; }
-
         [JsonIgnore]
-        public abstract IReadOnlyList<SaveDataObject> Blocks { get; }
+        public IReadOnlyList<SaveDataObject> Blocks
+        {
+            get
+            {
+                List<SaveDataObject> blocks = GetBlocks();
+                blocks.AddRange(UserDefinedBlocks);
+
+                return blocks.AsReadOnly();
+            }
+        }
+
+        public List<SaveDataObject> UserDefinedBlocks { get; }
 
         [JsonIgnore]
         public abstract string Name { get; set;  }
 
         [JsonIgnore]
         public abstract DateTime TimeLastSaved { get; set; }
+
+        protected abstract int BufferSize { get; }
 
         public SaveFile()
         {
@@ -150,7 +161,7 @@ namespace GTASaveData
             return new T().DetectFileFormat(data, out fmt);
         }
 
-        protected byte[] GetPaddingBytes(int length)
+        protected byte[] GenerateSpecialPadding(int length)
         {
             switch (Padding)
             {
@@ -177,7 +188,7 @@ namespace GTASaveData
                 }
             }
 
-            throw new InvalidOperationException("Unknown padding type.");
+            throw new InvalidOperationException("Invalid padding type.");
         }
 
         protected abstract int ReadBlock(DataBuffer file);
@@ -185,7 +196,7 @@ namespace GTASaveData
         protected abstract void LoadAllData(DataBuffer file);
         protected abstract void SaveAllData(DataBuffer file);
         protected abstract bool DetectFileFormat(byte[] data, out SaveFileFormat fmt);
-        protected abstract int GetBufferSize();
+        protected abstract List<SaveDataObject> GetBlocks();
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {

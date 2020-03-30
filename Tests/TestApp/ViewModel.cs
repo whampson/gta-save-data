@@ -1,7 +1,8 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
-using GTASaveData.Types;
 using GTASaveData.VC;
+using GTASaveData.SA;
+using GTASaveData.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,8 +13,7 @@ using WpfEssentials.Win32;
 
 using GTA3Block = GTASaveData.GTA3.Block;
 using VCBlock = GTASaveData.VC.Block;
-using SABlock = GTASaveData.VC.Block;
-using GTASaveData.SA;
+using SABlock = GTASaveData.SA.Block;
 
 namespace TestApp
 {

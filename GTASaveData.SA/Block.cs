@@ -1,0 +1,35 @@
+﻿namespace GTASaveData.SA
+{
+    public enum Block
+    {
+        SimpleVars,
+        Scripts,
+        Pools,
+        Garages,
+        GameLogic,
+        PathFind,
+        Pickups,
+        PhoneInfo,
+        Restart,
+        Radar,
+        Zones,
+        Gangs,
+        CarGenerators,
+        PedGenerators,
+        AudioScriptObjects,
+        PlayerInfo,
+        Stats,
+        SetPieces,
+        Streaming,
+        PedTypeInfo,
+        TagManager,
+        IplStore,
+        Shopping,
+        GangWars,
+        StuntJumpManager,
+        EntryExitManager,
+        RadioTrackManager,
+        User3dMarkers,
+        PostEffects
+    }
+}

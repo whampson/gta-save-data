@@ -172,6 +172,11 @@ namespace GTASaveData
             return m_reader.ReadBytes(count);
         }
 
+        public int Read(byte[] buffer, int index, int count)
+        {
+            return m_reader.Read(buffer, index, count);
+        }
+
         /// <summary>
         /// Reads an ASCII or Unicode character. Note: Surrogate characters are not supported.
         /// </summary>
@@ -417,6 +422,13 @@ namespace GTASaveData
             m_writer.Write(buffer);
 
             return buffer.Length;
+        }
+
+        public int Write(byte[] buffer, int index, int count)
+        {
+            m_writer.Write(buffer, index, count);
+
+            return count;
         }
 
         /// <summary>

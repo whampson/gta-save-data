@@ -39,11 +39,6 @@ namespace GTASaveData.Core.Tests
 
         private class TestSave : SaveFile
         {
-            public override IReadOnlyList<SaveDataObject> Blocks
-            {
-                get => throw new NotImplementedException();
-            }
-
             public override string Name
             {
                 get => throw new NotImplementedException();
@@ -56,9 +51,11 @@ namespace GTASaveData.Core.Tests
                 set => throw new NotImplementedException();
             }
 
-            public new byte[] GetPaddingBytes(int length)
+            protected override int BufferSize => throw new NotImplementedException();
+
+            public byte[] GetPaddingBytes(int length)
             {
-                return base.GetPaddingBytes(length);
+                return GenerateSpecialPadding(length);
             }
 
             protected override int ReadBlock(DataBuffer file)
@@ -86,7 +83,7 @@ namespace GTASaveData.Core.Tests
                 throw new NotImplementedException();
             }
 
-            protected override int GetBufferSize()
+            protected override List<SaveDataObject> GetBlocks()
             {
                 throw new NotImplementedException();
             }
