@@ -223,8 +223,17 @@ namespace GTASaveData.SA
             set { m_postEffects = value; }
         }
 
-        public override string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override DateTime TimeLastSaved { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override string Name
+        {
+            get { return SimpleVars.SaveName; }
+            set { SimpleVars.SaveName = value; OnPropertyChanged(); }
+        }
+
+        public override DateTime TimeLastSaved
+        {
+            get { return SimpleVars.TimeLastSaved.ToDateTime(); }
+            set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
+        }
 
         public override IReadOnlyList<SaveDataObject> Blocks => new List<SaveDataObject>()
         {
@@ -623,7 +632,7 @@ namespace GTASaveData.SA
     public static class FileFormats
     {
         public static readonly SaveFileFormat PC = new SaveFileFormat(
-            "PC", "PC", "PC (Windows/macOS)",
+            "PC", "PC", "Windows or macOS",
             new GameConsole(ConsoleType.Win32),
             new GameConsole(ConsoleType.MacOS)
         );

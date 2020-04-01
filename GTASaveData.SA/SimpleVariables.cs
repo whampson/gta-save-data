@@ -7,14 +7,533 @@ namespace GTASaveData.SA
 {
     public class SimpleVariables : SaveDataObject, IEquatable<SimpleVariables>
     {
+        public static class Limits
+        {
+            public const int MaxSaveNameLength = 100;   // PC
+        }
+
+        private const int SizeOfSimpleVariablesPC = 0x138;
+        private const int SizeOfSimpleVariablesAndroid = 0x1A8;
+        
+        private uint m_versionId;
+        private string m_saveName;
+        private byte m_missionPackGame;
+        private LevelType m_currLevel;
+        private Vector m_cameraPosition;
+        private int m_millisecondsPerGameMinute;
+        private uint m_lastClockTick;
+        private byte m_gameClockMonths;
+        private byte m_gameClockDays;
+        private byte m_gameClockHours;
+        private byte m_gameClockMinutes;
+        private byte m_currentDay;  // TODO: enum?
+        private byte m_storedGameClockMonths;
+        private byte m_storedGameClockDays;
+        private byte m_storedGameClockHours;
+        private byte m_storedGameClockMinutes;
+        private bool m_clockHasBeenStored;
+        private short m_currPadMode;
+        private bool m_hasPlayerCheated;
+        private uint m_timeInMilliseconds;
+        private float m_TimeScale;
+        private float m_TimeStep;
+        private float m_TimeStepNonClipped;
+        private uint m_frameCounter;
+        private WeatherType m_oldWeatherType;
+        private WeatherType m_newWeatherType;
+        private WeatherType m_forcedWeatherType;
+        private float m_weatherInterpolationValue;
+        private int m_weatherTypeInList;
+        private float m_rain;
+        private int m_cameraCarZoomIndicator;
+        private int m_cameraPedZoomIndicator;
+        private int m_currArea;     // TODO: enum?
+        private bool m_invertLook4Pad;
+        private int m_extraColour;
+        private bool m_extraColourOn;
+        private float m_extraColourInter;
+        private WeatherType m_extraColourWeatherType;
+        private int m_waterConfiguration;
+        private bool m_laRiots;
+        private bool m_laRiotsNoPoliceCars;
+        private int m_maximumWantedLevel;
+        private int m_maximumChaosLevel;
+        private bool m_germanGame;
+        private bool m_frenchGame;
+        private bool m_nastyGame;
+        private byte m_cineyCamMessageDisplayed;
+        private SystemTime m_timeLastSaved;
+        private int m_targetMarkerHandle;
+        private bool m_HasDisplayedPlayerQuitEnterCarHelpText;
+        private bool m_allTaxisHaveNitro;
+        private bool m_prostiutesPayYou;
+
+
+        public string SaveName
+        {
+            get { return m_saveName; }
+            set { m_saveName = value; OnPropertyChanged(); }
+        }
+
+        public uint VersionId
+        {
+            get { return m_versionId; }
+            set { m_versionId = value; OnPropertyChanged(); }
+        }
+
+        public byte MissionPackGame
+        {
+            get { return m_missionPackGame; }
+            set { m_missionPackGame = value; OnPropertyChanged(); }
+        }
+
+        public LevelType CurrLevel
+        {
+            get { return m_currLevel; }
+            set { m_currLevel = value; OnPropertyChanged(); }
+        }
+
+        public Vector CameraPosition
+        {
+            get { return m_cameraPosition; }
+            set { m_cameraPosition = value; OnPropertyChanged(); }
+        }
+
+        public int MillisecondsPerGameMinute
+        {
+            get { return m_millisecondsPerGameMinute; }
+            set { m_millisecondsPerGameMinute = value; OnPropertyChanged(); }
+        }
+
+        public uint LastClockTick
+        {
+            get { return m_lastClockTick; }
+            set { m_lastClockTick = value; OnPropertyChanged(); }
+        }
+
+        public byte GameClockMonths
+        {
+            get { return m_gameClockMonths; }
+            set { m_gameClockMonths = value; OnPropertyChanged(); }
+        }
+
+        public byte GameClockDays
+        {
+            get { return m_gameClockDays; }
+            set { m_gameClockDays = value; OnPropertyChanged(); }
+        }
+
+        public byte GameClockHours
+        {
+            get { return m_gameClockHours; }
+            set { m_gameClockHours = value; OnPropertyChanged(); }
+        }
+
+        public byte GameClockMinutes
+        {
+            get { return m_gameClockMinutes; }
+            set { m_gameClockMinutes = value; OnPropertyChanged(); }
+        }
+
+        public byte CurrentDay
+        {
+            get { return m_currentDay; }
+            set { m_currentDay = value; OnPropertyChanged(); }
+        }
+
+        public byte StoredGameClockMonths
+        {
+            get { return m_storedGameClockMonths; }
+            set { m_storedGameClockMonths = value; OnPropertyChanged(); }
+        }
+
+        public byte StoredGameClockDays
+        {
+            get { return m_storedGameClockDays; }
+            set { m_storedGameClockDays = value; OnPropertyChanged(); }
+        }
+
+        public byte StoredGameClockHours
+        {
+            get { return m_storedGameClockHours; }
+            set { m_storedGameClockHours = value; OnPropertyChanged(); }
+        }
+
+        public byte StoredGameClockMinutes
+        {
+            get { return m_storedGameClockMinutes; }
+            set { m_storedGameClockMinutes = value; OnPropertyChanged(); }
+        }
+
+        public bool ClockHasBeenStored
+        {
+            get { return m_clockHasBeenStored; }
+            set { m_clockHasBeenStored = value; OnPropertyChanged(); }
+        }
+
+        public short CurrPadMode
+        {
+            get { return m_currPadMode; }
+            set { m_currPadMode = value; OnPropertyChanged(); }
+        }
+
+        public bool HasPlayerCheated
+        {
+            get { return m_hasPlayerCheated; }
+            set { m_hasPlayerCheated = value; OnPropertyChanged(); }
+        }
+
+        public uint TimeInMilliseconds
+        {
+            get { return m_timeInMilliseconds; }
+            set { m_timeInMilliseconds = value; OnPropertyChanged(); }
+        }
+
+        public float TimeScale
+        {
+            get { return m_TimeScale; }
+            set { m_TimeScale = value; OnPropertyChanged(); }
+        }
+
+        public float TimeStep
+        {
+            get { return m_TimeStep; }
+            set { m_TimeStep = value; OnPropertyChanged(); }
+        }
+
+        public float TimeStepNonClipped
+        {
+            get { return m_TimeStepNonClipped; }
+            set { m_TimeStepNonClipped = value; OnPropertyChanged(); }
+        }
+
+        public uint FrameCounter
+        {
+            get { return m_frameCounter; }
+            set { m_frameCounter = value; OnPropertyChanged(); }
+        }
+
+        public WeatherType OldWeatherType
+        {
+            get { return m_oldWeatherType; }
+            set { m_oldWeatherType = value; OnPropertyChanged(); }
+        }
+
+        public WeatherType NewWeatherType
+        {
+            get { return m_newWeatherType; }
+            set { m_newWeatherType = value; OnPropertyChanged(); }
+        }
+
+        public WeatherType ForcedWeatherType
+        {
+            get { return m_forcedWeatherType; }
+            set { m_forcedWeatherType = value; OnPropertyChanged(); }
+        }
+
+        public float WeatherInterpolationValue
+        {
+            get { return m_weatherInterpolationValue; }
+            set { m_weatherInterpolationValue = value; OnPropertyChanged(); }
+        }
+
+        public int WeatherTypeInList
+        {
+            get { return m_weatherTypeInList; }
+            set { m_weatherTypeInList = value; OnPropertyChanged(); }
+        }
+
+        public float Rain
+        {
+            get { return m_rain; }
+            set { m_rain = value; OnPropertyChanged(); }
+        }
+
+        public int CameraCarZoomIndicator
+        {
+            get { return m_cameraCarZoomIndicator; }
+            set { m_cameraCarZoomIndicator = value; OnPropertyChanged(); }
+        }
+
+        public int CameraPedZoomIndicator
+        {
+            get { return m_cameraPedZoomIndicator; }
+            set { m_cameraPedZoomIndicator = value; OnPropertyChanged(); }
+        }
+
+        public int CurrArea
+        {
+            get { return m_currArea; }
+            set { m_currArea = value; OnPropertyChanged(); }
+        }
+
+        public bool InvertLook4Pad
+        {
+            get { return m_invertLook4Pad; }
+            set { m_invertLook4Pad = value; OnPropertyChanged(); }
+        }
+
+        public int ExtraColour
+        {
+            get { return m_extraColour; }
+            set { m_extraColour = value; OnPropertyChanged(); }
+        }
+
+        public bool ExtraColourOn
+        {
+            get { return m_extraColourOn; }
+            set { m_extraColourOn = value; OnPropertyChanged(); }
+        }
+
+        public float ExtraColourInterpolation
+        {
+            get { return m_extraColourInter; }
+            set { m_extraColourInter = value; OnPropertyChanged(); }
+        }
+
+        public WeatherType ExtraColourWeatherType
+        {
+            get { return m_extraColourWeatherType; }
+            set { m_extraColourWeatherType = value; OnPropertyChanged(); }
+        }
+
+        public int WaterConfiguration
+        {
+            get { return m_waterConfiguration; }
+            set { m_waterConfiguration = value; OnPropertyChanged(); }
+        }
+
+        public bool LARiots
+        {
+            get { return m_laRiots; }
+            set { m_laRiots = value; OnPropertyChanged(); }
+        }
+
+        public bool LARiotsNoPoliceCars
+        {
+            get { return m_laRiotsNoPoliceCars; }
+            set { m_laRiotsNoPoliceCars = value; OnPropertyChanged(); }
+        }
+
+        public int MaximumWantedLevel
+        {
+            get { return m_maximumWantedLevel; }
+            set { m_maximumWantedLevel = value; OnPropertyChanged(); }
+        }
+
+        public int MaximumChaosLevel
+        {
+            get { return m_maximumChaosLevel; }
+            set { m_maximumChaosLevel = value; OnPropertyChanged(); }
+        }
+
+        public bool GermanGame
+        {
+            get { return m_germanGame; }
+            set { m_germanGame = value; OnPropertyChanged(); }
+        }
+
+        public bool FrenchGame
+        {
+            get { return m_frenchGame; }
+            set { m_frenchGame = value; OnPropertyChanged(); }
+        }
+
+        public bool NastyGame
+        {
+            get { return m_nastyGame; }
+            set { m_nastyGame = value; OnPropertyChanged(); }
+        }
+
+        public byte CinematicCamMessagesLeftToDisplay
+        {
+            get { return m_cineyCamMessageDisplayed; }
+            set { m_cineyCamMessageDisplayed = value; OnPropertyChanged(); }
+        }
+
+        public SystemTime TimeLastSaved
+        {
+            get { return m_timeLastSaved; }
+            set { m_timeLastSaved = value; OnPropertyChanged(); }
+        }
+
+        public int TargetMarkerHandle
+        {
+            get { return m_targetMarkerHandle; }
+            set { m_targetMarkerHandle = value; OnPropertyChanged(); }
+        }
+
+        public bool HasDisplayedPlayerQuitEnterCarHelpText
+        {
+            get { return m_HasDisplayedPlayerQuitEnterCarHelpText; }
+            set { m_HasDisplayedPlayerQuitEnterCarHelpText = value; OnPropertyChanged(); }
+        }
+
+        public bool AllTaxisHaveNitro
+        {
+            get { return m_allTaxisHaveNitro; }
+            set { m_allTaxisHaveNitro = value; OnPropertyChanged(); }
+        }
+
+        public bool ProstiutesPayYou
+        {
+            get { return m_prostiutesPayYou; }
+            set { m_prostiutesPayYou = value; OnPropertyChanged(); }
+        }
+
+        public SimpleVariables()
+        {
+            SaveName = string.Empty;
+            TimeLastSaved = new SystemTime();
+            CameraPosition = new Vector();
+        }
+
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            throw new NotImplementedException();
+            VersionId = buf.ReadUInt32();
+            SaveName = buf.ReadString(Limits.MaxSaveNameLength);
+            MissionPackGame = buf.ReadByte();
+            buf.Align4Bytes();
+            CurrLevel = (LevelType) buf.ReadInt32();
+            CameraPosition = buf.ReadObject<Vector>();
+            MillisecondsPerGameMinute = buf.ReadInt32();
+            LastClockTick = buf.ReadUInt32();
+            GameClockMonths = buf.ReadByte();
+            GameClockDays = buf.ReadByte();
+            GameClockHours = buf.ReadByte();
+            GameClockMinutes = buf.ReadByte();
+            CurrentDay = buf.ReadByte();
+            StoredGameClockMonths = buf.ReadByte();
+            StoredGameClockDays = buf.ReadByte();
+            StoredGameClockHours = buf.ReadByte();
+            StoredGameClockMinutes = buf.ReadByte();
+            ClockHasBeenStored = buf.ReadBool();
+            CurrPadMode = buf.ReadInt16();
+            HasPlayerCheated = buf.ReadBool();
+            buf.Align4Bytes();
+            TimeInMilliseconds = buf.ReadUInt32();
+            TimeScale = buf.ReadSingle();
+            TimeStep = buf.ReadSingle();
+            TimeStepNonClipped = buf.ReadSingle();
+            FrameCounter = buf.ReadUInt32();
+            OldWeatherType = (WeatherType) buf.ReadInt16();
+            NewWeatherType = (WeatherType) buf.ReadInt16();
+            ForcedWeatherType = (WeatherType) buf.ReadInt16();
+            buf.Align4Bytes();
+            WeatherInterpolationValue = buf.ReadSingle();
+            WeatherTypeInList = buf.ReadInt32();
+            Rain = buf.ReadInt32();
+            CameraCarZoomIndicator = buf.ReadInt32();
+            CameraPedZoomIndicator = buf.ReadInt32();
+            CurrArea = buf.ReadInt32();
+            InvertLook4Pad = buf.ReadBool();
+            buf.Align4Bytes();
+            ExtraColour = buf.ReadInt32();
+            ExtraColourOn = buf.ReadBool();
+            buf.Align4Bytes();
+            ExtraColourInterpolation = buf.ReadSingle();
+            ExtraColourWeatherType = (WeatherType) buf.ReadInt32();
+            WaterConfiguration = buf.ReadInt32();
+            LARiots = buf.ReadBool();
+            LARiotsNoPoliceCars = buf.ReadBool();
+            buf.Align4Bytes();
+            MaximumWantedLevel = buf.ReadInt32();
+            MaximumChaosLevel = buf.ReadInt32();
+            GermanGame = buf.ReadBool();
+            FrenchGame = buf.ReadBool();
+            NastyGame = buf.ReadBool();
+            buf.Align4Bytes();
+            buf.Skip(0x2C);
+            CinematicCamMessagesLeftToDisplay = buf.ReadByte();
+            buf.Skip(1);    // Android: BlurOn
+            TimeLastSaved = buf.ReadObject<SystemTime>();
+            buf.Align4Bytes();
+            TargetMarkerHandle = buf.ReadInt32();
+            HasDisplayedPlayerQuitEnterCarHelpText = buf.ReadBool();
+            AllTaxisHaveNitro = buf.ReadBool();
+            ProstiutesPayYou = buf.ReadBool();
+            buf.Align4Bytes();
+
+            Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            throw new NotImplementedException();
+            buf.Write(VersionId);
+            buf.Write(SaveName, Limits.MaxSaveNameLength);
+            buf.Write(MissionPackGame);
+            buf.Align4Bytes();
+            buf.Write((int) CurrLevel);
+            buf.Write(CameraPosition);
+            buf.Write(MillisecondsPerGameMinute);
+            buf.Write(LastClockTick);
+            buf.Write(GameClockMonths);
+            buf.Write(GameClockDays);
+            buf.Write(GameClockHours);
+            buf.Write(GameClockMinutes);
+            buf.Write(CurrentDay);
+            buf.Write(StoredGameClockMonths);
+            buf.Write(StoredGameClockDays);
+            buf.Write(StoredGameClockHours);
+            buf.Write(StoredGameClockMinutes);
+            buf.Write(ClockHasBeenStored);
+            buf.Write(CurrPadMode);
+            buf.Write(HasPlayerCheated);
+            buf.Align4Bytes();
+            buf.Write(TimeInMilliseconds);
+            buf.Write(TimeScale);
+            buf.Write(TimeStep);
+            buf.Write(TimeStepNonClipped);
+            buf.Write(FrameCounter);
+            buf.Write((short) OldWeatherType);
+            buf.Write((short) NewWeatherType);
+            buf.Write((short) ForcedWeatherType);
+            buf.Align4Bytes();
+            buf.Write(WeatherInterpolationValue);
+            buf.Write(WeatherTypeInList);
+            buf.Write(Rain);
+            buf.Write(CameraCarZoomIndicator);
+            buf.Write(CameraPedZoomIndicator);
+            buf.Write(CurrArea);
+            buf.Write(InvertLook4Pad);
+            buf.Align4Bytes();
+            buf.Write(ExtraColour);
+            buf.Write(ExtraColourOn);
+            buf.Align4Bytes();
+            buf.Write(ExtraColourInterpolation);
+            buf.Write((int) ExtraColourWeatherType);
+            buf.Write(WaterConfiguration);
+            buf.Write(LARiots);
+            buf.Write(LARiotsNoPoliceCars);
+            buf.Align4Bytes();
+            buf.Write(MaximumWantedLevel);
+            buf.Write(MaximumChaosLevel);
+            buf.Write(GermanGame);
+            buf.Write(FrenchGame);
+            buf.Write(NastyGame);
+            buf.Align4Bytes();
+            buf.Skip(0x2C);
+            buf.Write(CinematicCamMessagesLeftToDisplay);
+            buf.Skip(1);  // Android: BlurOn
+            buf.Write(TimeLastSaved);
+            buf.Align4Bytes();
+            buf.Write(TargetMarkerHandle);
+            buf.Write(HasDisplayedPlayerQuitEnterCarHelpText);
+            buf.Write(AllTaxisHaveNitro);
+            buf.Write(ProstiutesPayYou);
+            buf.Align4Bytes();
+
+            Debug.Assert(buf.Offset == GetSize(fmt));
+        }
+
+        protected override int GetSize(SaveFileFormat fmt)
+        {
+            if (fmt.SupportedOnPC)
+            {
+                return SizeOfSimpleVariablesPC;
+            }
+
+            throw new NotSupportedException();
         }
 
         public override bool Equals(object obj)
@@ -24,573 +543,63 @@ namespace GTASaveData.SA
 
         public bool Equals(SimpleVariables other)
         {
-            throw new NotImplementedException();
+            if (other == null)
+            {
+                return false;
+            }
+
+            return VersionId.Equals(other.VersionId)
+                && SaveName.Equals(other.SaveName)
+                && MissionPackGame.Equals(other.MissionPackGame)
+                && CurrLevel.Equals(other.CurrLevel)
+                && CameraPosition.Equals(other.CameraPosition)
+                && MillisecondsPerGameMinute.Equals(other.MillisecondsPerGameMinute)
+                && LastClockTick.Equals(other.LastClockTick)
+                && GameClockMonths.Equals(other.GameClockMonths)
+                && GameClockDays.Equals(other.GameClockDays)
+                && GameClockHours.Equals(other.GameClockHours)
+                && GameClockMinutes.Equals(other.GameClockMinutes)
+                && CurrentDay.Equals(other.CurrentDay)
+                && StoredGameClockMonths.Equals(other.StoredGameClockMonths)
+                && StoredGameClockDays.Equals(other.StoredGameClockDays)
+                && StoredGameClockHours.Equals(other.StoredGameClockHours)
+                && StoredGameClockMinutes.Equals(other.StoredGameClockMinutes)
+                && ClockHasBeenStored.Equals(other.ClockHasBeenStored)
+                && CurrPadMode.Equals(other.CurrPadMode)
+                && HasPlayerCheated.Equals(other.HasPlayerCheated)
+                && TimeInMilliseconds.Equals(other.TimeInMilliseconds)
+                && TimeScale.Equals(other.TimeScale)
+                && TimeStep.Equals(other.TimeStep)
+                && TimeStepNonClipped.Equals(other.TimeStepNonClipped)
+                && FrameCounter.Equals(other.FrameCounter)
+                && OldWeatherType.Equals(other.OldWeatherType)
+                && NewWeatherType.Equals(other.NewWeatherType)
+                && ForcedWeatherType.Equals(other.ForcedWeatherType)
+                && WeatherInterpolationValue.Equals(other.WeatherInterpolationValue)
+                && WeatherTypeInList.Equals(other.WeatherTypeInList)
+                && Rain.Equals(other.Rain)
+                && CameraCarZoomIndicator.Equals(other.CameraCarZoomIndicator)
+                && CameraPedZoomIndicator.Equals(other.CameraPedZoomIndicator)
+                && CurrArea.Equals(other.CurrArea)
+                && InvertLook4Pad.Equals(other.InvertLook4Pad)
+                && ExtraColour.Equals(other.ExtraColour)
+                && ExtraColourOn.Equals(other.ExtraColourOn)
+                && ExtraColourInterpolation.Equals(other.ExtraColourInterpolation)
+                && ExtraColourWeatherType.Equals(other.ExtraColourWeatherType)
+                && WaterConfiguration.Equals(other.WaterConfiguration)
+                && LARiots.Equals(other.LARiots)
+                && LARiotsNoPoliceCars.Equals(other.LARiotsNoPoliceCars)
+                && MaximumWantedLevel.Equals(other.MaximumWantedLevel)
+                && MaximumChaosLevel.Equals(other.MaximumChaosLevel)
+                && GermanGame.Equals(other.GermanGame)
+                && FrenchGame.Equals(other.FrenchGame)
+                && NastyGame.Equals(other.NastyGame)
+                && CinematicCamMessagesLeftToDisplay.Equals(other.CinematicCamMessagesLeftToDisplay)
+                && TimeLastSaved.Equals(other.TimeLastSaved)
+                && TargetMarkerHandle.Equals(other.TargetMarkerHandle)
+                && HasDisplayedPlayerQuitEnterCarHelpText.Equals(other.HasDisplayedPlayerQuitEnterCarHelpText)
+                && AllTaxisHaveNitro.Equals(other.AllTaxisHaveNitro)
+                && ProstiutesPayYou.Equals(other.ProstiutesPayYou);
         }
     }
 }
-
-//using GTASaveData.Types;
-//using System;
-//using System.Diagnostics;
-
-//namespace GTASaveData.SA
-//{
-//    public class SimpleVars : GTAObject, IEquatable<SimpleVars>
-//    {
-//        public static class Limits
-//        {
-//            public const int MaxSaveNameLength = 100;
-//            public const int UnknownDataLength = 45;
-//        }
-
-//        private uint m_versionNumber;
-//        private string m_saveName;
-//        private bool m_missionPackGame;
-//        private int m_currLevel;
-//        private Vector m_cameraPosition;
-//        private int m_millisecondsPerGameMinute;
-//        private uint m_lastClockTick;
-//        private int m_gameMonth;
-//        private int m_gameMonthDay;
-//        private int m_gameHour;
-//        private int m_gameMinute;
-//        private int m_weekday;
-//        private bool m_timeCopyFlag;
-//        private int m_currentPadMode;
-//        private bool m_cheatedFlag;
-//        private uint m_timeInMilliseconds;
-//        private float m_timeScale;
-//        private float m_timeStep;
-//        private float m_tickTime;
-//        private int m_frameCounter;
-//        private int m_previousWeather;
-//        private int m_currentWeather;
-//        private int m_forcedWeather;
-//        private float m_weatherInterpolation;
-//        private int m_weatherTypeInList;
-//        private float m_amountOfRainFallen;
-//        private int m_inCarCameraMode;
-//        private int m_onFootCameraMode;
-//        private int m_currentInterior;
-//        private bool m_invertLook;
-//        private int m_extraColorId;
-//        private bool m_extraOn;
-//        private float m_extraInterpolation;
-//        private int m_extraWeather;
-//        private int m_currentWaterConfiguration;
-//        private bool m_riotMode;
-//        private bool m_unknownRiotRelated;
-//        private int m_maxWantedLevel;
-//        private int m_maxChaos;
-//        private bool m_isFrench;
-//        private bool m_isGerman;
-//        private bool m_isUncensored;
-//        private Array<byte> m_unknown;
-//        private int m_cinematicCameraHelpRemaining;
-//        private SystemTime m_saveTime;
-//        private uint m_targetMarkerHandle;
-//        private bool m_carTheftHelpShown;
-//        private bool m_allTaxisHaveNitro;
-//        private bool m_prostitutesPayYou;
-
-//        public uint VersionId
-//        { 
-//            get { return m_versionNumber; }
-//            set { m_versionNumber = value; OnPropertyChanged(); }
-//        }
-
-//        public string SaveName
-//        { 
-//            get { return m_saveName; }
-//            set { m_saveName = value; OnPropertyChanged(); }
-//        }
-
-//        public int CurrentMissionPack
-//        { 
-//            get { return m_missionPackGame; }
-//            set { m_missionPackGame = value; OnPropertyChanged(); }
-//        }
-
-//        public int CurrentLevel
-//        { 
-//            get { return m_currLevel; }
-//            set { m_currLevel = value; OnPropertyChanged(); }
-//        }
-
-//        public Vector CameraPosition
-//        { 
-//            get { return m_cameraPosition; }
-//            set { m_cameraPosition = value; OnPropertyChanged(); }
-//        }
-
-//        public int MillisecondsPerGameMinute
-//        { 
-//            get { return m_millisecondsPerGameMinute; }
-//            set { m_millisecondsPerGameMinute = value; OnPropertyChanged(); }
-//        }
-
-//        public uint LastClockTick
-//        { 
-//            get { return m_lastClockTick; }
-//            set { m_lastClockTick = value; OnPropertyChanged(); }
-//        }
-
-//        public int GameMonth
-//        { 
-//            get { return m_gameMonth; }
-//            set { m_gameMonth = value; OnPropertyChanged(); }
-//        }
-
-//        public int GameMonthDay
-//        { 
-//            get { return m_gameMonthDay; }
-//            set { m_gameMonthDay = value; OnPropertyChanged(); }
-//        }
-
-//        public int GameClockHours
-//        { 
-//            get { return m_gameHour; }
-//            set { m_gameHour = value; OnPropertyChanged(); }
-//        }
-
-//        public int GameClockMinutes
-//        { 
-//            get { return m_gameMinute; }
-//            set { m_gameMinute = value; OnPropertyChanged(); }
-//        }
-
-//        public int Weekday
-//        { 
-//            get { return m_weekday; }
-//            set { m_weekday = value; OnPropertyChanged(); }
-//        }
-
-//        public bool TimeCopyFlag
-//        { 
-//            get { return m_timeCopyFlag; }
-//            set { m_timeCopyFlag = value; OnPropertyChanged(); }
-//        }
-
-//        public int CurrentPadMode
-//        { 
-//            get { return m_currentPadMode; }
-//            set { m_currentPadMode = value; OnPropertyChanged(); }
-//        }
-
-//        public bool CheatedFlag
-//        {
-//            get { return m_cheatedFlag; }
-//            set { m_cheatedFlag = value; OnPropertyChanged(); }
-//        }
-
-//        public uint GlobalTimer
-//        { 
-//            get { return m_timeInMilliseconds; }
-//            set { m_timeInMilliseconds = value; OnPropertyChanged(); }
-//        }
-
-//        public float TimeScale
-//        { 
-//            get { return m_timeScale; }
-//            set { m_timeScale = value; OnPropertyChanged(); }
-//        }
-
-//        public float TimeStep
-//        { 
-//            get { return m_timeStep; }
-//            set { m_timeStep = value; OnPropertyChanged(); }
-//        }
-
-//        public float TickTime
-//        { 
-//            get { return m_tickTime; }
-//            set { m_tickTime = value; OnPropertyChanged(); }
-//        }
-
-//        public int FrameCounter
-//        { 
-//            get { return m_frameCounter; }
-//            set { m_frameCounter = value; OnPropertyChanged(); }
-//        }
-
-//        public int PreviousWeather
-//        { 
-//            get { return m_previousWeather; }
-//            set { m_previousWeather = value; OnPropertyChanged(); }
-//        }
-
-//        public int CurrentWeather
-//        { 
-//            get { return m_currentWeather; }
-//            set { m_currentWeather = value; OnPropertyChanged(); }
-//        }
-
-//        public int ForcedWeather
-//        { 
-//            get { return m_forcedWeather; }
-//            set { m_forcedWeather = value; OnPropertyChanged(); }
-//        }
-
-//        public float WeatherInterpolation
-//        { 
-//            get { return m_weatherInterpolation; }
-//            set { m_weatherInterpolation = value; OnPropertyChanged(); }
-//        }
-
-//        public int WeatherTypeInList
-//        { 
-//            get { return m_weatherTypeInList; }
-//            set { m_weatherTypeInList = value; OnPropertyChanged(); }
-//        }
-
-//        public float AmountOfRainFallen
-//        { 
-//            get { return m_amountOfRainFallen; }
-//            set { m_amountOfRainFallen = value; OnPropertyChanged(); }
-//        }
-
-//        public int InCarCameraMode
-//        { 
-//            get { return m_inCarCameraMode; }
-//            set { m_inCarCameraMode = value; OnPropertyChanged(); }
-//        }
-
-//        public int OnFootCameraMode
-//        { 
-//            get { return m_onFootCameraMode; }
-//            set { m_onFootCameraMode = value; OnPropertyChanged(); }
-//        }
-
-//        public int CurrentInterior
-//        { 
-//            get { return m_currentInterior; }
-//            set { m_currentInterior = value; OnPropertyChanged(); }
-//        }
-
-//        public bool InvertLook
-//        { 
-//            get { return m_invertLook; }
-//            set { m_invertLook = value; OnPropertyChanged(); }
-//        }
-
-//        public int ExtraColorId
-//        { 
-//            get { return m_extraColorId; }
-//            set { m_extraColorId = value; OnPropertyChanged(); }
-//        }
-
-//        public bool ExtraOn
-//        { 
-//            get { return m_extraOn; }
-//            set { m_extraOn = value; OnPropertyChanged(); }
-//        }
-
-//        public float ExtraInterpolation
-//        { 
-//            get { return m_extraInterpolation; }
-//            set { m_extraInterpolation = value; OnPropertyChanged(); }
-//        }
-
-//        public int ExtraWeather
-//        { 
-//            get { return m_extraWeather; }
-//            set { m_extraWeather = value; OnPropertyChanged(); }
-//        }
-
-//        public int CurrentWaterConfiguration
-//        { 
-//            get { return m_currentWaterConfiguration; }
-//            set { m_currentWaterConfiguration = value; OnPropertyChanged(); }
-//        }
-
-//        public bool RiotMode
-//        { 
-//            get { return m_riotMode; }
-//            set { m_riotMode = value; OnPropertyChanged(); }
-//        }
-
-//        public bool UnknownRiotRelated
-//        { 
-//            get { return m_unknownRiotRelated; }
-//            set { m_unknownRiotRelated = value; OnPropertyChanged(); }
-//        }
-
-//        public Array<byte> Unknown
-//        {
-//            get { return m_unknown; }
-//            set { m_unknown = value; OnPropertyChanged(); }
-//        }
-
-//        public int MaxWantedLevel
-//        { 
-//            get { return m_maxWantedLevel; }
-//            set { m_maxWantedLevel = value; OnPropertyChanged(); }
-//        }
-
-//        public int MaxChaos
-//        { 
-//            get { return m_maxChaos; }
-//            set { m_maxChaos = value; OnPropertyChanged(); }
-//        }
-
-//        public bool IsFrench
-//        { 
-//            get { return m_isFrench; }
-//            set { m_isFrench = value; OnPropertyChanged(); }
-//        }
-
-//        public bool IsGerman
-//        { 
-//            get { return m_isGerman; }
-//            set { m_isGerman = value; OnPropertyChanged(); }
-//        }
-
-//        public bool IsUncensored
-//        { 
-//            get { return m_isUncensored; }
-//            set { m_isUncensored = value; OnPropertyChanged(); }
-//        }
-
-//        public int CinematicCameraHelpRemaining
-//        { 
-//            get { return m_cinematicCameraHelpRemaining; }
-//            set { m_cinematicCameraHelpRemaining = value; OnPropertyChanged(); }
-//        }
-
-//        public SystemTime SaveTime
-//        { 
-//            get { return m_saveTime; }
-//            set { m_saveTime = value; OnPropertyChanged(); }
-//        }
-
-//        public uint TargetMarkerHandle
-//        { 
-//            get { return m_targetMarkerHandle; }
-//            set { m_targetMarkerHandle = value; OnPropertyChanged(); }
-//        }
-
-//        public bool CarTheftHelpShown
-//        { 
-//            get { return m_carTheftHelpShown; }
-//            set { m_carTheftHelpShown = value; OnPropertyChanged(); }
-//        }
-
-//        public bool AllTaxisHaveNitro
-//        { 
-//            get { return m_allTaxisHaveNitro; }
-//            set { m_allTaxisHaveNitro = value; OnPropertyChanged(); }
-//        }
-
-//        public bool ProstitutesPayYou
-//        { 
-//            get { return m_prostitutesPayYou; }
-//            set { m_prostitutesPayYou = value; OnPropertyChanged(); }
-//        }
-
-//        public SimpleVars()
-//        {
-//            m_cameraPosition = new Vector();
-//            m_saveTime = new SystemTime();
-//        }
-
-//        protected override void ReadObjectData(Serializer r, SaveFileFormat fmt)
-//        {
-//            long start = r.BaseStream.Position;
-
-//            m_versionNumber = r.ReadUInt32();
-//            m_saveName = r.ReadString(Limits.MaxSaveNameLength);
-//            m_missionPackGame = r.ReadByte();
-//            r.Align();
-//            m_currLevel = r.ReadInt32();
-//            m_cameraPosition = r.ReadObject<Vector>();
-//            m_millisecondsPerGameMinute = r.ReadInt32();
-//            m_lastClockTick = r.ReadUInt32();
-//            m_gameMonth = r.ReadByte();
-//            m_gameMonthDay = r.ReadByte();
-//            m_gameHour = r.ReadByte();
-//            m_gameMinute = r.ReadByte();
-//            m_weekday = r.ReadByte();
-//            m_gameMonth = r.ReadByte();     // deliberately copied
-//            m_gameMonthDay = r.ReadByte();  // deliberately copied
-//            m_gameHour = r.ReadByte();      // deliberately copied
-//            m_gameMinute = r.ReadByte();    // deliberately copied
-//            m_timeCopyFlag = r.ReadBool();
-//            m_currentPadMode = r.ReadUInt16();
-//            m_cheatedFlag = r.ReadBool();
-//            r.Align();
-//            m_timeInMilliseconds = r.ReadUInt32();
-//            m_timeScale = r.ReadSingle();
-//            m_timeStep = r.ReadSingle();
-//            m_tickTime = r.ReadSingle();
-//            m_frameCounter = r.ReadInt32();
-//            m_previousWeather = r.ReadInt16();
-//            m_currentWeather = r.ReadInt16();
-//            m_forcedWeather = r.ReadInt16();
-//            m_weatherInterpolation = r.ReadSingle();     // maybe dword?
-//            r.Align();
-//            m_weatherTypeInList = r.ReadInt32();
-//            m_amountOfRainFallen = r.ReadSingle();
-//            m_inCarCameraMode = r.ReadInt32();
-//            m_onFootCameraMode = r.ReadInt32();
-//            m_currentInterior = r.ReadInt32();
-//            m_invertLook = r.ReadBool();
-//            r.Align();
-//            m_extraColorId = r.ReadInt32();
-//            m_extraOn = r.ReadBool();
-//            r.Align();
-//            m_extraInterpolation = r.ReadSingle();
-//            m_extraWeather = r.ReadInt32();
-//            m_currentWaterConfiguration = r.ReadInt32();
-//            m_riotMode = r.ReadBool();
-//            m_unknownRiotRelated = r.ReadBool();
-//            r.Align();
-//            m_maxWantedLevel = r.ReadInt32();
-//            m_maxChaos = r.ReadInt32();
-//            m_isFrench = r.ReadBool();
-//            m_isGerman = r.ReadBool();
-//            m_isUncensored = r.ReadBool();
-//            r.Align();
-//            m_unknown = r.ReadBytes(Limits.UnknownDataLength);
-//            m_cinematicCameraHelpRemaining = r.ReadByte();
-//            m_saveTime = r.ReadObject<SystemTime>();
-//            m_targetMarkerHandle = r.ReadUInt32();
-//            m_carTheftHelpShown = r.ReadBool();
-//            m_allTaxisHaveNitro = r.ReadBool();
-//            m_prostitutesPayYou = r.ReadBool();
-//            r.Align();
-
-//            Debug.Assert(r.BaseStream.Position - start == 0x0138, "Invalid SimpleVars size!");
-//        }
-
-//        protected override void WriteObjectData(Serializer w, SaveFileFormat fmt)
-//        {
-//            long start = w.BaseStream.Position;
-
-//            w.Write(m_versionNumber);
-//            w.Write(m_saveName, Limits.MaxSaveNameLength);
-//            w.Write((byte) m_missionPackGame);
-//            w.Align();
-//            w.Write(m_currLevel);
-//            w.Write(m_cameraPosition);
-//            w.Write(m_millisecondsPerGameMinute);
-//            w.Write(m_lastClockTick);
-//            w.Write((byte) m_gameMonth);
-//            w.Write((byte) m_gameMonthDay);
-//            w.Write((byte) m_gameHour);
-//            w.Write((byte) m_gameMinute);
-//            w.Write((byte) m_weekday);  
-//            w.Write((byte) m_gameMonth);    // deliberately copied
-//            w.Write((byte) m_gameMonthDay); // deliberately copied
-//            w.Write((byte) m_gameHour);     // deliberately copied
-//            w.Write((byte) m_gameMinute);   // deliberately copied
-//            w.Write(m_timeCopyFlag);
-//            w.Write((ushort) m_currentPadMode);
-//            w.Write(m_cheatedFlag);
-//            w.Align();
-//            w.Write(m_timeInMilliseconds);
-//            w.Write(m_timeScale);
-//            w.Write(m_timeStep);
-//            w.Write(m_tickTime);
-//            w.Write(m_frameCounter);
-//            w.Write((short) m_previousWeather);
-//            w.Write((short) m_currentWeather);
-//            w.Write((short) m_forcedWeather);
-//            w.Write(m_weatherInterpolation);
-//            w.Align();
-//            w.Write(m_weatherTypeInList);
-//            w.Write(m_amountOfRainFallen);
-//            w.Write(m_inCarCameraMode);
-//            w.Write(m_onFootCameraMode);
-//            w.Write(m_currentInterior);
-//            w.Write(m_invertLook);
-//            w.Align();
-//            w.Write(m_extraColorId);
-//            w.Write(m_extraOn);
-//            w.Align();
-//            w.Write(m_extraInterpolation);
-//            w.Write(m_extraWeather);
-//            w.Write(m_currentWaterConfiguration);
-//            w.Write(m_riotMode);
-//            w.Write(m_unknownRiotRelated);
-//            w.Align();
-//            w.Write(m_maxWantedLevel);
-//            w.Write(m_maxChaos);
-//            w.Write(m_isFrench);
-//            w.Write(m_isGerman);
-//            w.Write(m_isUncensored);
-//            w.Align();
-//            w.Write(m_unknown.ToArray(), Limits.UnknownDataLength);
-//            w.Write((byte) m_cinematicCameraHelpRemaining);
-//            w.Write(m_saveTime);
-//            w.Write(m_targetMarkerHandle);
-//            w.Write(m_carTheftHelpShown);
-//            w.Write(m_allTaxisHaveNitro);
-//            w.Write(m_prostitutesPayYou);
-//            w.Align();
-
-//            Debug.Assert(w.BaseStream.Position - start == 0x0138, "Invalid SimpleVars size!");
-//        }
-
-//        public override bool Equals(object obj)
-//        {
-//            return Equals(obj as SimpleVars);
-//        }
-
-//        public bool Equals(SimpleVars other)
-//        {
-//            if (other == null)
-//            {
-//                return false;
-//            }
-
-//            return m_versionNumber.Equals(other.m_versionNumber)
-//                && m_saveName.Equals(other.m_saveName)
-//                && m_missionPackGame.Equals(other.m_missionPackGame)
-//                && m_currLevel.Equals(other.m_currLevel)
-//                && m_cameraPosition.Equals(other.m_cameraPosition)
-//                && m_millisecondsPerGameMinute.Equals(other.m_millisecondsPerGameMinute)
-//                && m_lastClockTick.Equals(other.m_lastClockTick)
-//                && m_gameMonth.Equals(other.m_gameMonth)
-//                && m_gameMonthDay.Equals(other.m_gameMonthDay)
-//                && m_gameHour.Equals(other.m_gameHour)
-//                && m_gameMinute.Equals(other.m_gameMinute)
-//                && m_weekday.Equals(other.m_weekday)
-//                && m_timeCopyFlag.Equals(other.m_timeCopyFlag)
-//                && m_currentPadMode.Equals(other.m_currentPadMode)
-//                && m_cheatedFlag.Equals(other.m_cheatedFlag)
-//                && m_timeInMilliseconds.Equals(other.m_timeInMilliseconds)
-//                && m_timeScale.Equals(other.m_timeScale)
-//                && m_timeStep.Equals(other.m_timeStep)
-//                && m_tickTime.Equals(other.m_tickTime)
-//                && m_frameCounter.Equals(other.m_frameCounter)
-//                && m_previousWeather.Equals(other.m_previousWeather)
-//                && m_currentWeather.Equals(other.m_currentWeather)
-//                && m_forcedWeather.Equals(other.m_forcedWeather)
-//                && m_weatherInterpolation.Equals(other.m_weatherInterpolation)
-//                && m_weatherTypeInList.Equals(other.m_weatherTypeInList)
-//                && m_amountOfRainFallen.Equals(other.m_amountOfRainFallen)
-//                && m_inCarCameraMode.Equals(other.m_inCarCameraMode)
-//                && m_onFootCameraMode.Equals(other.m_onFootCameraMode)
-//                && m_currentInterior.Equals(other.m_currentInterior)
-//                && m_invertLook.Equals(other.m_invertLook)
-//                && m_extraColorId.Equals(other.m_extraColorId)
-//                && m_extraOn.Equals(other.m_extraOn)
-//                && m_extraInterpolation.Equals(other.m_extraInterpolation)
-//                && m_extraWeather.Equals(other.m_extraWeather)
-//                && m_currentWaterConfiguration.Equals(other.m_currentWaterConfiguration)
-//                && m_riotMode.Equals(other.m_riotMode)
-//                && m_unknownRiotRelated.Equals(other.m_unknownRiotRelated)
-//                && m_maxWantedLevel.Equals(other.m_maxWantedLevel)
-//                && m_maxChaos.Equals(other.m_maxChaos)
-//                && m_isFrench.Equals(other.m_isFrench)
-//                && m_isGerman.Equals(other.m_isGerman)
-//                && m_isUncensored.Equals(other.m_isUncensored)
-//                && m_cinematicCameraHelpRemaining.Equals(other.m_cinematicCameraHelpRemaining)
-//                && m_saveTime.Equals(other.m_saveTime)
-//                && m_targetMarkerHandle.Equals(other.m_targetMarkerHandle)
-//                && m_carTheftHelpShown.Equals(other.m_carTheftHelpShown)
-//                && m_allTaxisHaveNitro.Equals(other.m_allTaxisHaveNitro)
-//                && m_prostitutesPayYou.Equals(other.m_prostitutesPayYou);
-//        }
-//    }
-//}
