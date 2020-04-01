@@ -13,26 +13,27 @@ namespace GTASaveData.SA
     public class SanAndreasSave : SaveFile, IGTASaveFile, IEquatable<SanAndreasSave>
     {
         public const int SizeOfOneGameInBytes = 202752;
-        public const int BlockHeaderSize = 5;
+        private const int BlockHeaderSize = 5;
         private const string BlockTagName = "BLOCK";
 
-        private DataBuffer m_file;
+        protected override int BufferSize => (FileFormat.SupportedOnMobile) ? 65000 : 51200;
 
-        private DummyObject m_simpleVars;   // SimpleVariables
+        private DataBuffer m_file;
+        private SimpleVariables m_simpleVars;
         private DummyObject m_scripts;      // TheScripts
         private DummyObject m_pools;   // Pools
         private DummyObject m_garages;   // Garages
         private DummyObject m_gameLogic;   // GameLogic
-        private DummyObject m_pathFind;   // PathFind
+        private DummyObject m_paths;   // PathFind
         private DummyObject m_pickups;   // Pickups
-        private DummyObject m_phoneInfo;   // PhoneInfo
-        private DummyObject m_restart;   // Restart
-        private DummyObject m_radar;   // Radar
+        private DummyObject m_phoneInfo;   // PhoneInfo (empty)
+        private DummyObject m_restartPoints;   // Restart
+        private DummyObject m_radarBlips;   // Radar
         private DummyObject m_zones;   // TheZones
-        private DummyObject m_gangs;   // Gangs
+        private DummyObject m_gangData;   // Gangs
         private DummyObject m_carGenerators;   // TheCarGenerators
         private DummyObject m_pedGenerators;   // PedGenerators (empty)
-        private DummyObject m_audioScriptObjects;   // AudioScriptObject (empty)
+        private DummyObject m_audioScriptObjects;   // AudioScriptObjects (empty)
         private DummyObject m_playerInfo;   // PlayerInfo
         private DummyObject m_stats;   // Stats
         private DummyObject m_setPieces;   // SetPieces
@@ -48,7 +49,7 @@ namespace GTASaveData.SA
         private DummyObject m_user3dMarkers;   // User3dMarkers
         private DummyObject m_postEffects;   // PostEffects (Mobile only?)
 
-        public DummyObject SimpleVars
+        public SimpleVariables SimpleVars
         {
             get { return m_simpleVars; }
             set { m_simpleVars = value; }
@@ -78,10 +79,10 @@ namespace GTASaveData.SA
             set { m_gameLogic = value; }
         }
 
-        public DummyObject PathFind
+        public DummyObject Paths
         {
-            get { return m_pathFind; }
-            set { m_pathFind = value; }
+            get { return m_paths; }
+            set { m_paths = value; }
         }
 
         public DummyObject Pickups
@@ -96,16 +97,16 @@ namespace GTASaveData.SA
             set { m_phoneInfo = value; }
         }
 
-        public DummyObject Restart
+        public DummyObject RestartPoints
         {
-            get { return m_restart; }
-            set { m_restart = value; }
+            get { return m_restartPoints; }
+            set { m_restartPoints = value; }
         }
 
-        public DummyObject Radar
+        public DummyObject RadarBlips
         {
-            get { return m_radar; }
-            set { m_radar = value; }
+            get { return m_radarBlips; }
+            set { m_radarBlips = value; }
         }
 
         public DummyObject Zones
@@ -114,10 +115,10 @@ namespace GTASaveData.SA
             set { m_zones = value; }
         }
 
-        public DummyObject Gangs
+        public DummyObject GangData
         {
-            get { return m_gangs; }
-            set { m_gangs = value; }
+            get { return m_gangData; }
+            set { m_gangData = value; }
         }
 
         public DummyObject CarGenerators
@@ -225,22 +226,53 @@ namespace GTASaveData.SA
         public override string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public override DateTime TimeLastSaved { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        protected override int BufferSize => (FileFormat.SupportedOnMobile) ? 65000 : 51200;
+        public override IReadOnlyList<SaveDataObject> Blocks => new List<SaveDataObject>()
+        {
+            SimpleVars,
+            Scripts,
+            Pools,
+            Garages,
+            GameLogic,
+            Paths,
+            Pickups,
+            PhoneInfo,
+            RestartPoints,
+            RadarBlips,
+            Zones,
+            GangData,
+            CarGenerators,
+            PedGenerators,
+            AudioScriptObjects,
+            PlayerInfo,
+            Stats,
+            SetPieces,
+            Streaming,
+            PedTypeInfo,
+            TagManager,
+            IplStore,
+            Shopping,
+            GangWars,
+            StuntJumpManager,
+            EntryExitManager,
+            RadioTrackManager,
+            User3dMarkers,
+            PostEffects
+        };
 
         public SanAndreasSave()
         {
-            SimpleVars = new DummyObject();
+            SimpleVars = new SimpleVariables();
             Scripts = new DummyObject();
             Pools = new DummyObject();
             Garages = new DummyObject();
             GameLogic = new DummyObject();
-            PathFind = new DummyObject();
+            Paths = new DummyObject();
             Pickups = new DummyObject();
             PhoneInfo = new DummyObject();
-            Restart = new DummyObject();
-            Radar = new DummyObject();
+            RestartPoints = new DummyObject();
+            RadarBlips = new DummyObject();
             Zones = new DummyObject();
-            Gangs = new DummyObject();
+            GangData = new DummyObject();
             CarGenerators = new DummyObject();
             PedGenerators = new DummyObject();
             AudioScriptObjects = new DummyObject();
@@ -260,6 +292,20 @@ namespace GTASaveData.SA
             PostEffects = new DummyObject();
         }
 
+        private int LoadBlockHeader()
+        {
+            int count = LoadDataFromWorkBuffer(5, out byte[] tagBytes);
+            string tag = Encoding.ASCII.GetString(tagBytes);
+
+            Debug.Assert(tag == BlockTagName);
+            return count;
+        }
+
+        private int SaveBlockHeader()
+        {
+            return SaveDataToWorkBuffer(BlockTagName.GetAsciiBytes(), 5);
+        }
+
         private DummyObject LoadDummy(int size)
         {
             LoadDataFromWorkBuffer(size, out byte[] data);
@@ -267,7 +313,16 @@ namespace GTASaveData.SA
             int count = Serializer.Read(obj, data, FileFormat);
 
             Debug.Assert(count == size);
+            return obj;
+        }
 
+
+        private T LoadObject<T>(int size) where T : SaveDataObject, new()
+        {
+            LoadDataFromWorkBuffer(size, out byte[] data);
+            int count = Serializer.Read(data, FileFormat, out T obj);
+
+            Debug.Assert(size == count);
             return obj;
         }
 
@@ -279,6 +334,56 @@ namespace GTASaveData.SA
             Debug.Assert(written == count);
 
             return written;
+        }
+
+        private int LoadDataFromWorkBuffer(int count, out byte[] data)
+        {
+            if (count <= 0)
+            {
+                data = new byte[0];
+                return 0;
+            }
+
+            int total = 0;
+            int index = 0;
+
+            data = new byte[count];
+            if (WorkBuff.Position + count > BufferSize)
+            {
+                int len = BufferSize - WorkBuff.Position;
+                total += LoadDataFromWorkBuffer(len, out byte[] tmp);
+                Array.Copy(tmp, 0, data, 0, len);
+                LoadWorkBuffer();
+                count -= len;
+                index += len;
+            }
+
+
+            total += WorkBuff.Read(data, index, count);
+            return total;
+        }
+
+        private int SaveDataToWorkBuffer(byte[] data, int count)
+        {
+            if (count <= 0)
+            {
+                return 0;
+            }
+
+            int total = 0;
+            int index = 0;
+
+            if (WorkBuff.Position + count > BufferSize)
+            {
+                int len = BufferSize - WorkBuff.Position;
+                total += SaveDataToWorkBuffer(data, len);
+                SaveWorkBuffer(false);
+                count -= len;
+                index += len;
+            }
+
+            total += WorkBuff.Write(data, index, count);
+            return total;
         }
 
         private void LoadWorkBuffer()
@@ -315,56 +420,6 @@ namespace GTASaveData.SA
             WorkBuff.Reset();
         }
 
-        private int LoadDataFromWorkBuffer(int count, out byte[] data)
-        {
-            if (count <= 0)
-            {
-                data = new byte[0];
-                return 0;
-            }
-
-            int total = 0;
-            int index = 0;
-
-            data = new byte[count];
-            if (WorkBuff.Position + count > BufferSize)
-            {
-                int len = BufferSize - WorkBuff.Position;
-                total += LoadDataFromWorkBuffer(len, out byte[] tmp);
-                Array.Copy(tmp, 0, data, 0, len);
-                LoadWorkBuffer();
-                count -= len;
-                index += len;
-            }
-
-            
-            total += WorkBuff.Read(data, index, count);
-            return total;
-        }
-
-        private int SaveDataToWorkBuffer(byte[] data, int count)
-        {
-            if (count <= 0)
-            {
-                return 0;
-            }
-
-            int total = 0;
-            int index = 0;
-
-            if (WorkBuff.Position + count > BufferSize)
-            {
-                int len = BufferSize - WorkBuff.Position;
-                total += SaveDataToWorkBuffer(data, len);
-                SaveWorkBuffer(false);
-                count -= len;
-                index += len;
-            }
-
-            total += WorkBuff.Write(data, index, count);
-            return total;
-        }
-
         protected override void LoadAllData(DataBuffer file)
         {
             List<int> blockSizes;
@@ -390,25 +445,22 @@ namespace GTASaveData.SA
             WorkBuff.Seek(BufferSize);
             for (index = 0; index < 28; index++)            // TODO: 29 on android?
             {
-                LoadDataFromWorkBuffer(5, out byte[] tagBytes);
-                string tag = Encoding.ASCII.GetString(tagBytes);
-                Debug.Assert(tag == BlockTagName);
-
                 int size = blockSizes[index];
+                LoadBlockHeader();
                 switch (index)
                 {
-                    case 0: SimpleVars = LoadDummy(size); break;
+                    case 0: SimpleVars = LoadObject<SimpleVariables>(size); break;
                     case 1: Scripts = LoadDummy(size); break;
                     case 2: Pools = LoadDummy(size); break;
                     case 3: Garages = LoadDummy(size); break;
                     case 4: GameLogic = LoadDummy(size); break;
-                    case 5: PathFind = LoadDummy(size); break;
+                    case 5: Paths = LoadDummy(size); break;
                     case 6: Pickups = LoadDummy(size); break;
                     case 7: PhoneInfo = LoadDummy(size); break;
-                    case 8: Restart = LoadDummy(size); break;
-                    case 9: Radar = LoadDummy(size); break;
+                    case 8: RestartPoints = LoadDummy(size); break;
+                    case 9: RadarBlips = LoadDummy(size); break;
                     case 10: Zones = LoadDummy(size); break;
-                    case 11: Gangs = LoadDummy(size); break;
+                    case 11: GangData = LoadDummy(size); break;
                     case 12: CarGenerators = LoadDummy(size); break;
                     case 13: PedGenerators = LoadDummy(size); break;
                     case 14: AudioScriptObjects = LoadDummy(size); break;
@@ -444,9 +496,8 @@ namespace GTASaveData.SA
 
             for (index = 0; index < 28; index++)            // TODO: 29 on android?
             {
-                SaveDataToWorkBuffer(BlockTagName.GetAsciiBytes(), 5);
-
                 size = 0;
+                SaveBlockHeader();
                 switch (index)
                 {
                     case 0: size = SaveObject(SimpleVars); break;
@@ -454,13 +505,13 @@ namespace GTASaveData.SA
                     case 2: size = SaveObject(Pools); break;
                     case 3: size = SaveObject(Garages); break;
                     case 4: size = SaveObject(GameLogic); break;
-                    case 5: size = SaveObject(PathFind); break;
+                    case 5: size = SaveObject(Paths); break;
                     case 6: size = SaveObject(Pickups); break;
                     case 7: size = SaveObject(PhoneInfo); break;
-                    case 8: size = SaveObject(Restart); break;
-                    case 9: size = SaveObject(Radar); break;
+                    case 8: size = SaveObject(RestartPoints); break;
+                    case 9: size = SaveObject(RadarBlips); break;
                     case 10: size = SaveObject(Zones); break;
-                    case 11: size = SaveObject(Gangs); break;
+                    case 11: size = SaveObject(GangData); break;
                     case 12: size = SaveObject(CarGenerators); break;
                     case 13: size = SaveObject(PedGenerators); break;
                     case 14: size = SaveObject(AudioScriptObjects); break;
@@ -494,11 +545,11 @@ namespace GTASaveData.SA
             //    {
             //        WorkBuff.Seek(BufferSize - 4);
             //    }
-
             //    // Checksum
             //    SaveWorkBuffer(true);
             //}
 
+            // PS2
             size = WorkBuff.Position + file.Position;
             while (size < SizeOfOneGameInBytes - 4)
             {
@@ -513,7 +564,6 @@ namespace GTASaveData.SA
                 SaveWorkBuffer(false);
                 size = WorkBuff.Position + file.Position;
             }
-
             SaveWorkBuffer(true);
 
             Debug.Assert(m_file.Position == SizeOfOneGameInBytes);
@@ -524,42 +574,6 @@ namespace GTASaveData.SA
             // TODO
             fmt = FileFormats.PC;
             return true;
-        }
-
-        protected override List<SaveDataObject> GetBlocks()
-        {
-            return new List<SaveDataObject>()
-            {
-                SimpleVars,
-                Scripts,
-                Pools,
-                Garages,
-                GameLogic,
-                PathFind,
-                Pickups,
-                PhoneInfo,
-                Restart,
-                Radar,
-                Zones,
-                Gangs,
-                CarGenerators,
-                PedGenerators,
-                AudioScriptObjects,
-                PlayerInfo,
-                Stats,
-                SetPieces,
-                Streaming,
-                PedTypeInfo,
-                TagManager,
-                IplStore,
-                Shopping,
-                GangWars,
-                StuntJumpManager,
-                EntryExitManager,
-                RadioTrackManager,
-                User3dMarkers,
-                PostEffects
-            };
         }
 
         public override bool Equals(object obj)
@@ -579,13 +593,13 @@ namespace GTASaveData.SA
                 && Pools.Equals(other.Pools)
                 && Garages.Equals(other.Garages)
                 && GameLogic.Equals(other.GameLogic)
-                && PathFind.Equals(other.PathFind)
+                && Paths.Equals(other.Paths)
                 && Pickups.Equals(other.Pickups)
                 && PhoneInfo.Equals(other.PhoneInfo)
-                && Restart.Equals(other.Restart)
-                && Radar.Equals(other.Radar)
+                && RestartPoints.Equals(other.RestartPoints)
+                && RadarBlips.Equals(other.RadarBlips)
                 && Zones.Equals(other.Zones)
-                && Gangs.Equals(other.Gangs)
+                && GangData.Equals(other.GangData)
                 && CarGenerators.Equals(other.CarGenerators)
                 && PedGenerators.Equals(other.PedGenerators)
                 && AudioScriptObjects.Equals(other.AudioScriptObjects)
@@ -609,7 +623,7 @@ namespace GTASaveData.SA
     public static class FileFormats
     {
         public static readonly SaveFileFormat PC = new SaveFileFormat(
-            "PC", "PC (Windows/macOS)",
+            "PC", "PC", "PC (Windows/macOS)",
             new GameConsole(ConsoleType.Win32),
             new GameConsole(ConsoleType.MacOS)
         );

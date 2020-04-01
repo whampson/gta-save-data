@@ -344,7 +344,7 @@ namespace GTASaveData.Types
         {
             if (m_monitor.Busy)
             {
-                throw new InvalidOperationException(Strings.Error_InvalidOperation_NoCollectionReentrancy);
+                throw new InvalidOperationException(Strings.Error_InvalidOperation_CollectionReentrancy);
             }
         }
         #endregion

@@ -1,124 +1,102 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Types.Interfaces;
 
 namespace GTASaveData
 {
     public static class Serializer
     {
+        /// <summary>
+        /// Reads a value from a byte array.
+        /// </summary>
         public static T Read<T>(byte[] buf)
         {
-            return Read<T>(buf, SaveFileFormat.Default);
+            Read(buf, SaveFileFormat.Default, out T obj);
+            return obj;
         }
 
+        /// <summary>
+        /// Reads a value from a byte array using the specified format.
+        /// </summary>
         public static T Read<T>(byte[] buf, SaveFileFormat fmt)
         {
             Read(buf, fmt, out T obj);
             return obj;
         }
 
+        /// <summary>
+        /// Reads a value from a byte array using the specified format and returns the number of bytes read.
+        /// </summary>
         public static int Read<T>(byte[] buf, SaveFileFormat fmt, out T obj)
         {
-            using (DataBuffer wb = new DataBuffer(buf))
+            using (DataBuffer workBuf = new DataBuffer(buf))
             {
-                return Read(wb, fmt, out obj);
+                return Read(workBuf, fmt, out obj);
             }
         }
 
-        public static T Read<T>(DataBuffer buf)
-        {
-            return Read<T>(buf, SaveFileFormat.Default);
-        }
-
-        public static T Read<T>(DataBuffer buf, SaveFileFormat fmt)
-        {
-            T obj = buf.GenericRead<T>(fmt);
-            if (obj == null)
-            {
-                throw SerializationNotSupported();
-            }
-
-            return obj;
-        }
-
+        /// <summary>
+        /// Reads a value from the current position in a buffer using the specified format and returns the number of bytes read.
+        /// </summary>
         public static int Read<T>(DataBuffer buf, SaveFileFormat fmt, out T obj)
         {
-            int oldMark, length;
-
-            oldMark = buf.Mark;
-            buf.MarkPosition();
-            obj = buf.GenericRead<T>(fmt);
-            length = buf.Offset;
-            buf.Mark = oldMark;
-
-            if (obj == null)
-            {
-                throw SerializationNotSupported();
-            }
-
-            return length;
+            return buf.GenericRead(fmt, out obj);
         }
 
-        public static int Read<T>(T obj, byte[] buf, SaveFileFormat fmt)
-             where T : ISaveDataObject
+        /// <summary>
+        /// Reads the object's data from a byte array using the specified format and returns the number of bytes read.
+        /// </summary>
+        public static int Read<T>(T obj, byte[] buf, SaveFileFormat fmt) where T : ISaveDataObject
         {
-            using (DataBuffer wb = new DataBuffer(buf))
+            using (DataBuffer workBuf = new DataBuffer(buf))
             {
-                return obj.ReadObjectData(wb, fmt);
+                return Read(obj, workBuf, fmt);
             }
         }
 
+        /// <summary>
+        /// Reads the object's data from the current position in a buffer using the specified format and returns the number of bytes read.
+        /// </summary>
+        public static int Read<T>(T obj, DataBuffer buf, SaveFileFormat fmt) where T : ISaveDataObject
+        {
+            return obj.ReadObjectData(buf, fmt);
+        }
+
+        /// <summary>
+        /// Converts a value into a byte array.
+        /// </summary>
         public static byte[] Write<T>(T obj)
         {
-            return Write(obj, SaveFileFormat.Default);
+            Write(obj, SaveFileFormat.Default, out byte[] data);
+            return data;
         }
 
+        /// <summary>
+        /// Converts a value into a byte arrya using the specified format.
+        /// </summary>
         public static byte[] Write<T>(T obj, SaveFileFormat fmt)
         {
-            using (DataBuffer wb = new DataBuffer())
-            {
-                Write(wb, obj, fmt);
-                return wb.GetBytes();
-            }
+            Write(obj, fmt, out byte[] data);
+            return data;
         }
 
+        /// <summary>
+        /// Converts a value into a byte arrya using the specified format and returns the number of bytes written.
+        /// </summary>
         public static int Write<T>(T obj, SaveFileFormat fmt, out byte[] data)
         {
-            using (DataBuffer wb = new DataBuffer())
+            using (DataBuffer workBuf = new DataBuffer())
             {
-                int count = Write(wb, obj, fmt);
-                data = wb.GetBytes();
-
-                return count;
+                int bytesWritten = workBuf.GenericWrite(obj, fmt);
+                data = workBuf.GetBytes();
+                return bytesWritten;
             }
         }
 
-        public static int Write<T>(DataBuffer buf, T obj)
+        /// <summary>
+        /// Writes an object to the current postion in the buffer using the specified format and returns the number of bytes written.
+        /// </summary>
+        public static int Write<T>(DataBuffer buf, T obj, SaveFileFormat fmt) where T : ISaveDataObject
         {
-            return Write(buf, obj, SaveFileFormat.Default);
-        }
-
-        public static int Write<T>(DataBuffer buf, T obj, SaveFileFormat fmt)
-        {
-            bool success;
-            int oldMark, length;
-
-            oldMark = buf.Mark;
-            buf.MarkPosition();
-            success = buf.GenericWrite(obj, fmt);
-            length = buf.Offset;
-            buf.Mark = oldMark;
-
-            if (!success)
-            {
-                throw SerializationNotSupported();
-            }
-
-            return length;
-        }
-
-        private static SerializationException SerializationNotSupported()
-        {
-            return new SerializationException(Strings.Error_InvalidOperation_NoSerialization);
+            return obj.WriteObjectData(buf, fmt);
         }
     }
 }

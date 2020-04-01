@@ -99,18 +99,18 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to The collection cannot be modified while being changed by another thread..
         /// </summary>
-        internal static string Error_InvalidOperation_NoCollectionReentrancy {
+        internal static string Error_InvalidOperation_CollectionReentrancy {
             get {
-                return ResourceManager.GetString("Error_InvalidOperation_NoCollectionReentrancy", resourceCulture);
+                return ResourceManager.GetString("Error_InvalidOperation_CollectionReentrancy", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The object does not support serialization..
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; does not support serialization..
         /// </summary>
-        internal static string Error_InvalidOperation_NoSerialization {
+        internal static string Error_InvalidOperation_Serialization {
             get {
-                return ResourceManager.GetString("Error_InvalidOperation_NoSerialization", resourceCulture);
+                return ResourceManager.GetString("Error_InvalidOperation_Serialization", resourceCulture);
             }
         }
         

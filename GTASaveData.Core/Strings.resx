@@ -129,11 +129,12 @@
   <data name="Error_Argument_SequenceTooBig" xml:space="preserve">
     <value>The sequence length must be less than or equal to the length of the array.</value>
   </data>
-  <data name="Error_InvalidOperation_NoCollectionReentrancy" xml:space="preserve">
+  <data name="Error_InvalidOperation_CollectionReentrancy" xml:space="preserve">
     <value>The collection cannot be modified while being changed by another thread.</value>
   </data>
-  <data name="Error_InvalidOperation_NoSerialization" xml:space="preserve">
-    <value>The object does not support serialization.</value>
+  <data name="Error_InvalidOperation_Serialization" xml:space="preserve">
+    <value>The type '{0}' does not support serialization.</value>
+    <comment>{0} = object type</comment>
   </data>
   <data name="Error_JsonSerialization_BinaryUnexpectedEnd" xml:space="preserve">
     <value>Unexpected end while parsing JSON.</value>

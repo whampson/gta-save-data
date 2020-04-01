@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
-    <AssemblyVersion>1.0.0.190</AssemblyVersion>
-    <FileVersion>1.0.0.190</FileVersion>
+    <AssemblyVersion>1.0.0.206</AssemblyVersion>
+    <FileVersion>1.0.0.206</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

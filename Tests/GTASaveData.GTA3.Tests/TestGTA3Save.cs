@@ -14,7 +14,7 @@ namespace GTASaveData.GTA3.Tests
             Faker<GTA3Save> model = new Faker<GTA3Save>()
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
-                .RuleFor(x => x.Scripts, Generator.Generate<TheScripts, TestTheScripts>(format))
+                .RuleFor(x => x.Scripts, Generator.Generate<TheScripts, TesttheScripts>(format))
                 //.RuleFor(x => x.PedPool, Generator.Generate<PedPool, TestPedPool>(format))
                 //.RuleFor(x => x.Garages, Generator.Generate<Garages, TestGarages>(format))
                 //.RuleFor(x => x.VehiclePool, Generator.Generate<VehiclePool, TestVehiclePool>(format))

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace GTASaveData
@@ -37,17 +36,10 @@ namespace GTASaveData
             get { return m_buffer.Capacity; }
         }
 
-        /// <summary>
-        /// Creates a new <see cref="DataBuffer"/> with an expandable capacity initialized to zero.
-        /// </summary>
         public DataBuffer()
             : this(new MemoryStream())
         { }
 
-        /// <summary>
-        /// Creates a new non-resizable <see cref="DataBuffer"/> with data from the specified byte array.
-        /// </summary>
-        /// <param name="data">The data with which to initialize the buffer.</param>
         public DataBuffer(byte[] data)
             : this(new MemoryStream(data))
         { }
@@ -89,8 +81,7 @@ namespace GTASaveData
 
         public int MarkPosition()
         {
-            Mark = Position;
-            return Mark;
+            return Mark = Position;
         }
 
         public void Seek(int pos)
@@ -120,12 +111,7 @@ namespace GTASaveData
             return GetBytes().Take(Position).ToArray();
         }
 
-        /// <summary>
-        /// Reads an n-byte Boolean value.
-        /// 'False' is represented by all bits being 0.
-        /// </summary>
-        /// <param name="byteCount">The number of bytes to treat as a single Boolean.</param>
-        /// <returns>A bool.</returns>
+        #region Read Functions
         public bool ReadBool(int byteCount = 1)
         {
             if (byteCount < 1)
@@ -144,29 +130,16 @@ namespace GTASaveData
             return value != 0;
         }
 
-        /// <summary>
-        /// Reads an 8-bit integer.
-        /// </summary>
-        /// <returns>An sbyte.</returns>
         public sbyte ReadSByte()
         {
             return m_reader.ReadSByte();
         }
 
-        /// <summary>
-        /// Reads an 8-bit unsigned integer.
-        /// </summary>
-        /// <returns>A byte.</returns>
         public byte ReadByte()
         {
             return m_reader.ReadByte();
         }
 
-        /// <summary>
-        /// Reads the specified number of bytes.
-        /// </summary>
-        /// <param name="count">The number of bytes to read.</param>
-        /// <returns>A byte array.</returns>
         public byte[] ReadBytes(int count)
         {
             return m_reader.ReadBytes(count);
@@ -177,11 +150,6 @@ namespace GTASaveData
             return m_reader.Read(buffer, index, count);
         }
 
-        /// <summary>
-        /// Reads an ASCII or Unicode character. Note: Surrogate characters are not supported.
-        /// </summary>
-        /// <param name="unicode">A value indicating whether to read a unicode character.</param>
-        /// <returns>A char.</returns>
         public char ReadChar(bool unicode = false)
         {
             // BinaryWriter#ReadChar() relies on the encoding specified in the constructor
@@ -195,83 +163,46 @@ namespace GTASaveData
                 : (char) ReadByte();
         }
 
-        /// <summary>
-        /// Reads a 32-bit single precision floating-point number.
-        /// </summary>
-        /// <returns>A float.</returns>
         public float ReadSingle()
         {
             return m_reader.ReadSingle();
         }
 
-        /// <summary>
-        /// Reads a 64-bit double precision floating-point number.
-        /// </summary>
-        /// <returns>A double.</returns>
         public double ReadDouble()
         {
             return m_reader.ReadDouble();
         }
 
-        /// <summary>
-        /// Reads a 16-bit integer.
-        /// </summary>
-        /// <returns>A short.</returns>
         public short ReadInt16()
         {
             return m_reader.ReadInt16();
         }
 
-        /// <summary>
-        /// Reads a 16-bit unsigned integer.
-        /// </summary>
-        /// <returns>A ushort.</returns>
         public ushort ReadUInt16()
         {
             return m_reader.ReadUInt16();
         }
 
-        /// <summary>
-        /// Reads a 32-bit integer.
-        /// </summary>
-        /// <returns>An int.</returns>
         public int ReadInt32()
         {
             return m_reader.ReadInt32();
         }
 
-        /// <summary>
-        /// Reads a 32-bit unsigned integer.
-        /// </summary>
-        /// <returns>A uint.</returns>
         public uint ReadUInt32()
         {
             return m_reader.ReadUInt32();
         }
 
-        /// <summary>
-        /// Reads a 64-bit integer.
-        /// </summary>
-        /// <returns>A long.</returns>
         public long ReadInt64()
         {
             return m_reader.ReadInt64();
         }
 
-        /// <summary>
-        /// Reads a 64-bit unsigned integer.
-        /// </summary>
-        /// <returns>A ulong.</returns>
         public ulong ReadUInt64()
         {
             return m_reader.ReadUInt64();
         }
 
-        /// <summary>
-        /// Reads a zero-terminated string.
-        /// </summary>
-        /// <param name="unicode">A value indicating whether to read unicode characters.</param>
-        /// <returns>A string.</returns>
         public string ReadString(bool unicode = false)
         {
             string s = "";
@@ -285,17 +216,6 @@ namespace GTASaveData
             return s;
         }
 
-        /// <summary>
-        /// Reads a string of the specified length.
-        /// </summary>
-        /// <remarks>
-        /// If a null character is found, the returned string will be terminated at
-        /// that point. If the specified length is nonzero, the stream position will
-        /// advance until the length is reached, even if a null character is seen.
-        /// </remarks>
-        /// <param name="length">The number of characters to read. Specify 0 to read until the first null character.</param>
-        /// <param name="unicode">A value indicating whether to read Unicode characters.</param>
-        /// <returns>A string.</returns>
         public string ReadString(int length, bool unicode = false)
         {
             if (length == 0)
@@ -331,13 +251,6 @@ namespace GTASaveData
             return obj;
         }
 
-        /// <summary>
-        /// Reads an object.
-        /// </summary>
-        /// <typeparam name="T">The type of object to read.</typeparam>
-        /// <param name="format">The data format.</param>
-        /// <returns>An object.</returns>
-        /// <exception cref="SerializationException">Thrown if an error occurs during deserialization.</exception>
         public T ReadObject<T>(SaveFileFormat format) where T : ISaveDataObject, new()
         {
             T obj = new T();
@@ -353,36 +266,105 @@ namespace GTASaveData
             return ReadArray<T>(count, SaveFileFormat.Default, itemLength, unicode);
         }
 
-        /// <summary>
-        /// Reads an array of the specified type.
-        /// </summary>
-        /// <typeparam name="T">The item type.</typeparam>
-        /// <param name="count">The number of items to read.</param>
-        /// <param name="format">The data format, if applicable.</param>
-        /// <param name="itemLength">The length of each item. Note: only applies to <see cref="bool"/> and <see cref="string"/> types.</param>
-        /// <param name="unicode">A value indicating whether to read unicode characters.</param>
-        /// <returns>An array of the specified type.</returns>
-        /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
         public T[] ReadArray<T>(int count,
             SaveFileFormat format,
-            int itemLength = 0,
+            int itemLength = 0,     // Note: only applies to bool string types.
             bool unicode = false)
         {
             List<T> items = new List<T>();
             for (int i = 0; i < count; i++)
             {
-                items.Add(GenericRead<T>(format, itemLength, unicode));
+                GenericRead(format, out T obj, itemLength, unicode);
+                items.Add(obj);
             }
 
             return items.ToArray();
         }
 
-        /// <summary>
-        /// Writes an n-byte Boolean value.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        /// <param name="byteCount">The number of bytes to write.</param>
-        public void Write(bool value, int byteCount = 1)
+        internal int GenericRead<T>(SaveFileFormat format,
+            out T obj,
+            int length = 0,
+            bool unicode = false)
+        {
+            Type t = typeof(T);
+            object o = null;
+            int mark = Position;
+
+            if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
+
+            if (t == typeof(bool))
+            {
+                o = ReadBool((length == 0) ? 1 : length);
+            }
+            else if (t == typeof(byte))
+            {
+                o = ReadByte();
+            }
+            else if (t == typeof(sbyte))
+            {
+                o = ReadSByte();
+            }
+            else if (t == typeof(byte[]))
+            {
+                o = ReadBytes(length);
+            }
+            else if (t == typeof(char))
+            {
+                o = ReadChar(unicode);
+            }
+            else if (t == typeof(double))
+            {
+                o = ReadDouble();
+            }
+            else if (t == typeof(float))
+            {
+                o = ReadSingle();
+            }
+            else if (t == typeof(int))
+            {
+                o = ReadInt32();
+            }
+            else if (t == typeof(uint))
+            {
+                o = ReadUInt32();
+            }
+            else if (t == typeof(long))
+            {
+                o = ReadInt64();
+            }
+            else if (t == typeof(ulong))
+            {
+                o = ReadUInt64();
+            }
+            else if (t == typeof(short))
+            {
+                o = ReadInt16();
+            }
+            else if (t == typeof(ushort))
+            {
+                o = ReadUInt16();
+            }
+            else if (t == typeof(string))
+            {
+                o = (length == 0) ? ReadString(unicode) : ReadString(length, unicode);
+            }
+            else if (t.GetInterface(nameof(ISaveDataObject)) != null)
+            {
+                var m = GetType().GetMethod(nameof(ReadObject), new Type[] { typeof(SaveFileFormat) }).MakeGenericMethod(t);
+                o = m.Invoke(this, new object[] { format });
+            }
+            else
+            {
+                throw SerializationNotSupportedException(typeof(T));
+            }
+
+            obj = (T) o;
+            return Position - mark;
+        }
+        #endregion
+
+        #region Write Functions
+        public int Write(bool value, int byteCount = 1)
         {
             if (byteCount < 1)
             {
@@ -392,31 +374,23 @@ namespace GTASaveData
             byte[] buffer = new byte[byteCount];
             buffer[0] = (value) ? (byte) 1 : (byte) 0;      // little endian
 
-            Write(buffer);
+            return Write(buffer);
         }
 
-        /// <summary>
-        /// Writes an 8-bit unsigned integer.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        public void Write(byte value)
+        public int Write(byte value)
         {
             m_writer.Write(value);
+
+            return sizeof(byte);
         }
 
-        /// <summary>
-        /// Writes an 8-bit integer.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        public void Write(sbyte value)
+        public int Write(sbyte value)
         {
             m_writer.Write(value);
+
+            return sizeof(sbyte);
         }
 
-        /// <summary>
-        /// Writes a byte array.
-        /// </summary>
-        /// <param name="buffer">The byte array to write.</param>
         public int Write(byte[] buffer)
         {
             m_writer.Write(buffer);
@@ -431,12 +405,7 @@ namespace GTASaveData
             return count;
         }
 
-        /// <summary>
-        /// Writes an ASCII or Unicode character. Note: Surrogate characters are not supported.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        /// <param name="unicode">A value indicating whether to read a unicode character.</param>
-        public void Write(char value, bool unicode = false)
+        public int Write(char value, bool unicode = false)
         {
             // BinaryWriter#Write(char) relies on the encoding specified in the constructor
             // to determine how many bytes to write for a character. Since GTA saves sometimes
@@ -449,125 +418,91 @@ namespace GTASaveData
                 throw new ArgumentException(Strings.Error_Argument_NoSurrogateChars, nameof(value));
             }
 
-            if (unicode)
-            {
-                Write((ushort) value);
-            }
-            else
-            {
-                Write((byte) value);
-            }
+            return (unicode)
+                ? Write((ushort) value)
+                : Write((byte) value);
         }
 
-        /// <summary>
-        /// Writes a 32-bit single precision floating-point value.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        public void Write(float value)
+        public int Write(float value)
         {
             m_writer.Write(value);
+
+            return sizeof(float);
         }
 
-        /// <summary>
-        /// Writes a 32-bit double precision floating-point value.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        public void Write(double value)
+        public int Write(double value)
         {
             m_writer.Write(value);
+
+            return sizeof(double);
         }
 
-        /// <summary>
-        /// Writes a 16-bit integer.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        public void Write(short value)
+        public int Write(short value)
         {
             m_writer.Write(value);
+
+            return sizeof(short);
         }
 
-        /// <summary>
-        /// Writes a 32-bit integer.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        public void Write(int value)
+        public int Write(int value)
         {
             m_writer.Write(value);
+
+            return sizeof(int);
         }
 
-        /// <summary>
-        /// Writes a 64-bit integer.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        public void Write(long value)
+        public int Write(long value)
         {
             m_writer.Write(value);
+
+            return sizeof(long);
         }
 
-        /// <summary>
-        /// Writes a 16-bit unsigned integer.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        public void Write(ushort value)
+        public int Write(ushort value)
         {
             m_writer.Write(value);
+
+            return sizeof(ushort);
         }
 
-        /// <summary>
-        /// Writes a 32-bit unsigned integer.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        public void Write(uint value)
+        public int Write(uint value)
         {
             m_writer.Write(value);
+
+            return sizeof(uint);
         }
 
-        /// <summary>
-        /// Write an 64-bit integer.
-        /// </summary>
-        /// <param name="value">The value to write.</param>
-        public void Write(ulong value)
+        public int Write(ulong value)
         {
             m_writer.Write(value);
+
+            return sizeof(ulong);
         }
 
-        /// <summary>
-        /// Writes a string.
-        /// </summary>
-        /// <param name="value">The string to write.</param>
-        /// <param name="length">
-        /// The number of characters to write. The string will be truncated if this value is less than
-        /// the string's length. The string will be zero-padded on the right side if this value exceeds
-        /// the string's length. If this value is null, the string will be written in its entirety and
-        /// a null teminator will be appended.
-        /// </param>
-        /// <param name="unicode">A value indicating whether to write Unicode characters.</param>
-        /// <param name="zeroTerminate">
-        /// A value indicating whether to terminate the string with a null character (C-style).
-        /// If the length is unspecified, the null character will be added to the end of the
-        /// string regardless. Otherwise, the string will be truncated if necessary so as to
-        /// not exceed the specified length when the null character is written.
-        /// </param>
-        public void Write(string value,
+        public int Write(string value,
             int? length = null,
             bool unicode = false,
             bool zeroTerminate = true)
-        {
+        {  
             Encoding encoding = (unicode)
                 ? Encoding.Unicode
                 : Encoding.ASCII;
 
-            // Use whole string if 'length' parameter is unspecified (null or 0)
+            // Use whole string if 'length' parameter not specified
             int actualLength = (length == 0)
                 ? (value.Length)
                 : (length ?? value.Length);
 
-            // Add extra byte for null terminator if 'length' is unspecified
+
+            // Add extra byte for null terminator if 'length' not specified
             if ((length == null || length == 0) && zeroTerminate)
             {
                 actualLength += 1;
             }
 
+            // If the length is unspecified, the null character will be added to the end of the
+            // string regardless. Otherwise, the string will be truncated if necessary so as to
+            // not exceed the specified length when the null character is written.
             if (value.Length >= actualLength)
             {
                 value = (zeroTerminate)
@@ -585,231 +520,127 @@ namespace GTASaveData
                 numPadding *= 2;
             }
 
-            Write(encoding.GetBytes(value));
-            m_buffer.Position += numPadding;
+            int bytesWritten = Write(encoding.GetBytes(value));
+            Skip(numPadding);
+
+            return bytesWritten + numPadding;
         }
 
-        public void Write<T>(T value) where T : ISaveDataObject
+        public int Write<T>(T value) where T : ISaveDataObject
         {
-            Write(value, SaveFileFormat.Default);
+            return Write(value, SaveFileFormat.Default);
         }
 
-        /// <summary>
-        /// Writes an object.
-        /// </summary>
-        /// <remarks>
-        /// The object type must implement the <see cref="ISaveDataObject"/> interface
-        /// and specify its serialization.
-        /// </remarks>
-        /// <typeparam name="T">The type of object to write.</typeparam>
-        /// <param name="value">The object to write</param>
-        /// <param name="format">The data format.</param>
-        /// <exception cref="SerializationException">Thrown if an error occurs during serialization.</exception>
-        public void Write<T>(T value, SaveFileFormat format) where T : ISaveDataObject
+        public int Write<T>(T value, SaveFileFormat format) where T : ISaveDataObject
         {
-            value.WriteObjectData(this, format);
+            return value.WriteObjectData(this, format);
         }
 
-        public void Write<T>(T[] items,
+        public int Write<T>(T[] items,
             int? count = null,
             int itemLength = 0,
             bool unicode = false)
             where T : new()
         {
-            Write<T>(items, SaveFileFormat.Default, count, itemLength, unicode);
+            return Write(items, SaveFileFormat.Default, count, itemLength, unicode);
         }
 
-        /// <summary>
-        /// Writes a collection as a contiguous sequence of bytes.
-        /// </summary>
-        /// <typeparam name="T">The element type.</typeparam>
-        /// <param name="items">The items to write.</param>
-        /// <param name="count">
-        /// The number of items to write. Use null to write all elements. If the count is larger than
-        /// the collection length, default values will be written until 'count' elements are written.
-        /// </param>
-        /// <param name="format">The data format.</param>
-        /// <param name="itemLength">
-        /// The length of each item. Note: only applies to <see cref="bool"/> and <see cref="string"/> types.
-        /// </param>
-        /// <param name="unicode">A value indicating whether to write unicode characters.</param>
-        /// <exception cref="SerializationException">Thrown if the type does not support serialization.</exception>
-        public void Write<T>(T[] items,
+        public int Write<T>(T[] items,
             SaveFileFormat format,
             int? count = null,
-            int itemLength = 0,
+            int itemLength = 0, // Note: only applies to "bool" and "string types
             bool unicode = false)
             where T : new()
         {
             int capacity = items.Length;
+            int bytesWritten = 0;
+
             for (int i = 0; i < (count ?? capacity); i++)
             {
-                if (i < capacity)
-                {
-                    GenericWrite(items.ElementAt(i), format, itemLength, unicode);
-                }
-                else
-                {
-                    GenericWrite(new T(), format, itemLength, unicode);
-                }
+                bytesWritten += (i < capacity)
+                    ? GenericWrite(items.ElementAt(i), format, itemLength, unicode)
+                    : GenericWrite(new T(), format, itemLength, unicode);
             }
+
+            return bytesWritten;
         }
 
-        internal T GenericRead<T>(SaveFileFormat format,
+        internal int GenericWrite<T>(T value, SaveFileFormat format,
             int length = 0,
             bool unicode = false)
         {
-            if (length < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(length));
-            }
-
             Type t = typeof(T);
-            object ret = null;
+
+            if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
 
             if (t == typeof(bool))
             {
-                ret = ReadBool((length == 0) ? 1 : length);
+                return Write(Convert.ToBoolean(value), (length == 0) ? 1 : length);
             }
             else if (t == typeof(byte))
             {
-                ret = ReadByte();
+                return Write(Convert.ToByte(value));
             }
             else if (t == typeof(sbyte))
             {
-                ret = ReadSByte();
+                return Write(Convert.ToSByte(value));
             }
             else if (t == typeof(byte[]))
             {
-                ret = ReadBytes(length);
+                return Write((byte[]) (object) value);
             }
             else if (t == typeof(char))
             {
-                ret = ReadChar(unicode);
+                return Write(Convert.ToChar(value), unicode);
             }
             else if (t == typeof(double))
             {
-                ret = ReadDouble();
+                return Write(Convert.ToDouble(value));
             }
             else if (t == typeof(float))
             {
-                ret = ReadSingle();
+                return Write(Convert.ToSingle(value));
             }
             else if (t == typeof(int))
             {
-                ret = ReadInt32();
+                return Write(Convert.ToInt32(value));
             }
             else if (t == typeof(uint))
             {
-                ret = ReadUInt32();
+                return Write(Convert.ToUInt32(value));
             }
             else if (t == typeof(long))
             {
-                ret = ReadInt64();
+                return Write(Convert.ToInt64(value));
             }
             else if (t == typeof(ulong))
             {
-                ret = ReadUInt64();
+                return Write(Convert.ToUInt64(value));
             }
             else if (t == typeof(short))
             {
-                ret = ReadInt16();
+                return Write(Convert.ToInt16(value));
             }
             else if (t == typeof(ushort))
             {
-                ret = ReadUInt16();
+                return Write(Convert.ToUInt16(value));
             }
             else if (t == typeof(string))
             {
-                ret = (length == 0) ? ReadString(unicode) : ReadString(length, unicode);
+                return Write(Convert.ToString(value), length, unicode);
             }
             else if (t.GetInterface(nameof(ISaveDataObject)) != null)
             {
-                MethodInfo readChunk = GetType().GetMethod(nameof(ReadObject), new Type[] { typeof(SaveFileFormat) }).MakeGenericMethod(t);
-                ret = readChunk.Invoke(this, new object[] { format });
+                return Write((ISaveDataObject) value, format);
             }
 
-            return (T) ret;
+            throw SerializationNotSupportedException(typeof(T));
         }
+        #endregion
 
-        internal bool GenericWrite<T>(T value, SaveFileFormat format,
-            int length = 0,
-            bool unicode = false)
+        private static SerializationException SerializationNotSupportedException(Type t)
         {
-            if (length < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(length));
-            }
-
-            Type t = typeof(T);
-            bool retval = true;
-
-            if (t == typeof(bool))
-            {
-                Write(Convert.ToBoolean(value), (length == 0) ? 1 : length);
-            }
-            else if (t == typeof(byte))
-            {
-                Write(Convert.ToByte(value));
-            }
-            else if (t == typeof(sbyte))
-            {
-                Write(Convert.ToSByte(value));
-            }
-            else if (t == typeof(byte[]))
-            {
-                Write((byte[]) (object) value);
-            }
-            else if (t == typeof(char))
-            {
-                Write(Convert.ToChar(value), unicode);
-            }
-            else if (t == typeof(double))
-            {
-                Write(Convert.ToDouble(value));
-            }
-            else if (t == typeof(float))
-            {
-                Write(Convert.ToSingle(value));
-            }
-            else if (t == typeof(int))
-            {
-                Write(Convert.ToInt32(value));
-            }
-            else if (t == typeof(uint))
-            {
-                Write(Convert.ToUInt32(value));
-            }
-            else if (t == typeof(long))
-            {
-                Write(Convert.ToInt64(value));
-            }
-            else if (t == typeof(ulong))
-            {
-                Write(Convert.ToUInt64(value));
-            }
-            else if (t == typeof(short))
-            {
-                Write(Convert.ToInt16(value));
-            }
-            else if (t == typeof(ushort))
-            {
-                Write(Convert.ToUInt16(value));
-            }
-            else if (t == typeof(string))
-            {
-                Write(Convert.ToString(value), length, unicode);
-            }
-            else if (t.GetInterface(nameof(ISaveDataObject)) != null)
-            {
-                Write((ISaveDataObject) value, format);
-            }
-            else
-            {
-                retval = false;
-            }
-
-            return retval;
+            return new SerializationException(Strings.Error_InvalidOperation_Serialization, t.Name);
         }
     }
 }

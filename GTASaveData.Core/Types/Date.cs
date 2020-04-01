@@ -6,7 +6,7 @@ namespace GTASaveData.Types
     /// <summary>
     /// Represents a date and time.
     /// </summary>
-    [Size(0x18)]
+    [Size(24)]
     public class Date : SaveDataObject, IEquatable<Date>
     {
         private int m_second;

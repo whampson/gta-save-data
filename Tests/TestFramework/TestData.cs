@@ -9,7 +9,7 @@ namespace TestFramework
         public static string GetTestDataPath(GameType game, SaveFileFormat fileFormat, string fileName)
         {
             string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../..");
-            string filePath = string.Format("TestData/{0}/{1}/{2}", game, fileFormat.Name, fileName);
+            string filePath = string.Format("TestData/{0}/{1}/{2}", game, fileFormat.Id, fileName);
             
             return Path.GetFullPath(Path.Combine(basePath, filePath));
         }

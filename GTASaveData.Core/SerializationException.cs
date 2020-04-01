@@ -14,5 +14,9 @@ namespace GTASaveData
         public SerializationException(string message, Exception innerException)
             : base(message, innerException)
         { }
+
+        public SerializationException(string msgFmt, params object[] args)
+            : base (string.Format(msgFmt, args))
+        { }
     }
 }

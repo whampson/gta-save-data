@@ -1,4 +1,35 @@
-﻿//using GTASaveData.Types;
+﻿using GTASaveData.Types;
+using System;
+using System.Diagnostics;
+using System.Linq;
+
+namespace GTASaveData.SA
+{
+    public class SimpleVariables : SaveDataObject, IEquatable<SimpleVariables>
+    {
+        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as SimpleVariables);
+        }
+
+        public bool Equals(SimpleVariables other)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+
+//using GTASaveData.Types;
 //using System;
 //using System.Diagnostics;
 

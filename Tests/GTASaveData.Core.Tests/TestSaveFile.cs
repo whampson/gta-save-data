@@ -39,6 +39,8 @@ namespace GTASaveData.Core.Tests
 
         private class TestSave : SaveFile
         {
+            protected override int BufferSize => throw new NotImplementedException();
+
             public override string Name
             {
                 get => throw new NotImplementedException();
@@ -51,7 +53,7 @@ namespace GTASaveData.Core.Tests
                 set => throw new NotImplementedException();
             }
 
-            protected override int BufferSize => throw new NotImplementedException();
+            public override IReadOnlyList<SaveDataObject> Blocks => throw new NotImplementedException();
 
             public byte[] GetPaddingBytes(int length)
             {
@@ -69,11 +71,6 @@ namespace GTASaveData.Core.Tests
             }
 
             protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override List<SaveDataObject> GetBlocks()
             {
                 throw new NotImplementedException();
             }

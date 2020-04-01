@@ -19,10 +19,12 @@ namespace GTASaveData
         private SaveFileFormat m_fileFormat;
         private PaddingType m_padding;
         private byte[] m_paddingBytes;
+        private bool m_blockSizeChecksEnabled;
         private bool m_disposed;
 
         protected DataBuffer WorkBuff { get; }
         protected uint CheckSum { get; set; }
+        protected abstract int BufferSize { get; }
 
         [JsonIgnore]
         public SaveFileFormat FileFormat
@@ -42,22 +44,18 @@ namespace GTASaveData
         public byte[] PaddingBytes
         {
             get { return m_paddingBytes; }
-            set { m_paddingBytes = value ?? DefaultPadding; }
+            set { m_paddingBytes = value ?? DefaultPadding; OnPropertyChanged(); }
         }
 
         [JsonIgnore]
-        public IReadOnlyList<SaveDataObject> Blocks
+        public bool BlockSizeChecksEnabled
         {
-            get
-            {
-                List<SaveDataObject> blocks = GetBlocks();
-                blocks.AddRange(UserDefinedBlocks);
-
-                return blocks.AsReadOnly();
-            }
+            get { return m_blockSizeChecksEnabled; }
+            set { m_blockSizeChecksEnabled = value; OnPropertyChanged(); }
         }
 
-        public List<SaveDataObject> UserDefinedBlocks { get; }
+        [JsonIgnore]
+        public abstract IReadOnlyList<SaveDataObject> Blocks { get; }
 
         [JsonIgnore]
         public abstract string Name { get; set;  }
@@ -65,17 +63,19 @@ namespace GTASaveData
         [JsonIgnore]
         public abstract DateTime TimeLastSaved { get; set; }
 
-        protected abstract int BufferSize { get; }
-
         public SaveFile()
         {
             m_disposed = false;
             WorkBuff = new DataBuffer(new byte[MaxBufferCapacity]);
-            UserDefinedBlocks = new List<SaveDataObject>();
             CheckSum = 0;
             FileFormat = SaveFileFormat.Default;
             Padding = PaddingType.Default;
             PaddingBytes = DefaultPadding;
+            
+// Hmmm...
+#if !DEBUG
+            BlockSizeChecks = true;
+#endif
         }
 
         public void Dispose()
@@ -85,11 +85,6 @@ namespace GTASaveData
                 WorkBuff.Dispose();
                 m_disposed = true;
             }
-        }
-
-        protected void RegisterUserDefinedBlock<T>() where T : SaveDataObject, new()
-        {
-            UserDefinedBlocks.Add(new T());
         }
 
         public static T Load<T>(string path)
@@ -107,8 +102,7 @@ namespace GTASaveData
         public static T Load<T>(string path, SaveFileFormat fmt)
             where T : SaveFile, new()
         {
-            T obj = new T();
-            obj.FileFormat = fmt;
+            T obj = new T() { FileFormat = fmt };
             obj.Load(path);
 
             return obj;
@@ -167,10 +161,14 @@ namespace GTASaveData
             throw new InvalidOperationException("Invalid padding type.");
         }
 
+        protected SerializationException BlockSizeException(int maxSize, int actualSize)
+        {
+            return new SerializationException("Maximum block size exeeded. (max = {0}, actual = {1})", maxSize, actualSize);
+        }
+
         protected abstract void LoadAllData(DataBuffer file);
         protected abstract void SaveAllData(DataBuffer file);
         protected abstract bool DetectFileFormat(byte[] data, out SaveFileFormat fmt);
-        protected abstract List<SaveDataObject> GetBlocks();
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
@@ -186,7 +184,8 @@ namespace GTASaveData
 
         public override string ToString()
         {
-            return string.Format("{0}: {{ Name = {1}, FileFormat = {2} }}", GetType().Name, Name, FileFormat);
+            return string.Format("{0}: {{ Name = {1}, FileFormat = {2}, TimeLastSaved = {3} }}",
+                GetType().Name, Name, FileFormat, TimeLastSaved.ToString("yyyy-MM-dd HH:mm:ss"));
         }
     }
 }

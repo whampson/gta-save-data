@@ -16,30 +16,32 @@ namespace GTASaveData.VC
         public const int SaveHeaderSize = 8;
         public const int SizeOfOneGameInBytes = 201729;
 
-        private SimpleVariables m_simpleVars;
-        private DummyObject m_scripts;
-        private DummyObject m_pedPool;
-        private DummyObject m_garages;
-        private DummyObject m_gameLogic;
-        private DummyObject m_vehiclePool;
-        private DummyObject m_objectPool;
-        private DummyObject m_paths;
-        private DummyObject m_cranes;
-        private DummyObject m_pickups;
-        private DummyObject m_phoneInfo;
-        private DummyObject m_restartPoints;
-        private DummyObject m_radarBlips;
-        private DummyObject m_zones;
-        private DummyObject m_gangData;
-        private DummyObject m_carGenerators;
-        private DummyObject m_particleObjects;
-        private DummyObject m_audioScriptObjects;
-        private DummyObject m_scriptPaths;
-        private DummyObject m_playerInfo;
-        private DummyObject m_stats;
-        private DummyObject m_setPieces;
-        private DummyObject m_streaming;
-        private DummyObject m_pedTypeInfo;
+        protected override int BufferSize => (FileFormat.SupportedOnMobile) ? 65536 : 55000;
+
+        private SimpleVariables m_simpleVars;   // SimpleVariables
+        private DummyObject m_scripts;  // TheScripts
+        private DummyObject m_pedPool;  // PedPool
+        private DummyObject m_garages;  // Garages
+        private DummyObject m_gameLogic;    // GameLogic
+        private DummyObject m_vehiclePool;  // VehiclePool
+        private DummyObject m_objectPool;   // ObjectPool
+        private DummyObject m_paths;    // PathFind
+        private DummyObject m_cranes;   // Cranes
+        private DummyObject m_pickups;  // Pickups
+        private DummyObject m_phoneInfo;    // PhoneInfo
+        private DummyObject m_restartPoints;    // Restarts
+        private DummyObject m_radarBlips;   // Radar
+        private DummyObject m_zones;    // TheZones
+        private DummyObject m_gangData; // Gangs
+        private DummyObject m_carGenerators;    // TheCarGenerators
+        private DummyObject m_particles;  // Particles
+        private DummyObject m_audioScriptObjects;   // AudioScriptObjects
+        private DummyObject m_scriptPaths;  // ScriptPaths
+        private DummyObject m_playerInfo;   // PlayerInfo
+        private DummyObject m_stats;    // Stats
+        private DummyObject m_setPieces; // SetPieces
+        private DummyObject m_streaming;    // Streaming
+        private DummyObject m_pedTypeInfo;  // PedTypeInfo
 
         public SimpleVariables SimpleVars
         {
@@ -139,8 +141,8 @@ namespace GTASaveData.VC
 
         public DummyObject ParticleObjects
         {
-            get { return m_particleObjects; }
-            set { m_particleObjects = value; OnPropertyChanged(); }
+            get { return m_particles; }
+            set { m_particles = value; OnPropertyChanged(); }
         }
 
         public DummyObject AudioScriptObjects
@@ -197,7 +199,33 @@ namespace GTASaveData.VC
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
 
-        protected override int BufferSize => (FileFormat.SupportedOnMobile) ? 65536 : 55000;
+        public override IReadOnlyList<SaveDataObject> Blocks => new List<SaveDataObject>()
+        {
+            SimpleVars,
+            Scripts,
+            PedPool,
+            Garages,
+            GameLogic,
+            VehiclePool,
+            ObjectPool,
+            Paths,
+            Cranes,
+            Pickups,
+            PhoneInfo,
+            RestartPoints,
+            RadarBlips,
+            Zones,
+            GangData,
+            CarGenerators,
+            ParticleObjects,
+            AudioScriptObjects,
+            ScriptPaths,
+            PlayerInfo,
+            Stats,
+            SetPieces,
+            Streaming,
+            PedTypeInfo
+        };
 
         public ViceCitySave()
         {
@@ -227,64 +255,30 @@ namespace GTASaveData.VC
             PedTypeInfo = new DummyObject();
         }
 
+        #region Shared between GTA3/VC
         public static int ReadSaveHeader(DataBuffer buf, string tag)
         {
             string readTag = buf.ReadString(4);
             int size = buf.ReadInt32();
 
-            Debug.Assert(tag == readTag, "Invalid block tag (expected: {0}, actual: {1})", tag, readTag);
+            Debug.Assert(readTag == tag, "Invalid block tag (expected: {0}, actual: {1})", tag, readTag);
             return size;
         }
 
         public static void WriteSaveHeader(DataBuffer buf, string tag, int size)
         {
-            buf.Write(tag, 4);
+            buf.Write(tag, 4, zeroTerminate: true);
             buf.Write(size);
-        }
-
-        private T LoadData<T>() where T : SaveDataObject, new()
-        {
-            return LoadData<T>(out int _);
-        }
-
-        private T LoadData<T>(out int size) where T : SaveDataObject, new()
-        {
-            size = WorkBuff.ReadInt32();
-            int bytesRead = Serializer.Read(WorkBuff, FileFormat, out T obj);
-
-            Debug.Assert(size == bytesRead);
-            return obj;
         }
 
         private DummyObject LoadDummy()
         {
-            return LoadDummy(out int _);
-        }
+            int size = WorkBuff.ReadInt32();
+            var o = new DummyObject(size);
+            int bytesRead = Serializer.Read(o, WorkBuff, FileFormat);
 
-        private DummyObject LoadDummy(out int size)
-        {
-            size = WorkBuff.ReadInt32();
-            DummyObject obj = new DummyObject(size);
-            ((ISaveDataObject) obj).ReadObjectData(WorkBuff);
-
-            return obj;
-        }
-
-        private void SaveData(SaveDataObject o)
-        {
-            int size;
-            int preSize, postData;
-
-            preSize = WorkBuff.Position;
-            WorkBuff.Skip(4);
-
-            size = Serializer.Write(WorkBuff, o, FileFormat);
-            postData = WorkBuff.Position;
-
-            WorkBuff.Seek(preSize);
-            WorkBuff.Write(size);
-            WorkBuff.Seek(postData);
-            WorkBuff.Align4Bytes();
+            Debug.Assert(bytesRead == size);
+            return o;
         }
 
         private void LoadSimpleVars()
@@ -298,6 +292,31 @@ namespace GTASaveData.VC
             WorkBuff.Write(SimpleVars, FileFormat);
         }
 
+        private T LoadData<T>() where T : SaveDataObject, new()
+        {
+            int size = WorkBuff.ReadInt32();
+            int bytesRead = Serializer.Read(WorkBuff, FileFormat, out T obj);
+
+            Debug.Assert(bytesRead == size);
+            return obj;
+        }
+
+        private void SaveData(SaveDataObject o)
+        {
+            int size, preSize, postData;
+
+            preSize = WorkBuff.Position;
+            WorkBuff.Skip(4);
+
+            size = Serializer.Write(WorkBuff, o, FileFormat);
+            postData = WorkBuff.Position;
+
+            WorkBuff.Seek(preSize);
+            WorkBuff.Write(size);
+            WorkBuff.Seek(postData);
+            WorkBuff.Align4Bytes();
+        }
+
         private int ReadBlock(DataBuffer file)
         {
             file.MarkPosition();
@@ -306,8 +325,11 @@ namespace GTASaveData.VC
             int size = file.ReadInt32();
             if (size > BufferSize)
             {
-                // TODO: BlockSizeChecks flag?
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
+                if (BlockSizeChecksEnabled)
+                {
+                    throw BlockSizeException(BufferSize, size);
+                }
             }
 
             WorkBuff.Write(file.ReadBytes(size));
@@ -327,8 +349,11 @@ namespace GTASaveData.VC
             int size = data.Length;
             if (size > BufferSize)
             {
-                // TODO: BlockSizeChecks flag?
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
+                if (BlockSizeChecksEnabled)
+                {
+                    throw BlockSizeException(BufferSize, size);
+                }
             }
 
             file.Write(size);
@@ -344,12 +369,15 @@ namespace GTASaveData.VC
             WorkBuff.Reset();
             return size;
         }
+        #endregion
 
         protected override void LoadAllData(DataBuffer file)
         {
             int totalSize = 0;
 
-            totalSize += ReadBlock(file); LoadSimpleVars(); Scripts = LoadDummy();
+            totalSize += ReadBlock(file);
+            LoadSimpleVars();
+            Scripts = LoadDummy();
             totalSize += ReadBlock(file); PedPool = LoadDummy();
             totalSize += ReadBlock(file); Garages = LoadDummy();
             totalSize += ReadBlock(file); GameLogic = LoadDummy();
@@ -372,7 +400,6 @@ namespace GTASaveData.VC
             totalSize += ReadBlock(file); SetPieces = LoadDummy();
             totalSize += ReadBlock(file); Streaming = LoadDummy();
             totalSize += ReadBlock(file); PedTypeInfo = LoadDummy();
-            totalSize += LoadUserDefinedBlocks(file);
 
             while (file.Position < file.Length - 4)
             {
@@ -415,7 +442,6 @@ namespace GTASaveData.VC
             SaveData(SetPieces); totalSize += WriteBlock(file);
             SaveData(Streaming); totalSize += WriteBlock(file);
             SaveData(PedTypeInfo); totalSize += WriteBlock(file);
-            totalSize += SaveUserDefinedBlocks(file);
 
             for (int i = 0; i < 4; i++)
             {
@@ -440,30 +466,6 @@ namespace GTASaveData.VC
 
             Debug.WriteLine("Save size: {0}", totalSize);
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
-        }
-
-        private int LoadUserDefinedBlocks(DataBuffer buf)
-        {
-            int size = 0;
-            foreach (var block in UserDefinedBlocks)
-            {
-                size += ReadBlock(buf);
-                ((ISaveDataObject) block).ReadObjectData(WorkBuff, FileFormat);
-            }
-
-            return size;
-        }
-
-        private int SaveUserDefinedBlocks(DataBuffer buf)
-        {
-            int size = 0;
-            foreach (var block in UserDefinedBlocks)
-            {
-                ((ISaveDataObject) block).WriteObjectData(WorkBuff, FileFormat);
-                size += WriteBlock(buf);
-            }
-
-            return size;
         }
 
         protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
@@ -495,37 +497,6 @@ namespace GTASaveData.VC
 
             fmt = SaveFileFormat.Default;
             return false;
-        }
-
-        protected override List<SaveDataObject> GetBlocks()
-        {
-            return new List<SaveDataObject>()
-            {
-                SimpleVars,
-                Scripts,
-                PedPool,
-                Garages,
-                GameLogic,
-                VehiclePool,
-                ObjectPool,
-                Paths,
-                Cranes,
-                Pickups,
-                PhoneInfo,
-                RestartPoints,
-                RadarBlips,
-                Zones,
-                GangData,
-                CarGenerators,
-                ParticleObjects,
-                AudioScriptObjects,
-                ScriptPaths,
-                PlayerInfo,
-                Stats,
-                SetPieces,
-                Streaming,
-                PedTypeInfo
-            };
         }
 
         public override bool Equals(object obj)
@@ -569,13 +540,13 @@ namespace GTASaveData.VC
         public static class FileFormats
         {
             public static readonly SaveFileFormat PC_Retail = new SaveFileFormat(
-                "PC_Retail", "PC (Windows/macOS)",
+                "PC_Retail", "PC", "Windows (Retail) or macOS (Steam)",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.MacOS, ConsoleFlags.Steam)
             );
 
             public static readonly SaveFileFormat PC_Steam = new SaveFileFormat(
-                "PC_Steam", "PC (Windows, Steam)",
+                "PC_Steam", "Windows/Steam", "Windows (Steam)",
                 new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam)
             );
 

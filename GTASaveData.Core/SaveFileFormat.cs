@@ -6,8 +6,9 @@ namespace GTASaveData
 {
     public struct SaveFileFormat : IEquatable<SaveFileFormat>
     {
-        public static readonly SaveFileFormat Default = new SaveFileFormat(null, null);
+        public static readonly SaveFileFormat Default = new SaveFileFormat("Default", "", "");
 
+        public string Id { get; }
         public string Name { get; }
         public string Description { get; }
         public IEnumerable<GameConsole> SupportedConsoles { get; }
@@ -24,8 +25,9 @@ namespace GTASaveData
         public bool SupportedOnXbox => IsSupportedOn(ConsoleType.Xbox);
         public bool SupportedOnXbox360 => IsSupportedOn(ConsoleType.Xbox360);
 
-        public SaveFileFormat(string name, string description, params GameConsole[] supportedConsoles)
+        public SaveFileFormat(string id, string name, string description, params GameConsole[] supportedConsoles)
         {
+            Id = id;
             Name = name;
             Description = description;
             SupportedConsoles = new List<GameConsole>(supportedConsoles);
