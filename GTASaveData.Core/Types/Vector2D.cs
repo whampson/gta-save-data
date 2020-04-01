@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Numerics;
 
 namespace GTASaveData.Types
 {
     /// <summary>
-    /// Represents a 2-dimensional vector.
+    /// A 2-dimensional vector.
     /// </summary>
     [Size(8)]
     public class Vector2D : SaveDataObject, IEquatable<Vector2D>
@@ -23,37 +23,6 @@ namespace GTASaveData.Types
             get { return m_y; }
             set { m_y = value; OnPropertyChanged(); }
         }
-
-        [JsonIgnore]
-        public float Heading
-        {
-            get { return (float) Math.Atan2(-X, Y); }
-        }
-
-        [JsonIgnore]
-        public float Magnitude
-        {
-            get { return (float) Math.Sqrt(MagnitudeSquared); }
-        }
-
-        [JsonIgnore]
-        public float MagnitudeSquared
-        {
-            get { return (X * X) + (Y * Y); }
-        }
-
-        [JsonIgnore]
-        public float Magnitude2D
-        {
-            get { return (float) Math.Sqrt(MagnitudeSquared2D); }
-        }
-
-        [JsonIgnore]
-        public float MagnitudeSquared2D
-        {
-            get { return (X * X) + (Y * Y); }
-        }
-
         public Vector2D()
             : this(0, 0)
         { }
@@ -62,17 +31,6 @@ namespace GTASaveData.Types
         {
             X = x;
             Y = y;
-        }
-
-        public void Normalize()
-        {
-            float magSquared = MagnitudeSquared;
-            if (magSquared > 0)
-            {
-                float invSqrt = (float) (1.0 / Math.Sqrt(magSquared));
-                X *= invSqrt;
-                Y *= invSqrt;
-            }
         }
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
@@ -108,60 +66,14 @@ namespace GTASaveData.Types
                 && Y.Equals(other.Y);
         }
 
-        public static float Distance(Vector2D v1, Vector2D v2)
+        public static implicit operator Vector2(Vector2D v)
         {
-            return (v2 - v1).Magnitude;
+            return new Vector2(v.X, v.Y);
         }
 
-        public static float DotProduct(Vector2D v1, Vector2D v2)
+        public static implicit operator Vector2D(Vector2 v)
         {
-            return (v1.X * v2.X)
-                 + (v1.Y * v2.Y);
-        }
-
-        public static float CrossProduct(Vector2D v1, Vector2D v2)
-        {
-            return (v1.X * v2.Y) - (v1.Y * v2.X);
-        }
-
-        public static Vector2D operator -(Vector2D v)
-        {
-            return new Vector2D(-v.X, -v.Y);
-        }
-
-        public static Vector2D operator +(Vector2D left, Vector2D right)
-        {
-            return new Vector2D(
-                left.X + right.X,
-                left.Y + right.Y);
-        }
-
-        public static Vector2D operator -(Vector2D left, Vector2D right)
-        {
-            return new Vector2D(
-                left.X - right.X,
-                left.Y - right.Y);
-        }
-
-        public static Vector2D operator *(Vector2D left, float right)
-        {
-            return new Vector2D(
-                left.X * right,
-                left.Y * right);
-        }
-
-        public static Vector2D operator *(float left, Vector2D right)
-        {
-            return new Vector2D(
-                left * right.X,
-                left * right.Y);
-        }
-
-        public static Vector2D operator /(Vector2D left, float right)
-        {
-            return new Vector2D(
-                left.X / right,
-                left.Y / right);
+            return new Vector2D(v.X, v.Y);
         }
     }
 }

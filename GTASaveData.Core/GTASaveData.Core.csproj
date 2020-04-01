@@ -9,10 +9,10 @@
     <Product>GTASaveData</Product>
     <Description>Shared objects and APIs for the GTA save data library.</Description>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
-    <AssemblyVersion>0.1.0.472</AssemblyVersion>
-    <FileVersion>0.1.0.472</FileVersion>
+    <AssemblyVersion>0.1.0.475</AssemblyVersion>
+    <FileVersion>0.1.0.475</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.1.0-alpha-472</Version>
+    <Version>0.1.0-alpha-475</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="WpfEssentials" Version="1.2.0" />
   </ItemGroup>
 

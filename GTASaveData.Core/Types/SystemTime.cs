@@ -149,7 +149,7 @@ namespace GTASaveData.Types
                 && Millisecond.Equals(other.Millisecond);
         }
 
-        public static explicit operator DateTime(SystemTime t)
+        public static implicit operator DateTime(SystemTime t)
         {
             return t.ToDateTime();
         }
