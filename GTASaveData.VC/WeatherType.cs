@@ -8,6 +8,7 @@
         Rainy,
         Foggy,
         ExtraSunny,
-        Hurricane
+        Hurricane,
+        ExtraColours
     }
 }
