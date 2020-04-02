@@ -173,9 +173,7 @@ namespace TestApp
                 }
 
                 CurrentFileFormat = fmt;
-                CurrentSaveFile = new T();
-                CurrentSaveFile.FileFormat = CurrentFileFormat;
-                CurrentSaveFile.Load(path);
+                CurrentSaveFile = SaveFile.Load<T>(path, fmt);
 
                 return true;
             }

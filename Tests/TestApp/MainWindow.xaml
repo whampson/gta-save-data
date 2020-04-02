@@ -105,11 +105,11 @@
                     <ItemsPanelTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="9*"/>
+                                <ColumnDefinition Width="14*"/>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="3*"/>
                                 <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="3*"/>
                             </Grid.ColumnDefinitions>
                         </Grid>
                     </ItemsPanelTemplate>
@@ -122,12 +122,6 @@
                 <Separator Grid.Column="1"/>
 
                 <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Center">
-                    <TextBlock Text="{Binding CurrentFileFormat}"/>
-                </StatusBarItem>
-
-                <Separator Grid.Column="3"/>
-
-                <StatusBarItem Grid.Column="4" HorizontalContentAlignment="Center">
                     <TextBlock Text="{Binding SelectedGame, Converter={StaticResource EnumDescriptionConverter}}">
                         <TextBlock.ContextMenu>
                             <ContextMenu ItemsSource="{eext:EnumValueCollection EnumType=s:GameType}">
@@ -139,6 +133,12 @@
                             </ContextMenu>
                         </TextBlock.ContextMenu>
                     </TextBlock>
+                </StatusBarItem>
+
+                <Separator Grid.Column="3"/>
+
+                <StatusBarItem Grid.Column="4" HorizontalContentAlignment="Center">
+                    <TextBlock Text="{Binding CurrentFileFormat.Name}"/>
                 </StatusBarItem>
 
             </StatusBar>
