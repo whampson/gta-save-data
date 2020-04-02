@@ -43,7 +43,7 @@ namespace GTASaveData.VC
         private int m_weatherTypeInList;
         private float m_cameraCarZoomIndicator;
         private float m_cameraPedZoomIndicator;
-        private AreaType m_currArea;
+        private Interior m_currArea;
         private bool m_allTaxisHaveNitro;
         private bool m_invertLook4Pad;
         private int m_extraColour;
@@ -207,7 +207,7 @@ namespace GTASaveData.VC
             set { m_cameraPedZoomIndicator = value; OnPropertyChanged(); }
         }
 
-        public AreaType CurrArea
+        public Interior CurrArea
         {
             get { return m_currArea; }
             set { m_currArea = value; OnPropertyChanged(); }
@@ -264,7 +264,8 @@ namespace GTASaveData.VC
             SaveSize = buf.ReadInt32();
             CurrLevel = (LevelType) buf.ReadInt32();
             CameraPosition = buf.ReadObject<Vector>();
-            if (IsSteamWin32(fmt)) SteamWin32Only = buf.ReadInt32();         // TODO: constant?
+            if (IsSteamWin32(fmt)) SteamWin32Only = buf.ReadInt32();
+            Debug.Assert(SteamWin32Only == SteamWin32OnlyValue);
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockHours = (byte) buf.ReadInt32();
@@ -291,7 +292,7 @@ namespace GTASaveData.VC
             WeatherTypeInList = buf.ReadInt32();
             CameraCarZoomIndicator = buf.ReadSingle();
             CameraPedZoomIndicator = buf.ReadSingle();
-            CurrArea = (AreaType) buf.ReadInt32();
+            CurrArea = (Interior) buf.ReadInt32();
             AllTaxisHaveNitro = buf.ReadBool();
             buf.Align4Bytes();
             InvertLook4Pad = buf.ReadBool();

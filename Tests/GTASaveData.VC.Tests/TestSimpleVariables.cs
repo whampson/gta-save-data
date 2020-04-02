@@ -37,7 +37,7 @@ namespace GTASaveData.VC.Tests
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
                 .RuleFor(x => x.CameraCarZoomIndicator, f => f.Random.Float())
                 .RuleFor(x => x.CameraPedZoomIndicator, f => f.Random.Float())
-                .RuleFor(x => x.CurrArea, f => f.PickRandom<AreaType>())
+                .RuleFor(x => x.CurrArea, f => f.PickRandom<Interior>())
                 .RuleFor(x => x.AllTaxisHaveNitro, f => f.Random.Bool())
                 .RuleFor(x => x.InvertLook4Pad, f => f.Random.Bool())
                 .RuleFor(x => x.ExtraColour, f => f.Random.Int())

@@ -1,8 +1,8 @@
 ﻿namespace GTASaveData.VC
 {
-    public enum AreaType
+    public enum Interior
     {
-        MainMap,
+        None,
         Hotel,
         Mansion,
         Bank,
