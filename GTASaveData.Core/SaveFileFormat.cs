@@ -74,7 +74,7 @@ namespace GTASaveData
 
         public override string ToString()
         {
-            return Description ?? Name ?? string.Empty;
+            return Name;
         }
 
         public static bool operator ==(SaveFileFormat left, SaveFileFormat right)
