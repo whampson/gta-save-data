@@ -3,7 +3,7 @@
 
 ## To-Do List
 ### Blocks
-- [ ] SimpleVars
+- [x] SimpleVars
 - [ ] Scripts
 - [ ] Pools
 - [ ] Garages
