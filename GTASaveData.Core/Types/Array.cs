@@ -250,6 +250,11 @@ namespace GTASaveData.Types
             return m_items[index];
         }
 
+        /// <summary>
+        /// Moves an item in the <see cref="Array{T}"/> to a new index.
+        /// </summary>
+        /// <param name="oldIndex">The index of the item to be moved.</param>
+        /// <param name="newIndex">The index to move the item to.</param>
         public void Move(int oldIndex, int newIndex)
         {
             CheckReentrancy();
@@ -296,6 +301,10 @@ namespace GTASaveData.Types
             return true;
         }
 
+        /// <summary>
+        /// Removes the item at the specified index from the <see cref="Array{T}"/>.
+        /// </summary>
+        /// <param name="index">The index of the item to remove.</param>
         public void RemoveAt(int index)
         {
             CheckReentrancy();
@@ -310,6 +319,11 @@ namespace GTASaveData.Types
             OnCollectionChanged(NotifyCollectionChangedAction.Remove, item, index);
         }
 
+        /// <summary>
+        /// Replaces the item at the specified index.
+        /// </summary>
+        /// <param name="item">The new item.</param>
+        /// <param name="index">The index of the item to replace.</param>
         public void Replace(T item, int index)
         {
             CheckReentrancy();
@@ -350,19 +364,11 @@ namespace GTASaveData.Types
         #endregion
 
         #region IEnumerable
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An item enumerator.</returns>
         public IEnumerator<T> GetEnumerator()
         {
             return m_items.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An item enumerator.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

@@ -158,12 +158,12 @@ namespace GTASaveData
                 }
             }
 
-            throw new InvalidOperationException("Invalid padding type.");
+            throw new InvalidOperationException(Strings.Error_InvalidOperation_PaddingType);
         }
 
         protected SerializationException BlockSizeException(int maxSize, int actualSize)
         {
-            return new SerializationException("Maximum block size exeeded. (max = {0}, actual = {1})", maxSize, actualSize);
+            return new SerializationException(Strings.Error_Serialization_BlockSizeExceeded, maxSize, actualSize);
         }
 
         protected abstract void LoadAllData(DataBuffer file);

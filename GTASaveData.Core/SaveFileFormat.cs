@@ -8,10 +8,15 @@ namespace GTASaveData
     {
         public static readonly SaveFileFormat Default = new SaveFileFormat("Default", "", "");
 
-        public string Id { get; }
-        public string Name { get; }
-        public string Description { get; }
-        public IEnumerable<GameConsole> SupportedConsoles { get; }
+        private readonly string m_id;
+        private readonly string m_name;
+        private readonly string m_description;
+        private readonly IEnumerable<GameConsole> m_supportedConsoles;
+
+        public string Id => m_id ?? string.Empty;
+        public string Name => m_name ?? string.Empty;
+        public string Description => m_description ?? string.Empty;
+        public IEnumerable<GameConsole> SupportedConsoles => m_supportedConsoles ?? new List<GameConsole>();
 
         public bool SupportedOnAndroid => IsSupportedOn(ConsoleType.Android);
         public bool SupportedOniOS => IsSupportedOn(ConsoleType.iOS);
@@ -27,10 +32,10 @@ namespace GTASaveData
 
         public SaveFileFormat(string id, string name, string description, params GameConsole[] supportedConsoles)
         {
-            Id = id;
-            Name = name;
-            Description = description;
-            SupportedConsoles = new List<GameConsole>(supportedConsoles);
+            m_id = id;
+            m_name = name;
+            m_description = description;
+            m_supportedConsoles = new List<GameConsole>(supportedConsoles);
         }
 
         public bool IsSupportedOn(GameConsole c)

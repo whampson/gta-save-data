@@ -24,8 +24,10 @@ namespace GTASaveData.Core.Tests
             switch (mode)
             {
                 case PaddingType.Random:
+                {
                     Assert.NotEqual(0, data.Sum(x => x));
                     break;
+                }
                 case PaddingType.Pattern:
                 {
                     for (int i = 0; i < data.Length; i++)

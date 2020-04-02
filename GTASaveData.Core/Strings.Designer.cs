@@ -106,6 +106,15 @@ namespace GTASaveData {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid padding type..
+        /// </summary>
+        internal static string Error_InvalidOperation_PaddingType {
+            get {
+                return ResourceManager.GetString("Error_InvalidOperation_PaddingType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The type &apos;{0}&apos; does not support serialization..
         /// </summary>
         internal static string Error_InvalidOperation_Serialization {
@@ -129,6 +138,15 @@ namespace GTASaveData {
         internal static string Error_JsonSerialization_BinaryUnexpectedToken {
             get {
                 return ResourceManager.GetString("Error_JsonSerialization_BinaryUnexpectedToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum block size exeeded. (max = {0}, actual = {1}).
+        /// </summary>
+        internal static string Error_Serialization_BlockSizeExceeded {
+            get {
+                return ResourceManager.GetString("Error_Serialization_BlockSizeExceeded", resourceCulture);
             }
         }
     }

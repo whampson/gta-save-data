@@ -19,12 +19,6 @@ namespace GTASaveData.Types
             set { m_data = value; OnPropertyChanged(); }
         }
 
-        [JsonIgnore]
-        public int Length
-        {
-            get { return m_data.Count; }
-        }
-
         public DummyObject()
             : this(0)
         { }

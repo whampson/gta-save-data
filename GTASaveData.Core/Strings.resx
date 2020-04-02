@@ -132,6 +132,9 @@
   <data name="Error_InvalidOperation_CollectionReentrancy" xml:space="preserve">
     <value>The collection cannot be modified while being changed by another thread.</value>
   </data>
+  <data name="Error_InvalidOperation_PaddingType" xml:space="preserve">
+    <value>Invalid padding type.</value>
+  </data>
   <data name="Error_InvalidOperation_Serialization" xml:space="preserve">
     <value>The type '{0}' does not support serialization.</value>
     <comment>{0} = object type</comment>
@@ -142,5 +145,9 @@
   <data name="Error_JsonSerialization_BinaryUnexpectedToken" xml:space="preserve">
     <value>Unexpected token while parsing JSON binary: {0}.</value>
     <comment>{0} = token type</comment>
+  </data>
+  <data name="Error_Serialization_BlockSizeExceeded" xml:space="preserve">
+    <value>Maximum block size exeeded. (max = {0}, actual = {1})</value>
+    <comment>{0} = max block size, {1} = actual block size</comment>
   </data>
 </root>

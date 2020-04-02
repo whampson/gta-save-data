@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace GTASaveData
@@ -16,26 +15,10 @@ namespace GTASaveData
         private bool m_disposed;
 
         public int Mark { get; set; }
-
-        public int Position
-        {
-            get { return (int) m_buffer.Position; }
-        }
-
-        public int Offset
-        {
-            get { return Position - Mark; }
-        }
-
-        public int Length
-        {
-            get { return (int) m_buffer.Length; }
-        }
-
-        public int Capacity
-        {
-            get { return m_buffer.Capacity; }
-        }
+        public int Position => (int) m_buffer.Position;
+        public int Offset => Position - Mark;
+        public int Length => (int) m_buffer.Length;
+        public int Capacity => m_buffer.Capacity;
 
         public DataBuffer()
             : this(new MemoryStream())
@@ -50,66 +33,6 @@ namespace GTASaveData
             m_buffer = buffer;
             m_reader = new BinaryReader(m_buffer, Encoding.ASCII, true);
             m_writer = new BinaryWriter(m_buffer, Encoding.ASCII, true);
-        }
-
-        public void Dispose()
-        {
-            if (!m_disposed)
-            {
-                m_writer.Dispose();
-                m_reader.Dispose();
-                m_disposed = true;
-            }
-        }
-
-        public static int Align4Bytes(int addr)
-        {
-            const int WordSize = 4;
-
-            return (addr + WordSize - 1) & ~(WordSize - 1);
-        }
-
-        public void Align4Bytes()
-        {
-            Skip(Align4Bytes(Position) - Position);
-        }
-
-        public void Reset()
-        {
-            Seek(0);
-            MarkPosition();
-        }
-
-        public int MarkPosition()
-        {
-            return Mark = Position;
-        }
-
-        public void Seek(int pos)
-        {
-            m_buffer.Position = pos;
-        }
-
-        public void Skip(int count)
-        {
-            if (m_buffer.Position + count > m_buffer.Length)
-            {
-                Write(new byte[count]);
-            }
-            else
-            {
-                m_buffer.Position += count;
-            }
-        }
-
-        public byte[] GetBytes()
-        {
-            return m_buffer.ToArray();
-        }
-
-        public byte[] GetBytesUpToCursor()
-        {
-            return GetBytes().Take(Position).ToArray();
         }
 
         #region Read Functions
@@ -639,9 +562,71 @@ namespace GTASaveData
         }
         #endregion
 
+        #region Helper Functions
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                m_writer.Dispose();
+                m_reader.Dispose();
+                m_disposed = true;
+            }
+        }
+
+        public static int Align4Bytes(int addr)
+        {
+            const int WordSize = 4;
+
+            return (addr + WordSize - 1) & ~(WordSize - 1);
+        }
+
+        public void Align4Bytes()
+        {
+            Skip(Align4Bytes(Position) - Position);
+        }
+
+        public void Reset()
+        {
+            Seek(0);
+            MarkPosition();
+        }
+
+        public int MarkPosition()
+        {
+            return Mark = Position;
+        }
+
+        public void Seek(int pos)
+        {
+            m_buffer.Position = pos;
+        }
+
+        public void Skip(int count)
+        {
+            if (m_buffer.Position + count > m_buffer.Length)
+            {
+                Write(new byte[count]);
+            }
+            else
+            {
+                m_buffer.Position += count;
+            }
+        }
+
+        public byte[] GetBytes()
+        {
+            return m_buffer.ToArray();
+        }
+
+        public byte[] GetBytesUpToCursor()
+        {
+            return GetBytes().Take(Position).ToArray();
+        }
+
         private static SerializationException SerializationNotSupportedException(Type t)
         {
             return new SerializationException(Strings.Error_InvalidOperation_Serialization, t.Name);
         }
+        #endregion
     }
 }
