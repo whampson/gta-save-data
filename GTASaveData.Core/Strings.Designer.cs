@@ -140,14 +140,5 @@ namespace GTASaveData {
                 return ResourceManager.GetString("Error_JsonSerialization_BinaryUnexpectedToken", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Maximum block size exeeded. (max = {0}, actual = {1}).
-        /// </summary>
-        internal static string Error_Serialization_BlockSizeExceeded {
-            get {
-                return ResourceManager.GetString("Error_Serialization_BlockSizeExceeded", resourceCulture);
-            }
-        }
     }
 }

@@ -117,33 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Error_Argument_NoNegative" xml:space="preserve">
-    <value>The value must be non-negative.</value>
-  </data>
-  <data name="Error_Argument_NoSurrogateChars" xml:space="preserve">
-    <value>The character cannot be a surrogate.</value>
-  </data>
-  <data name="Error_Argument_SequenceIndexOutOfRange" xml:space="preserve">
-    <value>The index must be smaller than the length of the sequence.</value>
-  </data>
-  <data name="Error_Argument_SequenceTooBig" xml:space="preserve">
-    <value>The sequence length must be less than or equal to the length of the array.</value>
-  </data>
-  <data name="Error_InvalidOperation_CollectionReentrancy" xml:space="preserve">
-    <value>The collection cannot be modified while being changed by another thread.</value>
-  </data>
-  <data name="Error_InvalidOperation_PaddingType" xml:space="preserve">
-    <value>Invalid padding type.</value>
-  </data>
-  <data name="Error_InvalidOperation_Serialization" xml:space="preserve">
-    <value>The type '{0}' does not support serialization.</value>
-    <comment>{0} = object type</comment>
-  </data>
-  <data name="Error_JsonSerialization_BinaryUnexpectedEnd" xml:space="preserve">
-    <value>Unexpected end while parsing JSON.</value>
-  </data>
-  <data name="Error_JsonSerialization_BinaryUnexpectedToken" xml:space="preserve">
-    <value>Unexpected token while parsing JSON binary: {0}.</value>
-    <comment>{0} = token type</comment>
+  <data name="Error_Serialization_BlockSizeExceeded" xml:space="preserve">
+    <value>Maximum block size exeeded. (max = {0}, actual = {1})</value>
+    <comment>{0} = max block size, {1} = actual block size</comment>
   </data>
 </root>

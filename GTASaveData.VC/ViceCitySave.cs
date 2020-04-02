@@ -1,6 +1,7 @@
 ﻿using GTASaveData.Extensions;
 using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.Linq;
 namespace GTASaveData.VC
 {
     /// <summary>
-    /// Represents a save file for <i>Grand Theft Auto: Vice City</i>.
+    /// Represents a <i>Grand Theft Auto: Vice City</i> save file.
     /// </summary>
     public class ViceCitySave : SaveFile, IGTASaveFile, IEquatable<ViceCitySave>
     {
@@ -18,6 +19,7 @@ namespace GTASaveData.VC
 
         protected override int BufferSize => (FileFormat.SupportedOnMobile) ? 65536 : 55000;
 
+        private bool m_blockSizeChecksEnabled;
         private SimpleVariables m_simpleVars;   // SimpleVariables
         private DummyObject m_scripts;  // TheScripts
         private DummyObject m_pedPool;  // PedPool
@@ -42,6 +44,13 @@ namespace GTASaveData.VC
         private DummyObject m_setPieces; // SetPieces
         private DummyObject m_streaming;    // Streaming
         private DummyObject m_pedTypeInfo;  // PedTypeInfo
+
+        [JsonIgnore]
+        public bool BlockSizeChecksEnabled
+        {
+            get { return m_blockSizeChecksEnabled; }
+            set { m_blockSizeChecksEnabled = value; OnPropertyChanged(); }
+        }
 
         public SimpleVariables SimpleVars
         {
@@ -253,6 +262,10 @@ namespace GTASaveData.VC
             SetPieces = new DummyObject();
             Streaming = new DummyObject();
             PedTypeInfo = new DummyObject();
+
+        #if !DEBUG
+            BlockSizeChecks = true;
+        #endif
         }
 
         #region Shared between GTA3/VC
@@ -328,7 +341,7 @@ namespace GTASaveData.VC
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
                 if (BlockSizeChecksEnabled)
                 {
-                    throw BlockSizeException(BufferSize, size);
+                    throw BlockSizeExceededException(BufferSize, size);
                 }
             }
 
@@ -352,7 +365,7 @@ namespace GTASaveData.VC
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
                 if (BlockSizeChecksEnabled)
                 {
-                    throw BlockSizeException(BufferSize, size);
+                    throw BlockSizeExceededException(BufferSize, size);
                 }
             }
 
@@ -535,6 +548,11 @@ namespace GTASaveData.VC
                 && SetPieces.Equals(other.SetPieces)
                 && Streaming.Equals(other.Streaming)
                 && PedTypeInfo.Equals(other.PedTypeInfo);
+        }
+
+        private SerializationException BlockSizeExceededException(int maxSize, int actualSize)
+        {
+            return new SerializationException(Strings.Error_Serialization_BlockSizeExceeded, maxSize, actualSize);
         }
 
         public static class FileFormats

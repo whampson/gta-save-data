@@ -1,6 +1,7 @@
 using GTASaveData.Extensions;
 using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     /// <summary>
-    /// Represents a save file for <i>Grand Theft Auto III</i>.
+    /// Represents a <i>Grand Theft Auto III</i> save file.
     /// </summary>
     public class GTA3Save : SaveFile, IGTASaveFile, IEquatable<GTA3Save>
     {
@@ -18,6 +19,7 @@ namespace GTASaveData.GTA3
 
         protected override int BufferSize => (FileFormat.SupportedOnPS2) ? 50000 : 55000;
 
+        private bool m_blockSizeChecksEnabled;
         private SimpleVariables m_simpleVars;   // SimpleVariables
         private TheScripts m_scripts;  // TheScripts
         private DummyObject m_pedPool;  // PedPool
@@ -39,6 +41,13 @@ namespace GTASaveData.GTA3
         private DummyObject m_stats;    // Stats
         private DummyObject m_streaming;    // Streaming
         private DummyObject m_pedTypeInfo;  // PedTypeInfo
+
+        [JsonIgnore]
+        public bool BlockSizeChecksEnabled
+        {
+            get { return m_blockSizeChecksEnabled; }
+            set { m_blockSizeChecksEnabled = value; OnPropertyChanged(); }
+        }
 
         public SimpleVariables SimpleVars
         {
@@ -226,6 +235,10 @@ namespace GTASaveData.GTA3
             Stats = new DummyObject();
             Streaming = new DummyObject();
             PedTypeInfo = new DummyObject();
+
+        #if !DEBUG
+            BlockSizeChecks = true;
+        #endif
         }
 
         #region Shared between GTA3/VC
@@ -301,7 +314,7 @@ namespace GTASaveData.GTA3
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
                 if (BlockSizeChecksEnabled)
                 {
-                    throw BlockSizeException(BufferSize, size);
+                    throw BlockSizeExceededException(BufferSize, size);
                 }
             }
 
@@ -325,7 +338,7 @@ namespace GTASaveData.GTA3
                 Debug.WriteLine("Maximum block size exceeded: {0}", size);
                 if (BlockSizeChecksEnabled)
                 {
-                    throw BlockSizeException(BufferSize, size);
+                    throw BlockSizeExceededException(BufferSize, size);
                 }
             }
 
@@ -444,6 +457,12 @@ namespace GTASaveData.GTA3
             int fileIdJP = data.FindFirst(BitConverter.GetBytes(0x31400));
             int scr = data.FindFirst("SCR\0".GetAsciiBytes());
 
+            if (fileId == -1 || scr == -1)
+            {
+                fmt = SaveFileFormat.Default;
+                return false;
+            }
+
             int blk1Size;
             using (DataBuffer wb = new DataBuffer(data))
             {
@@ -544,6 +563,11 @@ namespace GTASaveData.GTA3
                 && PedTypeInfo.Equals(other.PedTypeInfo);
         }
 
+        private SerializationException BlockSizeExceededException(int maxSize, int actualSize)
+        {
+            return new SerializationException(Strings.Error_Serialization_BlockSizeExceeded, maxSize, actualSize);
+        }
+
         public static class FileFormats
         {
             public static readonly SaveFileFormat Android = new SaveFileFormat(
@@ -565,7 +589,7 @@ namespace GTASaveData.GTA3
             );
 
             public static readonly SaveFileFormat PS2_AU = new SaveFileFormat(
-                "PS2_AU", "PS2/Australia", "PS2 (PAL-AU)",
+                "PS2_AU", "PS2/Australia", "PS2 (PAL/Australia)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.Australia)
             );
 
@@ -575,7 +599,7 @@ namespace GTASaveData.GTA3
             );
 
             public static readonly SaveFileFormat PS2_NAEU = new SaveFileFormat(
-                "PS2_NAEU", "PS2", "PS2 (NTSC-U/C, PAL-EU)",
+                "PS2_NAEU", "PS2", "PS2 (NTSC-U/C, PAL/Europe)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe)
             );
 
