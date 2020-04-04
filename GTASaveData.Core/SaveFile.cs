@@ -95,20 +95,31 @@ namespace GTASaveData
             return obj;
         }
 
-        public void Load(string path)
+        public int Load(string path)
         {
-            byte[] data = File.ReadAllBytes(path);
+            return Load(File.ReadAllBytes(path));
+        }
+
+        public int Load(byte[] data)
+        {
             int bytesRead = Serializer.Read(this, data, FileFormat);
 
             Debug.WriteLine("Read {0} bytes from disk.", bytesRead);
+            return bytesRead;
         }
 
-        public void Save(string path)
+        public int Save(string path)
         {
-            int bytesWritten = Serializer.Write(this, FileFormat, out byte[] data);
+            int bytesWritten = Save(out byte[] data);
             File.WriteAllBytes(path, data);
 
             Debug.WriteLine("Wrote {0} bytes to disk.", bytesWritten);
+            return bytesWritten;
+        }
+
+        public int Save(out byte[] data)
+        {
+            return Serializer.Write(this, FileFormat, out data);
         }
 
         public static bool GetFileFormat<T>(string path, out SaveFileFormat fmt)

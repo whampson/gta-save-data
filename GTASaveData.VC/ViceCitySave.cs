@@ -19,7 +19,7 @@ namespace GTASaveData.VC
 
         protected override int BufferSize => (FileFormat.SupportedOnMobile) ? 65536 : 55000;
 
-        private bool m_blockSizeChecksEnabled;
+        private bool m_blockSizeChecks;
         private SimpleVariables m_simpleVars;   // SimpleVariables
         private DummyObject m_scripts;  // TheScripts
         private DummyObject m_pedPool;  // PedPool
@@ -46,10 +46,10 @@ namespace GTASaveData.VC
         private DummyObject m_pedTypeInfo;  // PedTypeInfo
 
         [JsonIgnore]
-        public bool BlockSizeChecksEnabled
+        public bool BlockSizeChecks
         {
-            get { return m_blockSizeChecksEnabled; }
-            set { m_blockSizeChecksEnabled = value; OnPropertyChanged(); }
+            get { return m_blockSizeChecks; }
+            set { m_blockSizeChecks = value; OnPropertyChanged(); }
         }
 
         public SimpleVariables SimpleVars
@@ -264,7 +264,7 @@ namespace GTASaveData.VC
             PedTypeInfo = new DummyObject();
 
         #if !DEBUG
-            BlockSizeChecksEnabled = true;
+            BlockSizeChecks = true;
         #endif
         }
 
@@ -336,12 +336,12 @@ namespace GTASaveData.VC
             WorkBuff.Reset();
 
             int size = file.ReadInt32();
-            if (size > BufferSize)
+            if ((uint) size > BufferSize)
             {
-                Debug.WriteLine("Maximum block size exceeded: {0}", size);
-                if (BlockSizeChecksEnabled)
+                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
+                if (BlockSizeChecks)
                 {
-                    throw BlockSizeExceededException(BufferSize, size);
+                    throw BlockSizeExceededException((uint) size, BufferSize);
                 }
             }
 
@@ -360,12 +360,12 @@ namespace GTASaveData.VC
 
             byte[] data = WorkBuff.GetBytesUpToCursor();
             int size = data.Length;
-            if (size > BufferSize)
+            if ((uint) size > BufferSize)
             {
-                Debug.WriteLine("Maximum block size exceeded: {0}", size);
-                if (BlockSizeChecksEnabled)
+                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
+                if (BlockSizeChecks)
                 {
-                    throw BlockSizeExceededException(BufferSize, size);
+                    throw BlockSizeExceededException((uint) size, BufferSize);
                 }
             }
 
@@ -483,6 +483,8 @@ namespace GTASaveData.VC
 
         protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
         {
+            // TODO: Android, iOS, PS2, Xbox
+
             int fileId = data.FindFirst(BitConverter.GetBytes(0x31401));
             int fileIdJP = data.FindFirst(BitConverter.GetBytes(0x31400));  // TODO: confirm this even exists
             int scr = data.FindFirst("SCR\0".GetAsciiBytes());
@@ -550,15 +552,25 @@ namespace GTASaveData.VC
                 && PedTypeInfo.Equals(other.PedTypeInfo);
         }
 
-        private SerializationException BlockSizeExceededException(int maxSize, int actualSize)
+        private SerializationException BlockSizeExceededException(uint value, int max)
         {
-            return new SerializationException(Strings.Error_Serialization_BlockSizeExceeded, maxSize, actualSize);
+            return new SerializationException(Strings.Error_Serialization_BlockSizeExceeded, value, max);
         }
 
         public static class FileFormats
         {
+            public static readonly SaveFileFormat Android = new SaveFileFormat(
+                "Android", "Android", "Android",
+                new GameConsole(ConsoleType.Android)
+            );
+
+            public static readonly SaveFileFormat iOS = new SaveFileFormat(
+                "iOS", "iOS", "iOS",
+                new GameConsole(ConsoleType.iOS)
+            );
+
             public static readonly SaveFileFormat PC_Retail = new SaveFileFormat(
-                "PC_Retail", "PC", "Windows (Retail) or macOS (Steam)",
+                "PC_Retail", "PC", "Windows (Retail), macOS (Steam)",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.MacOS, ConsoleFlags.Steam)
             );
@@ -568,9 +580,19 @@ namespace GTASaveData.VC
                 new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam)
             );
 
+            public static readonly SaveFileFormat PS2 = new SaveFileFormat(
+                "PS2", "PS2", "PlayStation 2",
+                new GameConsole(ConsoleType.PS2)
+            );
+
+            public static readonly SaveFileFormat Xbox = new SaveFileFormat(
+                "Xbox", "Xbox", "Xbox",
+                new GameConsole(ConsoleType.Xbox)
+            );
+
             public static SaveFileFormat[] GetAll()
             {
-                return new SaveFileFormat[] { PC_Retail, PC_Steam };
+                return new SaveFileFormat[] { Android, iOS, PC_Retail, PC_Steam, PS2, Xbox };
             }
         }
     }

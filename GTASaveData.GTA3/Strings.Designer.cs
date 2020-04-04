@@ -61,7 +61,7 @@ namespace GTASaveData.GTA3 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Maximum block size exeeded. (max = {0}, actual = {1}).
+        ///   Looks up a localized string similar to Maximum block size exeeded. (value = {0}, max = {1}).
         /// </summary>
         internal static string Error_Serialization_BlockSizeExceeded {
             get {

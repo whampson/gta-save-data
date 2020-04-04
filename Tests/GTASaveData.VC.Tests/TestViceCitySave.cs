@@ -4,6 +4,7 @@ using TestFramework;
 using Xunit;
 using System.Linq;
 using System;
+using System.IO;
 
 namespace GTASaveData.VC.Tests
 {
@@ -56,7 +57,7 @@ namespace GTASaveData.VC.Tests
             ViceCitySave x0 = GenerateTestObject(format);
             ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
-            AssertEqual(x0, x1);
+            AssertSavesAreEqual(x0, x1);
 
             int calculatedSum = data.Take(data.Length - 4).Sum(x => x);
             int storedSum = BitConverter.ToInt32(data, data.Length - 4);
@@ -72,14 +73,39 @@ namespace GTASaveData.VC.Tests
             ViceCitySave x0 = SaveFile.Load<ViceCitySave>(path, format);
             ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
-            AssertEqual(x0, x1);
+            AssertSavesAreEqual(x0, x1);
 
             int calculatedSum = data.Take(data.Length - 4).Sum(x => x);
             int storedSum = BitConverter.ToInt32(data, data.Length - 4);
             Assert.Equal(calculatedSum, storedSum);
         }
 
-        private void AssertEqual(ViceCitySave x0, ViceCitySave x1)
+        [Fact]
+        public void BlockSizeExceeded()
+        {
+            string path = TestData.GetTestDataPath(GameType.VC, ViceCitySave.FileFormats.PC_Retail, "COK_2");
+            byte[] data = File.ReadAllBytes(path);
+
+            ViceCitySave x = new ViceCitySave()
+            {
+                FileFormat = ViceCitySave.FileFormats.PC_Retail,
+                BlockSizeChecks = true
+            };
+
+            // Fudge the block size
+            data[0] = 0xBE;
+            data[1] = 0xBA;
+            data[2] = 0xFE;
+            data[3] = 0xCA;
+            Assert.Throws<SerializationException>(() => x.Load(data));
+
+            // TODO: uncomment when Scripts done
+            // Make the script space huge
+            //x.Scripts.ScriptSpace = GTAObject.CreateArray<byte>(100000);
+            //Assert.Throws<SerializationException>(() => x.Save(out byte[] _));
+        }
+
+        private void AssertSavesAreEqual(ViceCitySave x0, ViceCitySave x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);
@@ -110,12 +136,34 @@ namespace GTASaveData.VC.Tests
 
         public static IEnumerable<object[]> TestFiles => new[]
         {
+            //new object[] { ViceCitySave.FileFormats.Android, "CAP_1" },
+            //new object[] { ViceCitySave.FileFormats.Android, "COK_4" },
+            //new object[] { ViceCitySave.FileFormats.Android, "CUB_1" },
+            //new object[] { ViceCitySave.FileFormats.Android, "FIN_1" },
+            //new object[] { ViceCitySave.FileFormats.Android, "LAW_3" },
+            //new object[] { ViceCitySave.FileFormats.iOS, "FIN_1" },
+            //new object[] { ViceCitySave.FileFormats.iOS, "FIN_1 SpecialVehicles1" },
+            //new object[] { ViceCitySave.FileFormats.iOS, "FIN_1 SpecialVehicles1" },
+            new object[] { ViceCitySave.FileFormats.PC_Retail, "COK_2" },
+            new object[] { ViceCitySave.FileFormats.PC_Retail, "CREAM" },
+            new object[] { ViceCitySave.FileFormats.PC_Retail, "FIN_1" },
             new object[] { ViceCitySave.FileFormats.PC_Retail, "ITBEG" },
-            new object[] { ViceCitySave.FileFormats.PC_Retail, "ITBEG_JP" },
-            new object[] { ViceCitySave.FileFormats.PC_Retail, "PROTEC3" },
-            new object[] { ViceCitySave.FileFormats.PC_Steam, "BARON3" },
-            new object[] { ViceCitySave.FileFormats.PC_Retail, "PROTEC3" },
-            // TODO: PS2
+            new object[] { ViceCitySave.FileFormats.PC_Retail, "ITBEG Japan" },
+            new object[] { ViceCitySave.FileFormats.PC_Retail, "ITBEG StarterSave" },
+            new object[] { ViceCitySave.FileFormats.PC_Retail, "JOB_5" },
+            new object[] { ViceCitySave.FileFormats.PC_Retail, "TEX_3" },
+            new object[] { ViceCitySave.FileFormats.PC_Steam, "BUD_3" },
+            new object[] { ViceCitySave.FileFormats.PC_Steam, "COK_3" },
+            new object[] { ViceCitySave.FileFormats.PC_Steam, "FIN_1" },
+            //new object[] { ViceCitySave.FileFormats.PS2, "CREAM" },
+            //new object[] { ViceCitySave.FileFormats.PS2, "FIN_1 1" },
+            //new object[] { ViceCitySave.FileFormats.PS2, "FIN_1 2" },
+            //new object[] { ViceCitySave.FileFormats.PS2, "FIN_1 3" },
+            //new object[] { ViceCitySave.FileFormats.PS2, "TEX_1" },
+            //new object[] { ViceCitySave.FileFormats.PS2, "TEX_2" },
+            //new object[] { ViceCitySave.FileFormats.Xbox, "CAP_1" },
+            //new object[] { ViceCitySave.FileFormats.Xbox, "FIN_1" },
+            //new object[] { ViceCitySave.FileFormats.Xbox, "LAW_2" },
         };
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Bogus;
+using GTASaveData.Types;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TestFramework;
 using Xunit;
@@ -79,6 +81,30 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(calculatedSum, storedSum);
         }
 
+        [Fact]
+        public void BlockSizeExceeded()
+        {
+            string path = TestData.GetTestDataPath(GameType.III, GTA3Save.FileFormats.PC, "CAT2");
+            byte[] data = File.ReadAllBytes(path);
+
+            GTA3Save x = new GTA3Save()
+            {
+                FileFormat = GTA3Save.FileFormats.PC,
+                BlockSizeChecks = true
+            };
+
+            // Fudge the block size
+            data[0] = 0xBE;
+            data[1] = 0xBA;
+            data[2] = 0xFE;
+            data[3] = 0xCA;
+            Assert.Throws<SerializationException>(() => x.Load(data));
+
+            // Make the script space huge
+            x.Scripts.ScriptSpace = GTAObject.CreateArray<byte>(100000);
+            Assert.Throws<SerializationException>(() => x.Save(out byte[] _));
+        }
+
         private void AssertSavesAreEqual(GTA3Save x0, GTA3Save x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
@@ -140,7 +166,10 @@ namespace GTASaveData.GTA3.Tests
             //new object[] { GTA3Save.FileFormats.PS2_NAEU, "CAT2" },
             //new object[] { GTA3Save.FileFormats.PS2_NAEU, "LM1" },
             //new object[] { GTA3Save.FileFormats.PS2_NAEU, "T4X4_1" },
-            //new object[] { GTA3Save.FileFormats.Xbox, "LM1" },
+            //new object[] { GTA3Save.FileFormats.Xbox, "JM2" },
+            //new object[] { GTA3Save.FileFormats.Xbox, "LM1 1" },
+            //new object[] { GTA3Save.FileFormats.Xbox, "LM1 2" },
+            //new object[] { GTA3Save.FileFormats.Xbox, "LM1 ChainGame100" },
         };
     }
 }

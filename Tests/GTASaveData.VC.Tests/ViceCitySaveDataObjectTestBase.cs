@@ -9,9 +9,12 @@ namespace GTASaveData.VC.Tests
     {
         public static IEnumerable<object[]> FileFormats => new[]
         {
+            //new object[] { ViceCitySave.FileFormats.Android },
+            //new object[] { ViceCitySave.FileFormats.iOS },
             new object[] { ViceCitySave.FileFormats.PC_Retail },
             new object[] { ViceCitySave.FileFormats.PC_Steam },
             //new object[] { ViceCitySave.FileFormats.PS2 },
+            //new object[] { ViceCitySave.FileFormats.Xbox },
         };
     }
 }

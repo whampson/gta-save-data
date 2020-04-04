@@ -19,7 +19,7 @@ namespace GTASaveData.GTA3
 
         protected override int BufferSize => (FileFormat.SupportedOnPS2) ? 50000 : 55000;
 
-        private bool m_blockSizeChecksEnabled;
+        private bool m_blockSizeChecks;
         private SimpleVariables m_simpleVars;   // SimpleVariables
         private TheScripts m_scripts;  // TheScripts
         private DummyObject m_pedPool;  // PedPool
@@ -43,10 +43,10 @@ namespace GTASaveData.GTA3
         private DummyObject m_pedTypeInfo;  // PedTypeInfo
 
         [JsonIgnore]
-        public bool BlockSizeChecksEnabled
+        public bool BlockSizeChecks
         {
-            get { return m_blockSizeChecksEnabled; }
-            set { m_blockSizeChecksEnabled = value; OnPropertyChanged(); }
+            get { return m_blockSizeChecks; }
+            set { m_blockSizeChecks = value; OnPropertyChanged(); }
         }
 
         public SimpleVariables SimpleVars
@@ -237,7 +237,7 @@ namespace GTASaveData.GTA3
             PedTypeInfo = new DummyObject();
 
         #if !DEBUG
-            BlockSizeChecksEnabled = true;
+            BlockSizeChecks = true;
         #endif
         }
 
@@ -309,12 +309,12 @@ namespace GTASaveData.GTA3
             WorkBuff.Reset();
 
             int size = file.ReadInt32();
-            if (size > BufferSize)
+            if ((uint) size > BufferSize)
             {
-                Debug.WriteLine("Maximum block size exceeded: {0}", size);
-                if (BlockSizeChecksEnabled)
+                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
+                if (BlockSizeChecks)
                 {
-                    throw BlockSizeExceededException(BufferSize, size);
+                    throw BlockSizeExceededException((uint) size, BufferSize);
                 }
             }
 
@@ -333,12 +333,12 @@ namespace GTASaveData.GTA3
 
             byte[] data = WorkBuff.GetBytesUpToCursor();
             int size = data.Length;
-            if (size > BufferSize)
+            if ((uint) size > BufferSize)
             {
-                Debug.WriteLine("Maximum block size exceeded: {0}", size);
-                if (BlockSizeChecksEnabled)
+                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
+                if (BlockSizeChecks)
                 {
-                    throw BlockSizeExceededException(BufferSize, size);
+                    throw BlockSizeExceededException((uint) size, BufferSize);
                 }
             }
 
@@ -563,9 +563,9 @@ namespace GTASaveData.GTA3
                 && PedTypeInfo.Equals(other.PedTypeInfo);
         }
 
-        private SerializationException BlockSizeExceededException(int maxSize, int actualSize)
+        private SerializationException BlockSizeExceededException(uint value, int max)
         {
-            return new SerializationException(Strings.Error_Serialization_BlockSizeExceeded, maxSize, actualSize);
+            return new SerializationException(Strings.Error_Serialization_BlockSizeExceeded, value, max);
         }
 
         public static class FileFormats
@@ -581,7 +581,7 @@ namespace GTASaveData.GTA3
             );
 
             public static readonly SaveFileFormat PC = new SaveFileFormat(
-                "PC", "PC", "Windows or macOS",
+                "PC", "PC", "Windows, macOS",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.MacOS),
                 new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam),
@@ -589,17 +589,17 @@ namespace GTASaveData.GTA3
             );
 
             public static readonly SaveFileFormat PS2_AU = new SaveFileFormat(
-                "PS2_AU", "PS2/Australia", "PS2 (PAL/Australia)",
+                "PS2_AU", "PS2/Australia", "PlayStation 2 (PAL/Australia)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.Australia)
             );
 
             public static readonly SaveFileFormat PS2_JP = new SaveFileFormat(
-                "PS2_JP", "PS2/Japan", "PS2 (NTSC-J)",
+                "PS2_JP", "PS2/Japan", "PlayStation 2 (NTSC-J)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.Japan)
             );
 
             public static readonly SaveFileFormat PS2_NAEU = new SaveFileFormat(
-                "PS2_NAEU", "PS2", "PS2 (NTSC-U/C, PAL/Europe)",
+                "PS2_NAEU", "PS2", "PlayStation 2 (NTSC-U/C, PAL/Europe)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe)
             );
 

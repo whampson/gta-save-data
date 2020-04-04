@@ -265,7 +265,6 @@ namespace GTASaveData.VC
             CurrLevel = (LevelType) buf.ReadInt32();
             CameraPosition = buf.ReadObject<Vector>();
             if (IsSteamWin32(fmt)) SteamWin32Only = buf.ReadInt32();
-            Debug.Assert(SteamWin32Only == SteamWin32OnlyValue);
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockHours = (byte) buf.ReadInt32();
