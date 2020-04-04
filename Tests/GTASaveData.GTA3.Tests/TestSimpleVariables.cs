@@ -11,7 +11,7 @@ namespace GTASaveData.GTA3.Tests
         public override SimpleVariables GenerateTestObject(SaveFileFormat format)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.SaveName, f => Generator.RandomUnicodeString(f, SimpleVariables.Limits.MaxSaveNameLength - 1))
+                .RuleFor(x => x.SaveName, f => Generator.RandomUnicodeString(f, SimpleVariables.Limits.MaxNameLength - 1))
                 .RuleFor(x => x.TimeLastSaved, f => Generator.Generate<SystemTime, TestSystemTime>())
                 .RuleFor(x => x.SaveSize, f => f.Random.Int())
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<LevelType>())

@@ -39,13 +39,13 @@ namespace GTASaveData.SA
         private DummyObject m_setPieces;   // SetPieces
         private DummyObject m_streaming;   // Streaming
         private DummyObject m_pedTypeInfo;   // PedType
-        private DummyObject m_tagManager;   // TagManager
+        private DummyObject m_tags;   // TagManager
         private DummyObject m_iplStore;   // IplStore
         private DummyObject m_shopping;   // Shopping
         private DummyObject m_gangWars;   // GangWars
-        private DummyObject m_stuntJumpManager;   // StuntJumpManager
-        private DummyObject m_entryExitManager;   // EntryExitManager
-        private DummyObject m_radioTrackManager;   // AERadioTrackManager
+        private DummyObject m_stuntJumps;   // StuntJumpManager
+        private DummyObject m_entryExits;   // EntryExitManager
+        private DummyObject m_radio;   // AERadioTrackManager
         private DummyObject m_user3dMarkers;   // User3dMarkers
         private DummyObject m_postEffects;   // PostEffects (Mobile only?)
 
@@ -169,10 +169,10 @@ namespace GTASaveData.SA
             set { m_pedTypeInfo = value; }
         }
 
-        public DummyObject TagManager
+        public DummyObject Tags
         {
-            get { return m_tagManager; }
-            set { m_tagManager = value; }
+            get { return m_tags; }
+            set { m_tags = value; }
         }
 
         public DummyObject IplStore
@@ -193,22 +193,22 @@ namespace GTASaveData.SA
             set { m_gangWars = value; }
         }
 
-        public DummyObject StuntJumpManager
+        public DummyObject StuntJumps
         {
-            get { return m_stuntJumpManager; }
-            set { m_stuntJumpManager = value; }
+            get { return m_stuntJumps; }
+            set { m_stuntJumps = value; }
         }
 
-        public DummyObject EntryExitManager
+        public DummyObject EntryExits
         {
-            get { return m_entryExitManager; }
-            set { m_entryExitManager = value; }
+            get { return m_entryExits; }
+            set { m_entryExits = value; }
         }
 
-        public DummyObject RadioTrackManager
+        public DummyObject Radio
         {
-            get { return m_radioTrackManager; }
-            set { m_radioTrackManager = value; }
+            get { return m_radio; }
+            set { m_radio = value; }
         }
 
         public DummyObject User3dMarkers
@@ -225,8 +225,8 @@ namespace GTASaveData.SA
 
         public override string Name
         {
-            get { return SimpleVars.SaveName; }
-            set { SimpleVars.SaveName = value; OnPropertyChanged(); }
+            get { return SimpleVars.LastMissionPassedName; }
+            set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
         }
 
         public override DateTime TimeLastSaved
@@ -257,13 +257,13 @@ namespace GTASaveData.SA
             SetPieces,
             Streaming,
             PedTypeInfo,
-            TagManager,
+            Tags,
             IplStore,
             Shopping,
             GangWars,
-            StuntJumpManager,
-            EntryExitManager,
-            RadioTrackManager,
+            StuntJumps,
+            EntryExits,
+            Radio,
             User3dMarkers,
             PostEffects
         };
@@ -290,13 +290,13 @@ namespace GTASaveData.SA
             SetPieces = new DummyObject();
             Streaming = new DummyObject();
             PedTypeInfo = new DummyObject();
-            TagManager = new DummyObject();
+            Tags = new DummyObject();
             IplStore = new DummyObject();
             Shopping = new DummyObject();
             GangWars = new DummyObject();
-            StuntJumpManager = new DummyObject();
-            EntryExitManager = new DummyObject();
-            RadioTrackManager = new DummyObject();
+            StuntJumps = new DummyObject();
+            EntryExits = new DummyObject();
+            Radio = new DummyObject();
             User3dMarkers = new DummyObject();
             PostEffects = new DummyObject();
         }
@@ -478,13 +478,13 @@ namespace GTASaveData.SA
                     case 17: SetPieces = LoadDummy(size); break;
                     case 18: Streaming = LoadDummy(size); break;
                     case 19: PedTypeInfo = LoadDummy(size); break;
-                    case 20: TagManager = LoadDummy(size); break;
+                    case 20: Tags = LoadDummy(size); break;
                     case 21: IplStore  = LoadDummy(size); break;
                     case 22: Shopping = LoadDummy(size); break;
                     case 23: GangWars = LoadDummy(size); break;
-                    case 24: StuntJumpManager= LoadDummy(size); break;
-                    case 25: EntryExitManager = LoadDummy(size); break;
-                    case 26: RadioTrackManager = LoadDummy(size); break;
+                    case 24: StuntJumps= LoadDummy(size); break;
+                    case 25: EntryExits = LoadDummy(size); break;
+                    case 26: Radio = LoadDummy(size); break;
                     case 27: User3dMarkers = LoadDummy(size); break;
                     case 28: PostEffects = LoadDummy(size); break;      // ???
                 }
@@ -529,13 +529,13 @@ namespace GTASaveData.SA
                     case 17: size = SaveObject(SetPieces); break;
                     case 18: size = SaveObject(Streaming); break;
                     case 19: size = SaveObject(PedTypeInfo); break;
-                    case 20: size = SaveObject(TagManager); break;
+                    case 20: size = SaveObject(Tags); break;
                     case 21: size = SaveObject(IplStore); break;
                     case 22: size = SaveObject(Shopping); break;
                     case 23: size = SaveObject(GangWars); break;
-                    case 24: size = SaveObject(StuntJumpManager); break;
-                    case 25: size = SaveObject(EntryExitManager); break;
-                    case 26: size = SaveObject(RadioTrackManager); break;
+                    case 24: size = SaveObject(StuntJumps); break;
+                    case 25: size = SaveObject(EntryExits); break;
+                    case 26: size = SaveObject(Radio); break;
                     case 27: size = SaveObject(User3dMarkers); break;
                     case 28: size = SaveObject(PostEffects); break;      // ???
                 }
@@ -617,13 +617,13 @@ namespace GTASaveData.SA
                 && SetPieces.Equals(other.SetPieces)
                 && Streaming.Equals(other.Streaming)
                 && PedTypeInfo.Equals(other.PedTypeInfo)
-                && TagManager.Equals(other.TagManager)
+                && Tags.Equals(other.Tags)
                 && IplStore.Equals(other.IplStore)
                 && Shopping.Equals(other.Shopping)
                 && GangWars.Equals(other.GangWars)
-                && StuntJumpManager.Equals(other.StuntJumpManager)
-                && EntryExitManager.Equals(other.EntryExitManager)
-                && RadioTrackManager.Equals(other.RadioTrackManager)
+                && StuntJumps.Equals(other.StuntJumps)
+                && EntryExits.Equals(other.EntryExits)
+                && Radio.Equals(other.Radio)
                 && User3dMarkers.Equals(other.User3dMarkers)
                 && PostEffects.Equals(other.PostEffects);
         }

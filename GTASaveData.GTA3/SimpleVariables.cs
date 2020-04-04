@@ -8,10 +8,10 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int MaxSaveNameLength = 24;
+            public const int MaxNameLength = 24;
         }
 
-        private string m_saveName;
+        private string m_lastMissionPassedName;
         private SystemTime m_timeLastSaved;
         private int m_saveSize;
         private LevelType m_currLevel;
@@ -40,8 +40,8 @@ namespace GTASaveData.GTA3
 
         public string SaveName
         {
-            get { return m_saveName; }
-            set { m_saveName = value; OnPropertyChanged(); }
+            get { return m_lastMissionPassedName; }
+            set { m_lastMissionPassedName = value; OnPropertyChanged(); }
         }
 
         public SystemTime TimeLastSaved
@@ -204,7 +204,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            SaveName = buf.ReadString(Limits.MaxSaveNameLength, unicode: true);
+            SaveName = buf.ReadString(Limits.MaxNameLength, unicode: true);
             TimeLastSaved = buf.ReadObject<SystemTime>();
             SaveSize = buf.ReadInt32();
             CurrLevel = (LevelType) buf.ReadInt32();
@@ -242,7 +242,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(SaveName, Limits.MaxSaveNameLength, unicode: true);
+            buf.Write(SaveName, Limits.MaxNameLength, unicode: true);
             buf.Write(TimeLastSaved);
             buf.Write(SaveSize);
             buf.Write((int) CurrLevel);

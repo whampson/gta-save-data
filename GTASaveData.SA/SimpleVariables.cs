@@ -9,14 +9,14 @@ namespace GTASaveData.SA
     {
         public static class Limits
         {
-            public const int MaxSaveNameLength = 100;   // PC
+            public const int MaxNameLength = 100;   // PC, not sure if different on other platforms
         }
 
         private const int SizeOfSimpleVariablesPC = 0x138;
         private const int SizeOfSimpleVariablesAndroid = 0x1A8;
         
         private uint m_versionId;
-        private string m_saveName;
+        private string m_lastMissionPassedName;
         private byte m_missionPackGame;
         private LevelType m_currLevel;
         private Vector m_cameraPosition;
@@ -68,11 +68,10 @@ namespace GTASaveData.SA
         private bool m_allTaxisHaveNitro;
         private bool m_prostiutesPayYou;
 
-
-        public string SaveName
+        public string LastMissionPassedName
         {
-            get { return m_saveName; }
-            set { m_saveName = value; OnPropertyChanged(); }
+            get { return m_lastMissionPassedName; }
+            set { m_lastMissionPassedName = value; OnPropertyChanged(); }
         }
 
         public uint VersionId
@@ -383,7 +382,7 @@ namespace GTASaveData.SA
 
         public SimpleVariables()
         {
-            SaveName = string.Empty;
+            LastMissionPassedName = string.Empty;
             TimeLastSaved = new SystemTime();
             CameraPosition = new Vector();
         }
@@ -391,7 +390,7 @@ namespace GTASaveData.SA
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             VersionId = buf.ReadUInt32();
-            SaveName = buf.ReadString(Limits.MaxSaveNameLength);
+            LastMissionPassedName = buf.ReadString(Limits.MaxNameLength);
             MissionPackGame = buf.ReadByte();
             buf.Align4Bytes();
             CurrLevel = (LevelType) buf.ReadInt32();
@@ -460,7 +459,7 @@ namespace GTASaveData.SA
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write(VersionId);
-            buf.Write(SaveName, Limits.MaxSaveNameLength);
+            buf.Write(LastMissionPassedName, Limits.MaxNameLength);
             buf.Write(MissionPackGame);
             buf.Align4Bytes();
             buf.Write((int) CurrLevel);
@@ -549,7 +548,7 @@ namespace GTASaveData.SA
             }
 
             return VersionId.Equals(other.VersionId)
-                && SaveName.Equals(other.SaveName)
+                && LastMissionPassedName.Equals(other.LastMissionPassedName)
                 && MissionPackGame.Equals(other.MissionPackGame)
                 && CurrLevel.Equals(other.CurrLevel)
                 && CameraPosition.Equals(other.CameraPosition)

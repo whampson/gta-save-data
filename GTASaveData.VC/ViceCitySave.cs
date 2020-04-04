@@ -198,8 +198,8 @@ namespace GTASaveData.VC
 
         public override string Name
         {
-            get { return SimpleVars.SaveName; }
-            set { SimpleVars.SaveName = value; OnPropertyChanged(); }
+            get { return SimpleVars.LastMissionPassedName; }
+            set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
         }
 
         public override DateTime TimeLastSaved
@@ -264,7 +264,7 @@ namespace GTASaveData.VC
             PedTypeInfo = new DummyObject();
 
         #if !DEBUG
-            BlockSizeChecks = true;
+            BlockSizeChecksEnabled = true;
         #endif
         }
 

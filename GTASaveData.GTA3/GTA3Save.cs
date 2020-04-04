@@ -237,7 +237,7 @@ namespace GTASaveData.GTA3
             PedTypeInfo = new DummyObject();
 
         #if !DEBUG
-            BlockSizeChecks = true;
+            BlockSizeChecksEnabled = true;
         #endif
         }
 

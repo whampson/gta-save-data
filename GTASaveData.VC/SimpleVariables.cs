@@ -9,7 +9,7 @@ namespace GTASaveData.VC
     {
         public static class Limits
         {
-            public const int MaxSaveNameLength = 24;
+            public const int MaxNameLength = 24;
             public const int RadioStationListCount = 10;
         }
 
@@ -17,7 +17,7 @@ namespace GTASaveData.VC
         private const int SizeOfSimpleVariablesPC = 0xE4;
         private const int SizeOfSimpleVariablesSteamWin32 = 0xE8;
 
-        private string m_saveName;
+        private string m_lastMissionPassedName;
         private SystemTime m_timeLastSaved;
         private int m_saveSize;
         private LevelType m_currLevel;
@@ -51,10 +51,10 @@ namespace GTASaveData.VC
         private float m_extraColourInter;
         private Array<int> m_radioStationPositionList;
 
-        public string SaveName
+        public string LastMissionPassedName
         {
-            get { return m_saveName; }
-            set { m_saveName = value; OnPropertyChanged(); }
+            get { return m_lastMissionPassedName; }
+            set { m_lastMissionPassedName = value; OnPropertyChanged(); }
         }
 
         public SystemTime TimeLastSaved
@@ -251,7 +251,7 @@ namespace GTASaveData.VC
 
         public SimpleVariables()
         {
-            SaveName = string.Empty;
+            LastMissionPassedName = string.Empty;
             TimeLastSaved = new SystemTime();
             CameraPosition = new Vector();
             RadioStationPositionList = CreateArray<int>(Limits.RadioStationListCount);
@@ -259,7 +259,7 @@ namespace GTASaveData.VC
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            SaveName = buf.ReadString(Limits.MaxSaveNameLength, unicode: true);
+            LastMissionPassedName = buf.ReadString(Limits.MaxNameLength, unicode: true);
             TimeLastSaved = buf.ReadObject<SystemTime>();
             SaveSize = buf.ReadInt32();
             CurrLevel = (LevelType) buf.ReadInt32();
@@ -307,7 +307,7 @@ namespace GTASaveData.VC
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(SaveName, Limits.MaxSaveNameLength, unicode: true);
+            buf.Write(LastMissionPassedName, Limits.MaxNameLength, unicode: true);
             buf.Write(TimeLastSaved);
             buf.Write(SaveSize);
             buf.Write((int) CurrLevel);
@@ -383,7 +383,7 @@ namespace GTASaveData.VC
                 return false;
             }
 
-            return SaveName.Equals(other.SaveName)
+            return LastMissionPassedName.Equals(other.LastMissionPassedName)
                 && TimeLastSaved.Equals(other.TimeLastSaved)
                 && SaveSize.Equals(other.SaveSize)
                 && CurrLevel.Equals(other.CurrLevel)
