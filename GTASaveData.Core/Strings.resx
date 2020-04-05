@@ -139,6 +139,9 @@
     <value>The type '{0}' does not support serialization.</value>
     <comment>{0} = object type</comment>
   </data>
+  <data name="Error_IO_EndOfStream" xml:space="preserve">
+    <value>End of stream reached.</value>
+  </data>
   <data name="Error_JsonSerialization_BinaryUnexpectedEnd" xml:space="preserve">
     <value>Unexpected end while parsing JSON.</value>
   </data>

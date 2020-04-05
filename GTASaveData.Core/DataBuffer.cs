@@ -10,10 +10,9 @@ namespace GTASaveData
     public sealed class DataBuffer : IDisposable
     {
         private readonly MemoryStream m_buffer;
-        private readonly BinaryReader m_reader;
-        private readonly BinaryWriter m_writer;
         private bool m_disposed;
 
+        public bool BigEndian { get; set; }
         public int Mark { get; set; }
         public int Position => (int) m_buffer.Position;
         public int Offset => Position - Mark;
@@ -31,8 +30,6 @@ namespace GTASaveData
         private DataBuffer(MemoryStream buffer)
         {
             m_buffer = buffer;
-            m_reader = new BinaryReader(m_buffer, Encoding.ASCII, true);
-            m_writer = new BinaryWriter(m_buffer, Encoding.ASCII, true);
         }
 
         #region Read Functions
@@ -56,82 +53,112 @@ namespace GTASaveData
 
         public sbyte ReadSByte()
         {
-            return m_reader.ReadSByte();
+            int b = m_buffer.ReadByte();
+            if (b == -1)
+            {
+                throw EndOfStream();
+            }
+
+            return (sbyte) b;
         }
 
         public byte ReadByte()
         {
-            return m_reader.ReadByte();
+            int b = m_buffer.ReadByte();
+            if (b == -1)
+            {
+                throw EndOfStream();
+            }
+
+            return (byte) b;
         }
 
         public byte[] ReadBytes(int count)
         {
-            return m_reader.ReadBytes(count);
+            byte[] data = new byte[count];
+            Read(data, 0, count);
+
+            return data;
         }
 
         public int Read(byte[] buffer, int index, int count)
         {
-            return m_reader.Read(buffer, index, count);
+            return m_buffer.Read(buffer, index, count);
         }
 
         public char ReadChar(bool unicode = false)
         {
-            // BinaryWriter#ReadChar() relies on the encoding specified in the constructor
-            // to determine how many bytes to write for a character. Since GTA saves sometimes
-            // have a mixture of Unicode and ASCII strings, and we can't change the encoding
-            // once the writer is created, we're going to bypass the built-in encoding processing
-            // altogether. "Unicode" in this sense means UTF-16, i.e. 16-bit characters.
-
             return (unicode)
-                ? (char) ReadUInt16()
+                ? (char) ReadUInt16()   // "Unicode", more like UCS-2
                 : (char) ReadByte();
         }
 
         public float ReadSingle()
         {
-            return m_reader.ReadSingle();
+            byte[] data = ReadBytes(sizeof(float));
+            if (BigEndian)
+            {
+                data = data.Reverse().ToArray();
+            }
+
+            return BitConverter.ToSingle(data, 0);
         }
 
         public double ReadDouble()
         {
-            return m_reader.ReadDouble();
+            byte[] data = ReadBytes(sizeof(double));
+            if (BigEndian)
+            {
+                data = data.Reverse().ToArray();
+            }
+
+            return BitConverter.ToDouble(data, 0);
         }
 
         public short ReadInt16()
         {
-            return m_reader.ReadInt16();
-        }
-
-        public ushort ReadUInt16()
-        {
-            return m_reader.ReadUInt16();
+            return (short) ReadUInt16();
         }
 
         public int ReadInt32()
         {
-            return m_reader.ReadInt32();
-        }
-
-        public uint ReadUInt32()
-        {
-            return m_reader.ReadUInt32();
+            return (int) ReadUInt32();
         }
 
         public long ReadInt64()
         {
-            return m_reader.ReadInt64();
+            return (long) ReadUInt64();
+        }
+
+        public ushort ReadUInt16()
+        {
+            byte[] data = ReadBytes(sizeof(ushort));
+            return (BigEndian)
+                ? (ushort) ((data[0] << 8) | data[1])
+                : (ushort) ((data[1] << 8) | data[0]);
+        }
+
+        public uint ReadUInt32()
+        {
+            byte[] data = ReadBytes(sizeof(uint));
+            return (BigEndian)
+                ? (uint) ((data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3])
+                : (uint) ((data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0]);
         }
 
         public ulong ReadUInt64()
         {
-            return m_reader.ReadUInt64();
+            ulong[] data = ReadBytes(sizeof(ulong)).Select(x => (ulong) x).ToArray();
+            return (BigEndian)
+                ? ((data[0] << 56) | (data[1] << 48) | (data[2] << 40) | (data[3] << 32) | (data[4] << 24) | (data[5] << 16) | (data[6] << 8) | data[7])
+                : ((data[7] << 56) | (data[6] << 48) | (data[5] << 40) | (data[4] << 32) | (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0]);
         }
 
         public string ReadString(bool unicode = false)
         {
             string s = "";
-
             char c;
+
             while ((c = ReadChar(unicode)) != '\0')
             {
                 s += c;
@@ -279,7 +306,7 @@ namespace GTASaveData
             }
             else
             {
-                throw SerializationNotSupportedException(typeof(T));
+                throw SerializationNotSupported(typeof(T));
             }
 
             obj = (T) o;
@@ -295,112 +322,151 @@ namespace GTASaveData
                 throw new ArgumentOutOfRangeException(nameof(byteCount));
             }
 
-            byte[] buffer = new byte[byteCount];
-            buffer[0] = (value) ? (byte) 1 : (byte) 0;      // little endian
+            byte[] data = new byte[byteCount];
+            int index = (BigEndian) ? byteCount - 1 : 0;
+            data[index] = (value) ? (byte) 1 : (byte) 0;
 
-            return Write(buffer);
+            return Write(data);
         }
 
         public int Write(byte value)
         {
-            m_writer.Write(value);
-
+            m_buffer.WriteByte(value);
             return sizeof(byte);
         }
 
         public int Write(sbyte value)
         {
-            m_writer.Write(value);
-
+            m_buffer.WriteByte((byte) value);
             return sizeof(sbyte);
         }
 
-        public int Write(byte[] buffer)
+        public int Write(byte[] data)
         {
-            m_writer.Write(buffer);
-
-            return buffer.Length;
+            return Write(data, 0, data.Length);
         }
 
-        public int Write(byte[] buffer, int index, int count)
+        public int Write(byte[] data, int index, int count)
         {
-            m_writer.Write(buffer, index, count);
-
+            m_buffer.Write(data, index, count);
             return count;
         }
 
         public int Write(char value, bool unicode = false)
         {
-            // BinaryWriter#Write(char) relies on the encoding specified in the constructor
-            // to determine how many bytes to write for a character. Since GTA saves sometimes
-            // have a mixture of Unicode and ASCII strings, and we can't change the encoding
-            // once the writer is created, we're going to bypass the encoding altogether.
-            // "Unicode" in this sense means UTF-16, i.e. 16-bit characters.
-
             if (char.IsSurrogate(value))
             {
                 throw new ArgumentException(Strings.Error_Argument_NoSurrogateChars, nameof(value));
             }
 
             return (unicode)
-                ? Write((ushort) value)
+                ? Write((ushort) value)     // "Unicode", more like UCS-2
                 : Write((byte) value);
         }
 
         public int Write(float value)
         {
-            m_writer.Write(value);
+            byte[] data = BitConverter.GetBytes(value);
+            if (BigEndian)
+            {
+                data = data.Reverse().ToArray();
+            }
 
-            return sizeof(float);
+            return Write(data);
         }
 
         public int Write(double value)
         {
-            m_writer.Write(value);
+            byte[] data = BitConverter.GetBytes(value);
+            if (BigEndian)
+            {
+                data = data.Reverse().ToArray();
+            }
 
-            return sizeof(double);
+            return Write(data);
         }
 
         public int Write(short value)
         {
-            m_writer.Write(value);
-
-            return sizeof(short);
+            return Write((ushort) value);
         }
 
         public int Write(int value)
         {
-            m_writer.Write(value);
-
-            return sizeof(int);
+            return Write((uint) value);
         }
 
         public int Write(long value)
         {
-            m_writer.Write(value);
-
-            return sizeof(long);
+            return Write((ulong) value);
         }
 
         public int Write(ushort value)
         {
-            m_writer.Write(value);
+            byte[] data = new byte[sizeof(ushort)];
+            if (BigEndian)
+            {
+                data[0] = (byte) ((value & 0xFF00) >> 8);
+                data[1] = (byte) ((value & 0x00FF));
+            }
+            else
+            {
+                data[0] = (byte) ((value & 0x00FF));
+                data[1] = (byte) ((value & 0xFF00) >> 8);
+            }
 
-            return sizeof(ushort);
+            return Write(data);
         }
 
         public int Write(uint value)
         {
-            m_writer.Write(value);
+            byte[] data = new byte[sizeof(uint)];
+            if (BigEndian)
+            {
+                data[0] = (byte) ((value & 0xFF000000) >> 24);
+                data[1] = (byte) ((value & 0x00FF0000) >> 16);
+                data[2] = (byte) ((value & 0x0000FF00) >> 8);
+                data[3] = (byte) ((value & 0x000000FF));
+            }
+            else
+            {
+                data[0] = (byte) ((value & 0x000000FF));
+                data[1] = (byte) ((value & 0x0000FF00) >> 8);
+                data[2] = (byte) ((value & 0x00FF0000) >> 16);
+                data[3] = (byte) ((value & 0xFF000000) >> 24);
 
-            return sizeof(uint);
+            }
+
+            return Write(data);
         }
 
         public int Write(ulong value)
         {
-            m_writer.Write(value);
+            byte[] data = new byte[sizeof(ulong)];
+            if (BigEndian)
+            {
+                data[0] = (byte) ((value & 0xFF00000000000000) >> 56);
+                data[1] = (byte) ((value & 0x00FF000000000000) >> 48);
+                data[2] = (byte) ((value & 0x0000FF0000000000) >> 40);
+                data[3] = (byte) ((value & 0x000000FF00000000) >> 32);
+                data[4] = (byte) ((value & 0x00000000FF000000) >> 24);
+                data[5] = (byte) ((value & 0x0000000000FF0000) >> 16);
+                data[6] = (byte) ((value & 0x000000000000FF00) >> 8);
+                data[7] = (byte) ((value & 0x00000000000000FF));
+            }
+            else
+            {
+                data[0] = (byte) ((value & 0x00000000000000FF));
+                data[1] = (byte) ((value & 0x000000000000FF00) >> 8);
+                data[2] = (byte) ((value & 0x0000000000FF0000) >> 16);
+                data[3] = (byte) ((value & 0x00000000FF000000) >> 24);
+                data[4] = (byte) ((value & 0x000000FF00000000) >> 32);
+                data[5] = (byte) ((value & 0x0000FF0000000000) >> 40);
+                data[6] = (byte) ((value & 0x00FF000000000000) >> 48);
+                data[7] = (byte) ((value & 0xFF00000000000000) >> 56);
+            }
 
-            return sizeof(ulong);
+            return Write(data);
         }
 
         public int Write(string value,
@@ -495,7 +561,10 @@ namespace GTASaveData
         {
             Type t = typeof(T);
 
-            if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
+            if (length < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length));
+            }
 
             if (t == typeof(bool))
             {
@@ -558,7 +627,7 @@ namespace GTASaveData
                 return Write((ISaveDataObject) value, format);
             }
 
-            throw SerializationNotSupportedException(typeof(T));
+            throw SerializationNotSupported(typeof(T));
         }
         #endregion
 
@@ -567,8 +636,7 @@ namespace GTASaveData
         {
             if (!m_disposed)
             {
-                m_writer.Dispose();
-                m_reader.Dispose();
+                m_buffer.Dispose();
                 m_disposed = true;
             }
         }
@@ -576,7 +644,6 @@ namespace GTASaveData
         public static int Align4Bytes(int addr)
         {
             const int WordSize = 4;
-
             return (addr + WordSize - 1) & ~(WordSize - 1);
         }
 
@@ -623,9 +690,14 @@ namespace GTASaveData
             return GetBytes().Take(Position).ToArray();
         }
 
-        private static SerializationException SerializationNotSupportedException(Type t)
+        private static SerializationException SerializationNotSupported(Type t)
         {
             return new SerializationException(Strings.Error_InvalidOperation_Serialization, t.Name);
+        }
+
+        private static EndOfStreamException EndOfStream()
+        {
+            return new EndOfStreamException(Strings.Error_IO_EndOfStream);
         }
         #endregion
     }

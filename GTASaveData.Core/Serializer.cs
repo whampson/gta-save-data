@@ -5,6 +5,12 @@ namespace GTASaveData
     public static class Serializer
     {
         /// <summary>
+        /// Gets or sets whether to read and write data in big-endian byte order
+        /// when a <see cref="DataBuffer"/> instance is not provided.
+        /// </summary>
+        public static bool BigEndian { get; set; }
+
+        /// <summary>
         /// Reads a value from a byte array.
         /// </summary>
         public static T Read<T>(byte[] buf)
@@ -27,7 +33,7 @@ namespace GTASaveData
         /// </summary>
         public static int Read<T>(byte[] buf, SaveFileFormat fmt, out T obj)
         {
-            using (DataBuffer workBuf = new DataBuffer(buf))
+            using (DataBuffer workBuf = new DataBuffer(buf) { BigEndian = BigEndian })
             {
                 return Read(workBuf, fmt, out obj);
             }
@@ -46,7 +52,7 @@ namespace GTASaveData
         /// </summary>
         public static int Read<T>(T obj, byte[] buf, SaveFileFormat fmt) where T : ISaveDataObject
         {
-            using (DataBuffer workBuf = new DataBuffer(buf))
+            using (DataBuffer workBuf = new DataBuffer(buf) { BigEndian = BigEndian })
             {
                 return Read(obj, workBuf, fmt);
             }
@@ -83,7 +89,7 @@ namespace GTASaveData
         /// </summary>
         public static int Write<T>(T obj, SaveFileFormat fmt, out byte[] data)
         {
-            using (DataBuffer workBuf = new DataBuffer())
+            using (DataBuffer workBuf = new DataBuffer() { BigEndian = BigEndian })
             {
                 int bytesWritten = workBuf.GenericWrite(obj, fmt);
                 data = workBuf.GetBytes();

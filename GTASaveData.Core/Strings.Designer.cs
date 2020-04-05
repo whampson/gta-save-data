@@ -124,6 +124,15 @@ namespace GTASaveData {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to End of stream reached..
+        /// </summary>
+        internal static string Error_IO_EndOfStream {
+            get {
+                return ResourceManager.GetString("Error_IO_EndOfStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected end while parsing JSON..
         /// </summary>
         internal static string Error_JsonSerialization_BinaryUnexpectedEnd {
