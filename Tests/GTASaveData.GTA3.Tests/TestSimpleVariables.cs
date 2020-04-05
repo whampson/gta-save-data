@@ -6,7 +6,7 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestSimpleVariables : GTA3SaveDataObjectTestBase<SimpleVariables>
+    public class TestSimpleVariables : Base<SimpleVariables>
     {
         public override SimpleVariables GenerateTestObject(SaveFileFormat format)
         {

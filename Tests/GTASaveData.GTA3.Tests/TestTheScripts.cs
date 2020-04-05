@@ -4,7 +4,7 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TesttheScripts : GTA3SaveDataObjectTestBase<TheScripts>
+    public class TesttheScripts : Base<TheScripts>
     {
         public override TheScripts GenerateTestObject(SaveFileFormat format)
         {

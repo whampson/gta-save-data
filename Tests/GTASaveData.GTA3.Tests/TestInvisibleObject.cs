@@ -3,7 +3,7 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestInvisibleObject : GTA3SaveDataObjectTestBase<InvisibleObject>
+    public class TestInvisibleObject : Base<InvisibleObject>
     {
         public override InvisibleObject GenerateTestObject(SaveFileFormat format)
         {

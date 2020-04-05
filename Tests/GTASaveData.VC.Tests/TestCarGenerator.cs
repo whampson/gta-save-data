@@ -6,7 +6,7 @@ using GTASaveData.Core.Tests.Types;
 
 namespace GTASaveData.VC.Tests
 {
-    public class TestCarGenerator : ViceCitySaveDataObjectTestBase<CarGenerator>
+    public class TestCarGenerator : Base<CarGenerator>
     {
         public override CarGenerator GenerateTestObject(SaveFileFormat format)
         {

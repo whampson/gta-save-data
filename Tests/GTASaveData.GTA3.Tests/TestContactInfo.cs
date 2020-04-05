@@ -3,7 +3,7 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestContactInfo : GTA3SaveDataObjectTestBase<ContactInfo>
+    public class TestContactInfo : Base<ContactInfo>
     {
         public override ContactInfo GenerateTestObject(SaveFileFormat format)
         {

@@ -3,7 +3,7 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestStaticReplacement : GTA3SaveDataObjectTestBase<StaticReplacement>
+    public class TestStaticReplacement : Base<StaticReplacement>
     {
         public override StaticReplacement GenerateTestObject(SaveFileFormat format)
         {

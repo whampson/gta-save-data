@@ -4,7 +4,7 @@ using TestFramework;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public abstract class GTA3SaveDataObjectTestBase<T> : SaveDataObjectTestBase<T>
+    public abstract class Base<T> : SaveDataObjectTestBase<T>
         where T : SaveDataObject, new()
     {
         public static IEnumerable<object[]> FileFormats => new[]

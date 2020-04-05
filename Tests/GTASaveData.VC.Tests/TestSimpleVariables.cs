@@ -6,7 +6,7 @@ using Xunit;
 
 namespace GTASaveData.VC.Tests
 {
-    public class TestSimpleVariables : ViceCitySaveDataObjectTestBase<SimpleVariables>
+    public class TestSimpleVariables : Base<SimpleVariables>
     {
         public override SimpleVariables GenerateTestObject(SaveFileFormat format)
         {

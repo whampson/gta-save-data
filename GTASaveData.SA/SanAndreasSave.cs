@@ -4,7 +4,6 @@ using GTASaveData.Types.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -14,6 +13,8 @@ namespace GTASaveData.SA
     {
         public const int SizeOfOneGameInBytes = 202752;
         private const int BlockHeaderSize = 5;
+        private const int BlockCount = 28;
+        private const int BlockCountMobile = 29;
         private const string BlockTagName = "BLOCK";
 
         protected override int BufferSize => (FileFormat.SupportedOnMobile) ? 65000 : 51200;
@@ -26,14 +27,14 @@ namespace GTASaveData.SA
         private DummyObject m_gameLogic;   // GameLogic
         private DummyObject m_paths;   // PathFind
         private DummyObject m_pickups;   // Pickups
-        private DummyObject m_phoneInfo;   // PhoneInfo (empty)
+        private DummyObject m_block7;   // empty
         private DummyObject m_restartPoints;   // Restart
         private DummyObject m_radarBlips;   // Radar
         private DummyObject m_zones;   // TheZones
         private DummyObject m_gangData;   // Gangs
         private DummyObject m_carGenerators;   // TheCarGenerators
-        private DummyObject m_pedGenerators;   // PedGenerators (empty)
-        private DummyObject m_audioScriptObjects;   // AudioScriptObjects (empty)
+        private DummyObject m_block13;   // empty
+        private DummyObject m_block14;   // empty
         private DummyObject m_playerInfo;   // PlayerInfo
         private DummyObject m_stats;   // Stats
         private DummyObject m_setPieces;   // SetPieces
@@ -47,7 +48,7 @@ namespace GTASaveData.SA
         private DummyObject m_entryExits;   // EntryExitManager
         private DummyObject m_radio;   // AERadioTrackManager
         private DummyObject m_user3dMarkers;   // User3dMarkers
-        private DummyObject m_postEffects;   // PostEffects (Mobile only?)
+        private DummyObject m_postEffects;   // PostEffects (Mobile only)
 
         public SimpleVariables SimpleVars
         {
@@ -93,8 +94,8 @@ namespace GTASaveData.SA
 
         public DummyObject PhoneInfo
         {
-            get { return m_phoneInfo; }
-            set { m_phoneInfo = value; }
+            get { return m_block7; }
+            set { m_block7 = value; }
         }
 
         public DummyObject RestartPoints
@@ -129,14 +130,14 @@ namespace GTASaveData.SA
 
         public DummyObject PedGenerators
         {
-            get { return m_pedGenerators; }
-            set { m_pedGenerators = value; }
+            get { return m_block13; }
+            set { m_block13 = value; }
         }
 
         public DummyObject AudioScriptObjects
         {
-            get { return m_audioScriptObjects; }
-            set { m_audioScriptObjects = value; }
+            get { return m_block14; }
+            set { m_block14 = value; }
         }
 
         public DummyObject PlayerInfo
@@ -297,8 +298,8 @@ namespace GTASaveData.SA
             StuntJumps = new DummyObject();
             EntryExits = new DummyObject();
             Radio = new DummyObject();
-            User3dMarkers = new DummyObject();
-            PostEffects = new DummyObject();
+            User3dMarkers = new DummyObject(0x8C);
+            PostEffects = new DummyObject(0x160);
         }
 
         private int LoadBlockHeader()
@@ -433,30 +434,55 @@ namespace GTASaveData.SA
         {
             List<int> blockSizes;
             byte[] fileData;
-            int index;
+            int numBlocks, numCounted;
+            int size, offset;
+            int mark;
 
             m_file = file;
             fileData = file.GetBytes();
             blockSizes = new List<int>();
             
-            index = fileData.FindFirst(BlockTagName.GetAsciiBytes(), 0);
-            Debug.Assert(index == 0);
-            index += BlockHeaderSize;
+            offset = fileData.FindFirst(BlockTagName.GetAsciiBytes(), 0);
+            numCounted = 0;
 
-            do
+            // Get block sizes
+            while (offset > -1)
             {
-                int mark = index;
-                index = fileData.FindFirst(BlockTagName.GetAsciiBytes(), mark);
-                blockSizes.Add(index - mark);
-                index += BlockHeaderSize;
-            } while (index - BlockHeaderSize > -1);
+                offset += BlockHeaderSize;
+                mark = offset;
+                offset = fileData.FindFirst(BlockTagName.GetAsciiBytes(), mark);
 
+                // Padding after final block has no clear beginning marker,
+                // need to know exact size of last block
+                if (numCounted == 27 && !FileFormat.SupportedOnMobile)
+                {
+                    size = 0x8C;    // SizeOf<C3dMarkers>()
+                }
+                else if (numCounted == 28 && FileFormat.SupportedOnMobile)
+                {
+                    size = 0x160;   // SizeOf<PostEffects>();
+                }
+                else
+                {
+                    size = offset - mark;
+                }
+
+                blockSizes.Add(size);
+                numCounted++;
+            }
+
+            numBlocks = (FileFormat.SupportedOnMobile) ? BlockCountMobile : BlockCount;
+            Debug.Assert(numCounted >= numBlocks);
+
+            // Init pointer at end so loader thinks buffer is full and refills it
             WorkBuff.Seek(BufferSize);
-            for (index = 0; index < 28; index++)            // TODO: 29 on android?
+            
+            for (offset = 0; offset < numBlocks; offset++)
             {
-                int size = blockSizes[index];
+                size = blockSizes[offset];
                 LoadBlockHeader();
-                switch (index)
+
+                switch (offset)
                 {
                     case 0: SimpleVars = LoadObject<SimpleVariables>(size); break;
                     case 1: Scripts = LoadDummy(size); break;
@@ -479,34 +505,37 @@ namespace GTASaveData.SA
                     case 18: Streaming = LoadDummy(size); break;
                     case 19: PedTypeInfo = LoadDummy(size); break;
                     case 20: Tags = LoadDummy(size); break;
-                    case 21: IplStore  = LoadDummy(size); break;
+                    case 21: IplStore = LoadDummy(size); break;
                     case 22: Shopping = LoadDummy(size); break;
                     case 23: GangWars = LoadDummy(size); break;
-                    case 24: StuntJumps= LoadDummy(size); break;
+                    case 24: StuntJumps = LoadDummy(size); break;
                     case 25: EntryExits = LoadDummy(size); break;
                     case 26: Radio = LoadDummy(size); break;
                     case 27: User3dMarkers = LoadDummy(size); break;
-                    case 28: PostEffects = LoadDummy(size); break;      // ???
+                    case 28: PostEffects = LoadDummy(size); break;      // mobile only
                 }
                 Debug.WriteLine("Read {0} bytes of block data.", size);
             }
 
-            Debug.Assert(m_file.Position == SizeOfOneGameInBytes);
+            // (mobile) TODO: briefs??
         }
 
         protected override void SaveAllData(DataBuffer file)
         {
             int index;
             int size;
+            int count;
 
             m_file = file;
             CheckSum = 0;
             WorkBuff.Seek(0);
 
-            for (index = 0; index < 28; index++)            // TODO: 29 on android?
+            count = (FileFormat.SupportedOnMobile) ? BlockCountMobile : BlockCount;
+            for (index = 0; index < count; index++)
             {
                 size = 0;
                 SaveBlockHeader();
+
                 switch (index)
                 {
                     case 0: size = SaveObject(SimpleVars); break;
@@ -537,10 +566,12 @@ namespace GTASaveData.SA
                     case 25: size = SaveObject(EntryExits); break;
                     case 26: size = SaveObject(Radio); break;
                     case 27: size = SaveObject(User3dMarkers); break;
-                    case 28: size = SaveObject(PostEffects); break;      // ???
+                    case 28: size = SaveObject(PostEffects); break;     // mobile only
                 }
                 Debug.WriteLine("Wrote {0} bytes of block data.", size);
             }
+
+            // (mobile) TODO: briefs??
 
             // Android
             //{
@@ -558,7 +589,7 @@ namespace GTASaveData.SA
             //    SaveWorkBuffer(true);
             //}
 
-            // PS2
+            // PC
             size = WorkBuff.Position + file.Position;
             while (size < SizeOfOneGameInBytes - 4)
             {
@@ -627,19 +658,36 @@ namespace GTASaveData.SA
                 && User3dMarkers.Equals(other.User3dMarkers)
                 && PostEffects.Equals(other.PostEffects);
         }
-    }
 
-    public static class FileFormats
-    {
-        public static readonly SaveFileFormat PC = new SaveFileFormat(
-            "PC", "PC", "Windows or macOS",
-            new GameConsole(ConsoleType.Win32),
-            new GameConsole(ConsoleType.MacOS)
-        );
-
-        public static SaveFileFormat[] GetAll()
+        public static class FileFormats
         {
-            return new SaveFileFormat[] { PC };
+            // TODO: 1.05 and 1.06 different?
+            public static readonly SaveFileFormat Mobile = new SaveFileFormat(
+                "Mobile", "Mobile", "Android, iOS",
+                new GameConsole(ConsoleType.Android),
+                new GameConsole(ConsoleType.iOS)
+            );
+
+            public static readonly SaveFileFormat PC = new SaveFileFormat(
+                "PC", "PC", "Windows, macOS",
+                new GameConsole(ConsoleType.Win32),
+                new GameConsole(ConsoleType.MacOS)
+            );
+
+            public static readonly SaveFileFormat PS2 = new SaveFileFormat(
+                "PS2", "PS2", "PlayStation 2",
+                new GameConsole(ConsoleType.PS2)
+            );
+
+            public static readonly SaveFileFormat Xbox = new SaveFileFormat(
+                "Xbox", "Xbox", "Xbox",
+                new GameConsole(ConsoleType.Xbox)
+            );
+
+            public static SaveFileFormat[] GetAll()
+            {
+                return new SaveFileFormat[] { Mobile, PC, PS2, Xbox };
+            }
         }
     }
 }

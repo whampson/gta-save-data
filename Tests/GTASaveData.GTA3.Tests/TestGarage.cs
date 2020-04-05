@@ -6,7 +6,7 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestGarage : GTA3SaveDataObjectTestBase<Garage>
+    public class TestGarage : Base<Garage>
     {
         public override Garage GenerateTestObject(SaveFileFormat format)
         {

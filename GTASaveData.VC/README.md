@@ -35,9 +35,6 @@
     - [x] "Retail" (Win32/Retail, macOS/Steam)
     - [x] "Steam" (Win32/Steam)
 - [ ] PS2
-    - [ ] North America/Europe
-    - [ ] Australia (presumed to have differences)
-    - [ ] Japan (presumed to have differences)
 - [ ] Xbox
 **TODO: Others? Rockstar Launcher?**
 

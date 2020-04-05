@@ -8,7 +8,7 @@ using System.IO;
 
 namespace GTASaveData.VC.Tests
 {
-    public class TestViceCitySave : ViceCitySaveDataObjectTestBase<ViceCitySave>
+    public class TestViceCitySave : Base<ViceCitySave>
     {
         public override ViceCitySave GenerateTestObject(SaveFileFormat format)
         {

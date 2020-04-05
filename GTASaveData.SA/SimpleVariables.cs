@@ -421,7 +421,7 @@ namespace GTASaveData.SA
             buf.Align4Bytes();
             WeatherInterpolationValue = buf.ReadSingle();
             WeatherTypeInList = buf.ReadInt32();
-            Rain = buf.ReadInt32();
+            Rain = buf.ReadSingle();
             CameraCarZoomIndicator = buf.ReadInt32();
             CameraPedZoomIndicator = buf.ReadInt32();
             CurrArea = buf.ReadInt32();

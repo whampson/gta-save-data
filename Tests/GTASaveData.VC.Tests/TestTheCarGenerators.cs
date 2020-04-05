@@ -4,7 +4,7 @@ using Xunit;
 
 namespace GTASaveData.VC.Tests
 {
-    public class TestTheCarGenerators : ViceCitySaveDataObjectTestBase<TheCarGenerators>
+    public class TestTheCarGenerators : Base<TheCarGenerators>
     {
         public override TheCarGenerators GenerateTestObject(SaveFileFormat format)
         {

@@ -35,14 +35,10 @@
 
 ### Platform Support
 - [ ] Mobile
-    - [ ] 1.05 and below
-    - [ ] 1.06 and above
 - [x] PC
 - [ ] PS2
-    - [ ] North America/Europe
-    - [ ] Japan
 - [ ] Xbox
-**TODO: Others? Rockstar Launcher?**
+**TODO: Others? PS3/360? Rockstar Launcher?**
 
 ## Format Differences
 (TODO)

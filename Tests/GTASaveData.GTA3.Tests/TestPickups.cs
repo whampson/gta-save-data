@@ -4,7 +4,7 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestPickups : GTA3SaveDataObjectTestBase<Pickups>
+    public class TestPickups : Base<Pickups>
     {
         public override Pickups GenerateTestObject(SaveFileFormat format)
         {
