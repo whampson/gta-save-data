@@ -9,6 +9,9 @@ using System.Text;
 
 namespace GTASaveData.SA
 {
+    /// <summary>
+    /// Represents a <i>Grand Theft Auto: San Andreas</i> save file.
+    /// </summary>
     public class SanAndreasSave : SaveFile, IGTASaveFile, IEquatable<SanAndreasSave>
     {
         public const int SizeOfOneGameInBytes = 202752;
