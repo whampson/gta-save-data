@@ -1,6 +1,7 @@
 ﻿using GTASaveData.Extensions;
 using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,7 +25,7 @@ namespace GTASaveData.GTA4
         private int m_scriptSpace;
         private string m_lastMissionPassedName;
 
-        private DummyObject m_simpleVars;
+        private SimpleVariables m_simpleVars;
         private DummyObject m_playerInfo;
         private DummyObject m_extraContent;
         private DummyObject m_scripts;
@@ -59,7 +60,6 @@ namespace GTASaveData.GTA4
         private DummyObject m_unusedExtraBlock;
         private DummyObject m_gfwlData;
 
-        // tODO : fix not showing in ui
         public override string Name
         {
             get { return m_lastMissionPassedName; }
@@ -84,7 +84,7 @@ namespace GTASaveData.GTA4
             set { m_scriptSpace = value; OnPropertyChanged(); }
         }
 
-        public DummyObject SimpleVars
+        public SimpleVariables SimpleVars
         {
             get { return m_simpleVars; }
             set { m_simpleVars = value; OnPropertyChanged(); }
@@ -288,6 +288,7 @@ namespace GTASaveData.GTA4
             set { m_gfwlData = value; OnPropertyChanged(); }
         }
 
+        [JsonIgnore]
         public override IReadOnlyList<SaveDataObject> Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
@@ -329,7 +330,7 @@ namespace GTASaveData.GTA4
         public GTA4Save()
         {
             Name = "";
-            SimpleVars = new DummyObject();
+            SimpleVars = new SimpleVariables();
             PlayerInfo = new DummyObject();
             ExtraContent = new DummyObject();
             Scripts = new DummyObject();
@@ -393,6 +394,19 @@ namespace GTASaveData.GTA4
             }
         }
 
+        private T LoadData<T>() where T : SaveDataObject, new()
+        {
+            string sig = m_file.ReadString(5);
+            int size = m_file.ReadInt32();
+            Debug.Assert(sig == "BLOCK", "Invalid 'BLOCK' signature!");
+
+            m_file.MarkPosition();
+            T obj = m_file.Read<T>();
+            Debug.Assert(m_file.Offset == size - 9);
+
+            return obj;
+        }
+
         private DummyObject LoadDummy(byte[] data)
         {
             return new DummyObject(data);
@@ -425,7 +439,7 @@ namespace GTASaveData.GTA4
             {
                 switch (index++)
                 {
-                    case 0: SimpleVars = LoadDummy(LoadBlockData()); break;
+                    case 0: SimpleVars = LoadData<SimpleVariables>(); break;
                     case 1: PlayerInfo = LoadDummy(LoadBlockData()); break;
                     case 2: ExtraContent = LoadDummy(LoadBlockData()); break;
                     case 3: Scripts = LoadDummy(LoadBlockData()); break;
