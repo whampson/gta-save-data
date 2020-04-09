@@ -32,7 +32,7 @@ namespace GTASaveData.GTA4
         private DummyObject m_garages;
         private DummyObject m_gameLogic;
         private DummyObject m_paths;
-        private DummyObject m_pickups;
+        private Pickups m_pickups;
         private DummyObject m_restartPoints;
         private DummyObject m_radarBlips;
         private DummyObject m_zones;
@@ -126,7 +126,7 @@ namespace GTASaveData.GTA4
             set { m_paths = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Pickups
+        public Pickups Pickups
         {
             get { return m_pickups; }
             set { m_pickups = value; OnPropertyChanged(); }
@@ -337,7 +337,7 @@ namespace GTASaveData.GTA4
             Garages = new DummyObject();
             GameLogic = new DummyObject();
             Paths = new DummyObject();
-            Pickups = new DummyObject();
+            Pickups = new Pickups();
             RestartPoints = new DummyObject();
             RadarBlips = new DummyObject();
             Zones = new DummyObject();
@@ -440,13 +440,13 @@ namespace GTASaveData.GTA4
                 switch (index++)
                 {
                     case 0: SimpleVars = LoadData<SimpleVariables>(); break;
-                    case 1: PlayerInfo = LoadDummy(LoadBlockData()); break;
+                    case 1: PlayerInfo = LoadDummy(LoadBlockData()); break;     // lol fix this syntax
                     case 2: ExtraContent = LoadDummy(LoadBlockData()); break;
                     case 3: Scripts = LoadDummy(LoadBlockData()); break;
                     case 4: Garages = LoadDummy(LoadBlockData()); break;
                     case 5: GameLogic = LoadDummy(LoadBlockData()); break;
                     case 6: Paths = LoadDummy(LoadBlockData()); break;
-                    case 7: Pickups = LoadDummy(LoadBlockData()); break;
+                    case 7: Pickups = LoadData<Pickups>(); break;
                     case 8: RestartPoints = LoadDummy(LoadBlockData()); break;
                     case 9: RadarBlips = LoadDummy(LoadBlockData()); break;
                     case 10: Zones = LoadDummy(LoadBlockData()); break;

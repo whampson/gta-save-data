@@ -4,10 +4,9 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA4
 {
+    [Size(0xB0)]
     public class SimpleVariables : SaveDataObject, IEquatable<SimpleVariables>
     {
-        private const int SizeOfSimpleVariables = 0xB0;
-
         private int m_closestSafehouseIndex;
         private bool m_fadeInAfterLoad;
         private int m_unknown04h;
@@ -357,7 +356,7 @@ namespace GTASaveData.GTA4
             UnknownA8h = buf.ReadInt32();
             UnknownACh = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOfSimpleVariables);
+            Debug.Assert(buf.Offset == SizeOf<SimpleVariables>());
         }
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
@@ -405,7 +404,7 @@ namespace GTASaveData.GTA4
             buf.Write(UnknownA8h);
             buf.Write(UnknownACh);
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == SizeOf<SimpleVariables>());
         }
 
         public override bool Equals(object obj)
