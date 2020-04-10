@@ -14,12 +14,8 @@ namespace GTASaveData.Core.Tests
         [InlineData(PaddingType.Pattern, new byte[] { 0xCA, 0xFE, 0xBA, 0xBE })]
         public void Padding(PaddingType mode, byte[] seq)
         {
-            byte[] data;
-
-            using (TestSave t = new TestSave() { Padding = mode, PaddingBytes = seq })
-            {
-                data = t.GetPaddingBytes(100);
-            }
+            TestSave t = new TestSave() { Padding = mode, PaddingBytes = seq };
+            byte[] data = t.GetPaddingBytes(100);
 
             switch (mode)
             {
@@ -41,8 +37,6 @@ namespace GTASaveData.Core.Tests
 
         private class TestSave : SaveFile
         {
-            protected override int BufferSize => throw new NotImplementedException();
-
             public override string Name
             {
                 get => throw new NotImplementedException();

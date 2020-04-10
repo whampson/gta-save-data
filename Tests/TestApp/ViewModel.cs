@@ -1,5 +1,6 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
+using GTASaveData.GTA4;
 using GTASaveData.VC;
 using GTASaveData.SA;
 using GTASaveData.Types;
@@ -11,7 +12,8 @@ using System.Windows.Input;
 using WpfEssentials;
 using WpfEssentials.Win32;
 
-using GTA3Block = GTASaveData.GTA3.Block;
+using IIIBlock = GTASaveData.GTA3.Block;
+using IVBlock = GTASaveData.GTA4.Block;
 using VCBlock = GTASaveData.VC.Block;
 using SABlock = GTASaveData.SA.Block;
 
@@ -19,10 +21,6 @@ namespace TestApp
 {
     public class ViewModel : ObservableObject
     {
-        public void OnLoad()
-        {
-        }
-
         #region Events, Variables, and Properties
         public EventHandler<FileDialogEventArgs> FileDialogRequested;
         public EventHandler<MessageBoxEventArgs> MessageBoxRequested;
@@ -129,6 +127,12 @@ namespace TestApp
                 );
             }
         }
+        #endregion
+
+        public void OnLoad()
+        {
+
+        }
 
         public ViewModel()
         {
@@ -144,9 +148,7 @@ namespace TestApp
                 case GameType.SA: DoLoad<SanAndreasSave>(path); break;
                 //case GameType.LCS: DoLoad<LibertyCityStoriesSave>(path); break;
                 //case GameType.VCS: DoLoad<ViceCityStoriesSave>(path); break;
-                //case GameType.IV: DoLoad<GTA4Save>(path); break;
-                //case GameType.TLAD: DoLoad<LostAndDamnedSave>(path); break;
-                //case GameType.TBOGT: DoLoad<BalladOfGayTonySave>(path); break;
+                case GameType.IV: DoLoad<GTA4Save>(path); break;
                 default: RequestMessageBoxError("Selected game not yet supported!"); return;
             }
 
@@ -159,11 +161,11 @@ namespace TestApp
                 OnLoad();
                 OnPropertyChanged(nameof(BlockNameForCurrentGame));
             }
-
         }
 
         private bool DoLoad<T>(string path) where T : SaveFile, new()
         {
+            
             try
             {
                 if (!SaveFile.GetFileFormat<T>(path, out SaveFileFormat fmt))
@@ -172,8 +174,9 @@ namespace TestApp
                     return false;
                 }
 
-                CurrentFileFormat = fmt;
+                CleanupOldSaveData();
                 CurrentSaveFile = SaveFile.Load<T>(path, fmt);
+                CurrentFileFormat = fmt;
 
                 return true;
             }
@@ -189,8 +192,25 @@ namespace TestApp
             }
         }
 
+        private void CleanupOldSaveData()
+        {
+            if (CurrentSaveFile is GTA3Save)
+            {
+                (CurrentSaveFile as GTA3Save).Dispose();
+            }
+            else if (CurrentSaveFile is ViceCitySave)
+            {
+                (CurrentSaveFile as ViceCitySave).Dispose();
+            }
+            else if (CurrentSaveFile is SanAndreasSave)
+            {
+                (CurrentSaveFile as SanAndreasSave).Dispose();
+            }
+        }
+
         public void CloseSaveData()
         {
+            CleanupOldSaveData();
             CurrentSaveFile = null;
             CurrentFileFormat = SaveFileFormat.Default;
             SelectedBlockIndex = -1;
@@ -211,6 +231,15 @@ namespace TestApp
             StatusText = "File saved.";
         }
 
+        public static Dictionary<GameType, string[]> BlockNames => new Dictionary<GameType, string[]>()
+        {
+            { GameType.III, Enum.GetNames(typeof(IIIBlock)) },
+            { GameType.VC, Enum.GetNames(typeof(VCBlock)) },
+            { GameType.SA, Enum.GetNames(typeof(SABlock)) },
+            { GameType.IV, Enum.GetNames(typeof(IVBlock)) },
+        };
+
+        #region UI Controls
         public void UpdateTextBox()
         {
             if (CurrentSaveFile == null || SelectedBlockIndex < 0)
@@ -258,15 +287,6 @@ namespace TestApp
             MessageBoxRequested?.Invoke(this, new MessageBoxEventArgs(
                 text, "Error", icon: MessageBoxImage.Error));
         }
-        #endregion
-
-        #region Misc
-        public static Dictionary<GameType, string[]> BlockNames => new Dictionary<GameType, string[]>()
-        {
-            { GameType.III, Enum.GetNames(typeof(GTA3Block)) },
-            { GameType.VC, Enum.GetNames(typeof(VCBlock)) },
-            { GameType.SA, Enum.GetNames(typeof(SABlock)) },
-        };
         #endregion
     }
 }

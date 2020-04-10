@@ -55,8 +55,8 @@ namespace GTASaveData.GTA3.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(SaveFileFormat format)
         {
-            GTA3Save x0 = GenerateTestObject(format);
-            GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using GTA3Save x0 = GenerateTestObject(format);
+            using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -71,8 +71,8 @@ namespace GTASaveData.GTA3.Tests
         {
             string path = TestData.GetTestDataPath(GameType.III, format, filename);
 
-            GTA3Save x0 = SaveFile.Load<GTA3Save>(path, format);
-            GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using GTA3Save x0 = SaveFile.Load<GTA3Save>(path, format);
+            using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -87,12 +87,11 @@ namespace GTASaveData.GTA3.Tests
             string path = TestData.GetTestDataPath(GameType.III, GTA3Save.FileFormats.PC, "CAT2");
             byte[] data = File.ReadAllBytes(path);
 
-            GTA3Save x = new GTA3Save()
+            using GTA3Save x = new GTA3Save()
             {
                 FileFormat = GTA3Save.FileFormats.PC,
                 BlockSizeChecks = true
             };
-
             // Fudge the block size
             data[0] = 0xBE;
             data[1] = 0xBA;

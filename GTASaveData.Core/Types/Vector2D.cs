@@ -35,8 +35,8 @@ namespace GTASaveData.Types
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            X = buf.ReadSingle();
-            Y = buf.ReadSingle();
+            X = buf.ReadFloat();
+            Y = buf.ReadFloat();
         }
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)

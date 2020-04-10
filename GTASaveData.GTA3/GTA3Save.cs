@@ -12,14 +12,18 @@ namespace GTASaveData.GTA3
     /// <summary>
     /// Represents a <i>Grand Theft Auto III</i> save file.
     /// </summary>
-    public class GTA3Save : SaveFile, IGTASaveFile, IEquatable<GTA3Save>
+    public class GTA3Save : SaveFile, IGTASaveFile, IEquatable<GTA3Save>, IDisposable
     {
         public const int SaveHeaderSize = 8;
         public const int SizeOfOneGameInBytes = 201729;
+        public const int MaxBufferSize = 55000;
 
-        protected override int BufferSize => (FileFormat.SupportedOnPS2) ? 50000 : 55000;
-
+        private readonly DataBuffer m_workBuff;
+        private int m_bufferSize => (FileFormat.SupportedOnPS2) ? 50000 : 55000;
+        private int m_checkSum;
         private bool m_blockSizeChecks;
+        private bool m_disposed;
+
         private SimpleVariables m_simpleVars;   // SimpleVariables
         private TheScripts m_scripts;  // TheScripts
         private DummyObject m_pedPool;  // PedPool
@@ -41,13 +45,6 @@ namespace GTASaveData.GTA3
         private DummyObject m_stats;    // Stats
         private DummyObject m_streaming;    // Streaming
         private DummyObject m_pedTypeInfo;  // PedTypeInfo
-
-        [JsonIgnore]
-        public bool BlockSizeChecks
-        {
-            get { return m_blockSizeChecks; }
-            set { m_blockSizeChecks = value; OnPropertyChanged(); }
-        }
 
         public SimpleVariables SimpleVars
         {
@@ -175,18 +172,28 @@ namespace GTASaveData.GTA3
             set { m_pedTypeInfo = value; OnPropertyChanged(); }
         }
 
-        public override string Name
+        [JsonIgnore]
+        public bool BlockSizeChecks
         {
-            get { return SimpleVars.SaveName; }
-            set { SimpleVars.SaveName = value; OnPropertyChanged(); }
+            get { return m_blockSizeChecks; }
+            set { m_blockSizeChecks = value; OnPropertyChanged(); }
         }
 
+        [JsonIgnore]
+        public override string Name
+        {
+            get { return SimpleVars.LastMissionPassedName; }
+            set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
+        }
+
+        [JsonIgnore]
         public override DateTime TimeLastSaved
         {
-            get { return SimpleVars.TimeLastSaved.ToDateTime(); }
+            get { return SimpleVars.TimeLastSaved; }
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
 
+        [JsonIgnore]
         public override IReadOnlyList<SaveDataObject> Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
@@ -214,6 +221,9 @@ namespace GTASaveData.GTA3
 
         public GTA3Save()
         {
+            m_disposed = false;
+            m_workBuff = new DataBuffer(new byte[MaxBufferSize]);
+
             SimpleVars = new SimpleVariables();
             Scripts = new TheScripts();
             PedPool = new DummyObject();
@@ -259,9 +269,9 @@ namespace GTASaveData.GTA3
 
         private DummyObject LoadDummy()
         {
-            int size = WorkBuff.ReadInt32();
+            int size = m_workBuff.ReadInt32();
             var o = new DummyObject(size);
-            int bytesRead = Serializer.Read(o, WorkBuff, FileFormat);
+            int bytesRead = Serializer.Read(o, m_workBuff, FileFormat);
 
             Debug.Assert(bytesRead == size);
             return o;
@@ -269,19 +279,19 @@ namespace GTASaveData.GTA3
 
         private void LoadSimpleVars()
         {
-            SimpleVars = WorkBuff.ReadObject<SimpleVariables>(FileFormat);
+            SimpleVars = m_workBuff.Read<SimpleVariables>(FileFormat);
         }
 
         private void SaveSimpleVars()
         {
             SimpleVars.SaveSize = SizeOfOneGameInBytes;
-            WorkBuff.Write(SimpleVars, FileFormat);
+            m_workBuff.Write(SimpleVars, FileFormat);
         }
 
         private T LoadData<T>() where T : SaveDataObject, new()
         {
-            int size = WorkBuff.ReadInt32();
-            int bytesRead = Serializer.Read(WorkBuff, FileFormat, out T obj);
+            int size = m_workBuff.ReadInt32();
+            int bytesRead = Serializer.Read(m_workBuff, FileFormat, out T obj);
 
             Debug.Assert(bytesRead == size);
             return obj;
@@ -291,39 +301,39 @@ namespace GTASaveData.GTA3
         {
             int size, preSize, postData;
                 
-            preSize = WorkBuff.Position;
-            WorkBuff.Skip(4);
+            preSize = m_workBuff.Position;
+            m_workBuff.Skip(4);
             
-            size = Serializer.Write(WorkBuff, o, FileFormat);
-            postData = WorkBuff.Position;
+            size = Serializer.Write(m_workBuff, o, FileFormat);
+            postData = m_workBuff.Position;
 
-            WorkBuff.Seek(preSize);
-            WorkBuff.Write(size);
-            WorkBuff.Seek(postData);
-            WorkBuff.Align4Bytes();
+            m_workBuff.Seek(preSize);
+            m_workBuff.Write(size);
+            m_workBuff.Seek(postData);
+            m_workBuff.Align4Bytes();
         }
 
         private int ReadBlock(DataBuffer file)
         {
             file.MarkPosition();
-            WorkBuff.Reset();
+            m_workBuff.Reset();
 
             int size = file.ReadInt32();
-            if ((uint) size > BufferSize)
+            if ((uint) size > m_bufferSize)
             {
-                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
+                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, m_bufferSize);
                 if (BlockSizeChecks)
                 {
-                    throw BlockSizeExceededException((uint) size, BufferSize);
+                    throw BlockSizeExceededException((uint) size, m_bufferSize);
                 }
             }
 
-            WorkBuff.Write(file.ReadBytes(size));
+            m_workBuff.Write(file.ReadBytes(size));
 
             Debug.Assert(file.Offset == size + 4);
             Debug.WriteLine("Read {0} bytes of block data.", size);
 
-            WorkBuff.Reset();
+            m_workBuff.Reset();
             return size;
         }
 
@@ -331,14 +341,14 @@ namespace GTASaveData.GTA3
         {
             file.MarkPosition();
 
-            byte[] data = WorkBuff.GetBytesUpToCursor();
+            byte[] data = m_workBuff.GetBytesUpToCursor();
             int size = data.Length;
-            if ((uint) size > BufferSize)
+            if ((uint) size > m_bufferSize)
             {
-                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
+                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, m_bufferSize);
                 if (BlockSizeChecks)
                 {
-                    throw BlockSizeExceededException((uint) size, BufferSize);
+                    throw BlockSizeExceededException((uint) size, m_bufferSize);
                 }
             }
 
@@ -349,10 +359,10 @@ namespace GTASaveData.GTA3
             Debug.Assert(file.Offset == size + 4);
             Debug.WriteLine("Wrote {0} bytes of block data.", size);
 
-            CheckSum += (uint) BitConverter.GetBytes(size).Sum(x => x);
-            CheckSum += (uint) data.Sum(x => x);
+            m_checkSum += BitConverter.GetBytes(size).Sum(x => x);
+            m_checkSum += data.Sum(x => x);
 
-            WorkBuff.Reset();
+            m_workBuff.Reset();
             return size;
         }
         #endregion
@@ -398,8 +408,8 @@ namespace GTASaveData.GTA3
             int totalSize = 0;
             int size;
 
-            WorkBuff.Reset();
-            CheckSum = 0;
+            m_workBuff.Reset();
+            m_checkSum = 0;
 
             SaveSimpleVars();
             SaveData(Scripts); totalSize += WriteBlock(file);
@@ -426,23 +436,23 @@ namespace GTASaveData.GTA3
             for (int i = 0; i < 4; i++)
             {
                 size = DataBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
-                if (size > BufferSize)
+                if (size > m_bufferSize)
                 {
-                    size = BufferSize;
+                    size = m_bufferSize;
                 }
                 if (size > 4)
                 {
                     if (Padding != PaddingType.Default)
                     {
-                        WorkBuff.Reset();
-                        WorkBuff.Write(GenerateSpecialPadding(size));
+                        m_workBuff.Reset();
+                        m_workBuff.Write(GenerateSpecialPadding(size));
                     }
-                    WorkBuff.Seek(size);
+                    m_workBuff.Seek(size);
                     totalSize += WriteBlock(file);
                 }
             }
 
-            file.Write(CheckSum);
+            file.Write(m_checkSum);
 
             Debug.WriteLine("Save size: {0}", totalSize);
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
@@ -563,6 +573,15 @@ namespace GTASaveData.GTA3
                 && PedTypeInfo.Equals(other.PedTypeInfo);
         }
 
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                m_workBuff.Dispose();
+                m_disposed = true;
+            }
+        }
+
         private SerializationException BlockSizeExceededException(uint value, int max)
         {
             return new SerializationException(Strings.Error_Serialization_BlockSizeExceeded, value, max);
@@ -583,23 +602,21 @@ namespace GTASaveData.GTA3
             public static readonly SaveFileFormat PC = new SaveFileFormat(
                 "PC", "PC", "Windows, macOS",
                 new GameConsole(ConsoleType.Win32),
-                new GameConsole(ConsoleType.MacOS),
-                new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam),
-                new GameConsole(ConsoleType.MacOS, ConsoleFlags.Steam)
+                new GameConsole(ConsoleType.MacOS)
             );
 
             public static readonly SaveFileFormat PS2_AU = new SaveFileFormat(
-                "PS2_AU", "PS2/Australia", "PlayStation 2 (PAL/Australia)",
+                "PS2_AU", "PS2 (Australia)", "PlayStation 2 (PAL Australia)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.Australia)
             );
 
             public static readonly SaveFileFormat PS2_JP = new SaveFileFormat(
-                "PS2_JP", "PS2/Japan", "PlayStation 2 (NTSC-J)",
+                "PS2_JP", "PS2 (Japan)", "PlayStation 2 (NTSC-J)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.Japan)
             );
 
             public static readonly SaveFileFormat PS2_NAEU = new SaveFileFormat(
-                "PS2_NAEU", "PS2", "PlayStation 2 (NTSC-U/C, PAL/Europe)",
+                "PS2_NAEU", "PS2", "PlayStation 2 (NTSC-U/C, PAL Europe)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe)
             );
 

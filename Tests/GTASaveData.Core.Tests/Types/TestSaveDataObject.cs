@@ -35,7 +35,7 @@ namespace GTASaveData.Core.Tests.Types
             protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
             {
                 m_field00h = buf.ReadInt32();
-                m_field04h = buf.ReadSingle();
+                m_field04h = buf.ReadFloat();
                 m_field08h = buf.ReadBool(4);
             }
 

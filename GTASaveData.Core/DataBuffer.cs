@@ -89,11 +89,11 @@ namespace GTASaveData
         public char ReadChar(bool unicode = false)
         {
             return (unicode)
-                ? (char) ReadUInt16()   // "Unicode", more like UCS-2
+                ? (char) ReadUInt16()   // "Unicode", aka UCS-2/UTF-16
                 : (char) ReadByte();
         }
 
-        public float ReadSingle()
+        public float ReadFloat()
         {
             byte[] data = ReadBytes(sizeof(float));
             if (BigEndian)
@@ -194,7 +194,7 @@ namespace GTASaveData
             return s;
         }
 
-        public T ReadObject<T>() where T : ISaveDataObject, new()
+        public T Read<T>() where T : ISaveDataObject, new()
         {
             T obj = new T();
             obj.ReadObjectData(this);
@@ -202,7 +202,7 @@ namespace GTASaveData
             return obj;
         }
 
-        public T ReadObject<T>(SaveFileFormat format) where T : ISaveDataObject, new()
+        public T Read<T>(SaveFileFormat format) where T : ISaveDataObject, new()
         {
             T obj = new T();
             obj.ReadObjectData(this, format);
@@ -269,7 +269,7 @@ namespace GTASaveData
             }
             else if (t == typeof(float))
             {
-                o = ReadSingle();
+                o = ReadFloat();
             }
             else if (t == typeof(int))
             {
@@ -301,7 +301,7 @@ namespace GTASaveData
             }
             else if (t.GetInterface(nameof(ISaveDataObject)) != null)
             {
-                var m = GetType().GetMethod(nameof(ReadObject), new Type[] { typeof(SaveFileFormat) }).MakeGenericMethod(t);
+                var m = GetType().GetMethod(nameof(Read), new Type[] { typeof(SaveFileFormat) }).MakeGenericMethod(t);
                 o = m.Invoke(this, new object[] { format });
             }
             else
@@ -360,7 +360,7 @@ namespace GTASaveData
             }
 
             return (unicode)
-                ? Write((ushort) value)     // "Unicode", more like UCS-2
+                ? Write((ushort) value)     // "Unicode", aka UCS-2/UTF-16
                 : Write((byte) value);
         }
 

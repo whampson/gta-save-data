@@ -251,7 +251,7 @@ namespace GTASaveData.VC
 
         public SimpleVariables()
         {
-            LastMissionPassedName = string.Empty;
+            LastMissionPassedName = "";
             TimeLastSaved = new SystemTime();
             CameraPosition = new Vector();
             RadioStationPositionList = CreateArray<int>(Limits.RadioStationListCount);
@@ -260,10 +260,10 @@ namespace GTASaveData.VC
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             LastMissionPassedName = buf.ReadString(Limits.MaxNameLength, unicode: true);
-            TimeLastSaved = buf.ReadObject<SystemTime>();
+            TimeLastSaved = buf.Read<SystemTime>();
             SaveSize = buf.ReadInt32();
             CurrLevel = (LevelType) buf.ReadInt32();
-            CameraPosition = buf.ReadObject<Vector>();
+            CameraPosition = buf.Read<Vector>();
             if (IsSteamWin32(fmt)) SteamWin32Only = buf.ReadInt32();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
@@ -274,23 +274,23 @@ namespace GTASaveData.VC
             CurrPadMode = buf.ReadInt16();
             buf.Align4Bytes();
             TimeInMilliseconds = buf.ReadUInt32();
-            TimerTimeScale = buf.ReadSingle();
-            TimerTimeStep = buf.ReadSingle();
-            TimerTimeStepNonClipped = buf.ReadSingle();
+            TimerTimeScale = buf.ReadFloat();
+            TimerTimeStep = buf.ReadFloat();
+            TimerTimeStepNonClipped = buf.ReadFloat();
             FrameCounter = buf.ReadUInt32();
-            TimeStep = buf.ReadSingle();
-            FramesPerUpdate = buf.ReadSingle();
-            TimeScale = buf.ReadSingle();
+            TimeStep = buf.ReadFloat();
+            FramesPerUpdate = buf.ReadFloat();
+            TimeScale = buf.ReadFloat();
             OldWeatherType = (WeatherType) buf.ReadInt16();
             buf.Align4Bytes();
             NewWeatherType = (WeatherType) buf.ReadInt16();
             buf.Align4Bytes();
             ForcedWeatherType = (WeatherType) buf.ReadInt16();
             buf.Align4Bytes();
-            WeatherInterpolation = buf.ReadSingle();
+            WeatherInterpolation = buf.ReadFloat();
             WeatherTypeInList = buf.ReadInt32();
-            CameraCarZoomIndicator = buf.ReadSingle();
-            CameraPedZoomIndicator = buf.ReadSingle();
+            CameraCarZoomIndicator = buf.ReadFloat();
+            CameraPedZoomIndicator = buf.ReadFloat();
             CurrArea = (Interior) buf.ReadInt32();
             AllTaxisHaveNitro = buf.ReadBool();
             buf.Align4Bytes();
@@ -298,7 +298,7 @@ namespace GTASaveData.VC
             buf.Align4Bytes();
             ExtraColour = buf.ReadInt32();
             ExtraColourOn = buf.ReadBool(4);
-            ExtraColourInterpolation = buf.ReadSingle();
+            ExtraColourInterpolation = buf.ReadFloat();
             RadioStationPositionList = buf.ReadArray<int>(Limits.RadioStationListCount);
 
             Debug.Assert(buf.Offset == GetSize(fmt));

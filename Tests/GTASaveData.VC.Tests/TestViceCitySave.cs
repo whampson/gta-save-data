@@ -54,8 +54,8 @@ namespace GTASaveData.VC.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(SaveFileFormat format)
         {
-            ViceCitySave x0 = GenerateTestObject(format);
-            ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using ViceCitySave x0 = GenerateTestObject(format);
+            using ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -70,8 +70,8 @@ namespace GTASaveData.VC.Tests
         {
             string path = TestData.GetTestDataPath(GameType.VC, format, filename);
 
-            ViceCitySave x0 = SaveFile.Load<ViceCitySave>(path, format);
-            ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using ViceCitySave x0 = SaveFile.Load<ViceCitySave>(path, format);
+            using ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -86,7 +86,7 @@ namespace GTASaveData.VC.Tests
             string path = TestData.GetTestDataPath(GameType.VC, ViceCitySave.FileFormats.PC_Retail, "COK_2");
             byte[] data = File.ReadAllBytes(path);
 
-            ViceCitySave x = new ViceCitySave()
+            using ViceCitySave x = new ViceCitySave()
             {
                 FileFormat = ViceCitySave.FileFormats.PC_Retail,
                 BlockSizeChecks = true

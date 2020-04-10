@@ -87,8 +87,8 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             ModelIndex = buf.ReadInt32();
-            Position = buf.ReadObject<Vector>();
-            Angle = buf.ReadObject<Vector>();
+            Position = buf.Read<Vector>();
+            Angle = buf.Read<Vector>();
             Flags = (StoredCarFlags) buf.ReadInt32();
             Color1 = buf.ReadByte();
             Color2 = buf.ReadByte();

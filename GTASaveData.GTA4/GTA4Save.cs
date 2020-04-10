@@ -15,7 +15,7 @@ namespace GTASaveData.GTA4
     {
         public static class Limits
         {
-            public const int MaxSaveNameLength = 128;
+            public const int MaxNameLength = 128;
         }
 
         private DataBuffer m_file;
@@ -24,6 +24,7 @@ namespace GTASaveData.GTA4
         private int m_saveSizeInBytes;
         private int m_scriptSpace;
         private string m_lastMissionPassedName;
+        private DateTime m_timeLastSaved;   // Not in savefile
 
         private SimpleVariables m_simpleVars;
         private DummyObject m_playerInfo;
@@ -64,6 +65,12 @@ namespace GTASaveData.GTA4
         {
             get { return m_lastMissionPassedName; }
             set { m_lastMissionPassedName = value; OnPropertyChanged(); }
+        }
+
+        public override DateTime TimeLastSaved
+        {
+            get { return m_timeLastSaved; }
+            set { m_timeLastSaved = value; OnPropertyChanged(); }
         }
 
         public int SaveVersion
@@ -375,7 +382,7 @@ namespace GTASaveData.GTA4
             string sig = m_file.ReadString(4);
             if (FileFormat.SupportedOnWin32)
             {
-                Name = m_file.ReadString(Limits.MaxSaveNameLength, unicode: true);
+                Name = m_file.ReadString(Limits.MaxNameLength, unicode: true);
             }
 
             Debug.Assert(sig == "SAVE", "Invalid 'SAVE' signature!");

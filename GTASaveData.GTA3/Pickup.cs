@@ -78,7 +78,7 @@ namespace GTASaveData.GTA3
             Timer = buf.ReadUInt32();
             ModelIndex = buf.ReadInt16();
             Index = buf.ReadInt16();
-            Position = buf.ReadObject<Vector>();
+            Position = buf.Read<Vector>();
 
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }

@@ -22,7 +22,7 @@ namespace GTASaveData.SA.Tests
                 .RuleFor(x => x.GameClockDays, f => f.Random.Byte())
                 .RuleFor(x => x.GameClockHours, f => f.Random.Byte())
                 .RuleFor(x => x.GameClockMinutes, f => f.Random.Byte())
-                .RuleFor(x => x.CurrentDay, f => f.Random.Byte())
+                .RuleFor(x => x.GameClockDayOfWeek, f => f.Random.Byte())
                 .RuleFor(x => x.StoredGameClockMonths, f => f.Random.Byte())
                 .RuleFor(x => x.StoredGameClockDays, f => f.Random.Byte())
                 .RuleFor(x => x.StoredGameClockHours, f => f.Random.Byte())
@@ -38,7 +38,7 @@ namespace GTASaveData.SA.Tests
                 .RuleFor(x => x.OldWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.NewWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.ForcedWeatherType, f => f.PickRandom<WeatherType>())
-                .RuleFor(x => x.WeatherInterpolationValue, f => f.Random.Float())
+                .RuleFor(x => x.WeatherInterpolation, f => f.Random.Float())
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
                 .RuleFor(x => x.Rain, f => f.Random.Float())
                 .RuleFor(x => x.CameraCarZoomIndicator, f => f.Random.Int())
@@ -85,7 +85,7 @@ namespace GTASaveData.SA.Tests
             Assert.Equal(x0.GameClockDays, x1.GameClockDays);
             Assert.Equal(x0.GameClockHours, x1.GameClockHours);
             Assert.Equal(x0.GameClockMinutes, x1.GameClockMinutes);
-            Assert.Equal(x0.CurrentDay, x1.CurrentDay);
+            Assert.Equal(x0.GameClockDayOfWeek, x1.GameClockDayOfWeek);
             Assert.Equal(x0.StoredGameClockMonths, x1.StoredGameClockMonths);
             Assert.Equal(x0.StoredGameClockDays, x1.StoredGameClockDays);
             Assert.Equal(x0.StoredGameClockHours, x1.StoredGameClockHours);
@@ -101,7 +101,7 @@ namespace GTASaveData.SA.Tests
             Assert.Equal(x0.OldWeatherType, x1.OldWeatherType);
             Assert.Equal(x0.NewWeatherType, x1.NewWeatherType);
             Assert.Equal(x0.ForcedWeatherType, x1.ForcedWeatherType);
-            Assert.Equal(x0.WeatherInterpolationValue, x1.WeatherInterpolationValue);
+            Assert.Equal(x0.WeatherInterpolation, x1.WeatherInterpolation);
             Assert.Equal(x0.WeatherTypeInList, x1.WeatherTypeInList);
             Assert.Equal(x0.Rain, x1.Rain);
             Assert.Equal(x0.CameraCarZoomIndicator, x1.CameraCarZoomIndicator);

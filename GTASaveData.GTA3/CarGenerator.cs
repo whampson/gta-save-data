@@ -156,8 +156,8 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             ModelIndex = buf.ReadInt32();
-            Position = buf.ReadObject<Vector>();
-            Angle = buf.ReadSingle();
+            Position = buf.Read<Vector>();
+            Angle = buf.ReadFloat();
             Color1 = buf.ReadInt16();
             Color2 = buf.ReadInt16();
             ForceSpawn = buf.ReadBool();
@@ -171,9 +171,9 @@ namespace GTASaveData.GTA3
             UsesRemaining = buf.ReadInt16();
             IsBlocking = buf.ReadBool();
             buf.ReadByte();
-            VecInf = buf.ReadObject<Vector>();
-            VecSup = buf.ReadObject<Vector>();
-            Size = buf.ReadSingle();
+            VecInf = buf.Read<Vector>();
+            VecSup = buf.Read<Vector>();
+            Size = buf.ReadFloat();
 
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }

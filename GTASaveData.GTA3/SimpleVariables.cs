@@ -38,7 +38,7 @@ namespace GTASaveData.GTA3
         private float m_cameraCarZoomIndicator;
         private float m_cameraPedZoomIndicator;
 
-        public string SaveName
+        public string LastMissionPassedName
         {
             get { return m_lastMissionPassedName; }
             set { m_lastMissionPassedName = value; OnPropertyChanged(); }
@@ -196,7 +196,7 @@ namespace GTASaveData.GTA3
 
         public SimpleVariables()
         {
-            SaveName = string.Empty;
+            LastMissionPassedName = "";
             TimeLastSaved = new SystemTime();
             CameraPosition = new Vector();
             CompileDateAndTime = new Date();
@@ -204,11 +204,11 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            SaveName = buf.ReadString(Limits.MaxNameLength, unicode: true);
-            TimeLastSaved = buf.ReadObject<SystemTime>();
+            LastMissionPassedName = buf.ReadString(Limits.MaxNameLength, unicode: true);
+            TimeLastSaved = buf.Read<SystemTime>();
             SaveSize = buf.ReadInt32();
             CurrLevel = (LevelType) buf.ReadInt32();
-            CameraPosition = buf.ReadObject<Vector>();
+            CameraPosition = buf.Read<Vector>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockHours = (byte) buf.ReadInt32();
@@ -218,31 +218,31 @@ namespace GTASaveData.GTA3
             CurrPadMode = buf.ReadInt16();
             buf.Align4Bytes();
             TimeInMilliseconds = buf.ReadUInt32();
-            TimerTimeScale = buf.ReadSingle();
-            TimerTimeStep = buf.ReadSingle();
-            TimerTimeStepNonClipped = buf.ReadSingle();
+            TimerTimeScale = buf.ReadFloat();
+            TimerTimeStep = buf.ReadFloat();
+            TimerTimeStepNonClipped = buf.ReadFloat();
             FrameCounter = buf.ReadUInt32();
-            TimeStep = buf.ReadSingle();
-            FramesPerUpdate = buf.ReadSingle();
-            TimeScale = buf.ReadSingle();
+            TimeStep = buf.ReadFloat();
+            FramesPerUpdate = buf.ReadFloat();
+            TimeScale = buf.ReadFloat();
             OldWeatherType = (WeatherType) buf.ReadInt16();
             buf.Align4Bytes();
             NewWeatherType = (WeatherType) buf.ReadInt16();
             buf.Align4Bytes();
             ForcedWeatherType = (WeatherType) buf.ReadInt16();
             buf.Align4Bytes();
-            WeatherInterpolation = buf.ReadSingle();
-            CompileDateAndTime = buf.ReadObject<Date>();
+            WeatherInterpolation = buf.ReadFloat();
+            CompileDateAndTime = buf.Read<Date>();
             WeatherTypeInList = buf.ReadInt32();
-            CameraCarZoomIndicator = buf.ReadSingle();
-            CameraPedZoomIndicator = buf.ReadSingle();
+            CameraCarZoomIndicator = buf.ReadFloat();
+            CameraPedZoomIndicator = buf.ReadFloat();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(SaveName, Limits.MaxNameLength, unicode: true);
+            buf.Write(LastMissionPassedName, Limits.MaxNameLength, unicode: true);
             buf.Write(TimeLastSaved);
             buf.Write(SaveSize);
             buf.Write((int) CurrLevel);
@@ -300,7 +300,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return SaveName.Equals(other.SaveName)
+            return LastMissionPassedName.Equals(other.LastMissionPassedName)
                 && TimeLastSaved.Equals(other.TimeLastSaved)
                 && SaveSize.Equals(other.SaveSize)
                 && CurrLevel.Equals(other.CurrLevel)

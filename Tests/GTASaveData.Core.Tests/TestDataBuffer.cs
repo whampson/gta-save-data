@@ -36,7 +36,7 @@ namespace GTASaveData.Core.Tests
                 b1 = wb.ReadBool();
                 wb.Align4Bytes();
                 i1 = wb.ReadInt32();
-                f1 = wb.ReadSingle();
+                f1 = wb.ReadFloat();
             }
 
             Assert.Equal(b0, b1);
@@ -523,7 +523,7 @@ namespace GTASaveData.Core.Tests
             {
                 Integer = buf.ReadInt32();
                 Boolean = buf.ReadBool();
-                Single = buf.ReadSingle();
+                Single = buf.ReadFloat();
             }
 
             protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)

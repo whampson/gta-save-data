@@ -269,20 +269,20 @@ namespace GTASaveData.GTA3
             IsRotatedDoor = buf.ReadBool();
             CameraFollowsPlayer = buf.ReadBool();
             Field27h = buf.ReadByte();
-            PositionInf.X = buf.ReadSingle();
-            PositionSup.X = buf.ReadSingle();
-            PositionInf.Y = buf.ReadSingle();
-            PositionSup.Y = buf.ReadSingle();
-            PositionInf.Z = buf.ReadSingle();
-            PositionSup.Z = buf.ReadSingle();
-            DoorOpenMinZOffset = buf.ReadSingle();
-            DoorOpenMaxZOffset = buf.ReadSingle();
-            Door1Pos.X = buf.ReadSingle();
-            Door1Pos.Y = buf.ReadSingle();
-            Door2Pos.X = buf.ReadSingle();
-            Door2Pos.Y = buf.ReadSingle();
-            Door1Pos.Z = buf.ReadSingle();
-            Door2Pos.Z = buf.ReadSingle();
+            PositionInf.X = buf.ReadFloat();
+            PositionSup.X = buf.ReadFloat();
+            PositionInf.Y = buf.ReadFloat();
+            PositionSup.Y = buf.ReadFloat();
+            PositionInf.Z = buf.ReadFloat();
+            PositionSup.Z = buf.ReadFloat();
+            DoorOpenMinZOffset = buf.ReadFloat();
+            DoorOpenMaxZOffset = buf.ReadFloat();
+            Door1Pos.X = buf.ReadFloat();
+            Door1Pos.Y = buf.ReadFloat();
+            Door2Pos.X = buf.ReadFloat();
+            Door2Pos.Y = buf.ReadFloat();
+            Door1Pos.Z = buf.ReadFloat();
+            Door2Pos.Z = buf.ReadFloat();
             DoorLastOpenTime = buf.ReadUInt32();
             CollectedCarsState = buf.ReadByte();
             Field89h = buf.ReadByte();
@@ -290,7 +290,7 @@ namespace GTASaveData.GTA3
             Field91h = buf.ReadByte();
             TargetVehiclePointer = buf.ReadUInt32();
             Field96h = buf.ReadInt32();
-            StoredCar = buf.ReadObject<StoredCar>();
+            StoredCar = buf.Read<StoredCar>();
 
             Debug.Assert(buf.Offset == SizeOf<Garage>());
         }

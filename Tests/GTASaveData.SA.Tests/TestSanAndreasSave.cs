@@ -33,8 +33,8 @@ namespace GTASaveData.SA.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(SaveFileFormat format)
         {
-            SanAndreasSave x0 = GenerateTestObject(format);
-            SanAndreasSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using SanAndreasSave x0 = GenerateTestObject(format);
+            using SanAndreasSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -49,8 +49,8 @@ namespace GTASaveData.SA.Tests
         {
             string path = TestData.GetTestDataPath(GameType.SA, format, filename);
 
-            SanAndreasSave x0 = SaveFile.Load<SanAndreasSave>(path, format);
-            SanAndreasSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using SanAndreasSave x0 = SaveFile.Load<SanAndreasSave>(path, format);
+            using SanAndreasSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 

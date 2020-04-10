@@ -1,6 +1,7 @@
 ﻿using GTASaveData.Extensions;
 using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,15 +13,19 @@ namespace GTASaveData.SA
     /// <summary>
     /// Represents a <i>Grand Theft Auto: San Andreas</i> save file.
     /// </summary>
-    public class SanAndreasSave : SaveFile, IGTASaveFile, IEquatable<SanAndreasSave>
+    public class SanAndreasSave : SaveFile, IGTASaveFile, IEquatable<SanAndreasSave>, IDisposable
     {
         public const int SizeOfOneGameInBytes = 202752;
+        private const int MaxBufferSize = 65000;
         private const int BlockHeaderSize = 5;
         private const int BlockCount = 28;
         private const int BlockCountMobile = 29;
         private const string BlockTagName = "BLOCK";
 
-        protected override int BufferSize => (FileFormat.SupportedOnMobile) ? 65000 : 51200;
+        private readonly DataBuffer m_workBuffer;
+        private int m_bufferSize => (FileFormat.SupportedOnMobile) ? 65000 : 51200;
+        private int m_checkSum;
+        private bool m_disposed;
 
         private DataBuffer m_file;
         private SimpleVariables m_simpleVars;
@@ -227,18 +232,21 @@ namespace GTASaveData.SA
             set { m_postEffects = value; }
         }
 
+        [JsonIgnore]
         public override string Name
         {
             get { return SimpleVars.LastMissionPassedName; }
             set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
         }
 
+        [JsonIgnore]
         public override DateTime TimeLastSaved
         {
-            get { return SimpleVars.TimeLastSaved.ToDateTime(); }
+            get { return SimpleVars.TimeLastSaved; }
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
 
+        [JsonIgnore]
         public override IReadOnlyList<SaveDataObject> Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
@@ -274,6 +282,9 @@ namespace GTASaveData.SA
 
         public SanAndreasSave()
         {
+            m_disposed = false;
+            m_workBuffer = new DataBuffer(new byte[MaxBufferSize]);
+
             SimpleVars = new SimpleVariables();
             Scripts = new DummyObject();
             Pools = new DummyObject();
@@ -329,7 +340,6 @@ namespace GTASaveData.SA
             return obj;
         }
 
-
         private T LoadObject<T>(int size) where T : SaveDataObject, new()
         {
             LoadDataFromWorkBuffer(size, out byte[] data);
@@ -345,7 +355,6 @@ namespace GTASaveData.SA
             int written = SaveDataToWorkBuffer(data, count);
 
             Debug.Assert(written == count);
-
             return written;
         }
 
@@ -361,9 +370,9 @@ namespace GTASaveData.SA
             int index = 0;
 
             data = new byte[count];
-            if (WorkBuff.Position + count > BufferSize)
+            if (m_workBuffer.Position + count > m_bufferSize)
             {
-                int len = BufferSize - WorkBuff.Position;
+                int len = m_bufferSize - m_workBuffer.Position;
                 total += LoadDataFromWorkBuffer(len, out byte[] tmp);
                 Array.Copy(tmp, 0, data, 0, len);
                 LoadWorkBuffer();
@@ -372,7 +381,7 @@ namespace GTASaveData.SA
             }
 
 
-            total += WorkBuff.Read(data, index, count);
+            total += m_workBuffer.Read(data, index, count);
             return total;
         }
 
@@ -386,16 +395,16 @@ namespace GTASaveData.SA
             int total = 0;
             int index = 0;
 
-            if (WorkBuff.Position + count > BufferSize)
+            if (m_workBuffer.Position + count > m_bufferSize)
             {
-                int len = BufferSize - WorkBuff.Position;
+                int len = m_bufferSize - m_workBuffer.Position;
                 total += SaveDataToWorkBuffer(data, len);
                 SaveWorkBuffer(false);
                 count -= len;
                 index += len;
             }
 
-            total += WorkBuff.Write(data, index, count);
+            total += m_workBuffer.Write(data, index, count);
             return total;
         }
 
@@ -403,7 +412,7 @@ namespace GTASaveData.SA
         {
             int count;
 
-            count = BufferSize;
+            count = m_bufferSize;
             if (m_file.Position + count > m_file.Length)
             {
                 count = m_file.Length - m_file.Position;
@@ -411,26 +420,26 @@ namespace GTASaveData.SA
 
             if (count != 0 && count == DataBuffer.Align4Bytes(count))
             {
-                WorkBuff.Reset();
-                WorkBuff.Write(m_file.ReadBytes(count));
-                WorkBuff.Reset();
+                m_workBuffer.Reset();
+                m_workBuffer.Write(m_file.ReadBytes(count));
+                m_workBuffer.Reset();
             }
         }
 
         private void SaveWorkBuffer(bool writeCheckSum)
         {
-            CheckSum += (uint) WorkBuff.GetBytesUpToCursor().Sum(x => x);
+            m_checkSum += m_workBuffer.GetBytesUpToCursor().Sum(x => x);
             if (writeCheckSum)
             {
-                if (WorkBuff.Position > BufferSize - 4)
+                if (m_workBuffer.Position > m_bufferSize - 4)
                 {
                     SaveWorkBuffer(false);
                 }
-                WorkBuff.Write(CheckSum);
+                m_workBuffer.Write(m_checkSum);
             }
 
-            m_file.Write(WorkBuff.GetBytesUpToCursor());
-            WorkBuff.Reset();
+            m_file.Write(m_workBuffer.GetBytesUpToCursor());
+            m_workBuffer.Reset();
         }
 
         protected override void LoadAllData(DataBuffer file)
@@ -459,11 +468,11 @@ namespace GTASaveData.SA
                 // need to know exact size of last block
                 if (numCounted == 27 && !FileFormat.SupportedOnMobile)
                 {
-                    size = 0x8C;    // SizeOf<C3dMarkers>()
+                    size = 0x8C;    // TODO: use SizeOf<C3dMarkers>()
                 }
                 else if (numCounted == 28 && FileFormat.SupportedOnMobile)
                 {
-                    size = 0x160;   // SizeOf<PostEffects>();
+                    size = 0x160;   // TODO: use SizeOf<PostEffects>();
                 }
                 else
                 {
@@ -478,7 +487,7 @@ namespace GTASaveData.SA
             Debug.Assert(numCounted >= numBlocks);
 
             // Init pointer at end so loader thinks buffer is full and refills it
-            WorkBuff.Seek(BufferSize);
+            m_workBuffer.Seek(m_bufferSize);
             
             for (offset = 0; offset < numBlocks; offset++)
             {
@@ -530,8 +539,8 @@ namespace GTASaveData.SA
             int count;
 
             m_file = file;
-            CheckSum = 0;
-            WorkBuff.Seek(0);
+            m_checkSum = 0;
+            m_workBuffer.Seek(0);
 
             count = (FileFormat.SupportedOnMobile) ? BlockCountMobile : BlockCount;
             for (index = 0; index < count; index++)
@@ -579,33 +588,33 @@ namespace GTASaveData.SA
             // Android
             //{
             //    // Padding
-            //    if (WorkBuff.Position > BufferSize - 4)
+            //    if (m_workBuffer.Position > BufferSize - 4)
             //    {
-            //        WorkBuff.Seek(BufferSize);
+            //        m_workBuffer.Seek(BufferSize);
             //        SaveWorkBuffer(false);
             //    }
             //    else
             //    {
-            //        WorkBuff.Seek(BufferSize - 4);
+            //        m_workBuffer.Seek(BufferSize - 4);
             //    }
             //    // Checksum
             //    SaveWorkBuffer(true);
             //}
 
             // PC
-            size = WorkBuff.Position + file.Position;
+            size = m_workBuffer.Position + file.Position;
             while (size < SizeOfOneGameInBytes - 4)
             {
-                int remaining = SizeOfOneGameInBytes - file.Position - WorkBuff.Position - 4;
-                if (WorkBuff.Position + remaining < BufferSize)
+                int remaining = SizeOfOneGameInBytes - file.Position - m_workBuffer.Position - 4;
+                if (m_workBuffer.Position + remaining < m_bufferSize)
                 {
-                    WorkBuff.Skip(remaining);
+                    m_workBuffer.Skip(remaining);
                     break;
                 }
 
-                WorkBuff.Seek(BufferSize);
+                m_workBuffer.Seek(m_bufferSize);
                 SaveWorkBuffer(false);
-                size = WorkBuff.Position + file.Position;
+                size = m_workBuffer.Position + file.Position;
             }
             SaveWorkBuffer(true);
 
@@ -662,6 +671,15 @@ namespace GTASaveData.SA
                 && PostEffects.Equals(other.PostEffects);
         }
 
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                m_workBuffer.Dispose();
+                m_disposed = true;
+            }
+        }
+
         public static class FileFormats
         {
             // TODO: 1.05 and 1.06 different?
@@ -674,7 +692,9 @@ namespace GTASaveData.SA
             public static readonly SaveFileFormat PC = new SaveFileFormat(
                 "PC", "PC", "Windows, macOS",
                 new GameConsole(ConsoleType.Win32),
-                new GameConsole(ConsoleType.MacOS)
+                new GameConsole(ConsoleType.MacOS),
+                new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam),
+                new GameConsole(ConsoleType.MacOS, ConsoleFlags.Steam)
             );
 
             public static readonly SaveFileFormat PS2 = new SaveFileFormat(

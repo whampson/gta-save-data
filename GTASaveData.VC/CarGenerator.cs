@@ -133,8 +133,8 @@ namespace GTASaveData.VC
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             ModelIndex = buf.ReadInt32();
-            Position = buf.ReadObject<Vector>();
-            Angle = buf.ReadSingle();
+            Position = buf.Read<Vector>();
+            Angle = buf.ReadFloat();
             Color1 = buf.ReadInt16();
             Color2 = buf.ReadInt16();
             ForceSpawn = buf.ReadBool();

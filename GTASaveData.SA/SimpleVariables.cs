@@ -26,7 +26,7 @@ namespace GTASaveData.SA
         private byte m_gameClockDays;
         private byte m_gameClockHours;
         private byte m_gameClockMinutes;
-        private byte m_currentDay;  // TODO: enum?
+        private byte m_gameClockDayOfWeek;
         private byte m_storedGameClockMonths;
         private byte m_storedGameClockDays;
         private byte m_storedGameClockHours;
@@ -47,7 +47,7 @@ namespace GTASaveData.SA
         private float m_rain;
         private int m_cameraCarZoomIndicator;
         private int m_cameraPedZoomIndicator;
-        private int m_currArea;     // TODO: enum?
+        private int m_currArea;
         private bool m_invertLook4Pad;
         private int m_extraColour;
         private bool m_extraColourOn;
@@ -134,10 +134,10 @@ namespace GTASaveData.SA
             set { m_gameClockMinutes = value; OnPropertyChanged(); }
         }
 
-        public byte CurrentDay
+        public byte GameClockDayOfWeek
         {
-            get { return m_currentDay; }
-            set { m_currentDay = value; OnPropertyChanged(); }
+            get { return m_gameClockDayOfWeek; }
+            set { m_gameClockDayOfWeek = value; OnPropertyChanged(); }
         }
 
         public byte StoredGameClockMonths
@@ -230,7 +230,7 @@ namespace GTASaveData.SA
             set { m_forcedWeatherType = value; OnPropertyChanged(); }
         }
 
-        public float WeatherInterpolationValue
+        public float WeatherInterpolation
         {
             get { return m_weatherInterpolationValue; }
             set { m_weatherInterpolationValue = value; OnPropertyChanged(); }
@@ -382,7 +382,7 @@ namespace GTASaveData.SA
 
         public SimpleVariables()
         {
-            LastMissionPassedName = string.Empty;
+            LastMissionPassedName = "";
             TimeLastSaved = new SystemTime();
             CameraPosition = new Vector();
         }
@@ -394,14 +394,14 @@ namespace GTASaveData.SA
             MissionPackGame = buf.ReadByte();
             buf.Align4Bytes();
             CurrLevel = (LevelType) buf.ReadInt32();
-            CameraPosition = buf.ReadObject<Vector>();
+            CameraPosition = buf.Read<Vector>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockMonths = buf.ReadByte();
             GameClockDays = buf.ReadByte();
             GameClockHours = buf.ReadByte();
             GameClockMinutes = buf.ReadByte();
-            CurrentDay = buf.ReadByte();
+            GameClockDayOfWeek = buf.ReadByte();
             StoredGameClockMonths = buf.ReadByte();
             StoredGameClockDays = buf.ReadByte();
             StoredGameClockHours = buf.ReadByte();
@@ -411,17 +411,17 @@ namespace GTASaveData.SA
             HasPlayerCheated = buf.ReadBool();
             buf.Align4Bytes();
             TimeInMilliseconds = buf.ReadUInt32();
-            TimeScale = buf.ReadSingle();
-            TimeStep = buf.ReadSingle();
-            TimeStepNonClipped = buf.ReadSingle();
+            TimeScale = buf.ReadFloat();
+            TimeStep = buf.ReadFloat();
+            TimeStepNonClipped = buf.ReadFloat();
             FrameCounter = buf.ReadUInt32();
             OldWeatherType = (WeatherType) buf.ReadInt16();
             NewWeatherType = (WeatherType) buf.ReadInt16();
             ForcedWeatherType = (WeatherType) buf.ReadInt16();
             buf.Align4Bytes();
-            WeatherInterpolationValue = buf.ReadSingle();
+            WeatherInterpolation = buf.ReadFloat();
             WeatherTypeInList = buf.ReadInt32();
-            Rain = buf.ReadSingle();
+            Rain = buf.ReadFloat();
             CameraCarZoomIndicator = buf.ReadInt32();
             CameraPedZoomIndicator = buf.ReadInt32();
             CurrArea = buf.ReadInt32();
@@ -430,7 +430,7 @@ namespace GTASaveData.SA
             ExtraColour = buf.ReadInt32();
             ExtraColourOn = buf.ReadBool();
             buf.Align4Bytes();
-            ExtraColourInterpolation = buf.ReadSingle();
+            ExtraColourInterpolation = buf.ReadFloat();
             ExtraColourWeatherType = (WeatherType) buf.ReadInt32();
             WaterConfiguration = buf.ReadInt32();
             LARiots = buf.ReadBool();
@@ -445,7 +445,7 @@ namespace GTASaveData.SA
             buf.Skip(0x2C);
             CinematicCamMessagesLeftToDisplay = buf.ReadByte();
             buf.Skip(1);    // Android: BlurOn
-            TimeLastSaved = buf.ReadObject<SystemTime>();
+            TimeLastSaved = buf.Read<SystemTime>();
             buf.Align4Bytes();
             TargetMarkerHandle = buf.ReadInt32();
             HasDisplayedPlayerQuitEnterCarHelpText = buf.ReadBool();
@@ -470,7 +470,7 @@ namespace GTASaveData.SA
             buf.Write(GameClockDays);
             buf.Write(GameClockHours);
             buf.Write(GameClockMinutes);
-            buf.Write(CurrentDay);
+            buf.Write(GameClockDayOfWeek);
             buf.Write(StoredGameClockMonths);
             buf.Write(StoredGameClockDays);
             buf.Write(StoredGameClockHours);
@@ -488,7 +488,7 @@ namespace GTASaveData.SA
             buf.Write((short) NewWeatherType);
             buf.Write((short) ForcedWeatherType);
             buf.Align4Bytes();
-            buf.Write(WeatherInterpolationValue);
+            buf.Write(WeatherInterpolation);
             buf.Write(WeatherTypeInList);
             buf.Write(Rain);
             buf.Write(CameraCarZoomIndicator);
@@ -558,7 +558,7 @@ namespace GTASaveData.SA
                 && GameClockDays.Equals(other.GameClockDays)
                 && GameClockHours.Equals(other.GameClockHours)
                 && GameClockMinutes.Equals(other.GameClockMinutes)
-                && CurrentDay.Equals(other.CurrentDay)
+                && GameClockDayOfWeek.Equals(other.GameClockDayOfWeek)
                 && StoredGameClockMonths.Equals(other.StoredGameClockMonths)
                 && StoredGameClockDays.Equals(other.StoredGameClockDays)
                 && StoredGameClockHours.Equals(other.StoredGameClockHours)
@@ -574,7 +574,7 @@ namespace GTASaveData.SA
                 && OldWeatherType.Equals(other.OldWeatherType)
                 && NewWeatherType.Equals(other.NewWeatherType)
                 && ForcedWeatherType.Equals(other.ForcedWeatherType)
-                && WeatherInterpolationValue.Equals(other.WeatherInterpolationValue)
+                && WeatherInterpolation.Equals(other.WeatherInterpolation)
                 && WeatherTypeInList.Equals(other.WeatherTypeInList)
                 && Rain.Equals(other.Rain)
                 && CameraCarZoomIndicator.Equals(other.CameraCarZoomIndicator)
