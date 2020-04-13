@@ -19,15 +19,16 @@ namespace GTASaveData.GTA3
         public const int MaxBufferSize = 55000;
 
         private readonly DataBuffer m_workBuff;
-        private int m_bufferSize => (FileFormat.SupportedOnPS2) ? 50000 : 55000;
-        private int m_checkSum;
         private bool m_blockSizeChecks;
         private bool m_disposed;
+        private int m_checkSum;
 
-        private SimpleVariables m_simpleVars;   // SimpleVariables
-        private TheScripts m_scripts;  // TheScripts
+        private int BufferSize => (FileFormat.SupportedOnPS2) ? 50000 : 55000;
+
+        private SimpleVariables m_simpleVars;
+        private TheScripts m_scripts;
         private DummyObject m_pedPool;  // PedPool
-        private DummyObject m_garages;  // Garages
+        private Garages m_garages;
         private DummyObject m_vehiclePool;  // VehiclePool
         private DummyObject m_objectPool;   // ObjectPool
         private DummyObject m_paths;    // PathFind
@@ -64,7 +65,7 @@ namespace GTASaveData.GTA3
             set { m_pedPool = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Garages
+        public Garages Garages
         {
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
@@ -227,7 +228,7 @@ namespace GTASaveData.GTA3
             SimpleVars = new SimpleVariables();
             Scripts = new TheScripts();
             PedPool = new DummyObject();
-            Garages = new DummyObject();
+            Garages = new Garages();
             VehiclePool = new DummyObject();
             ObjectPool = new DummyObject();
             Paths = new DummyObject();
@@ -319,12 +320,12 @@ namespace GTASaveData.GTA3
             m_workBuff.Reset();
 
             int size = file.ReadInt32();
-            if ((uint) size > m_bufferSize)
+            if ((uint) size > BufferSize)
             {
-                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, m_bufferSize);
+                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
                 if (BlockSizeChecks)
                 {
-                    throw BlockSizeExceededException((uint) size, m_bufferSize);
+                    throw BlockSizeExceededException((uint) size, BufferSize);
                 }
             }
 
@@ -343,12 +344,12 @@ namespace GTASaveData.GTA3
 
             byte[] data = m_workBuff.GetBytesUpToCursor();
             int size = data.Length;
-            if ((uint) size > m_bufferSize)
+            if ((uint) size > BufferSize)
             {
-                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, m_bufferSize);
+                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
                 if (BlockSizeChecks)
                 {
-                    throw BlockSizeExceededException((uint) size, m_bufferSize);
+                    throw BlockSizeExceededException((uint) size, BufferSize);
                 }
             }
 
@@ -375,7 +376,7 @@ namespace GTASaveData.GTA3
             LoadSimpleVars();                
             Scripts = LoadData<TheScripts>();
             totalSize += ReadBlock(file); PedPool = LoadDummy();
-            totalSize += ReadBlock(file); Garages = LoadDummy();
+            totalSize += ReadBlock(file); Garages = LoadData<Garages>();
             totalSize += ReadBlock(file); VehiclePool = LoadDummy();
             totalSize += ReadBlock(file); ObjectPool = LoadDummy();
             totalSize += ReadBlock(file); Paths = LoadDummy();
@@ -436,9 +437,9 @@ namespace GTASaveData.GTA3
             for (int i = 0; i < 4; i++)
             {
                 size = DataBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
-                if (size > m_bufferSize)
+                if (size > BufferSize)
                 {
-                    size = m_bufferSize;
+                    size = BufferSize;
                 }
                 if (size > 4)
                 {

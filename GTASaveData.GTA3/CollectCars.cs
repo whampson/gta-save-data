@@ -56,7 +56,7 @@ namespace GTASaveData.GTA3
     [Flags]
     public enum CollectCars3
     {
-        Landstalker = 0b_0000_0000_0000_0001
+        Landstalker = 1
     }
 
     /// <summary>
@@ -65,12 +65,12 @@ namespace GTASaveData.GTA3
     [Flags]
     public enum CollectCarsMilitaryCrane
     {
-        Firetruck   = 0b_0000_0000_0000_0001,
-        Ambulance   = 0b_0000_0000_0000_0010,
-        Enforcer    = 0b_0000_0000_0000_0100,
-        FbiCar      = 0b_0000_0000_0000_1000,
-        Rhino       = 0b_0000_0000_0001_0000,
-        BarracksOL  = 0b_0000_0000_0010_0000,
-        Police      = 0b_0000_0000_0100_0000,
+        Firetruck   = 0b_0000_0001,
+        Ambulance   = 0b_0000_0010,
+        Enforcer    = 0b_0000_0100,
+        FbiCar      = 0b_0000_1000,
+        Rhino       = 0b_0001_0000,
+        BarracksOL  = 0b_0010_0000,
+        Police      = 0b_0100_0000,
     }
 }

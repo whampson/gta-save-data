@@ -7,33 +7,33 @@ namespace GTASaveData.GTA3
     [Size(0x28)]
     public class StoredCar : SaveDataObject, IEquatable<StoredCar>
     {
-        private int m_modelIndex;
-        private Vector m_vecPos;
-        private Vector m_vecAngle;
+        private int m_model;
+        private Vector m_position;
+        private Vector m_angle;
         private StoredCarFlags m_flags;
         private byte m_color1;
         private byte m_color2;
         private RadioStation m_radio;
         private sbyte m_extra1;
         private sbyte m_extra2;
-        private BombType m_carBombType;
+        private BombType m_bomb;
 
-        public int ModelIndex
+        public int Model
         {
-            get { return m_modelIndex; }
-            set { m_modelIndex = value; OnPropertyChanged(); }
+            get { return m_model; }
+            set { m_model = value; OnPropertyChanged(); }
         }
 
         public Vector Position
         {
-            get { return m_vecPos; }
-            set { m_vecPos = value; OnPropertyChanged(); }
+            get { return m_position; }
+            set { m_position = value; OnPropertyChanged(); }
         }
 
         public Vector Angle
         {
-            get { return m_vecAngle; }
-            set { m_vecAngle = value; OnPropertyChanged(); }
+            get { return m_angle; }
+            set { m_angle = value; OnPropertyChanged(); }
         }
 
         public StoredCarFlags Flags
@@ -72,10 +72,10 @@ namespace GTASaveData.GTA3
             set { m_extra2 = value; OnPropertyChanged(); }
         }
 
-        public BombType CarBombType
+        public BombType Bomb
         {
-            get { return m_carBombType; }
-            set { m_carBombType = value; OnPropertyChanged(); }
+            get { return m_bomb; }
+            set { m_bomb = value; OnPropertyChanged(); }
         }
 
         public StoredCar()
@@ -86,16 +86,16 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            ModelIndex = buf.ReadInt32();
+            Model = buf.ReadInt32();
             Position = buf.Read<Vector>();
             Angle = buf.Read<Vector>();
             Flags = (StoredCarFlags) buf.ReadInt32();
             Color1 = buf.ReadByte();
             Color2 = buf.ReadByte();
-            Radio = (RadioStation) buf.ReadByte();
+            Radio = (RadioStation) buf.ReadSByte();
             Extra1 = buf.ReadSByte();
             Extra2 = buf.ReadSByte();
-            CarBombType = (BombType) buf.ReadByte();
+            Bomb = (BombType) buf.ReadSByte();
             buf.Align4Bytes();
 
             Debug.Assert(buf.Offset == SizeOf<StoredCar>());
@@ -103,16 +103,16 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(ModelIndex);
+            buf.Write(Model);
             buf.Write(Position);
             buf.Write(Angle);
             buf.Write((int) Flags);
             buf.Write(Color1);
             buf.Write(Color2);
-            buf.Write((byte) Radio);
+            buf.Write((sbyte) Radio);
             buf.Write(Extra1);
             buf.Write(Extra2);
-            buf.Write((byte) CarBombType);
+            buf.Write((sbyte) Bomb);
             buf.Align4Bytes();
 
             Debug.Assert(buf.Offset == SizeOf<StoredCar>());
@@ -130,7 +130,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return ModelIndex.Equals(other.ModelIndex)
+            return Model.Equals(other.Model)
                 && Position.Equals(other.Position)
                 && Angle.Equals(other.Angle)
                 && Flags.Equals(other.Flags)
@@ -139,7 +139,7 @@ namespace GTASaveData.GTA3
                 && Radio.Equals(other.Radio)
                 && Extra1.Equals(other.Extra1)
                 && Extra2.Equals(other.Extra2)
-                && CarBombType.Equals(other.CarBombType);
+                && Bomb.Equals(other.Bomb);
         }
     }
 }

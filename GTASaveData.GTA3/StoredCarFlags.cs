@@ -5,10 +5,10 @@ namespace GTASaveData.GTA3
     [Flags]
     public enum StoredCarFlags
     {
-        BulletProof     = 0b_0000_0001,
-        FireProof       = 0b_0000_0010,
-        ExplosionProof  = 0b_0000_0100,
-        CollisionProof  = 0b_0000_1000,
-        MeleeProof      = 0b_0001_0000
+        BulletProof     = 0b00001,
+        FireProof       = 0b00010,
+        ExplosionProof  = 0b00100,
+        CollisionProof  = 0b01000,
+        MeleeProof      = 0b10000
     }
 }

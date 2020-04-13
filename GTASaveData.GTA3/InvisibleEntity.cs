@@ -4,10 +4,10 @@ using System;
 namespace GTASaveData.GTA3
 {
     [Size(8)]
-    public class InvisibleObject : SaveDataObject, IEquatable<InvisibleObject>
+    public class InvisibleEntity : SaveDataObject, IEquatable<InvisibleEntity>
     {
         private ObjectType m_type;
-        private int m_staticIndex;
+        private int m_handle;
 
         public ObjectType Type
         {
@@ -15,30 +15,30 @@ namespace GTASaveData.GTA3
             set { m_type = value; OnPropertyChanged(); }
         }
 
-        public int StaticIndex
+        public int Handle
         {
-            get { return m_staticIndex; }
-            set { m_staticIndex = value; OnPropertyChanged(); }
+            get { return m_handle; }
+            set { m_handle = value; OnPropertyChanged(); }
         }
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             Type = (ObjectType) buf.ReadInt32();
-            StaticIndex = buf.ReadInt32();
+            Handle = buf.ReadInt32();
         }
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             buf.Write((int) Type);
-            buf.Write(StaticIndex);
+            buf.Write(Handle);
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as InvisibleObject);
+            return Equals(obj as InvisibleEntity);
         }
 
-        public bool Equals(InvisibleObject other)
+        public bool Equals(InvisibleEntity other)
         {
             if (other == null)
             {
@@ -46,7 +46,7 @@ namespace GTASaveData.GTA3
             }
 
             return Type.Equals(other.Type)
-                && StaticIndex.Equals(other.StaticIndex);
+                && Handle.Equals(other.Handle);
         }
     }
 }

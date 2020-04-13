@@ -10,11 +10,12 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int NumberOfStoredCars = 18;
+            public const int NumberOfCarsPerSafeHouse = 6;
+            public const int NumberOfSafeHouses = 3;
             public const int NumberOfGarages = 32;
         }
 
-        private int m_numberOfGarages;
+        private int m_numGarages;
         private bool m_bombsAreFree;
         private bool m_respraysAreFree;
         private int m_carsCollected;
@@ -24,13 +25,13 @@ namespace GTASaveData.GTA3
         private CollectCars2 m_carTypesCollected2;
         private CollectCars3 m_carTypesCollected3;
         private int m_lastTimeHelpMessage;
-        private Array<StoredCar> m_storedCars;
+        private Array<StoredCar> m_carsInSafeHouse;
         private Array<Garage> m_garages;
 
-        public int NumberOfGarages
+        public int NumGarages
         { 
-            get { return m_numberOfGarages; }
-            set { m_numberOfGarages = value; OnPropertyChanged(); }
+            get { return m_numGarages; }
+            set { m_numGarages = value; OnPropertyChanged(); }
         }
 
         public bool BombsAreFree
@@ -87,13 +88,13 @@ namespace GTASaveData.GTA3
             set { m_lastTimeHelpMessage = value; OnPropertyChanged(); }
         }
 
-        public Array<StoredCar> StoredCars
+        public Array<StoredCar> CarsInSafeHouse
         { 
-            get { return m_storedCars; }
-            set { m_storedCars = value; OnPropertyChanged(); }
+            get { return m_carsInSafeHouse; }
+            set { m_carsInSafeHouse = value; OnPropertyChanged(); }
         }
 
-        public Array<Garage> GarageArray
+        public Array<Garage> GaragesArray
         { 
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
@@ -101,13 +102,13 @@ namespace GTASaveData.GTA3
 
         public Garages()
         {
-            StoredCars = new Array<StoredCar>();
-            GarageArray = new Array<Garage>();
+            CarsInSafeHouse = new Array<StoredCar>();
+            GaragesArray = new Array<Garage>();
         }
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            NumberOfGarages = buf.ReadInt32();
+            NumGarages = buf.ReadInt32();
             BombsAreFree = buf.ReadBool(4);
             RespraysAreFree = buf.ReadBool(4);
             CarsCollected = buf.ReadInt32();
@@ -117,15 +118,15 @@ namespace GTASaveData.GTA3
             CarTypesCollected2 = (CollectCars2) buf.ReadInt32();
             CarTypesCollected3 = (CollectCars3) buf.ReadInt32();
             LastTimeHelpMessage = buf.ReadInt32();
-            StoredCars = buf.ReadArray<StoredCar>(Limits.NumberOfStoredCars);
-            GarageArray = buf.ReadArray<Garage>(Limits.NumberOfGarages);
+            CarsInSafeHouse = buf.ReadArray<StoredCar>(Limits.NumberOfCarsPerSafeHouse * Limits.NumberOfSafeHouses);
+            GaragesArray = buf.ReadArray<Garage>(Limits.NumberOfGarages);
 
             Debug.Assert(buf.Offset == SizeOf<Garages>());
         }
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(NumberOfGarages);
+            buf.Write(NumGarages);
             buf.Write(BombsAreFree, 4);
             buf.Write(RespraysAreFree, 4);
             buf.Write(CarsCollected);
@@ -135,8 +136,8 @@ namespace GTASaveData.GTA3
             buf.Write((int) CarTypesCollected2);
             buf.Write((int) CarTypesCollected3);
             buf.Write(LastTimeHelpMessage);
-            buf.Write(StoredCars.ToArray(), Limits.NumberOfStoredCars);
-            buf.Write(GarageArray.ToArray(), Limits.NumberOfGarages);
+            buf.Write(CarsInSafeHouse.ToArray(), Limits.NumberOfCarsPerSafeHouse * Limits.NumberOfSafeHouses);
+            buf.Write(GaragesArray.ToArray(), Limits.NumberOfGarages);
 
             Debug.Assert(buf.Offset == SizeOf<Garages>());
         }
@@ -153,7 +154,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return NumberOfGarages.Equals(other.NumberOfGarages)
+            return NumGarages.Equals(other.NumGarages)
                 && BombsAreFree.Equals(other.BombsAreFree)
                 && RespraysAreFree.Equals(other.RespraysAreFree)
                 && CarsCollected.Equals(other.CarsCollected)
@@ -163,8 +164,8 @@ namespace GTASaveData.GTA3
                 && CarTypesCollected2.Equals(other.CarTypesCollected2)
                 && CarTypesCollected3.Equals(other.CarTypesCollected3)
                 && LastTimeHelpMessage.Equals(other.LastTimeHelpMessage)
-                && StoredCars.SequenceEqual(other.StoredCars)
-                && GarageArray.SequenceEqual(other.GarageArray);
+                && CarsInSafeHouse.SequenceEqual(other.CarsInSafeHouse)
+                && GaragesArray.SequenceEqual(other.GaragesArray);
         }
     }
 }

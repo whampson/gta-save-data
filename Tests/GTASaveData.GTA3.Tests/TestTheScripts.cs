@@ -16,11 +16,11 @@ namespace GTASaveData.GTA3.Tests
             Faker<TheScripts> model = new Faker<TheScripts>()
                 .RuleFor(x => x.ScriptSpace, f => Generator.CreateArray(varSpace, g => f.Random.Byte()))
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
-                .RuleFor(x => x.ContactArray, f => Generator.CreateArray(TheScripts.Limits.NumberOfContacts, g => Generator.Generate<ContactInfo, TestContactInfo>()))
-                .RuleFor(x => x.CollectiveArray, f => Generator.CreateArray(TheScripts.Limits.NumberOfCollectives, g => Generator.Generate<Collective, TestCollective>()))
+                .RuleFor(x => x.Contacts, f => Generator.CreateArray(TheScripts.Limits.NumberOfContacts, g => Generator.Generate<ContactInfo, TestContactInfo>()))
+                .RuleFor(x => x.Collectives, f => Generator.CreateArray(TheScripts.Limits.NumberOfCollectives, g => Generator.Generate<Collective, TestCollective>()))
                 .RuleFor(x => x.NextFreeCollectiveIndex, f => f.Random.Int())
-                .RuleFor(x => x.BuildingSwapArray, f => Generator.CreateArray(TheScripts.Limits.NumberOfBuildingSwaps, g => Generator.Generate<StaticReplacement, TestStaticReplacement>()))
-                .RuleFor(x => x.InvisibilitySettingArray, f => Generator.CreateArray(TheScripts.Limits.NumberOfInvisibilitySettings, g => Generator.Generate<InvisibleObject, TestInvisibleObject>()))
+                .RuleFor(x => x.BuildingSwapArray, f => Generator.CreateArray(TheScripts.Limits.NumberOfBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
+                .RuleFor(x => x.InvisibilitySettingArray, f => Generator.CreateArray(TheScripts.Limits.NumberOfInvisibilitySettings, g => Generator.Generate<InvisibleEntity, TestInvisibleEntity>()))
                 .RuleFor(x => x.UsingAMultiScriptFile, f => f.Random.Bool())
                 .RuleFor(x => x.MainScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.LargestMissionScriptSize, f => f.Random.Int())
@@ -39,8 +39,8 @@ namespace GTASaveData.GTA3.Tests
 
             Assert.Equal(x0.ScriptSpace, x1.ScriptSpace);
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
-            Assert.Equal(x0.ContactArray, x1.ContactArray);
-            Assert.Equal(x0.CollectiveArray, x1.CollectiveArray);
+            Assert.Equal(x0.Contacts, x1.Contacts);
+            Assert.Equal(x0.Collectives, x1.Collectives);
             Assert.Equal(x0.NextFreeCollectiveIndex, x1.NextFreeCollectiveIndex);
             Assert.Equal(x0.BuildingSwapArray, x1.BuildingSwapArray);
             Assert.Equal(x0.InvisibilitySettingArray, x1.InvisibilitySettingArray);
