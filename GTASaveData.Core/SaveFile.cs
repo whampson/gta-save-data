@@ -136,7 +136,7 @@ namespace GTASaveData
                 }
             }
 
-            throw new InvalidOperationException(Strings.Error_InvalidOperation_PaddingType);
+            throw new InvalidOperationException(Strings.Error_InvalidPaddingType);
         }
 
         protected abstract void LoadAllData(DataBuffer file);

@@ -129,24 +129,27 @@
   <data name="Error_Argument_SequenceTooBig" xml:space="preserve">
     <value>The sequence length must be less than or equal to the length of the array.</value>
   </data>
-  <data name="Error_InvalidOperation_CollectionReentrancy" xml:space="preserve">
-    <value>The collection cannot be modified while being changed by another thread.</value>
-  </data>
-  <data name="Error_InvalidOperation_PaddingType" xml:space="preserve">
-    <value>Invalid padding type.</value>
-  </data>
-  <data name="Error_InvalidOperation_Serialization" xml:space="preserve">
-    <value>The type '{0}' does not support serialization.</value>
-    <comment>{0} = object type</comment>
-  </data>
-  <data name="Error_IO_EndOfStream" xml:space="preserve">
+  <data name="Error_EndOfStream" xml:space="preserve">
     <value>End of stream reached.</value>
   </data>
-  <data name="Error_JsonSerialization_BinaryUnexpectedEnd" xml:space="preserve">
+  <data name="Error_InvalidPaddingType" xml:space="preserve">
+    <value>Invalid padding type.</value>
+  </data>
+  <data name="Error_JsonBinaryUnexpectedEnd" xml:space="preserve">
     <value>Unexpected end while parsing JSON.</value>
   </data>
-  <data name="Error_JsonSerialization_BinaryUnexpectedToken" xml:space="preserve">
+  <data name="Error_JsonBinaryUnexpectedToken" xml:space="preserve">
     <value>Unexpected token while parsing JSON binary: {0}.</value>
     <comment>{0} = token type</comment>
+  </data>
+  <data name="Error_NoCollectionReentrancy" xml:space="preserve">
+    <value>The collection cannot be modified while being changed by another thread.</value>
+  </data>
+  <data name="Error_NotExpandable" xml:space="preserve">
+    <value>The buffer is not expandable.</value>
+  </data>
+  <data name="Error_SerializationNotAllowed" xml:space="preserve">
+    <value>The type '{0}' does not support serialization.</value>
+    <comment>{0} = object type</comment>
   </data>
 </root>

@@ -348,8 +348,15 @@ namespace GTASaveData
 
         public int Write(byte[] data, int index, int count)
         {
-            m_buffer.Write(data, index, count);
-            return count;
+            try
+            {
+                m_buffer.Write(data, index, count);
+                return count;
+            }
+            catch (NotSupportedException e)
+            {
+                throw new SerializationException(Strings.Error_NotExpandable, e);
+            }
         }
 
         public int Write(char value, bool unicode = false)
@@ -692,12 +699,12 @@ namespace GTASaveData
 
         private static SerializationException SerializationNotSupported(Type t)
         {
-            return new SerializationException(Strings.Error_InvalidOperation_Serialization, t.Name);
+            return new SerializationException(Strings.Error_SerializationNotAllowed, t.Name);
         }
 
         private static EndOfStreamException EndOfStream()
         {
-            return new EndOfStreamException(Strings.Error_IO_EndOfStream);
+            return new EndOfStreamException(Strings.Error_EndOfStream);
         }
         #endregion
     }

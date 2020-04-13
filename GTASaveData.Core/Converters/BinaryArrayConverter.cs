@@ -25,7 +25,7 @@ namespace GTASaveData.Converters
             }
             else
             {
-                throw new JsonSerializationException(string.Format(Strings.Error_JsonSerialization_BinaryUnexpectedToken, reader.TokenType));
+                throw new JsonSerializationException(string.Format(Strings.Error_JsonBinaryUnexpectedToken, reader.TokenType));
             }
 
             return data;
@@ -48,11 +48,11 @@ namespace GTASaveData.Converters
                         // skip
                         break;
                     default:
-                        throw new JsonSerializationException(string.Format(Strings.Error_JsonSerialization_BinaryUnexpectedToken, reader.TokenType));
+                        throw new JsonSerializationException(string.Format(Strings.Error_JsonBinaryUnexpectedToken, reader.TokenType));
                 }
             }
 
-            throw new JsonSerializationException(Strings.Error_JsonSerialization_BinaryUnexpectedEnd);
+            throw new JsonSerializationException(Strings.Error_JsonBinaryUnexpectedEnd);
         }
 
         public override void WriteJson(JsonWriter writer, Array<byte> value, JsonSerializer serializer)

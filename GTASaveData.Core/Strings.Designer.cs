@@ -97,56 +97,65 @@ namespace GTASaveData {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The collection cannot be modified while being changed by another thread..
+        ///   Looks up a localized string similar to End of stream reached..
         /// </summary>
-        internal static string Error_InvalidOperation_CollectionReentrancy {
+        internal static string Error_EndOfStream {
             get {
-                return ResourceManager.GetString("Error_InvalidOperation_CollectionReentrancy", resourceCulture);
+                return ResourceManager.GetString("Error_EndOfStream", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid padding type..
         /// </summary>
-        internal static string Error_InvalidOperation_PaddingType {
+        internal static string Error_InvalidPaddingType {
             get {
-                return ResourceManager.GetString("Error_InvalidOperation_PaddingType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The type &apos;{0}&apos; does not support serialization..
-        /// </summary>
-        internal static string Error_InvalidOperation_Serialization {
-            get {
-                return ResourceManager.GetString("Error_InvalidOperation_Serialization", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to End of stream reached..
-        /// </summary>
-        internal static string Error_IO_EndOfStream {
-            get {
-                return ResourceManager.GetString("Error_IO_EndOfStream", resourceCulture);
+                return ResourceManager.GetString("Error_InvalidPaddingType", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Unexpected end while parsing JSON..
         /// </summary>
-        internal static string Error_JsonSerialization_BinaryUnexpectedEnd {
+        internal static string Error_JsonBinaryUnexpectedEnd {
             get {
-                return ResourceManager.GetString("Error_JsonSerialization_BinaryUnexpectedEnd", resourceCulture);
+                return ResourceManager.GetString("Error_JsonBinaryUnexpectedEnd", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Unexpected token while parsing JSON binary: {0}..
         /// </summary>
-        internal static string Error_JsonSerialization_BinaryUnexpectedToken {
+        internal static string Error_JsonBinaryUnexpectedToken {
             get {
-                return ResourceManager.GetString("Error_JsonSerialization_BinaryUnexpectedToken", resourceCulture);
+                return ResourceManager.GetString("Error_JsonBinaryUnexpectedToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The collection cannot be modified while being changed by another thread..
+        /// </summary>
+        internal static string Error_NoCollectionReentrancy {
+            get {
+                return ResourceManager.GetString("Error_NoCollectionReentrancy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The buffer is not expandable..
+        /// </summary>
+        internal static string Error_NotExpandable {
+            get {
+                return ResourceManager.GetString("Error_NotExpandable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; does not support serialization..
+        /// </summary>
+        internal static string Error_SerializationNotAllowed {
+            get {
+                return ResourceManager.GetString("Error_SerializationNotAllowed", resourceCulture);
             }
         }
     }
