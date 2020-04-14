@@ -23,7 +23,7 @@ namespace GTASaveData.GTA3.Tests
                 //.RuleFor(x => x.ObjectPool, Generator.Generate<ObjectPool, TestObjectPool>(format))
                 .RuleFor(x => x.Paths, Generator.Generate<PathFind, TestPathFind>(format))
                 //.RuleFor(x => x.Cranes, Generator.Generate<Cranes, TestCranes>(format))
-                //.RuleFor(x => x.Pickups, Generator.Generate<Pickups, TestPickups>(format))
+                .RuleFor(x => x.Pickups, Generator.Generate<Pickups, TestPickups>(format))
                 //.RuleFor(x => x.PhoneInfo, Generator.Generate<PhoneInfo, TestPhoneInfo>(format))
                 //.RuleFor(x => x.RestartPoints, Generator.Generate<RestartPoints, TestRestartPoints>(format))
                 //.RuleFor(x => x.RadarBlips, Generator.Generate<RadarBlips, TestRadarBlips>(format))

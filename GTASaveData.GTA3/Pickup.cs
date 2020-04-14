@@ -8,7 +8,7 @@ namespace GTASaveData.GTA3
     public class Pickup : SaveDataObject, IEquatable<Pickup>
     {
         private PickupType m_type;
-        private bool m_hasBeenPickedUp;
+        private bool m_removed;
         private ushort m_quantity;
         private uint m_pObject;
         private uint m_timer;
@@ -24,8 +24,8 @@ namespace GTASaveData.GTA3
 
         public bool HasBeenPickedUp
         {
-            get { return m_hasBeenPickedUp; }
-            set { m_hasBeenPickedUp = value; OnPropertyChanged(); }
+            get { return m_removed; }
+            set { m_removed = value; OnPropertyChanged(); }
         }
 
         public ushort Quantity

@@ -34,7 +34,7 @@ namespace GTASaveData.GTA3
         private DummyObject m_objectPool;   // ObjectPool
         private PathFind m_paths;    // PathFind
         private DummyObject m_cranes;   // Cranes
-        private DummyObject m_pickups;  // Pickups
+        private Pickups m_pickups;
         private DummyObject m_phoneInfo;    // PhoneInfo
         private DummyObject m_restartPoints;    // Restarts
         private DummyObject m_radarBlips;   // Radar
@@ -96,7 +96,7 @@ namespace GTASaveData.GTA3
             set { m_cranes = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Pickups
+        public Pickups Pickups
         {
             get { return m_pickups; }
             set { m_pickups = value; OnPropertyChanged(); }
@@ -234,7 +234,7 @@ namespace GTASaveData.GTA3
             ObjectPool = new DummyObject();
             Paths = new PathFind();
             Cranes = new DummyObject();
-            Pickups = new DummyObject();
+            Pickups = new Pickups();
             PhoneInfo = new DummyObject();
             RestartPoints = new DummyObject();
             RadarBlips = new DummyObject();
@@ -406,7 +406,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); ObjectPool = LoadDataWithSize<DummyObject>();
             totalSize += ReadBlock(file); Paths = LoadDataWithSize<PathFind>();
             totalSize += ReadBlock(file); Cranes = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); Pickups = LoadDataWithSize<DummyObject>();
+            totalSize += ReadBlock(file); Pickups = LoadData<Pickups>();
             totalSize += ReadBlock(file); PhoneInfo = LoadDataWithSize<DummyObject>();
             totalSize += ReadBlock(file); RestartPoints = LoadDataWithSize<DummyObject>();
             totalSize += ReadBlock(file); RadarBlips = LoadDataWithSize<DummyObject>();
