@@ -11,7 +11,7 @@ namespace GTASaveData.VC.Tests
         public override CarGenerator GenerateTestObject(SaveFileFormat format)
         {
             Faker<CarGenerator> model = new Faker<CarGenerator>()
-                .RuleFor(x => x.ModelIndex, f => f.Random.Int())
+                .RuleFor(x => x.Model, f => f.Random.Int())
                 .RuleFor(x => x.Position, f => Generator.Generate<Vector, TestVector>())
                 .RuleFor(x => x.Angle, f => f.Random.Float())
                 .RuleFor(x => x.Color1, f => f.Random.Short())
@@ -35,7 +35,7 @@ namespace GTASaveData.VC.Tests
             CarGenerator x0 = GenerateTestObject();
             CarGenerator x1 = CreateSerializedCopy(x0, out byte[] data);
 
-            Assert.Equal(x0.ModelIndex, x1.ModelIndex);
+            Assert.Equal(x0.Model, x1.Model);
             Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0.Angle, x1.Angle);
             Assert.Equal(x0.Color1, x1.Color1);

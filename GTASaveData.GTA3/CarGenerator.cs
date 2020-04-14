@@ -14,8 +14,8 @@ namespace GTASaveData.GTA3
         private short m_color1;
         private short m_color2;
         private bool m_forceSpawn;
-        private byte m_alarmChance;
-        private byte m_lockedChance;
+        private byte m_alarm;
+        private byte m_doorLock;
         private ushort m_minDelay;
         private ushort m_maxDelay;
         private uint m_timer;
@@ -26,7 +26,7 @@ namespace GTASaveData.GTA3
         private Vector m_vecSup;
         private float m_size;
 
-        public int ModelIndex
+        public int Model
         {
             get { return m_modelIndex; }
             set { m_modelIndex = value; OnPropertyChanged(); }
@@ -62,16 +62,16 @@ namespace GTASaveData.GTA3
             set { m_forceSpawn = value; OnPropertyChanged(); }
         }
 
-        public byte AlarmChance
+        public byte Alarm
         {
-            get { return m_alarmChance; }
-            set { m_alarmChance = value; OnPropertyChanged(); }
+            get { return m_alarm; }
+            set { m_alarm = value; OnPropertyChanged(); }
         }
 
-        public byte LockedChance
+        public byte DoorLock
         {
-            get { return m_lockedChance; }
-            set { m_lockedChance = value; OnPropertyChanged(); }
+            get { return m_doorLock; }
+            set { m_doorLock = value; OnPropertyChanged(); }
         }
 
         public ushort MinDelay
@@ -155,14 +155,14 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            ModelIndex = buf.ReadInt32();
+            Model = buf.ReadInt32();
             Position = buf.Read<Vector>();
             Angle = buf.ReadFloat();
             Color1 = buf.ReadInt16();
             Color2 = buf.ReadInt16();
             ForceSpawn = buf.ReadBool();
-            AlarmChance = buf.ReadByte();
-            LockedChance = buf.ReadByte();
+            Alarm = buf.ReadByte();
+            DoorLock = buf.ReadByte();
             buf.ReadByte();
             MinDelay = buf.ReadUInt16();
             MaxDelay = buf.ReadUInt16();
@@ -180,14 +180,14 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(ModelIndex);
+            buf.Write(Model);
             buf.Write(Position);
             buf.Write(Angle);
             buf.Write(Color1);
             buf.Write(Color2);
             buf.Write(ForceSpawn);
-            buf.Write(AlarmChance);
-            buf.Write(LockedChance);
+            buf.Write(Alarm);
+            buf.Write(DoorLock);
             buf.Write((byte) 0);
             buf.Write(MinDelay);
             buf.Write(MaxDelay);
@@ -215,14 +215,14 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return ModelIndex.Equals(other.ModelIndex)
+            return Model.Equals(other.Model)
                 && Position.Equals(other.Position)
                 && Angle.Equals(other.Angle)
                 && Color1.Equals(other.Color1)
                 && Color2.Equals(other.Color2)
                 && ForceSpawn.Equals(other.ForceSpawn)
-                && AlarmChance.Equals(other.AlarmChance)
-                && LockedChance.Equals(other.LockedChance)
+                && Alarm.Equals(other.Alarm)
+                && DoorLock.Equals(other.DoorLock)
                 && MinDelay.Equals(other.MinDelay)
                 && MaxDelay.Equals(other.MaxDelay)
                 && Timer.Equals(other.Timer)

@@ -23,7 +23,7 @@ namespace GTASaveData.VC
         private short m_usesRemaining;
         private bool m_isBlocking;
 
-        public int ModelIndex
+        public int Model
         {
             get { return m_modelIndex; }
             set { m_modelIndex = value; OnPropertyChanged(); }
@@ -132,7 +132,7 @@ namespace GTASaveData.VC
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            ModelIndex = buf.ReadInt32();
+            Model = buf.ReadInt32();
             Position = buf.Read<Vector>();
             Angle = buf.ReadFloat();
             Color1 = buf.ReadInt16();
@@ -154,7 +154,7 @@ namespace GTASaveData.VC
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(ModelIndex);
+            buf.Write(Model);
             buf.Write(Position);
             buf.Write(Angle);
             buf.Write(Color1);
@@ -186,7 +186,7 @@ namespace GTASaveData.VC
                 return false;
             }
 
-            return ModelIndex.Equals(other.ModelIndex)
+            return Model.Equals(other.Model)
                 && Position.Equals(other.Position)
                 && Angle.Equals(other.Angle)
                 && Color1.Equals(other.Color1)

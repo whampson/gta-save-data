@@ -40,7 +40,7 @@ namespace GTASaveData.GTA3
         private DummyObject m_radarBlips;   // Radar
         private DummyObject m_zones;    // TheZones
         private DummyObject m_gangData; // Gangs
-        private DummyObject m_carGenerators;    // TheCarGenerators
+        private TheCarGenerators m_carGenerators;
         private DummyObject m_particleObjects;  // ParticleObjects
         private DummyObject m_audioScriptObjects;   // AudioScriptObjects
         private DummyObject m_playerInfo;   // PlayerInfo
@@ -132,7 +132,7 @@ namespace GTASaveData.GTA3
             set { m_gangData = value; OnPropertyChanged(); }
         }
 
-        public DummyObject CarGenerators
+        public TheCarGenerators CarGenerators
         {
             get { return m_carGenerators; }
             set { m_carGenerators = value; OnPropertyChanged(); }
@@ -240,7 +240,7 @@ namespace GTASaveData.GTA3
             RadarBlips = new DummyObject();
             Zones = new DummyObject();
             GangData = new DummyObject();
-            CarGenerators = new DummyObject();
+            CarGenerators = new TheCarGenerators();
             ParticleObjects = new DummyObject();
             AudioScriptObjects = new DummyObject();
             PlayerInfo = new DummyObject();
@@ -269,17 +269,6 @@ namespace GTASaveData.GTA3
             buf.Write(size);
         }
 
-        //private DummyObject LoadDummy()
-        //{
-        //    int size = m_workBuff.ReadInt32();
-        //    var o = new DummyObject(size);
-        //    int bytesRead = Serializer.Read(o, m_workBuff, FileFormat);
-
-        //    Debug.WriteLine("Read {0} bytes of {1} data.", bytesRead, "Dummy");
-        //    Debug.Assert(bytesRead == size);
-        //    return o;
-        //}
-
         private void LoadSimpleVars()
         {
             SimpleVars = m_workBuff.Read<SimpleVariables>(FileFormat);
@@ -291,21 +280,6 @@ namespace GTASaveData.GTA3
             m_workBuff.Write(SimpleVars, FileFormat);
         }
 
-        private T LoadDataWithSize<T>() where T : SaveDataObject
-        {
-            int size = m_workBuff.ReadInt32();
-            T obj = Activator.CreateInstance(typeof(T), size) as T;
-            if (obj == null)
-            {
-                throw new SerializationException("Object cannot be instantiated with data size.");
-            }
-
-            int bytesRead = Serializer.Read(obj, m_workBuff, FileFormat);
-            Debug.WriteLine("Read {0} bytes of {1} data.", bytesRead, typeof(T).Name);
-
-            return obj;
-        }
-
         private T LoadData<T>() where T : SaveDataObject, new()
         {
             T obj = new T();
@@ -313,14 +287,29 @@ namespace GTASaveData.GTA3
 
             return obj;
         }
-
         private int LoadData<T>(T obj) where T : SaveDataObject
         {
-            m_workBuff.ReadInt32();
+            m_workBuff.ReadInt32();     // Ignore size
             int bytesRead = Serializer.Read(obj, m_workBuff, FileFormat);
 
-            Debug.WriteLine("Read {0} bytes of {1} data.", bytesRead, typeof(T).Name);
+            Debug.WriteLine("{0}: {1} bytes", typeof(T).Name, bytesRead);
             return bytesRead;
+        }
+
+        private T LoadDataPreAlloc<T>() where T : SaveDataObject
+        {
+            // Pre-allocate object space, only applies to some types
+            int size = m_workBuff.ReadInt32();
+            if (!(Activator.CreateInstance(typeof(T), size) is T obj))
+            {
+                throw new SerializationException("Object cannot be pre-allocated.");
+            }
+            Debug.WriteLine("{0}: {1} bytes pre-allocated", typeof(T).Name, size);
+
+            int bytesRead = Serializer.Read(obj, m_workBuff, FileFormat);
+            Debug.WriteLine("{0}: {1} bytes", typeof(T).Name, bytesRead);
+
+            return obj;
         }
 
         private void SaveData(SaveDataObject o)
@@ -337,6 +326,8 @@ namespace GTASaveData.GTA3
             m_workBuff.Write(size);
             m_workBuff.Seek(postData);
             m_workBuff.Align4Bytes();
+
+            Debug.WriteLine("{0}: {1} bytes", o.GetType().Name, size);
         }
 
         private int ReadBlock(DataBuffer file)
@@ -357,7 +348,6 @@ namespace GTASaveData.GTA3
             m_workBuff.Write(file.ReadBytes(size));
 
             Debug.Assert(file.Offset == size + 4);
-            Debug.WriteLine("Block size: {0} bytes", size);
 
             m_workBuff.Reset();
             return size;
@@ -383,7 +373,6 @@ namespace GTASaveData.GTA3
             file.Align4Bytes();
 
             Debug.Assert(file.Offset == size + 4);
-            Debug.WriteLine("Wrote {0} bytes of block data.", size);
 
             m_checkSum += BitConverter.GetBytes(size).Sum(x => x);
             m_checkSum += data.Sum(x => x);
@@ -400,32 +389,33 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file);
             LoadSimpleVars();                
             Scripts = LoadData<TheScripts>();
-            totalSize += ReadBlock(file); PedPool = LoadDataWithSize<DummyObject>();
+            totalSize += ReadBlock(file); PedPool = LoadDataPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); Garages = LoadData<Garages>();
-            totalSize += ReadBlock(file); VehiclePool = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); ObjectPool = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); Paths = LoadDataWithSize<PathFind>();
-            totalSize += ReadBlock(file); Cranes = LoadDataWithSize<DummyObject>();
+            totalSize += ReadBlock(file); VehiclePool = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); ObjectPool = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); Paths = LoadDataPreAlloc<PathFind>();
+            totalSize += ReadBlock(file); Cranes = LoadDataPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); Pickups = LoadData<Pickups>();
-            totalSize += ReadBlock(file); PhoneInfo = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); RestartPoints = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); RadarBlips = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); Zones = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); GangData = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); CarGenerators = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); ParticleObjects = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); AudioScriptObjects = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); PlayerInfo = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); Stats = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); Streaming = LoadDataWithSize<DummyObject>();
-            totalSize += ReadBlock(file); PedTypeInfo = LoadDataWithSize<DummyObject>();
+            totalSize += ReadBlock(file); PhoneInfo = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); RestartPoints = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); RadarBlips = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); Zones = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); GangData = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); CarGenerators = LoadData<TheCarGenerators>();
+            totalSize += ReadBlock(file); ParticleObjects = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); AudioScriptObjects = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); PlayerInfo = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); Stats = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); Streaming = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); PedTypeInfo = LoadDataPreAlloc<DummyObject>();
 
             while (file.Position < file.Length - 4)
             {
                 totalSize += ReadBlock(file);
             }
 
-            Debug.WriteLine("Save size: {0}", totalSize);
+            Debug.WriteLine("Load successful!");
+            Debug.WriteLine("Size of game data: {0} bytes", totalSize);
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
         }
 
@@ -480,7 +470,8 @@ namespace GTASaveData.GTA3
 
             file.Write(m_checkSum);
 
-            Debug.WriteLine("Save size: {0}", totalSize);
+            Debug.WriteLine("Save successful!");
+            Debug.WriteLine("Size of game data: {0} bytes", totalSize);
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
         }
 

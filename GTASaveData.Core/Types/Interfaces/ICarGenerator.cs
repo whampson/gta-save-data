@@ -2,7 +2,7 @@
 {
     public interface ICarGenerator
     {
-        int ModelIndex { get; set; }
+        int Model { get; set; }
         Vector Position { get; set; }
         float Angle { get; set; }
         int Color1 { get; set; }

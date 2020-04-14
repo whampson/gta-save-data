@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x2D14)]
+    [Size(0x2D1C)]
     public class TheCarGenerators : SaveDataObject, IEquatable<TheCarGenerators>
     {
         public static class Limits
@@ -13,8 +13,8 @@ namespace GTASaveData.GTA3
             public const int NumberOfCarGenerators = 160;
         }
 
-        private const int SizeOfCarGeneratorData = 12;
-        private const int SizeOfCarGeneratorArray = 0x2D00;
+        private const int CarGeneratorDataSize = 12;
+        private const int CarGeneratorArraySize = 0x2D00;
 
         private int m_numberOfCarGenerators;
         private int m_currentActiveCount;
@@ -59,30 +59,35 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
+            int size = GTA3Save.ReadSaveHeader(buf, "CGN");
             int infoSize = buf.ReadInt32();
-            Debug.Assert(infoSize == SizeOfCarGeneratorData);
+            Debug.Assert(infoSize == CarGeneratorDataSize);
             NumberOfCarGenerators = buf.ReadInt32();
             CurrentActiveCount = buf.ReadInt32();
             ProcessCounter = buf.ReadByte();
             GenerateEvenIfPlayerIsCloseCounter = buf.ReadByte();
             buf.ReadInt16();
             int carGensSize = buf.ReadInt32();
-            Debug.Assert(carGensSize == SizeOfCarGeneratorArray);
+            Debug.Assert(carGensSize == CarGeneratorArraySize);
             CarGeneratorArray = buf.ReadArray<CarGenerator>(Limits.NumberOfCarGenerators);
 
             Debug.Assert(buf.Offset == SizeOf<TheCarGenerators>());
+            Debug.Assert(size + GTA3Save.SaveHeaderSize == SizeOf<TheCarGenerators>());
         }
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            buf.Write(SizeOfCarGeneratorData);
+            GTA3Save.WriteSaveHeader(buf, "CGN", SizeOf<TheCarGenerators>() - GTA3Save.SaveHeaderSize);
+            buf.Write(CarGeneratorDataSize);
             buf.Write(NumberOfCarGenerators);
             buf.Write(CurrentActiveCount);
             buf.Write(ProcessCounter);
             buf.Write(GenerateEvenIfPlayerIsCloseCounter);
             buf.Write((short) 0);
-            buf.Write(SizeOfCarGeneratorArray);
+            buf.Write(CarGeneratorArraySize);
             buf.Write(CarGeneratorArray.ToArray(), Limits.NumberOfCarGenerators);
+
+            Debug.Assert(buf.Offset == SizeOf<TheCarGenerators>());
         }
 
         public override bool Equals(object obj)
