@@ -35,7 +35,7 @@ namespace GTASaveData.GTA3.Tests
                 //.RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))
                 //.RuleFor(x => x.Stats, Generator.Generate<Stats, TestStats>(format))
                 //.RuleFor(x => x.Streaming, Generator.Generate<Streaming, TestStreaming>(format))
-                //.RuleFor(x => x.PedTypeInfo, Generator.Generate<PedTypeInfo, TestPedTypeInfo>(format))
+                .RuleFor(x => x.PedTypeData, Generator.Generate<PedTypeData, TestPedTypeData>(format))
                 ;
 
             return model.Generate();
@@ -126,7 +126,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.PlayerInfo, x1.PlayerInfo);
             Assert.Equal(x0.Stats, x1.Stats);
             Assert.Equal(x0.Streaming, x1.Streaming);
-            Assert.Equal(x0.PedTypeInfo, x1.PedTypeInfo);
+            Assert.Equal(x0.PedTypeData, x1.PedTypeData);
             Assert.Equal(x0, x1);
         }
 
