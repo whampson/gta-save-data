@@ -3,11 +3,11 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestContactInfo : Base<ContactInfo>
+    public class TestContact : Base<Contact>
     {
-        public override ContactInfo GenerateTestObject(SaveFileFormat format)
+        public override Contact GenerateTestObject(SaveFileFormat format)
         {
-            Faker<ContactInfo> model = new Faker<ContactInfo>()
+            Faker<Contact> model = new Faker<Contact>()
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
                 .RuleFor(x => x.BaseBriefId, f => f.Random.Int());
 
@@ -17,8 +17,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void Serialization()
         {
-            ContactInfo x0 = GenerateTestObject();
-            ContactInfo x1 = CreateSerializedCopy(x0, out byte[] data);
+            Contact x0 = GenerateTestObject();
+            Contact x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
             Assert.Equal(x0.BaseBriefId, x1.BaseBriefId);

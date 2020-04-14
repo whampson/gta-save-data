@@ -4,23 +4,23 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TesttheScripts : Base<TheScripts>
+    public class TestScriptData : Base<ScriptData>
     {
-        public override TheScripts GenerateTestObject(SaveFileFormat format)
+        public override ScriptData GenerateTestObject(SaveFileFormat format)
         {
             Faker faker = new Faker();
 
             int varSpace = faker.Random.Int(4, 4000);
             int runningScripts = faker.Random.Int(1, 10);
 
-            Faker<TheScripts> model = new Faker<TheScripts>()
+            Faker<ScriptData> model = new Faker<ScriptData>()
                 .RuleFor(x => x.ScriptSpace, f => Generator.CreateArray(varSpace, g => f.Random.Byte()))
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
-                .RuleFor(x => x.Contacts, f => Generator.CreateArray(TheScripts.Limits.NumberOfContacts, g => Generator.Generate<ContactInfo, TestContactInfo>()))
-                .RuleFor(x => x.Collectives, f => Generator.CreateArray(TheScripts.Limits.NumberOfCollectives, g => Generator.Generate<Collective, TestCollective>()))
+                .RuleFor(x => x.Contacts, f => Generator.CreateArray(ScriptData.Limits.NumberOfContacts, g => Generator.Generate<Contact, TestContact>()))
+                .RuleFor(x => x.Collectives, f => Generator.CreateArray(ScriptData.Limits.NumberOfCollectives, g => Generator.Generate<Collective, TestCollective>()))
                 .RuleFor(x => x.NextFreeCollectiveIndex, f => f.Random.Int())
-                .RuleFor(x => x.BuildingSwapArray, f => Generator.CreateArray(TheScripts.Limits.NumberOfBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
-                .RuleFor(x => x.InvisibilitySettingArray, f => Generator.CreateArray(TheScripts.Limits.NumberOfInvisibilitySettings, g => Generator.Generate<InvisibleEntity, TestInvisibleEntity>()))
+                .RuleFor(x => x.BuildingSwaps, f => Generator.CreateArray(ScriptData.Limits.NumberOfBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
+                .RuleFor(x => x.InvisibilitySettings, f => Generator.CreateArray(ScriptData.Limits.NumberOfInvisibilitySettings, g => Generator.Generate<InvisibleEntity, TestInvisibleEntity>()))
                 .RuleFor(x => x.UsingAMultiScriptFile, f => f.Random.Bool())
                 .RuleFor(x => x.MainScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.LargestMissionScriptSize, f => f.Random.Int())
@@ -34,16 +34,16 @@ namespace GTASaveData.GTA3.Tests
         [MemberData(nameof(FileFormats))]
         public void Serialization(SaveFileFormat format)
         {
-            TheScripts x0 = GenerateTestObject(format);
-            TheScripts x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            ScriptData x0 = GenerateTestObject(format);
+            ScriptData x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.ScriptSpace, x1.ScriptSpace);
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
             Assert.Equal(x0.Contacts, x1.Contacts);
             Assert.Equal(x0.Collectives, x1.Collectives);
             Assert.Equal(x0.NextFreeCollectiveIndex, x1.NextFreeCollectiveIndex);
-            Assert.Equal(x0.BuildingSwapArray, x1.BuildingSwapArray);
-            Assert.Equal(x0.InvisibilitySettingArray, x1.InvisibilitySettingArray);
+            Assert.Equal(x0.BuildingSwaps, x1.BuildingSwaps);
+            Assert.Equal(x0.InvisibilitySettings, x1.InvisibilitySettings);
             Assert.Equal(x0.UsingAMultiScriptFile, x1.UsingAMultiScriptFile);
             Assert.Equal(x0.MainScriptSize, x1.MainScriptSize);
             Assert.Equal(x0.LargestMissionScriptSize, x1.LargestMissionScriptSize);

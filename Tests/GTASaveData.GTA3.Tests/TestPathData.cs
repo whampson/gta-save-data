@@ -6,11 +6,11 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestPathFind : Base<PathFind>
+    public class TestPathData : Base<PathData>
     {
-        public override PathFind GenerateTestObject(SaveFileFormat format)
+        public override PathData GenerateTestObject(SaveFileFormat format)
         {
-            Faker<PathFind> model = new Faker<PathFind>()
+            Faker<PathData> model = new Faker<PathData>()
                 .RuleFor(x => x.PathNodes, f => Generator.CreateArray<PathNode>(f.Random.Int(0, 5000)));
 
             return model.Generate();
@@ -23,8 +23,8 @@ namespace GTASaveData.GTA3.Tests
             // nodes written will always be a multiple of 8,
             // so node lists may not be equal, and that is ok
 
-            PathFind x0 = GenerateTestObject();
-            PathFind x1 = CreateSerializedCopy(x0, out byte[] data);
+            PathData x0 = GenerateTestObject();
+            PathData x1 = CreateSerializedCopy(x0, out byte[] data);
 
             int count0 = x0.PathNodes.Count;
             int count1 = x1.PathNodes.Count;

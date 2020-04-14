@@ -4,11 +4,11 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestGarages : Base<Garages>
+    public class TestGarageData : Base<GarageData>
     {
-        public override Garages GenerateTestObject(SaveFileFormat format)
+        public override GarageData GenerateTestObject(SaveFileFormat format)
         {
-            Faker<Garages> model = new Faker<Garages>()
+            Faker<GarageData> model = new Faker<GarageData>()
                 .RuleFor(x => x.NumGarages, f => f.Random.Int())
                 .RuleFor(x => x.BombsAreFree, f => f.Random.Bool())
                 .RuleFor(x => x.RespraysAreFree, f => f.Random.Bool())
@@ -19,8 +19,8 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.CarTypesCollected2, f => f.PickRandom<CollectCars2>())
                 .RuleFor(x => x.CarTypesCollected3, f => f.PickRandom<CollectCars3>())
                 .RuleFor(x => x.LastTimeHelpMessage, f => f.Random.Int())
-                .RuleFor(x => x.CarsInSafeHouse, f => Generator.CreateArray(Garages.Limits.NumberOfCarsPerSafeHouse * Garages.Limits.NumberOfSafeHouses, g => Generator.Generate<StoredCar, TestStoredCar>()))
-                .RuleFor(x => x.GaragesArray, f => Generator.CreateArray(Garages.Limits.NumberOfGarages, g => Generator.Generate<Garage, TestGarage>()));
+                .RuleFor(x => x.CarsInSafeHouse, f => Generator.CreateArray(GarageData.Limits.NumberOfCarsPerSafeHouse * GarageData.Limits.NumberOfSafeHouses, g => Generator.Generate<StoredCar, TestStoredCar>()))
+                .RuleFor(x => x.Garages, f => Generator.CreateArray(GarageData.Limits.NumberOfGarages, g => Generator.Generate<Garage, TestGarage>()));
 
             return model.Generate();
         }
@@ -28,8 +28,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void Serialization()
         {
-            Garages x0 = GenerateTestObject();
-            Garages x1 = CreateSerializedCopy(x0, out byte[] data);
+            GarageData x0 = GenerateTestObject();
+            GarageData x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.NumGarages, x1.NumGarages);
             Assert.Equal(x0.BombsAreFree, x1.BombsAreFree);
@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.CarTypesCollected3, x1.CarTypesCollected3);
             Assert.Equal(x0.LastTimeHelpMessage, x1.LastTimeHelpMessage);
             Assert.Equal(x0.CarsInSafeHouse, x1.CarsInSafeHouse);
-            Assert.Equal(x0.GaragesArray, x1.GaragesArray);
+            Assert.Equal(x0.Garages, x1.Garages);
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(), data.Length);
         }

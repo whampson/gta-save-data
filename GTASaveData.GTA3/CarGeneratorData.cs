@@ -6,7 +6,7 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     [Size(0x2D1C)]
-    public class TheCarGenerators : SaveDataObject, IEquatable<TheCarGenerators>
+    public class CarGeneratorData : SaveDataObject, IEquatable<CarGeneratorData>
     {
         public static class Limits
         {
@@ -46,15 +46,15 @@ namespace GTASaveData.GTA3
             set { m_generateEvenIfPlayerIsCloseCounter = value; OnPropertyChanged(); }
         }
 
-        public Array<CarGenerator> CarGeneratorArray
+        public Array<CarGenerator> CarGenerators
         {
             get { return m_carGeneratorArray; }
             set { m_carGeneratorArray = value; OnPropertyChanged(); }
         }
 
-        public TheCarGenerators()
+        public CarGeneratorData()
         {
-            CarGeneratorArray = new Array<CarGenerator>();
+            CarGenerators = new Array<CarGenerator>();
         }
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
@@ -69,15 +69,15 @@ namespace GTASaveData.GTA3
             buf.ReadInt16();
             int carGensSize = buf.ReadInt32();
             Debug.Assert(carGensSize == CarGeneratorArraySize);
-            CarGeneratorArray = buf.ReadArray<CarGenerator>(Limits.NumberOfCarGenerators);
+            CarGenerators = buf.ReadArray<CarGenerator>(Limits.NumberOfCarGenerators);
 
-            Debug.Assert(buf.Offset == SizeOf<TheCarGenerators>());
-            Debug.Assert(size == SizeOf<TheCarGenerators>() - GTA3Save.SaveHeaderSize);
+            Debug.Assert(buf.Offset == SizeOf<CarGeneratorData>());
+            Debug.Assert(size == SizeOf<CarGeneratorData>() - GTA3Save.SaveHeaderSize);
         }
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            GTA3Save.WriteSaveHeader(buf, "CGN", SizeOf<TheCarGenerators>() - GTA3Save.SaveHeaderSize);
+            GTA3Save.WriteSaveHeader(buf, "CGN", SizeOf<CarGeneratorData>() - GTA3Save.SaveHeaderSize);
             buf.Write(CarGeneratorDataSize);
             buf.Write(NumberOfCarGenerators);
             buf.Write(CurrentActiveCount);
@@ -85,17 +85,17 @@ namespace GTASaveData.GTA3
             buf.Write(GenerateEvenIfPlayerIsCloseCounter);
             buf.Write((short) 0);
             buf.Write(CarGeneratorArraySize);
-            buf.Write(CarGeneratorArray.ToArray(), Limits.NumberOfCarGenerators);
+            buf.Write(CarGenerators.ToArray(), Limits.NumberOfCarGenerators);
 
-            Debug.Assert(buf.Offset == SizeOf<TheCarGenerators>());
+            Debug.Assert(buf.Offset == SizeOf<CarGeneratorData>());
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as TheCarGenerators);
+            return Equals(obj as CarGeneratorData);
         }
 
-        public bool Equals(TheCarGenerators other)
+        public bool Equals(CarGeneratorData other)
         {
             if (other == null)
             {
@@ -106,7 +106,7 @@ namespace GTASaveData.GTA3
                 && CurrentActiveCount.Equals(other.CurrentActiveCount)
                 && ProcessCounter.Equals(other.ProcessCounter)
                 && GenerateEvenIfPlayerIsCloseCounter.Equals(other.GenerateEvenIfPlayerIsCloseCounter)
-                && CarGeneratorArray.SequenceEqual(other.CarGeneratorArray);
+                && CarGenerators.SequenceEqual(other.CarGenerators);
         }
     }
 }

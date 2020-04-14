@@ -11,19 +11,19 @@
 - [ ] ObjectPool
 - [x] Paths
 - [ ] Cranes
-- [ ] Pickups
+- [x] Pickups
 - [ ] PhoneInfo
 - [ ] RestartPoints
 - [ ] RadarBlips
 - [ ] Zones
-- [ ] GangData
-- [ ] CarGenerators
+- [x] GangData
+- [x] CarGenerators
 - [ ] ParticleObjects
 - [ ] AudioScriptObjects
 - [ ] PlayerInfo
 - [ ] Stats
 - [ ] Streaming
-- [ ] PedTypeInfo
+- [x] PedTypeInfo
 
 ### Platform Support
 - [ ] Android

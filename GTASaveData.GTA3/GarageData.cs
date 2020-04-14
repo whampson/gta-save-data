@@ -6,7 +6,7 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     [Size(0x1478)]
-    public class Garages : SaveDataObject, IEquatable<Garages>
+    public class GarageData : SaveDataObject, IEquatable<GarageData>
     {
         public static class Limits
         {
@@ -94,16 +94,16 @@ namespace GTASaveData.GTA3
             set { m_carsInSafeHouse = value; OnPropertyChanged(); }
         }
 
-        public Array<Garage> GaragesArray
+        public Array<Garage> Garages
         { 
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
         }
 
-        public Garages()
+        public GarageData()
         {
             CarsInSafeHouse = new Array<StoredCar>();
-            GaragesArray = new Array<Garage>();
+            Garages = new Array<Garage>();
         }
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
@@ -119,9 +119,9 @@ namespace GTASaveData.GTA3
             CarTypesCollected3 = (CollectCars3) buf.ReadInt32();
             LastTimeHelpMessage = buf.ReadInt32();
             CarsInSafeHouse = buf.ReadArray<StoredCar>(Limits.NumberOfCarsPerSafeHouse * Limits.NumberOfSafeHouses);
-            GaragesArray = buf.ReadArray<Garage>(Limits.NumberOfGarages);
+            Garages = buf.ReadArray<Garage>(Limits.NumberOfGarages);
 
-            Debug.Assert(buf.Offset == SizeOf<Garages>());
+            Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
@@ -137,17 +137,17 @@ namespace GTASaveData.GTA3
             buf.Write((int) CarTypesCollected3);
             buf.Write(LastTimeHelpMessage);
             buf.Write(CarsInSafeHouse.ToArray(), Limits.NumberOfCarsPerSafeHouse * Limits.NumberOfSafeHouses);
-            buf.Write(GaragesArray.ToArray(), Limits.NumberOfGarages);
+            buf.Write(Garages.ToArray(), Limits.NumberOfGarages);
 
-            Debug.Assert(buf.Offset == SizeOf<Garages>());
+            Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Garages);
+            return Equals(obj as GarageData);
         }
 
-        public bool Equals(Garages other)
+        public bool Equals(GarageData other)
         {
             if (other == null)
             {
@@ -165,7 +165,7 @@ namespace GTASaveData.GTA3
                 && CarTypesCollected3.Equals(other.CarTypesCollected3)
                 && LastTimeHelpMessage.Equals(other.LastTimeHelpMessage)
                 && CarsInSafeHouse.SequenceEqual(other.CarsInSafeHouse)
-                && GaragesArray.SequenceEqual(other.GaragesArray);
+                && Garages.SequenceEqual(other.Garages);
         }
     }
 }

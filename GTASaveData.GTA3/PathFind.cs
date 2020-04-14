@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class PathFind : SaveDataObject, IEquatable<PathFind>
+    public class PathData : SaveDataObject, IEquatable<PathData>
     {
         private Array<PathNode> m_pathNodes;
 
@@ -15,12 +15,12 @@ namespace GTASaveData.GTA3
             set { m_pathNodes = value; OnPropertyChanged(); }
         }
 
-        public PathFind()
+        public PathData()
         {
             m_pathNodes = new Array<PathNode>();
         }
 
-        public PathFind(int saveSize)
+        public PathData(int saveSize)
         {
             m_pathNodes = CreateArray<PathNode>((saveSize / 2) * 8);
         }
@@ -77,10 +77,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as PathFind);
+            return Equals(obj as PathData);
         }
 
-        public bool Equals(PathFind other)
+        public bool Equals(PathData other)
         {
             if (other == null)
             {

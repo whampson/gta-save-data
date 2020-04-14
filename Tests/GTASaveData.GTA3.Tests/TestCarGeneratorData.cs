@@ -4,16 +4,16 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestTheCarGenerators : Base<TheCarGenerators>
+    public class TestCarGeneratorData : Base<CarGeneratorData>
     {
-        public override TheCarGenerators GenerateTestObject(SaveFileFormat format)
+        public override CarGeneratorData GenerateTestObject(SaveFileFormat format)
         {
-            Faker<TheCarGenerators> model = new Faker<TheCarGenerators>()
+            Faker<CarGeneratorData> model = new Faker<CarGeneratorData>()
                 .RuleFor(x => x.NumberOfCarGenerators, f => f.Random.Int())
                 .RuleFor(x => x.CurrentActiveCount, f => f.Random.Int())
                 .RuleFor(x => x.ProcessCounter, f => f.Random.Byte())
                 .RuleFor(x => x.GenerateEvenIfPlayerIsCloseCounter, f => f.Random.Byte())
-                .RuleFor(x => x.CarGeneratorArray, f => Generator.CreateArray(TheCarGenerators.Limits.NumberOfCarGenerators, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
+                .RuleFor(x => x.CarGenerators, f => Generator.CreateArray(CarGeneratorData.Limits.NumberOfCarGenerators, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
 
             return model.Generate();
         }
@@ -21,14 +21,14 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void Serialization()
         {
-            TheCarGenerators x0 = GenerateTestObject();
-            TheCarGenerators x1 = CreateSerializedCopy(x0, out byte[] data);
+            CarGeneratorData x0 = GenerateTestObject();
+            CarGeneratorData x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.NumberOfCarGenerators, x1.NumberOfCarGenerators);
             Assert.Equal(x0.CurrentActiveCount, x1.CurrentActiveCount);
             Assert.Equal(x0.ProcessCounter, x1.ProcessCounter);
             Assert.Equal(x0.GenerateEvenIfPlayerIsCloseCounter, x1.GenerateEvenIfPlayerIsCloseCounter);
-            Assert.Equal(x0.CarGeneratorArray, x1.CarGeneratorArray);
+            Assert.Equal(x0.CarGenerators, x1.CarGenerators);
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(), data.Length);
         }

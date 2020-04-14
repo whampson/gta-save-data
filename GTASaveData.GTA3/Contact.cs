@@ -4,7 +4,7 @@ using System;
 namespace GTASaveData.GTA3
 {
     [Size(8)]
-    public class ContactInfo : SaveDataObject, IEquatable<ContactInfo>
+    public class Contact : SaveDataObject, IEquatable<Contact>
     {
         private int m_onAMissionFlag;
         private int m_baseBriefId;
@@ -35,10 +35,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as ContactInfo);
+            return Equals(obj as Contact);
         }
 
-        public bool Equals(ContactInfo other)
+        public bool Equals(Contact other)
         {
             if (other == null)
             {
