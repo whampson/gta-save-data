@@ -13,8 +13,8 @@ namespace GTASaveData.Types
             mrk = buf.Mark;
             buf.MarkPosition();
             ReadObjectData(buf, SaveFileFormat.Default);
-            len = buf.Offset;
             buf.Mark = mrk;
+            len = buf.Offset;
 
             return len;
         }
@@ -26,8 +26,8 @@ namespace GTASaveData.Types
             mrk = buf.Mark;
             buf.MarkPosition();
             ReadObjectData(buf, fmt);
-            len = buf.Offset;
             buf.Mark = mrk;
+            len = buf.Offset;
 
             return len;
         }
@@ -41,8 +41,8 @@ namespace GTASaveData.Types
             mrk = buf.Mark;
             buf.MarkPosition();
             WriteObjectData(buf, SaveFileFormat.Default);
-            len = buf.Offset;
             buf.Mark = mrk;
+            len = buf.Offset;
 
             return len;
         }
@@ -54,8 +54,8 @@ namespace GTASaveData.Types
             mrk = buf.Mark;
             buf.MarkPosition();
             WriteObjectData(buf, fmt);
-            len = buf.Offset;
             buf.Mark = mrk;
+            len = buf.Offset;
 
             return len;
         }
