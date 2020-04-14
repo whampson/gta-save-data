@@ -8,26 +8,32 @@ namespace GTASaveData.Types
     {
         int ISaveDataObject.ReadObjectData(DataBuffer buf)
         {
-            int mrk, len;
+            int oldMark, start, len;
 
-            mrk = buf.Mark;
+            oldMark = buf.Mark;
             buf.MarkPosition();
+            start = buf.Position;
+
             ReadObjectData(buf, SaveFileFormat.Default);
-            buf.Mark = mrk;
-            len = buf.Offset;
+
+            len = buf.Position - start;
+            buf.Mark = oldMark;
 
             return len;
         }
 
         int ISaveDataObject.ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            int mrk, len;
+            int oldMark, start, len;
 
-            mrk = buf.Mark;
+            oldMark = buf.Mark;
             buf.MarkPosition();
+            start = buf.Position;
+
             ReadObjectData(buf, fmt);
-            buf.Mark = mrk;
-            len = buf.Offset;
+
+            len = buf.Position - start;
+            buf.Mark = oldMark;
 
             return len;
         }
@@ -36,26 +42,32 @@ namespace GTASaveData.Types
 
         int ISaveDataObject.WriteObjectData(DataBuffer buf)
         {
-            int mrk, len;
+            int oldMark, start, len;
 
-            mrk = buf.Mark;
+            oldMark = buf.Mark;
             buf.MarkPosition();
+            start = buf.Position;
+
             WriteObjectData(buf, SaveFileFormat.Default);
-            buf.Mark = mrk;
-            len = buf.Offset;
+
+            len = buf.Position - start;
+            buf.Mark = oldMark;
 
             return len;
         }
 
         int ISaveDataObject.WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            int mrk, len;
+            int oldMark, start, len;
 
-            mrk = buf.Mark;
+            oldMark = buf.Mark;
             buf.MarkPosition();
+            start = buf.Position;
+
             WriteObjectData(buf, fmt);
-            buf.Mark = mrk;
-            len = buf.Offset;
+
+            len = buf.Position - start;
+            buf.Mark = oldMark;
 
             return len;
         }
