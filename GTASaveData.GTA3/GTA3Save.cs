@@ -292,7 +292,7 @@ namespace GTASaveData.GTA3
             m_workBuff.ReadInt32();     // Ignore size
             int bytesRead = Serializer.Read(obj, m_workBuff, FileFormat);
 
-            Debug.WriteLine("{0}: {1} bytes", typeof(T).Name, bytesRead);
+            Debug.WriteLine("{0}: {1} bytes read", typeof(T).Name, bytesRead);
             return bytesRead;
         }
 
@@ -307,7 +307,7 @@ namespace GTASaveData.GTA3
             Debug.WriteLine("{0}: {1} bytes pre-allocated", typeof(T).Name, size);
 
             int bytesRead = Serializer.Read(obj, m_workBuff, FileFormat);
-            Debug.WriteLine("{0}: {1} bytes", typeof(T).Name, bytesRead);
+            Debug.WriteLine("{0}: {1} bytes read", typeof(T).Name, bytesRead);
 
             return obj;
         }
@@ -327,7 +327,7 @@ namespace GTASaveData.GTA3
             m_workBuff.Seek(postData);
             m_workBuff.Align4Bytes();
 
-            Debug.WriteLine("{0}: {1} bytes", o.GetType().Name, size);
+            Debug.WriteLine("{0}: {1} bytes written", o.GetType().Name, size);
         }
 
         private int ReadBlock(DataBuffer file)

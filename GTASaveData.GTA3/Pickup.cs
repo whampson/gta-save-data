@@ -67,6 +67,7 @@ namespace GTASaveData.GTA3
         public Pickup()
         {
             Position = new Vector();
+            Index = 1;
         }
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
