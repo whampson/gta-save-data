@@ -39,7 +39,7 @@ namespace GTASaveData.GTA3
         private DummyObject m_restartPoints;    // Restarts
         private DummyObject m_radarBlips;   // Radar
         private DummyObject m_zones;    // TheZones
-        private DummyObject m_gangData; // Gangs
+        private GangData m_gangData;
         private TheCarGenerators m_carGenerators;
         private DummyObject m_particleObjects;  // ParticleObjects
         private DummyObject m_audioScriptObjects;   // AudioScriptObjects
@@ -126,7 +126,7 @@ namespace GTASaveData.GTA3
             set { m_zones = value; OnPropertyChanged(); }
         }
 
-        public DummyObject GangData
+        public GangData GangData
         {
             get { return m_gangData; }
             set { m_gangData = value; OnPropertyChanged(); }
@@ -239,7 +239,7 @@ namespace GTASaveData.GTA3
             RestartPoints = new DummyObject();
             RadarBlips = new DummyObject();
             Zones = new DummyObject();
-            GangData = new DummyObject();
+            GangData = new GangData();
             CarGenerators = new TheCarGenerators();
             ParticleObjects = new DummyObject();
             AudioScriptObjects = new DummyObject();
@@ -400,7 +400,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); RestartPoints = LoadDataPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); RadarBlips = LoadDataPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); Zones = LoadDataPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); GangData = LoadDataPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); GangData = LoadData<GangData>();
             totalSize += ReadBlock(file); CarGenerators = LoadData<TheCarGenerators>();
             totalSize += ReadBlock(file); ParticleObjects = LoadDataPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); AudioScriptObjects = LoadDataPreAlloc<DummyObject>();

@@ -179,12 +179,12 @@ namespace GTASaveData.GTA3
             ActiveScripts = buf.ReadArray<RunningScript>(runningScripts, fmt);
 
             Debug.Assert(buf.Offset - GTA3Save.SaveHeaderSize == size);
-            Debug.Assert(size + GTA3Save.SaveHeaderSize == GetSize(fmt));
+            Debug.Assert(size == SizeOf(this, fmt) - GTA3Save.SaveHeaderSize);
         }
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
-            int size = GetSize(fmt);
+            int size = SizeOf(this, fmt);
 
             GTA3Save.WriteSaveHeader(buf, "SCR", size - GTA3Save.SaveHeaderSize);
             buf.Write(ScriptSpace.Count);
