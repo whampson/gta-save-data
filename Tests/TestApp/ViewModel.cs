@@ -131,7 +131,6 @@ namespace TestApp
 
         public void OnLoad()
         {
-
         }
 
         public ViewModel()

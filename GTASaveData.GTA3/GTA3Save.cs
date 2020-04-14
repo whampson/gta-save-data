@@ -41,9 +41,9 @@ namespace GTASaveData.GTA3
         private DummyObject m_zones;    // TheZones
         private GangData m_gangs;
         private CarGeneratorData m_carGenerators;
-        private DummyObject m_particles;  // ParticleObjects
-        private DummyObject m_audioScript;   // AudioScriptObjects
-        private DummyObject m_player;   // PlayerInfo
+        private DummyObject m_particleObjects;  // ParticleObjects
+        private DummyObject m_audioScriptObjects;   // AudioScriptObjects
+        private DummyObject m_playerInfo;   // PlayerInfo
         private DummyObject m_stats;    // Stats
         private DummyObject m_streaming;    // Streaming
         private PedTypeData m_pedType;
@@ -54,7 +54,7 @@ namespace GTASaveData.GTA3
             set { m_simpleVars = value; OnPropertyChanged(); }
         }
 
-        public ScriptData ScriptData
+        public ScriptData Scripts
         {
             get { return m_scripts; }
             set { m_scripts = value; OnPropertyChanged(); }
@@ -66,7 +66,7 @@ namespace GTASaveData.GTA3
             set { m_pedPool = value; OnPropertyChanged(); }
         }
 
-        public GarageData GarageData
+        public GarageData Garages
         {
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
@@ -84,76 +84,76 @@ namespace GTASaveData.GTA3
             set { m_objectPool = value; OnPropertyChanged(); }
         }
 
-        public PathData PathData
+        public PathData Paths
         {
             get { return m_paths; }
             set { m_paths = value; OnPropertyChanged(); }
         }
 
-        public DummyObject CraneData
+        public DummyObject Cranes
         {
             get { return m_cranes; }
             set { m_cranes = value; OnPropertyChanged(); }
         }
 
-        public PickupData PickupData
+        public PickupData Pickups
         {
             get { return m_pickups; }
             set { m_pickups = value; OnPropertyChanged(); }
         }
 
-        public DummyObject PhoneData
+        public DummyObject PhoneInfo
         {
             get { return m_phoneInfo; }
             set { m_phoneInfo = value; OnPropertyChanged(); }
         }
 
-        public DummyObject RestartData
+        public DummyObject RestartPoints
         {
             get { return m_restartPoints; }
             set { m_restartPoints = value; OnPropertyChanged(); }
         }
 
-        public DummyObject RadarData
+        public DummyObject RadarBlips
         {
             get { return m_radarBlips; }
             set { m_radarBlips = value; OnPropertyChanged(); }
         }
 
-        public DummyObject ZoneData
+        public DummyObject Zones
         {
             get { return m_zones; }
             set { m_zones = value; OnPropertyChanged(); }
         }
 
-        public GangData GangData
+        public GangData Gangs
         {
             get { return m_gangs; }
             set { m_gangs = value; OnPropertyChanged(); }
         }
 
-        public CarGeneratorData CarGeneratorData
+        public CarGeneratorData CarGenerators
         {
             get { return m_carGenerators; }
             set { m_carGenerators = value; OnPropertyChanged(); }
         }
 
-        public DummyObject ParticleData
+        public DummyObject ParticleObjects
         {
-            get { return m_particles; }
-            set { m_particles = value; OnPropertyChanged(); }
+            get { return m_particleObjects; }
+            set { m_particleObjects = value; OnPropertyChanged(); }
         }
 
-        public DummyObject AudioScriptData
+        public DummyObject AudioScriptObjects
         {
-            get { return m_audioScript; }
-            set { m_audioScript = value; OnPropertyChanged(); }
+            get { return m_audioScriptObjects; }
+            set { m_audioScriptObjects = value; OnPropertyChanged(); }
         }
 
-        public DummyObject PlayerData
+        public DummyObject PlayerInfo
         {
-            get { return m_player; }
-            set { m_player = value; OnPropertyChanged(); }
+            get { return m_playerInfo; }
+            set { m_playerInfo = value; OnPropertyChanged(); }
         }
 
         public DummyObject Stats
@@ -162,13 +162,13 @@ namespace GTASaveData.GTA3
             set { m_stats = value; OnPropertyChanged(); }
         }
 
-        public DummyObject StreamingData
+        public DummyObject Streaming
         {
             get { return m_streaming; }
             set { m_streaming = value; OnPropertyChanged(); }
         }
 
-        public PedTypeData PedTypeData
+        public PedTypeData PedType
         {
             get { return m_pedType; }
             set { m_pedType = value; OnPropertyChanged(); }
@@ -199,26 +199,26 @@ namespace GTASaveData.GTA3
         public override IReadOnlyList<SaveDataObject> Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
-            ScriptData,
+            Scripts,
             PedPool,
-            GarageData,
+            Garages,
             VehiclePool,
             ObjectPool,
-            PathData,
-            CraneData,
-            PickupData,
-            PhoneData,
-            RestartData,
-            RadarData,
-            ZoneData,
-            GangData,
-            CarGeneratorData,
-            ParticleData,
-            AudioScriptData,
-            PlayerData,
+            Paths,
+            Cranes,
+            Pickups,
+            PhoneInfo,
+            RestartPoints,
+            RadarBlips,
+            Zones,
+            Gangs,
+            CarGenerators,
+            ParticleObjects,
+            AudioScriptObjects,
+            PlayerInfo,
             Stats,
-            StreamingData,
-            PedTypeData
+            Streaming,
+            PedType
         };
 
         public GTA3Save()
@@ -227,26 +227,26 @@ namespace GTASaveData.GTA3
             m_workBuff = new DataBuffer(new byte[MaxBufferSize]);
 
             SimpleVars = new SimpleVariables();
-            ScriptData = new ScriptData();
+            Scripts = new ScriptData();
             PedPool = new DummyObject();
-            GarageData = new GarageData();
+            Garages = new GarageData();
             VehiclePool = new DummyObject();
             ObjectPool = new DummyObject();
-            PathData = new PathData();
-            CraneData = new DummyObject();
-            PickupData = new PickupData();
-            PhoneData = new DummyObject();
-            RestartData = new DummyObject();
-            RadarData = new DummyObject();
-            ZoneData = new DummyObject();
-            GangData = new GangData();
-            CarGeneratorData = new CarGeneratorData();
-            ParticleData = new DummyObject();
-            AudioScriptData = new DummyObject();
-            PlayerData = new DummyObject();
+            Paths = new PathData();
+            Cranes = new DummyObject();
+            Pickups = new PickupData();
+            PhoneInfo = new DummyObject();
+            RestartPoints = new DummyObject();
+            RadarBlips = new DummyObject();
+            Zones = new DummyObject();
+            Gangs = new GangData();
+            CarGenerators = new CarGeneratorData();
+            ParticleObjects = new DummyObject();
+            AudioScriptObjects = new DummyObject();
+            PlayerInfo = new DummyObject();
             Stats = new DummyObject();
-            StreamingData = new DummyObject();
-            PedTypeData = new PedTypeData();
+            Streaming = new DummyObject();
+            PedType = new PedTypeData();
 
         #if !DEBUG
             BlockSizeChecks = true;
@@ -346,7 +346,6 @@ namespace GTASaveData.GTA3
             }
 
             m_workBuff.Write(file.ReadBytes(size));
-
             Debug.Assert(file.Offset == size + 4);
 
             m_workBuff.Reset();
@@ -388,26 +387,26 @@ namespace GTASaveData.GTA3
 
             totalSize += ReadBlock(file);
             LoadSimpleVars();                
-            ScriptData = Load<ScriptData>();
+            Scripts = Load<ScriptData>();
             totalSize += ReadBlock(file); PedPool = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); GarageData = Load<GarageData>();
+            totalSize += ReadBlock(file); Garages = Load<GarageData>();
             totalSize += ReadBlock(file); VehiclePool = LoadPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); ObjectPool = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); PathData = LoadPreAlloc<PathData>();
-            totalSize += ReadBlock(file); CraneData = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); PickupData = Load<PickupData>();
-            totalSize += ReadBlock(file); PhoneData = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); RestartData = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); RadarData = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); ZoneData = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); GangData = Load<GangData>();
-            totalSize += ReadBlock(file); CarGeneratorData = Load<CarGeneratorData>();
-            totalSize += ReadBlock(file); ParticleData = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); AudioScriptData = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); PlayerData = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); Paths = LoadPreAlloc<PathData>();
+            totalSize += ReadBlock(file); Cranes = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); Pickups = Load<PickupData>();
+            totalSize += ReadBlock(file); PhoneInfo = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); RestartPoints = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); RadarBlips = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); Zones = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); Gangs = Load<GangData>();
+            totalSize += ReadBlock(file); CarGenerators = Load<CarGeneratorData>();
+            totalSize += ReadBlock(file); ParticleObjects = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); AudioScriptObjects = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); PlayerInfo = LoadPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); Stats = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); StreamingData = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); PedTypeData = Load<PedTypeData>();
+            totalSize += ReadBlock(file); Streaming = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); PedType = Load<PedTypeData>();
 
             while (file.Position < file.Length - 4)
             {
@@ -428,26 +427,26 @@ namespace GTASaveData.GTA3
             m_checkSum = 0;
 
             SaveSimpleVars();
-            Save(ScriptData); totalSize += WriteBlock(file);
+            Save(Scripts); totalSize += WriteBlock(file);
             Save(PedPool); totalSize += WriteBlock(file);
-            Save(GarageData); totalSize += WriteBlock(file);
+            Save(Garages); totalSize += WriteBlock(file);
             Save(VehiclePool); totalSize += WriteBlock(file);
             Save(ObjectPool); totalSize += WriteBlock(file);
-            Save(PathData); totalSize += WriteBlock(file);
-            Save(CraneData); totalSize += WriteBlock(file);
-            Save(PickupData); totalSize += WriteBlock(file);
-            Save(PhoneData); totalSize += WriteBlock(file);
-            Save(RestartData); totalSize += WriteBlock(file);
-            Save(RadarData); totalSize += WriteBlock(file);
-            Save(ZoneData); totalSize += WriteBlock(file);
-            Save(GangData); totalSize += WriteBlock(file);
-            Save(CarGeneratorData); totalSize += WriteBlock(file);
-            Save(ParticleData); totalSize += WriteBlock(file);
-            Save(AudioScriptData); totalSize += WriteBlock(file);
-            Save(PlayerData); totalSize += WriteBlock(file);
+            Save(Paths); totalSize += WriteBlock(file);
+            Save(Cranes); totalSize += WriteBlock(file);
+            Save(Pickups); totalSize += WriteBlock(file);
+            Save(PhoneInfo); totalSize += WriteBlock(file);
+            Save(RestartPoints); totalSize += WriteBlock(file);
+            Save(RadarBlips); totalSize += WriteBlock(file);
+            Save(Zones); totalSize += WriteBlock(file);
+            Save(Gangs); totalSize += WriteBlock(file);
+            Save(CarGenerators); totalSize += WriteBlock(file);
+            Save(ParticleObjects); totalSize += WriteBlock(file);
+            Save(AudioScriptObjects); totalSize += WriteBlock(file);
+            Save(PlayerInfo); totalSize += WriteBlock(file);
             Save(Stats); totalSize += WriteBlock(file);
-            Save(StreamingData); totalSize += WriteBlock(file);
-            Save(PedTypeData); totalSize += WriteBlock(file);
+            Save(Streaming); totalSize += WriteBlock(file);
+            Save(PedType); totalSize += WriteBlock(file);
 
             for (int i = 0; i < 4; i++)
             {
@@ -568,26 +567,26 @@ namespace GTASaveData.GTA3
             }
 
             return SimpleVars.Equals(other.SimpleVars)
-                && ScriptData.Equals(other.ScriptData)
+                && Scripts.Equals(other.Scripts)
                 && PedPool.Equals(other.PedPool)
-                && GarageData.Equals(other.GarageData)
+                && Garages.Equals(other.Garages)
                 && VehiclePool.Equals(other.VehiclePool)
                 && ObjectPool.Equals(other.ObjectPool)
                 //&& Paths.Equals(other.Paths)  // TODO: equality fails due to list padding during save
-                && CraneData.Equals(other.CraneData)
-                && PickupData.Equals(other.PickupData)
-                && PhoneData.Equals(other.PhoneData)
-                && RestartData.Equals(other.RestartData)
-                && RadarData.Equals(other.RadarData)
-                && ZoneData.Equals(other.ZoneData)
-                && GangData.Equals(other.GangData)
-                && CarGeneratorData.Equals(other.CarGeneratorData)
-                && ParticleData.Equals(other.ParticleData)
-                && AudioScriptData.Equals(other.AudioScriptData)
-                && PlayerData.Equals(other.PlayerData)
+                && Cranes.Equals(other.Cranes)
+                && Pickups.Equals(other.Pickups)
+                && PhoneInfo.Equals(other.PhoneInfo)
+                && RestartPoints.Equals(other.RestartPoints)
+                && RadarBlips.Equals(other.RadarBlips)
+                && Zones.Equals(other.Zones)
+                && Gangs.Equals(other.Gangs)
+                && CarGenerators.Equals(other.CarGenerators)
+                && ParticleObjects.Equals(other.ParticleObjects)
+                && AudioScriptObjects.Equals(other.AudioScriptObjects)
+                && PlayerInfo.Equals(other.PlayerInfo)
                 && Stats.Equals(other.Stats)
-                && StreamingData.Equals(other.StreamingData)
-                && PedTypeData.Equals(other.PedTypeData);
+                && Streaming.Equals(other.Streaming)
+                && PedType.Equals(other.PedType);
         }
 
         public void Dispose()

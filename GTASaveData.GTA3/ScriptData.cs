@@ -115,44 +115,41 @@ namespace GTASaveData.GTA3
             ActiveScripts = new Array<RunningScript>();
         }
 
-        public int GetVariable(int index)
-        {
-            // TODO: test this
-            return ScriptSpace[index + 3] << 24
-                 | ScriptSpace[index + 2] << 16
-                 | ScriptSpace[index + 1] << 8
-                 | ScriptSpace[index];
-        }
+        //public int GetVariable(int index)
+        //{
+        //    // TODO: test this
+        //    return ScriptSpace[index + 3] << 24
+        //         | ScriptSpace[index + 2] << 16
+        //         | ScriptSpace[index + 1] << 8
+        //         | ScriptSpace[index];
+        //}
 
-        public float GetVariableAsFloat(int index)
-        {
-            // TODO: test this
-            byte[] floatBits = new byte[]
-            {
-                ScriptSpace[index + 3],
-                ScriptSpace[index + 2],
-                ScriptSpace[index + 1],
-                ScriptSpace[index]
-            };
+        //public float GetVariableAsFloat(int index)
+        //{
+        //    // TODO: test this
+        //    byte[] floatBits = new byte[4];
+        //    Array.Copy(ScriptSpace, index, floatBits, 0, 4);
 
-            return BitConverter.ToSingle(floatBits, 0);
-        }
+        //    return BitConverter.ToSingle(floatBits, 0);
+        //}
 
-        public void SetVariable(int index, int value)
-        {
-            // TODO: test this
-            ScriptSpace[index + 3] = (byte) (value >> 24);
-            ScriptSpace[index + 2] = (byte) (value >> 16);
-            ScriptSpace[index + 1] = (byte) (value >> 8);
-            ScriptSpace[index] = (byte) value;
-        }
+        //public void SetVariable(int index, int value)
+        //{
+        //    // TODO: test this
+        //    ScriptSpace[index + 3] = (byte) (value >> 24);
+        //    ScriptSpace[index + 2] = (byte) (value >> 16);
+        //    ScriptSpace[index + 1] = (byte) (value >> 8);
+        //    ScriptSpace[index] = (byte) value;
 
-        public void SetVariable(int index, float value)
-        {
-            // TODO: test this
-            byte[] floatBits = BitConverter.GetBytes(value);
-            Array.Copy(floatBits, 0, ScriptSpace, index, 4);
-        }
+        //    Array.Copy(BitConverter.GetBytes(value), ScriptSpace, index);
+        //}
+
+        //public void SetVariable(int index, float value)
+        //{
+        //    // TODO: test this
+        //    byte[] floatBits = BitConverter.GetBytes(value);
+        //    Array.Copy(floatBits, 0, ScriptSpace, index, 4);
+        //}
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {

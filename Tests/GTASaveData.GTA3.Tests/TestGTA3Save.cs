@@ -16,26 +16,26 @@ namespace GTASaveData.GTA3.Tests
             Faker<GTA3Save> model = new Faker<GTA3Save>()
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
-                .RuleFor(x => x.ScriptData, Generator.Generate<ScriptData, TestScriptData>(format))
+                .RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
                 //.RuleFor(x => x.PedPool, Generator.Generate<PedPool, TestPedPool>(format))
-                .RuleFor(x => x.GarageData, Generator.Generate<GarageData, TestGarageData>(format))
+                .RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData>(format))
                 //.RuleFor(x => x.VehiclePool, Generator.Generate<VehiclePool, TestVehiclePool>(format))
                 //.RuleFor(x => x.ObjectPool, Generator.Generate<ObjectPool, TestObjectPool>(format))
-                .RuleFor(x => x.PathData, Generator.Generate<PathData, TestPathData>(format))
+                .RuleFor(x => x.Paths, Generator.Generate<PathData, TestPathData>(format))
                 //.RuleFor(x => x.Cranes, Generator.Generate<Cranes, TestCranes>(format))
-                .RuleFor(x => x.PickupData, Generator.Generate<PickupData, TestPickupData>(format))
+                .RuleFor(x => x.Pickups, Generator.Generate<PickupData, TestPickupData>(format))
                 //.RuleFor(x => x.PhoneInfo, Generator.Generate<PhoneInfo, TestPhoneInfo>(format))
                 //.RuleFor(x => x.RestartPoints, Generator.Generate<RestartPoints, TestRestartPoints>(format))
                 //.RuleFor(x => x.RadarBlips, Generator.Generate<RadarBlips, TestRadarBlips>(format))
                 //.RuleFor(x => x.Zones, Generator.Generate<Zones, TestZones>(format))
-                .RuleFor(x => x.GangData, Generator.Generate<GangData, TestGangData>(format))
-                .RuleFor(x => x.CarGeneratorData, Generator.Generate<CarGeneratorData, TestCarGeneratorData>(format))
+                .RuleFor(x => x.Gangs, Generator.Generate<GangData, TestGangData>(format))
+                .RuleFor(x => x.CarGenerators, Generator.Generate<CarGeneratorData, TestCarGeneratorData>(format))
                 //.RuleFor(x => x.ParticleObjects, Generator.Generate<Particles, TestParticles>(format))
                 //.RuleFor(x => x.AudioScriptObjects, Generator.Generate<AudioScriptObjects, TestAudioScriptObjects>(format))
                 //.RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))
                 //.RuleFor(x => x.Stats, Generator.Generate<Stats, TestStats>(format))
                 //.RuleFor(x => x.Streaming, Generator.Generate<Streaming, TestStreaming>(format))
-                .RuleFor(x => x.PedTypeData, Generator.Generate<PedTypeData, TestPedTypeData>(format))
+                .RuleFor(x => x.PedType, Generator.Generate<PedTypeData, TestPedTypeData>(format))
                 ;
 
             return model.Generate();
@@ -100,33 +100,33 @@ namespace GTASaveData.GTA3.Tests
             Assert.Throws<SerializationException>(() => x.Load(data));
 
             // Make the script space huge
-            x.ScriptData.ScriptSpace = GTAObject.CreateArray<byte>(100000);
+            x.Scripts.ScriptSpace = GTAObject.CreateArray<byte>(100000);
             Assert.Throws<SerializationException>(() => x.Save(out byte[] _));
         }
 
         private void AssertSavesAreEqual(GTA3Save x0, GTA3Save x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
-            Assert.Equal(x0.ScriptData, x1.ScriptData);
+            Assert.Equal(x0.Scripts, x1.Scripts);
             Assert.Equal(x0.PedPool, x1.PedPool);
-            Assert.Equal(x0.GarageData, x1.GarageData);
+            Assert.Equal(x0.Garages, x1.Garages);
             Assert.Equal(x0.VehiclePool, x1.VehiclePool);
             Assert.Equal(x0.ObjectPool, x1.ObjectPool);
             //Assert.Equal(x0.Paths, x1.Paths);         // TODO: equality fails due to list padding during save
-            Assert.Equal(x0.CraneData, x1.CraneData);
-            Assert.Equal(x0.PickupData, x1.PickupData);
-            Assert.Equal(x0.PhoneData, x1.PhoneData);
-            Assert.Equal(x0.RestartData, x1.RestartData);
-            Assert.Equal(x0.RadarData, x1.RadarData);
-            Assert.Equal(x0.ZoneData, x1.ZoneData);
-            Assert.Equal(x0.GangData, x1.GangData);
-            Assert.Equal(x0.CarGeneratorData, x1.CarGeneratorData);
-            Assert.Equal(x0.ParticleData, x1.ParticleData);
-            Assert.Equal(x0.AudioScriptData, x1.AudioScriptData);
-            Assert.Equal(x0.PlayerData, x1.PlayerData);
+            Assert.Equal(x0.Cranes, x1.Cranes);
+            Assert.Equal(x0.Pickups, x1.Pickups);
+            Assert.Equal(x0.PhoneInfo, x1.PhoneInfo);
+            Assert.Equal(x0.RestartPoints, x1.RestartPoints);
+            Assert.Equal(x0.RadarBlips, x1.RadarBlips);
+            Assert.Equal(x0.Zones, x1.Zones);
+            Assert.Equal(x0.Gangs, x1.Gangs);
+            Assert.Equal(x0.CarGenerators, x1.CarGenerators);
+            Assert.Equal(x0.ParticleObjects, x1.ParticleObjects);
+            Assert.Equal(x0.AudioScriptObjects, x1.AudioScriptObjects);
+            Assert.Equal(x0.PlayerInfo, x1.PlayerInfo);
             Assert.Equal(x0.Stats, x1.Stats);
-            Assert.Equal(x0.StreamingData, x1.StreamingData);
-            Assert.Equal(x0.PedTypeData, x1.PedTypeData);
+            Assert.Equal(x0.Streaming, x1.Streaming);
+            Assert.Equal(x0.PedType, x1.PedType);
             Assert.Equal(x0, x1);
         }
 
