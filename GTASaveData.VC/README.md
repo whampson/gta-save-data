@@ -31,12 +31,9 @@
 ### Platform Support
 - [ ] Android
 - [ ] iOS
-- [x] PC
-    - [x] "Retail" (Win32/Retail, macOS/Steam)
-    - [x] "Steam" (Win32/Steam)
-- [ ] PS2
+- [x] PC "Retail" (Win32/Retail, macOS/Steam)
+- [x] PC "Steam" (Win32/Steam)
+- [ ] PS2 V1
+- [ ] PS2 V2 (Haitian-friendly)
+- [ ] PS2 Japan
 - [ ] Xbox
-**TODO: Others? Rockstar Launcher?**
-
-## Format Differences
-(TODO)

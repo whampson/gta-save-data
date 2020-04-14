@@ -36,9 +36,7 @@
 ### Platform Support
 - [ ] Mobile
 - [x] PC
-- [ ] PS2
+- [ ] PS2 v1 (Hot Coffee)
+- [ ] PS2 v2
+- [ ] PS2 Japan
 - [ ] Xbox
-**TODO: Others? PS3/360? Rockstar Launcher?**
-
-## Format Differences
-(TODO)
