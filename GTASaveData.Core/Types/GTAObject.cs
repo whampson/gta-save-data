@@ -9,7 +9,7 @@ namespace GTASaveData.Types
         #region Helper Functions
         public static Array<T> CreateArray<T>(int count) where T : new()
         {
-            return Enumerable.Repeat(new T(), count).ToArray();
+            return Enumerable.Range(0, count).Select(x => new T()).ToArray();
         }
         #endregion
 

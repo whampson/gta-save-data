@@ -6,10 +6,10 @@
 - [x] SimpleVars
 - [x] Scripts
 - [ ] PedPool
-- [ ] Garages
+- [x] Garages
 - [ ] VehiclePool
 - [ ] ObjectPool
-- [ ] Paths
+- [x] Paths
 - [ ] Cranes
 - [ ] Pickups
 - [ ] PhoneInfo
@@ -29,12 +29,7 @@
 - [ ] Android
 - [ ] iOS
 - [x] PC
-- [ ] PS2
-    - [ ] Japan
-    - [ ] Australia
-    - [ ] North America/Europe
+- [ ] PS2 US/EU
+- [ ] PS2 AU
+- [ ] PS2 JP
 - [ ] Xbox
-**TODO: Others? Rockstar Launcher?**
-
-## Format Differences
-(TODO)

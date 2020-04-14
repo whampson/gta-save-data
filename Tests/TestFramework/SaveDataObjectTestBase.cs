@@ -11,6 +11,11 @@ namespace TestFramework
             return SaveDataObject.SizeOf<T>();
         }
 
+        public int GetSizeOfTestObject(T obj)
+        {
+            return SaveDataObject.SizeOf<T>(obj, SaveFileFormat.Default);
+        }
+
         public int GetSizeOfTestObject(SaveFileFormat format)
         {
             return SaveDataObject.SizeOf<T>(format);
