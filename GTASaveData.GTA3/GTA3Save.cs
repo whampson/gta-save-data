@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3
         private CarGeneratorData m_carGenerators;
         private DummyObject m_particleObjects;  // ParticleObjects
         private DummyObject m_audioScriptObjects;   // AudioScriptObjects
-        private DummyObject m_playerInfo;   // PlayerInfo
+        private PlayerInfo m_playerInfo;
         private Stats m_stats;
         private DummyObject m_streaming;    // Streaming
         private PedTypeData m_pedType;
@@ -149,7 +149,7 @@ namespace GTASaveData.GTA3
             set { m_audioScriptObjects = value; OnPropertyChanged(); }
         }
 
-        public DummyObject PlayerInfo
+        public PlayerInfo PlayerInfo
         {
             get { return m_playerInfo; }
             set { m_playerInfo = value; OnPropertyChanged(); }
@@ -242,7 +242,7 @@ namespace GTASaveData.GTA3
             CarGenerators = new CarGeneratorData();
             ParticleObjects = new DummyObject();
             AudioScriptObjects = new DummyObject();
-            PlayerInfo = new DummyObject();
+            PlayerInfo = new PlayerInfo();
             Stats = new Stats();
             Streaming = new DummyObject();
             PedType = new PedTypeData();
@@ -401,7 +401,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); CarGenerators = Load<CarGeneratorData>();
             totalSize += ReadBlock(file); ParticleObjects = LoadPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); AudioScriptObjects = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); PlayerInfo = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); PlayerInfo = Load<PlayerInfo>();
             totalSize += ReadBlock(file); Stats = Load<Stats>();
             totalSize += ReadBlock(file); Streaming = LoadPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); PedType = Load<PedTypeData>();

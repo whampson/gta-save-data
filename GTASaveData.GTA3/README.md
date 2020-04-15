@@ -20,7 +20,7 @@
 - [x] CarGenerators
 - [ ] ParticleObjects
 - [ ] AudioScriptObjects
-- [ ] PlayerInfo
+- [x] PlayerInfo
 - [x] Stats
 - [ ] Streaming
 - [x] PedTypeInfo

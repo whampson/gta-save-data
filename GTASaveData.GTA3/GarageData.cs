@@ -139,6 +139,9 @@ namespace GTASaveData.GTA3
             buf.Write(CarsInSafeHouse.ToArray(), Limits.NumberOfCarsPerSafeHouse * Limits.NumberOfSafeHouses);
             buf.Write(Garages.ToArray(), Limits.NumberOfGarages);
 
+            // More garbage is written here on actual game
+            // due to incorrect size calculation
+
             Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }
 
