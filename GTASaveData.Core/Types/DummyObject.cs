@@ -8,7 +8,7 @@ namespace GTASaveData.Types
     /// <summary>
     /// A container for arbitraty data.
     /// </summary>
-    public class DummyObject : SaveDataObject, IEquatable<DummyObject>
+    public class DummyObject : PreAllocatedSaveDataObject, IEquatable<DummyObject>
     {
         private Array<byte> m_data;
 
@@ -20,17 +20,24 @@ namespace GTASaveData.Types
         }
 
         public DummyObject()
-            : this(0)
+            : base(0)
         { }
 
-        public DummyObject(int count)
+        public DummyObject(int size)
+            : base(size)
+        { }
+
+        public static DummyObject Load(byte[] data)
         {
-            Data = new byte[count];
+            DummyObject o = new DummyObject(data.Length);
+            Serializer.Read(o, data, SaveFileFormat.Default);
+
+            return o;
         }
 
-        public DummyObject(byte[] data)
+        protected override void PreAllocate(int size)
         {
-            Data = data;
+            Data = new byte[size];
         }
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)

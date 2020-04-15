@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using System;
-using System.Linq;
 using TestFramework;
 using Xunit;
 
@@ -10,8 +8,13 @@ namespace GTASaveData.GTA3.Tests
     {
         public override PathData GenerateTestObject(SaveFileFormat format)
         {
+            int nodeCount = 8 * (new Faker().Random.Int(1, 1000) / 8);       // must be multiple of 8
+            Faker<PathNode> nodeModel = new Faker<PathNode>()
+                .RuleFor(x => x.Disabled, f => f.Random.Bool())
+                .RuleFor(x => x.BetweenLevels, f => f.Random.Bool());
+
             Faker<PathData> model = new Faker<PathData>()
-                .RuleFor(x => x.PathNodes, f => Generator.CreateArray<PathNode>(f.Random.Int(0, 5000)));
+                .RuleFor(x => x.PathNodes, f => Generator.CreateArray(nodeCount, g => nodeModel.Generate()));
 
             return model.Generate();
         }
@@ -19,24 +22,14 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void Serialization()
         {
-            // Special test conditions:
-            // nodes written will always be a multiple of 8,
-            // so node lists may not be equal, and that is ok
-
             PathData x0 = GenerateTestObject();
-            PathData x1 = CreateSerializedCopy(x0, out byte[] data);
+            byte[] data = Serializer.Write(x0);
+            PathData x1 = PathData.Load(data);
 
-            int count0 = x0.PathNodes.Count;
-            int count1 = x1.PathNodes.Count;
-            int min = Math.Min(count0, count1);
+            Assert.Equal(x0.PathNodes, x1.PathNodes);
 
-            var path0 = x0.PathNodes.Take(min);
-            var path1 = x1.PathNodes.Take(min);
-
-            Assert.True(count1 - count0 < 8);
-            Assert.Equal(path0, path1);
-
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(x0, x1);
+            Assert.Equal(PathData.SizeOf(x0), data.Length);
         }
     }
 }

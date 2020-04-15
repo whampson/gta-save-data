@@ -5,10 +5,9 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class PathData : SaveDataObject, IEquatable<PathData>
+    public class PathData : PreAllocatedSaveDataObject, IEquatable<PathData>
     {
         private Array<PathNode> m_pathNodes;
-
         public Array<PathNode> PathNodes
         {
             get { return m_pathNodes; }
@@ -16,11 +15,22 @@ namespace GTASaveData.GTA3
         }
 
         public PathData()
-        {
-            m_pathNodes = new Array<PathNode>();
-        }
+            : base(0)
+        { }
 
         public PathData(int saveSize)
+            : base(saveSize)
+        { }
+
+        public static PathData Load(byte[] data)
+        {
+            PathData p = new PathData(data.Length);
+            Serializer.Read(p, data, SaveFileFormat.Default);
+
+            return p;
+        }
+
+        protected override void PreAllocate(int saveSize)
         {
             m_pathNodes = CreateArray<PathNode>((saveSize / 2) * 8);
         }

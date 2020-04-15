@@ -295,9 +295,8 @@ namespace GTASaveData.GTA3
             return bytesRead;
         }
 
-        private T LoadPreAlloc<T>() where T : SaveDataObject
+        private T LoadPreAlloc<T>() where T : PreAllocatedSaveDataObject
         {
-            // Pre-allocate object space, only applies to some types
             int size = m_workBuff.ReadInt32();
             if (!(Activator.CreateInstance(typeof(T), size) is T obj))
             {
@@ -571,7 +570,7 @@ namespace GTASaveData.GTA3
                 && Garages.Equals(other.Garages)
                 && VehiclePool.Equals(other.VehiclePool)
                 && ObjectPool.Equals(other.ObjectPool)
-                //&& Paths.Equals(other.Paths)  // TODO: equality fails due to list padding during save
+                && Paths.Equals(other.Paths)
                 && Cranes.Equals(other.Cranes)
                 && Pickups.Equals(other.Pickups)
                 && PhoneInfo.Equals(other.PhoneInfo)
