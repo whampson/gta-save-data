@@ -60,6 +60,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "CGN");
+
             int infoSize = buf.ReadInt32();
             Debug.Assert(infoSize == CarGeneratorDataSize);
             NumberOfCarGenerators = buf.ReadInt32();
@@ -78,6 +79,7 @@ namespace GTASaveData.GTA3
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             GTA3Save.WriteSaveHeader(buf, "CGN", SizeOf<CarGeneratorData>() - GTA3Save.SaveHeaderSize);
+
             buf.Write(CarGeneratorDataSize);
             buf.Write(NumberOfCarGenerators);
             buf.Write(CurrentActiveCount);

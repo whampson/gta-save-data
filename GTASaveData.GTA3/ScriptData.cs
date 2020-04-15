@@ -161,6 +161,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "SCR");
+
             int varSpace = buf.ReadInt32();
             GlobalSpace = buf.ReadArray<byte>(varSpace);
             buf.Align4Bytes();
@@ -182,15 +183,15 @@ namespace GTASaveData.GTA3
             int runningScripts = buf.ReadInt32();
             ActiveScripts = buf.ReadArray<RunningScript>(runningScripts, fmt);
 
-            Debug.Assert(buf.Offset - GTA3Save.SaveHeaderSize == size);
+            Debug.Assert(buf.Offset == size + GTA3Save.SaveHeaderSize);
             Debug.Assert(size == SizeOf(this, fmt) - GTA3Save.SaveHeaderSize);
         }
 
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             int size = SizeOf(this, fmt);
-
             GTA3Save.WriteSaveHeader(buf, "SCR", size - GTA3Save.SaveHeaderSize);
+
             buf.Write(GlobalSpace.Count);
             buf.Write(GlobalSpace.ToArray());
             buf.Align4Bytes();

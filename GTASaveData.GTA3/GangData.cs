@@ -28,6 +28,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "GNG");
+
             Gangs = buf.ReadArray<GangInfo>(Limits.NumberOfGangs);
 
             Debug.Assert(buf.Offset == SizeOf<GangData>());

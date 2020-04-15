@@ -63,6 +63,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "PTP");
+
             PedTypes = buf.ReadArray<PedTypeInfo>(Limits.NumberOfPedTypes);
 
             Debug.Assert(buf.Offset == SizeOf<PedTypeData>());
@@ -72,6 +73,7 @@ namespace GTASaveData.GTA3
         protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             GTA3Save.WriteSaveHeader(buf, "PTP", SizeOf<PedTypeData>() - GTA3Save.SaveHeaderSize);
+
             buf.Write(PedTypes.ToArray(), Limits.NumberOfPedTypes);
 
             Debug.Assert(buf.Offset == SizeOf<PedTypeData>());

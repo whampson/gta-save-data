@@ -10,7 +10,7 @@
 - [ ] VehiclePool
 - [ ] ObjectPool
 - [x] Paths
-- [ ] Cranes
+- [x] Cranes
 - [x] Pickups
 - [ ] PhoneInfo
 - [ ] RestartPoints
@@ -19,7 +19,7 @@
 - [x] GangData
 - [x] CarGenerators
 - [ ] ParticleObjects
-- [ ] AudioScriptObjects
+- [x] AudioScriptObjects
 - [x] PlayerInfo
 - [x] Stats
 - [x] Streaming
