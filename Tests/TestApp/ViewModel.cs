@@ -131,6 +131,18 @@ namespace TestApp
 
         public void OnLoad()
         {
+            GTA3Save save = CurrentSaveFile as GTA3Save;
+            if (save == null)
+            {
+                return;
+            }
+
+            var scr = save.Scripts;
+            var ptp = save.PedType;
+
+            int oldV = scr.GetGlobal(34);
+            scr.SetGlobal(34, 6969);
+            int newV = scr.GetGlobal(34);
         }
 
         public ViewModel()

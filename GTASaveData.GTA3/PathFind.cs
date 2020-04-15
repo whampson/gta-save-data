@@ -72,7 +72,7 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(SaveFileFormat fmt)
         {
-            return ((PathNodes.Count + 8 - 1) / 8) * 2;
+            return ((PathNodes.Count + 7) / 8) * 2;
         }
 
         public override bool Equals(object obj)

@@ -19,7 +19,7 @@ namespace GTASaveData.GTA3
 
         private const int ScriptDataSize = 968;
 
-        private Array<byte> m_scriptSpace;
+        private Array<byte> m_globalSpace;
         private int m_onAMissionFlag;
         private Array<Contact> m_contacts;
         private Array<Collective> m_collectives;
@@ -32,11 +32,14 @@ namespace GTASaveData.GTA3
         private short m_numberOfMissionScripts;
         private Array<RunningScript> m_activeScripts;
 
+        [JsonIgnore]
+        public int NumberOfGlobalVariables => GlobalSpace.Count / 4;
+
         [JsonConverter(typeof(ByteArrayConverter))]
-        public Array<byte> ScriptSpace
+        public Array<byte> GlobalSpace
         {
-            get { return m_scriptSpace; }
-            set { m_scriptSpace = value; OnPropertyChanged(); }
+            get { return m_globalSpace; }
+            set { m_globalSpace = value; OnPropertyChanged(); }
         }
 
         public int OnAMissionFlag
@@ -107,7 +110,7 @@ namespace GTASaveData.GTA3
 
         public ScriptData()
         {
-            ScriptSpace = new Array<byte>();
+            GlobalSpace = new Array<byte>();
             Contacts = CreateArray<Contact>(Limits.NumberOfContacts);
             Collectives = CreateArray<Collective>(Limits.NumberOfCollectives);
             BuildingSwaps = CreateArray<BuildingSwap>(Limits.NumberOfBuildingSwaps);
@@ -115,47 +118,51 @@ namespace GTASaveData.GTA3
             ActiveScripts = new Array<RunningScript>();
         }
 
-        //public int GetVariable(int index)
-        //{
-        //    // TODO: test this
-        //    return ScriptSpace[index + 3] << 24
-        //         | ScriptSpace[index + 2] << 16
-        //         | ScriptSpace[index + 1] << 8
-        //         | ScriptSpace[index];
-        //}
+        public int GetGlobal(int index)
+        {
+            byte[] intBits = new byte[4];
+            for (int i = 0; i < 4; i++)
+            {
+                intBits[i] = GlobalSpace[(index * 4) + i];
+            }
 
-        //public float GetVariableAsFloat(int index)
-        //{
-        //    // TODO: test this
-        //    byte[] floatBits = new byte[4];
-        //    Array.Copy(ScriptSpace, index, floatBits, 0, 4);
+            return BitConverter.ToInt32(intBits, 0);
+        }
 
-        //    return BitConverter.ToSingle(floatBits, 0);
-        //}
+        public float GetGlobalAsFloat(int index)
+        {
+            byte[] floatBits = new byte[4];
+            for (int i = 0; i < 4; i++)
+            {
+                floatBits[i] = GlobalSpace[(index * 4) + i];
+            }
 
-        //public void SetVariable(int index, int value)
-        //{
-        //    // TODO: test this
-        //    ScriptSpace[index + 3] = (byte) (value >> 24);
-        //    ScriptSpace[index + 2] = (byte) (value >> 16);
-        //    ScriptSpace[index + 1] = (byte) (value >> 8);
-        //    ScriptSpace[index] = (byte) value;
+            return BitConverter.ToSingle(floatBits, 0);
+        }
 
-        //    Array.Copy(BitConverter.GetBytes(value), ScriptSpace, index);
-        //}
+        public void SetGlobal(int index, int value)
+        {
+            byte[] intBits = BitConverter.GetBytes(value);
+            for (int i = 0; i < 4; i++)
+            {
+                GlobalSpace[(index * 4) + i] = intBits[i];
+            }
+        }
 
-        //public void SetVariable(int index, float value)
-        //{
-        //    // TODO: test this
-        //    byte[] floatBits = BitConverter.GetBytes(value);
-        //    Array.Copy(floatBits, 0, ScriptSpace, index, 4);
-        //}
+        public void SetGlobal(int index, float value)
+        {
+            byte[] floatBits = BitConverter.GetBytes(value);
+            for (int i = 0; i < 4; i++)
+            {
+                GlobalSpace[(index * 4) + i] = floatBits[i];
+            }
+        }
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "SCR");
             int varSpace = buf.ReadInt32();
-            ScriptSpace = buf.ReadArray<byte>(varSpace);
+            GlobalSpace = buf.ReadArray<byte>(varSpace);
             buf.Align4Bytes();
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
@@ -184,8 +191,8 @@ namespace GTASaveData.GTA3
             int size = SizeOf(this, fmt);
 
             GTA3Save.WriteSaveHeader(buf, "SCR", size - GTA3Save.SaveHeaderSize);
-            buf.Write(ScriptSpace.Count);
-            buf.Write(ScriptSpace.ToArray());
+            buf.Write(GlobalSpace.Count);
+            buf.Write(GlobalSpace.ToArray());
             buf.Align4Bytes();
             buf.Write(ScriptDataSize);
             buf.Write(OnAMissionFlag);
@@ -210,7 +217,7 @@ namespace GTASaveData.GTA3
         protected override int GetSize(SaveFileFormat fmt)
         {
             return SizeOf<RunningScript>(fmt) * ActiveScripts.Count
-                + DataBuffer.Align4Bytes(ScriptSpace.Count)
+                + DataBuffer.Align4Bytes(GlobalSpace.Count)
                 + ScriptDataSize
                 + GTA3Save.SaveHeaderSize
                 + 3 * sizeof(int);
@@ -228,7 +235,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return ScriptSpace.SequenceEqual(other.ScriptSpace)
+            return GlobalSpace.SequenceEqual(other.GlobalSpace)
                 && OnAMissionFlag.Equals(other.OnAMissionFlag)
                 && Contacts.SequenceEqual(other.Contacts)
                 && Collectives.SequenceEqual(other.Collectives)

@@ -168,28 +168,42 @@ namespace GTASaveData.Types
         }
 
         /// <summary>
-        /// Copyies the elements of this <see cref="Array{T}"/> to an <see cref="Array"/>,
-        /// starting at a particular <see cref="Array"/> index.
+        /// Copyies the elements of this <see cref="Array{T}"/> to a compatible
+        /// one-dimensional array.
         /// </summary>
-        /// <param name="array">The array to copy to.</param>
-        /// <param name="index">The index in the destination array to copy to.</param>
-        public void CopyTo(Array array, int index)
+        /// <param name="array">The one-dimensional array to copy to.</param>
+        public void CopyTo(T[] array)
         {
-            for (int i = 0; i < m_items.Count; i++)
-            {
-                array.SetValue(m_items[i], index + i);
-            }
+            m_items.CopyTo(array);
         }
 
         /// <summary>
-        /// Copyies the elements of this <see cref="Array{T}"/> to an <see cref="Array"/>,
-        /// starting at a particular <see cref="Array"/> index.
+        /// Copyies the elements of this <see cref="Array{T}"/> to a compatible
+        /// one-dimensional array, starting at the specifed index of the target array.
         /// </summary>
-        /// <param name="array">The array to copy to.</param>
-        /// <param name="index">The index in the destination array to copy to.</param>
-        public void CopyTo(T[] array, int index)
+        /// <param name="array">The one-dimensional array to copy to.</param>
+        /// <param name="arrayIndex">The zero-based index in the target array at which copying begins.</param>
+        public void CopyTo(T[] array, int arrayIndex)
         {
-            m_items.CopyTo(array, index);
+            m_items.CopyTo(array, arrayIndex);
+        }
+
+        void ICollection.CopyTo(Array array, int arrayIndex)
+        {
+            (m_items as IList).CopyTo(array, arrayIndex);
+        }
+
+        /// <summary>
+        /// Copyies the elements of this <see cref="Array{T}"/> to a compatible
+        /// one-dimensional array, starting at the specifed index of the target array.
+        /// </summary>
+        /// <param name="index">The zero-based index in the source at which copying begins.</param>
+        /// <param name="array">The one-dimensional array to copy to.</param>
+        /// <param name="arrayIndex">The zero-based index in the target array at which copying begins.</param>
+        /// <param name="count">The number of elements to copy.</param>
+        public void CopyTo(int index, T[] array, int arrayIndex, int count)
+        {
+            m_items.CopyTo(index, array, arrayIndex, count);
         }
 
         /// <summary>
@@ -486,7 +500,7 @@ namespace GTASaveData.Types
             return new Array<T>(array);
         }
 
-        public static implicit operator T[](Array<T> array)
+        public static explicit operator T[](Array<T> array)
         {
             return array.ToArray();
         }
