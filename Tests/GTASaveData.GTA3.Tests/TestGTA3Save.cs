@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +21,7 @@ namespace GTASaveData.GTA3.Tests
                 //.RuleFor(x => x.VehiclePool, Generator.Generate<VehiclePool, TestVehiclePool>(format))
                 //.RuleFor(x => x.ObjectPool, Generator.Generate<ObjectPool, TestObjectPool>(format))
                 .RuleFor(x => x.Paths, Generator.Generate<PathData, TestPathData>(format))
-                //.RuleFor(x => x.Cranes, Generator.Generate<Cranes, TestCranes>(format))
+                .RuleFor(x => x.Cranes, Generator.Generate<CraneData, TestCraneData>(format))
                 .RuleFor(x => x.Pickups, Generator.Generate<PickupData, TestPickupData>(format))
                 //.RuleFor(x => x.PhoneInfo, Generator.Generate<PhoneInfo, TestPhoneInfo>(format))
                 //.RuleFor(x => x.RestartPoints, Generator.Generate<RestartPoints, TestRestartPoints>(format))

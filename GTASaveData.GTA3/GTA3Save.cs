@@ -32,7 +32,7 @@ namespace GTASaveData.GTA3
         private DummyObject m_vehiclePool;  // VehiclePool
         private DummyObject m_objectPool;   // ObjectPool
         private PathData m_paths;
-        private DummyObject m_cranes;   // Cranes
+        private CraneData m_cranes;
         private PickupData m_pickups;
         private DummyObject m_phoneInfo;    // PhoneInfo
         private DummyObject m_restartPoints;    // Restarts
@@ -89,7 +89,7 @@ namespace GTASaveData.GTA3
             set { m_paths = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Cranes
+        public CraneData Cranes
         {
             get { return m_cranes; }
             set { m_cranes = value; OnPropertyChanged(); }
@@ -232,7 +232,7 @@ namespace GTASaveData.GTA3
             VehiclePool = new DummyObject();
             ObjectPool = new DummyObject();
             Paths = new PathData();
-            Cranes = new DummyObject();
+            Cranes = new CraneData();
             Pickups = new PickupData();
             PhoneInfo = new DummyObject();
             RestartPoints = new DummyObject();
@@ -391,7 +391,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); VehiclePool = LoadPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); ObjectPool = LoadPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); Paths = LoadPreAlloc<PathData>();
-            totalSize += ReadBlock(file); Cranes = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); Cranes = Load<CraneData>();
             totalSize += ReadBlock(file); Pickups = Load<PickupData>();
             totalSize += ReadBlock(file); PhoneInfo = LoadPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); RestartPoints = LoadPreAlloc<DummyObject>();
