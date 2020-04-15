@@ -254,7 +254,7 @@ namespace GTASaveData.VC
             LastMissionPassedName = "";
             TimeLastSaved = new SystemTime();
             CameraPosition = new Vector();
-            RadioStationPositionList = CreateArray<int>(Limits.RadioStationListCount);
+            RadioStationPositionList = new Array<int>();
         }
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)

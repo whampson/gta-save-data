@@ -32,7 +32,7 @@ namespace GTASaveData.GTA3
 
         protected override void PreAllocate(int saveSize)
         {
-            m_pathNodes = CreateArray<PathNode>((saveSize / 2) * 8);
+            m_pathNodes = Helpers.CreateArray<PathNode>((saveSize / 2) * 8);
         }
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)

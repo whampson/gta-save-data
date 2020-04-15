@@ -1,16 +1,10 @@
 ﻿using Newtonsoft.Json;
-using System.Linq;
 using WpfEssentials;
 
 namespace GTASaveData.Types
 {
     public abstract class GTAObject : ObservableObject
     {
-        public static Array<T> CreateArray<T>(int count) where T : new()
-        {
-            return Enumerable.Range(0, count).Select(x => new T()).ToArray();
-        }
-
         public string ToJsonString()
         {
             return ToJsonString(Formatting.Indented);

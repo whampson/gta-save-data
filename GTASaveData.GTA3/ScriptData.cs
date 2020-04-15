@@ -111,10 +111,10 @@ namespace GTASaveData.GTA3
         public ScriptData()
         {
             GlobalSpace = new Array<byte>();
-            Contacts = CreateArray<Contact>(Limits.NumberOfContacts);
-            Collectives = CreateArray<Collective>(Limits.NumberOfCollectives);
-            BuildingSwaps = CreateArray<BuildingSwap>(Limits.NumberOfBuildingSwaps);
-            InvisibilitySettings = CreateArray<InvisibleEntity>(Limits.NumberOfInvisibilitySettings);
+            Contacts = new Array<Contact>();
+            Collectives = new Array<Collective>();
+            BuildingSwaps = new Array<BuildingSwap>();
+            InvisibilitySettings = new Array<InvisibleEntity>();
             ActiveScripts = new Array<RunningScript>();
         }
 

@@ -4,16 +4,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.Types
 {
-    public abstract class PreAllocatedSaveDataObject : SaveDataObject
-    {
-        protected PreAllocatedSaveDataObject(int size)
-        {
-            PreAllocate(size);
-        }
-
-        protected abstract void PreAllocate(int size);
-    }
-
     public abstract class SaveDataObject : GTAObject, ISaveDataObject
     {
         int ISaveDataObject.ReadObjectData(DataBuffer buf)
@@ -115,5 +105,15 @@ namespace GTASaveData.Types
         {
             return obj.GetSize(fmt);
         }
+    }
+
+    public abstract class PreAllocatedSaveDataObject : SaveDataObject
+    {
+        protected PreAllocatedSaveDataObject(int size)
+        {
+            PreAllocate(size);
+        }
+
+        protected abstract void PreAllocate(int size);
     }
 }

@@ -99,7 +99,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Throws<SerializationException>(() => x.Load(data));
 
             // Make the script space huge
-            x.Scripts.GlobalSpace = GTAObject.CreateArray<byte>(100000);
+            x.Scripts.GlobalSpace = Helpers.CreateArray<byte>(100000);
             Assert.Throws<SerializationException>(() => x.Save(out byte[] _));
         }
 
