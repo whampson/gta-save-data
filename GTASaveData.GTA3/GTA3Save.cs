@@ -43,7 +43,7 @@ namespace GTASaveData.GTA3
         private DummyObject m_particleObjects;  // ParticleObjects
         private DummyObject m_audioScriptObjects;   // AudioScriptObjects
         private DummyObject m_playerInfo;   // PlayerInfo
-        private DummyObject m_stats;    // Stats
+        private Stats m_stats;
         private DummyObject m_streaming;    // Streaming
         private PedTypeData m_pedType;
 
@@ -155,7 +155,7 @@ namespace GTASaveData.GTA3
             set { m_playerInfo = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Stats
+        public Stats Stats
         {
             get { return m_stats; }
             set { m_stats = value; OnPropertyChanged(); }
@@ -243,7 +243,7 @@ namespace GTASaveData.GTA3
             ParticleObjects = new DummyObject();
             AudioScriptObjects = new DummyObject();
             PlayerInfo = new DummyObject();
-            Stats = new DummyObject();
+            Stats = new Stats();
             Streaming = new DummyObject();
             PedType = new PedTypeData();
 
@@ -402,7 +402,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); ParticleObjects = LoadPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); AudioScriptObjects = LoadPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); PlayerInfo = LoadPreAlloc<DummyObject>();
-            totalSize += ReadBlock(file); Stats = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); Stats = Load<Stats>();
             totalSize += ReadBlock(file); Streaming = LoadPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); PedType = Load<PedTypeData>();
 
