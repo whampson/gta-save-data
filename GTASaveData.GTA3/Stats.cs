@@ -10,6 +10,7 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
+            public const int PedTypeCount = 23;
             public const int FastestTimesCount = 16;
             public const int HighestScoresCount = 16;
             public const int LastMissionPassedLength = 8;
@@ -19,7 +20,7 @@ namespace GTASaveData.GTA3
         private int m_peopleKilledByOthers;
         private int m_carsExploded;
         private int m_roundsFiredByPlayer;
-        private int m_pedsKilledOfThisType;
+        private Array<int> m_pedsKilledOfThisType;
         private int m_helisDestroyed;
         private int m_progressMade;
         private int m_totalProgressInGame;
@@ -47,8 +48,8 @@ namespace GTASaveData.GTA3
         private bool m_commercialPassed;
         private bool m_suburbanPassed;
         private int m_elBurroTime;
-        private int m_distanceTravelledOnFoot;
-        private int m_distanceTravelledInVehicle;
+        private float m_distanceTravelledOnFoot;
+        private float m_distanceTravelledInVehicle;
         private int m_record4x4One;
         private int m_record4x4Two;
         private int m_record4x4Three;
@@ -92,7 +93,7 @@ namespace GTASaveData.GTA3
             set { m_roundsFiredByPlayer = value; OnPropertyChanged(); }
         }
 
-        public int PedsKilledOfThisType
+        public Array<int> PedsKilledOfThisType
         {
             get { return m_pedsKilledOfThisType; }
             set { m_pedsKilledOfThisType = value; OnPropertyChanged(); }
@@ -260,13 +261,13 @@ namespace GTASaveData.GTA3
             set { m_elBurroTime = value; OnPropertyChanged(); }
         }
 
-        public int DistanceTravelledOnFoot
+        public float DistanceTravelledOnFoot
         {
             get { return m_distanceTravelledOnFoot; }
             set { m_distanceTravelledOnFoot = value; OnPropertyChanged(); }
         }
 
-        public int DistanceTravelledInVehicle
+        public float DistanceTravelledInVehicle
         {
             get { return m_distanceTravelledInVehicle; }
             set { m_distanceTravelledInVehicle = value; OnPropertyChanged(); }
@@ -383,6 +384,7 @@ namespace GTASaveData.GTA3
 
         public Stats()
         {
+            PedsKilledOfThisType = new Array<int>();
             FastestTimes = new Array<int>();
             HighestScores = new Array<int>();
             LastMissionPassedName = "";
@@ -394,7 +396,7 @@ namespace GTASaveData.GTA3
             PeopleKilledByOthers = buf.ReadInt32();
             CarsExploded = buf.ReadInt32();
             RoundsFiredByPlayer = buf.ReadInt32();
-            PedsKilledOfThisType = buf.ReadInt32();
+            PedsKilledOfThisType = buf.ReadArray<int>(Limits.PedTypeCount);
             HelisDestroyed = buf.ReadInt32();
             ProgressMade = buf.ReadInt32();
             TotalProgressInGame = buf.ReadInt32();
@@ -418,12 +420,12 @@ namespace GTASaveData.GTA3
             MissionsPassed = buf.ReadInt32();
             PassengersDroppedOffWithTaxi = buf.ReadInt32();
             MoneyMadeWithTaxi = buf.ReadInt32();
-            IndustrialPassed = buf.ReadBool();
-            CommercialPassed = buf.ReadBool();
-            SuburbanPassed = buf.ReadBool();
+            IndustrialPassed = buf.ReadBool(4);
+            CommercialPassed = buf.ReadBool(4);
+            SuburbanPassed = buf.ReadBool(4);
             ElBurroTime = buf.ReadInt32();
-            DistanceTravelledOnFoot = buf.ReadInt32();
-            DistanceTravelledInVehicle = buf.ReadInt32();
+            DistanceTravelledOnFoot = buf.ReadFloat();
+            DistanceTravelledInVehicle = buf.ReadFloat();
             Record4x4One = buf.ReadInt32();
             Record4x4Two = buf.ReadInt32();
             Record4x4Three = buf.ReadInt32();
@@ -452,7 +454,7 @@ namespace GTASaveData.GTA3
             buf.Write(PeopleKilledByOthers);
             buf.Write(CarsExploded);
             buf.Write(RoundsFiredByPlayer);
-            buf.Write(PedsKilledOfThisType);
+            buf.Write(PedsKilledOfThisType.ToArray(), Limits.PedTypeCount);
             buf.Write(HelisDestroyed);
             buf.Write(ProgressMade);
             buf.Write(TotalProgressInGame);
@@ -476,9 +478,9 @@ namespace GTASaveData.GTA3
             buf.Write(MissionsPassed);
             buf.Write(PassengersDroppedOffWithTaxi);
             buf.Write(MoneyMadeWithTaxi);
-            buf.Write(IndustrialPassed);
-            buf.Write(CommercialPassed);
-            buf.Write(SuburbanPassed);
+            buf.Write(IndustrialPassed, 4);
+            buf.Write(CommercialPassed, 4);
+            buf.Write(SuburbanPassed, 4);
             buf.Write(ElBurroTime);
             buf.Write(DistanceTravelledOnFoot);
             buf.Write(DistanceTravelledInVehicle);
@@ -520,7 +522,7 @@ namespace GTASaveData.GTA3
                 && PeopleKilledByOthers.Equals(other.PeopleKilledByOthers)
                 && CarsExploded.Equals(other.CarsExploded)
                 && RoundsFiredByPlayer.Equals(other.RoundsFiredByPlayer)
-                && PedsKilledOfThisType.Equals(other.PedsKilledOfThisType)
+                && PedsKilledOfThisType.SequenceEqual(other.PedsKilledOfThisType)
                 && HelisDestroyed.Equals(other.HelisDestroyed)
                 && ProgressMade.Equals(other.ProgressMade)
                 && TotalProgressInGame.Equals(other.TotalProgressInGame)

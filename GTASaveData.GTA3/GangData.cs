@@ -14,7 +14,6 @@ namespace GTASaveData.GTA3
         }
 
         private Array<GangInfo> m_gangs;
-
         public Array<GangInfo> Gangs
         {
             get { return m_gangs; }
@@ -23,7 +22,7 @@ namespace GTASaveData.GTA3
 
         public GangData()
         {
-            m_gangs = new Array<GangInfo>();
+            Gangs = new Array<GangInfo>();
         }
 
         protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)

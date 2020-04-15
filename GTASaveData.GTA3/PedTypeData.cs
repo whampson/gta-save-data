@@ -14,7 +14,6 @@ namespace GTASaveData.GTA3
         }
 
         private Array<PedTypeInfo> m_pedTypes;
-
         public Array<PedTypeInfo> PedTypes
         {
             get { return m_pedTypes; }
@@ -23,7 +22,7 @@ namespace GTASaveData.GTA3
 
         public PedTypeData()
         {
-            m_pedTypes = CreateArray<PedTypeInfo>(Limits.NumberOfPedTypes);
+            PedTypes = CreateArray<PedTypeInfo>(Limits.NumberOfPedTypes);
         }
 
         public PedTypeFlags GetFlag(PedType type)

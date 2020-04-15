@@ -21,7 +21,7 @@
 - [ ] ParticleObjects
 - [ ] AudioScriptObjects
 - [ ] PlayerInfo
-- [ ] Stats
+- [x] Stats
 - [ ] Streaming
 - [x] PedTypeInfo
 

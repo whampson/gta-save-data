@@ -33,7 +33,7 @@ namespace GTASaveData.GTA3.Tests
                 //.RuleFor(x => x.ParticleObjects, Generator.Generate<Particles, TestParticles>(format))
                 //.RuleFor(x => x.AudioScriptObjects, Generator.Generate<AudioScriptObjects, TestAudioScriptObjects>(format))
                 //.RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))
-                //.RuleFor(x => x.Stats, Generator.Generate<Stats, TestStats>(format))
+                .RuleFor(x => x.Stats, Generator.Generate<Stats, TestStats>(format))
                 //.RuleFor(x => x.Streaming, Generator.Generate<Streaming, TestStreaming>(format))
                 .RuleFor(x => x.PedType, Generator.Generate<PedTypeData, TestPedTypeData>(format))
                 ;
