@@ -44,7 +44,7 @@ namespace GTASaveData.GTA3
         private DummyObject m_audioScriptObjects;   // AudioScriptObjects
         private PlayerInfo m_playerInfo;
         private Stats m_stats;
-        private DummyObject m_streaming;    // Streaming
+        private Streaming m_streaming;
         private PedTypeData m_pedType;
 
         public SimpleVariables SimpleVars
@@ -161,7 +161,7 @@ namespace GTASaveData.GTA3
             set { m_stats = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Streaming
+        public Streaming Streaming
         {
             get { return m_streaming; }
             set { m_streaming = value; OnPropertyChanged(); }
@@ -244,7 +244,7 @@ namespace GTASaveData.GTA3
             AudioScriptObjects = new DummyObject();
             PlayerInfo = new PlayerInfo();
             Stats = new Stats();
-            Streaming = new DummyObject();
+            Streaming = new Streaming();
             PedType = new PedTypeData();
 
         #if !DEBUG
@@ -403,7 +403,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); AudioScriptObjects = LoadPreAlloc<DummyObject>();
             totalSize += ReadBlock(file); PlayerInfo = Load<PlayerInfo>();
             totalSize += ReadBlock(file); Stats = Load<Stats>();
-            totalSize += ReadBlock(file); Streaming = LoadPreAlloc<DummyObject>();
+            totalSize += ReadBlock(file); Streaming = Load<Streaming>();
             totalSize += ReadBlock(file); PedType = Load<PedTypeData>();
 
             while (file.Position < file.Length - 4)

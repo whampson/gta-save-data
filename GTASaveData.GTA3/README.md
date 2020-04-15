@@ -22,7 +22,7 @@
 - [ ] AudioScriptObjects
 - [x] PlayerInfo
 - [x] Stats
-- [ ] Streaming
+- [x] Streaming
 - [x] PedTypeInfo
 
 ### Platform Support
