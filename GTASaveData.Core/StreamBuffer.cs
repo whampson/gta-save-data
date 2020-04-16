@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Extensions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -72,6 +73,143 @@ namespace GTASaveData
         #endregion
 
         #region Read Functions
+        /// <summary>
+        /// Reads a value from the buffer.
+        /// </summary>
+        /// <typeparam name="T">The type of data to read.</typeparam>
+        /// <param name="format">The data format, if applicable.</param>
+        /// <param name="obj">
+        /// An object of type <typeparamref name="T"/> extracted from the
+        /// buffer.
+        /// </param>
+        /// <param name="length">
+        /// The number of bytes to read if <paramref name="obj"/> is a
+        /// <see cref="byte"/> array, <see cref="bool"/>, or <see cref="string"/> value.
+        /// Ignored otherwise.
+        /// </param>
+        /// <param name="unicode">
+        /// A value indicating whether to read UTF-16 characters if
+        /// <typeparamref name="T"/> is a <see cref="string"/>.
+        /// </param>
+        /// <returns>The number of bytes read.</returns>
+        /// <exception cref="SerializationException">
+        /// Thrown if <typeparamref name="T"/> is not one of the following:
+        /// <see cref="byte"/> array,
+        /// <see cref="byte"/>,
+        /// <see cref="sbyte"/>,
+        /// <see cref="bool"/>,
+        /// <see cref="char"/>,
+        /// <see cref="double"/>,
+        /// <see cref="float"/>,
+        /// <see cref="int"/>,
+        /// <see cref="long"/>,
+        /// <see cref="short"/>,
+        /// <see cref="uint"/>,
+        /// <see cref="ulong"/>,
+        /// <see cref="ushort"/>,
+        /// <see cref="string"/>,
+        /// <see cref="ISerializable"/>.
+        /// </exception>
+        internal int GenericRead<T>(DataFormat format,
+            out T obj,
+            int length = 0,
+            bool unicode = false)
+        {
+            Type t = typeof(T);
+            object o = null;
+            int mark = Cursor;
+
+            if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
+
+            if (t == typeof(byte[])) o = ReadBytes(length);
+            else if (t == typeof(byte)) o = ReadByte();
+            else if (t == typeof(sbyte)) o = ReadSByte();
+            else if (t == typeof(bool)) o = ReadBool((length == 0) ? 1 : length);
+            else if (t == typeof(char)) o = ReadChar(unicode);
+            else if (t == typeof(double)) o = ReadDouble();
+            else if (t == typeof(float)) o = ReadFloat();
+            else if (t == typeof(int)) o = ReadInt32();
+            else if (t == typeof(uint)) o = ReadUInt32();
+            else if (t == typeof(long)) o = ReadInt64();
+            else if (t == typeof(ulong)) o = ReadUInt64();
+            else if (t == typeof(short)) o = ReadInt16();
+            else if (t == typeof(ushort)) o = ReadUInt16();
+            else if (t == typeof(string)) o = (length == 0) ? ReadString(unicode) : ReadString(length, unicode);
+            else if (t.Implements(typeof(ISerializable)))
+            {
+                var p = new Type[] { typeof(DataFormat) };
+                var m = GetType().GetMethod(nameof(Read), p).MakeGenericMethod(t);
+                o = m.Invoke(this, new object[] { format });
+            }
+            else throw SerializationNotSupported(typeof(T));
+
+            obj = (T) o;
+            return Cursor - mark;
+        }
+
+        /// <summary>
+        /// Reads a block of bytes from the buffer.
+        /// </summary>
+        /// <param name="buffer">The target buffer to which the block of bytes will be written.</param>
+        /// <param name="index">The index in the target buffer at which to begin writing data.</param>
+        /// <param name="count">The number of bytes to read.</param>
+        /// <returns>The number of bytes read.</returns>
+        public int Read(byte[] buffer, int index, int count)
+        {
+            return m_buffer.Read(buffer, index, count);
+        }
+
+        /// <summary>
+        /// Reads a byte array from the buffer.
+        /// </summary>
+        /// <param name="count">The number of bytes to read.</param>
+        /// <returns>A byte array with <paramref name="count"/> bytes.</returns>
+        public byte[] ReadBytes(int count)
+        {
+            byte[] data = new byte[count];
+            Read(data, 0, count);
+
+            return data;
+        }
+
+        /// <summary>
+        /// Reads an unsigned 8-bit integer from the buffer.
+        /// </summary>
+        /// <returns>An byte value.</returns>
+        public byte ReadByte()
+        {
+            int b = m_buffer.ReadByte();
+            if (b == -1)
+            {
+                throw EndOfStream();
+            }
+
+            return (byte) b;
+        }
+
+        /// <summary>
+        /// Reads a signed 8-bit integer from the buffer.
+        /// </summary>
+        /// <returns>An sbyte value.</returns>
+        public sbyte ReadSByte()
+        {
+            int b = m_buffer.ReadByte();
+            if (b == -1)
+            {
+                throw EndOfStream();
+            }
+
+            return (sbyte) b;
+        }
+
+
+
+        /// <summary>
+        /// Reads a true/false value from the buffer.
+        /// False is represented with zero, true is represented with nonzero.
+        /// </summary>
+        /// <param name="byteCount">The number of bytes to treat as true/false.</param>
+        /// <returns>A bool value.</returns>
         public bool ReadBool(int byteCount = 1)
         {
             if (byteCount < 1)
@@ -90,41 +228,11 @@ namespace GTASaveData
             return value != 0;
         }
 
-        public sbyte ReadSByte()
-        {
-            int b = m_buffer.ReadByte();
-            if (b == -1)
-            {
-                throw EndOfStream();
-            }
-
-            return (sbyte) b;
-        }
-
-        public byte ReadByte()
-        {
-            int b = m_buffer.ReadByte();
-            if (b == -1)
-            {
-                throw EndOfStream();
-            }
-
-            return (byte) b;
-        }
-
-        public byte[] ReadBytes(int count)
-        {
-            byte[] data = new byte[count];
-            Read(data, 0, count);
-
-            return data;
-        }
-
-        public int Read(byte[] buffer, int index, int count)
-        {
-            return m_buffer.Read(buffer, index, count);
-        }
-
+        /// <summary>
+        /// Read an 8-bit or 16-bit character from the buffer.
+        /// </summary>
+        /// <param name="unicode">A value indicating whether to read UTF-16 characters.</param>
+        /// <returns>A char value.</returns>
         public char ReadChar(bool unicode = false)
         {
             return (unicode)
@@ -132,6 +240,10 @@ namespace GTASaveData
                 : (char) ReadByte();
         }
 
+        /// <summary>
+        /// Reads a 32-bit float (IEEE 754) from the buffer.
+        /// </summary>
+        /// <returns>A float value.</returns>
         public float ReadFloat()
         {
             byte[] data = ReadBytes(sizeof(float));
@@ -143,6 +255,10 @@ namespace GTASaveData
             return BitConverter.ToSingle(data, 0);
         }
 
+        /// <summary>
+        /// Reads a 64-bit double (IEEE 754) from the buffer.
+        /// </summary>
+        /// <returns>A float value.</returns>
         public double ReadDouble()
         {
             byte[] data = ReadBytes(sizeof(double));
@@ -154,21 +270,37 @@ namespace GTASaveData
             return BitConverter.ToDouble(data, 0);
         }
 
+        /// <summary>
+        /// Reads a signed 16-bit integer from the buffer.
+        /// </summary>
+        /// <returns>A short value.</returns>
         public short ReadInt16()
         {
             return (short) ReadUInt16();
         }
 
+        /// <summary>
+        /// Reads a signed 32-bit integer from the buffer.
+        /// </summary>
+        /// <returns>An int value.</returns>
         public int ReadInt32()
         {
             return (int) ReadUInt32();
         }
 
+        /// <summary>
+        /// Reads a signed 64-bit integer from the buffer.
+        /// </summary>
+        /// <returns>A long value.</returns>
         public long ReadInt64()
         {
             return (long) ReadUInt64();
         }
 
+        /// <summary>
+        /// Reads an unsigned 16-bit integer from the buffer.
+        /// </summary>
+        /// <returns>A short value.</returns>
         public ushort ReadUInt16()
         {
             byte[] data = ReadBytes(sizeof(ushort));
@@ -177,6 +309,10 @@ namespace GTASaveData
                 : (ushort) ((data[1] << 8) | data[0]);
         }
 
+        /// <summary>
+        /// Reads an unsigned 32-bit integer from the buffer.
+        /// </summary>
+        /// <returns>An int value.</returns>
         public uint ReadUInt32()
         {
             byte[] data = ReadBytes(sizeof(uint));
@@ -185,6 +321,10 @@ namespace GTASaveData
                 : (uint) ((data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0]);
         }
 
+        /// <summary>
+        /// Reads an unsigned 64-bit integer from the buffer.
+        /// </summary>
+        /// <returns>A long value.</returns>
         public ulong ReadUInt64()
         {
             ulong[] data = ReadBytes(sizeof(ulong)).Select(x => (ulong) x).ToArray();
@@ -193,6 +333,11 @@ namespace GTASaveData
                 : ((data[7] << 56) | (data[6] << 48) | (data[5] << 40) | (data[4] << 32) | (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0]);
         }
 
+        /// <summary>
+        /// Reads a zero-terminated string from the buffer.
+        /// </summary>
+        /// <param name="unicode">A value indicating whether to read UTF-16 characters.</param>
+        /// <returns>A string value.</returns>
         public string ReadString(bool unicode = false)
         {
             string s = "";
@@ -206,6 +351,15 @@ namespace GTASaveData
             return s;
         }
 
+        /// <summary>
+        /// Reads a fixed-length string from the buffer.
+        /// The number of bytes necessary to read <paramref name="length"/> characters
+        /// will be read from the buffer. If a zero-character is found, the string will
+        /// be truncated at that point.
+        /// </summary>
+        /// <param name="unicode">A value indicating whether to read UTF-16 characters.</param>
+        /// <param name="length">The number of characters to read.</param>
+        /// <returns>A string value.</returns>
         public string ReadString(int length, bool unicode = false)
         {
             if (length == 0)
@@ -233,6 +387,11 @@ namespace GTASaveData
             return s;
         }
 
+        /// <summary>
+        /// Reads an object from the buffer.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="ISerializable"/> to read.</typeparam>
+        /// <returns>An <see cref="ISerializable"/> object.</returns>
         public T Read<T>() where T : ISerializable, new()
         {
             T obj = new T();
@@ -241,6 +400,12 @@ namespace GTASaveData
             return obj;
         }
 
+        /// <summary>
+        /// Reads an object from the buffer using the specified data format.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="ISerializable"/> to read.</typeparam>
+        /// <param name="format">The data format.</param>
+        /// <returns>An <see cref="ISerializable"/> object.</returns>
         public T Read<T>(DataFormat format) where T : ISerializable, new()
         {
             T obj = new T();
@@ -249,6 +414,18 @@ namespace GTASaveData
             return obj;
         }
 
+        /// <summary>
+        /// Reads an array from the buffer.
+        /// </summary>
+        /// <typeparam name="T">The array element type.</typeparam>
+        /// <param name="count">The number of elements to read.</param>
+        /// <param name="itemLength">
+        /// The number of bytes to read per element if <typeparamref name="T"/> is
+        /// <see cref="byte"/> array, <see cref="bool"/>, or <see cref="string"/>.
+        /// Ignored otherwise.
+        /// </param>
+        /// <param name="unicode">A value indicating whether to read UTF-16 characters.</param>
+        /// <returns>An array of type <typeparamref name="T"/>.</returns>
         public T[] ReadArray<T>(int count,
             int itemLength = 0,
             bool unicode = false)
@@ -256,9 +433,22 @@ namespace GTASaveData
             return ReadArray<T>(count, DataFormat.Default, itemLength, unicode);
         }
 
-        public T[] ReadArray<T>(int count,
-            DataFormat format,
-            int itemLength = 0,     // Note: only applies to bool string types.
+        /// <summary>
+        /// Reads an array from the buffer using the specified data format for
+        /// each element.
+        /// </summary>
+        /// <typeparam name="T">The array element type.</typeparam>
+        /// <param name="count">The number of elements to read.</param>
+        /// <param name="format">The element data format, if applicable.</param>
+        /// <param name="itemLength">
+        /// The number of bytes to read per element if <typeparamref name="T"/> is
+        /// <see cref="byte"/> array, <see cref="bool"/>, or <see cref="string"/>.
+        /// Ignored otherwise.
+        /// </param>
+        /// <param name="unicode">A value indicating whether to read UTF-16 characters.</param>
+        /// <returns>An array of type <typeparamref name="T"/>.</returns>
+        public T[] ReadArray<T>(int count, DataFormat format,
+            int itemLength = 0,
             bool unicode = false)
         {
             List<T> items = new List<T>();
@@ -270,102 +460,85 @@ namespace GTASaveData
 
             return items.ToArray();
         }
+        #endregion
 
-        internal int GenericRead<T>(DataFormat format,
-            out T obj,
+        #region Write Functions
+        /// <summary>
+        /// Writes a value from the buffer.
+        /// </summary>
+        /// <typeparam name="T">The type of data to write.</typeparam>
+        /// <param name="value">The <typeparamref name="T"/> value to write.</param>
+        /// <param name="format">The data format, if applicable.</param>
+        /// <param name="length">
+        /// The number of bytes to write if <paramref name="value"/> is a
+        /// <see cref="byte"/> array, <see cref="bool"/>, or <see cref="string"/> value.
+        /// Ignored otherwise.
+        /// </param>
+        /// <param name="unicode">
+        /// A value indicating whether to write UTF-16 characters if
+        /// <typeparamref name="T"/> is a <see cref="string"/>.
+        /// </param>
+        /// <returns>The number of bytes written.</returns>
+        /// <exception cref="SerializationException">
+        /// Thrown if <typeparamref name="T"/> is not one of the following:
+        /// <see cref="byte"/> array,
+        /// <see cref="byte"/>,
+        /// <see cref="sbyte"/>,
+        /// <see cref="bool"/>,
+        /// <see cref="char"/>,
+        /// <see cref="double"/>,
+        /// <see cref="float"/>,
+        /// <see cref="int"/>,
+        /// <see cref="long"/>,
+        /// <see cref="short"/>,
+        /// <see cref="uint"/>,
+        /// <see cref="ulong"/>,
+        /// <see cref="ushort"/>,
+        /// <see cref="string"/>,
+        /// <see cref="ISerializable"/>.
+        /// </exception>
+        internal int GenericWrite<T>(T value, DataFormat format,
             int length = 0,
             bool unicode = false)
         {
             Type t = typeof(T);
-            object o = null;
-            int mark = Cursor;
 
             if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
 
-            if (t == typeof(bool))
-            {
-                o = ReadBool((length == 0) ? 1 : length);
-            }
-            else if (t == typeof(byte))
-            {
-                o = ReadByte();
-            }
-            else if (t == typeof(sbyte))
-            {
-                o = ReadSByte();
-            }
-            else if (t == typeof(byte[]))
-            {
-                o = ReadBytes(length);
-            }
-            else if (t == typeof(char))
-            {
-                o = ReadChar(unicode);
-            }
-            else if (t == typeof(double))
-            {
-                o = ReadDouble();
-            }
-            else if (t == typeof(float))
-            {
-                o = ReadFloat();
-            }
-            else if (t == typeof(int))
-            {
-                o = ReadInt32();
-            }
-            else if (t == typeof(uint))
-            {
-                o = ReadUInt32();
-            }
-            else if (t == typeof(long))
-            {
-                o = ReadInt64();
-            }
-            else if (t == typeof(ulong))
-            {
-                o = ReadUInt64();
-            }
-            else if (t == typeof(short))
-            {
-                o = ReadInt16();
-            }
-            else if (t == typeof(ushort))
-            {
-                o = ReadUInt16();
-            }
-            else if (t == typeof(string))
-            {
-                o = (length == 0) ? ReadString(unicode) : ReadString(length, unicode);
-            }
-            else if (t.GetInterface(nameof(ISerializable)) != null)
-            {
-                var m = GetType().GetMethod(nameof(Read), new Type[] { typeof(DataFormat) }).MakeGenericMethod(t);
-                o = m.Invoke(this, new object[] { format });
-            }
-            else
-            {
-                throw SerializationNotSupported(typeof(T));
-            }
-
-            obj = (T) o;
-            return Cursor - mark;
+            if (t == typeof(byte[])) return Write((byte[]) (object) value);
+            else if (t == typeof(byte)) return Write(Convert.ToByte(value));
+            else if (t == typeof(sbyte)) return Write(Convert.ToSByte(value));
+            else if (t == typeof(bool)) return Write(Convert.ToBoolean(value), (length == 0) ? 1 : length);
+            else if (t == typeof(char)) return Write(Convert.ToChar(value), unicode);
+            else if (t == typeof(double)) return Write(Convert.ToDouble(value));
+            else if (t == typeof(float)) return Write(Convert.ToSingle(value));
+            else if (t == typeof(int)) return Write(Convert.ToInt32(value));
+            else if (t == typeof(uint)) return Write(Convert.ToUInt32(value));
+            else if (t == typeof(long)) return Write(Convert.ToInt64(value));
+            else if (t == typeof(ulong)) return Write(Convert.ToUInt64(value));
+            else if (t == typeof(short)) return Write(Convert.ToInt16(value));
+            else if (t == typeof(ushort)) return Write(Convert.ToUInt16(value));
+            else if (t == typeof(string)) return Write(Convert.ToString(value), length, unicode);
+            else if (t.Implements(typeof(ISerializable))) return Write((ISerializable) value, format);
+            else throw SerializationNotSupported(typeof(T));
         }
-        #endregion
 
-        #region Write Functions
-        public int Write(bool value, int byteCount = 1)
+        public int Write(byte[] data, int index, int count)
         {
-            if (byteCount < 1)
+            try
             {
-                throw new ArgumentOutOfRangeException(nameof(byteCount));
+                m_buffer.Write(data, index, count);
+                return count;
             }
+            catch (NotSupportedException)
+            {
+                throw new SerializationException(Strings.Error_NotExpandable);
+            }
+        }
 
-            byte[] data = new byte[byteCount];
-            int index = (BigEndian) ? byteCount - 1 : 0;
-            data[index] = (value) ? (byte) 1 : (byte) 0;
-
-            return Write(data);
+        public int Write(byte[] data)
+        {
+            return Write(data, 0, data.Length);
         }
 
         public int Write(byte value)
@@ -380,31 +553,22 @@ namespace GTASaveData
             return sizeof(sbyte);
         }
 
-        public int Write(byte[] data)
+        public int Write(bool value, int byteCount = 1)
         {
-            return Write(data, 0, data.Length);
-        }
+            if (byteCount < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(byteCount));
+            }
 
-        public int Write(byte[] data, int index, int count)
-        {
-            try
-            {
-                m_buffer.Write(data, index, count);
-                return count;
-            }
-            catch (NotSupportedException e)
-            {
-                throw new SerializationException(Strings.Error_NotExpandable, e);
-            }
+            byte[] data = new byte[byteCount];
+            int index = (BigEndian) ? byteCount - 1 : 0;
+            data[index] = (value) ? (byte) 1 : (byte) 0;
+
+            return Write(data);
         }
 
         public int Write(char value, bool unicode = false)
         {
-            if (char.IsSurrogate(value))
-            {
-                throw new ArgumentException(Strings.Error_Argument_NoSurrogateChars, nameof(value));
-            }
-
             return (unicode)
                 ? Write((ushort) value)
                 : Write((byte) value);
@@ -599,81 +763,6 @@ namespace GTASaveData
             }
 
             return bytesWritten;
-        }
-
-        internal int GenericWrite<T>(T value, DataFormat format,
-            int length = 0,
-            bool unicode = false)
-        {
-            Type t = typeof(T);
-
-            if (length < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(length));
-            }
-
-            if (t == typeof(bool))
-            {
-                return Write(Convert.ToBoolean(value), (length == 0) ? 1 : length);
-            }
-            else if (t == typeof(byte))
-            {
-                return Write(Convert.ToByte(value));
-            }
-            else if (t == typeof(sbyte))
-            {
-                return Write(Convert.ToSByte(value));
-            }
-            else if (t == typeof(byte[]))
-            {
-                return Write((byte[]) (object) value);
-            }
-            else if (t == typeof(char))
-            {
-                return Write(Convert.ToChar(value), unicode);
-            }
-            else if (t == typeof(double))
-            {
-                return Write(Convert.ToDouble(value));
-            }
-            else if (t == typeof(float))
-            {
-                return Write(Convert.ToSingle(value));
-            }
-            else if (t == typeof(int))
-            {
-                return Write(Convert.ToInt32(value));
-            }
-            else if (t == typeof(uint))
-            {
-                return Write(Convert.ToUInt32(value));
-            }
-            else if (t == typeof(long))
-            {
-                return Write(Convert.ToInt64(value));
-            }
-            else if (t == typeof(ulong))
-            {
-                return Write(Convert.ToUInt64(value));
-            }
-            else if (t == typeof(short))
-            {
-                return Write(Convert.ToInt16(value));
-            }
-            else if (t == typeof(ushort))
-            {
-                return Write(Convert.ToUInt16(value));
-            }
-            else if (t == typeof(string))
-            {
-                return Write(Convert.ToString(value), length, unicode);
-            }
-            else if (t.GetInterface(nameof(ISerializable)) != null)
-            {
-                return Write((ISerializable) value, format);
-            }
-
-            throw SerializationNotSupported(typeof(T));
         }
         #endregion
 
