@@ -218,7 +218,6 @@ namespace GTASaveData.GTA3
             set { m_isTop = value; OnPropertyChanged(); }
         }
 
-
         public Crane()
         {
             DropoffTarget = new Vector();
@@ -266,7 +265,6 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
-
             buf.Write(CraneEntityPointer);
             buf.Write(HookPointer);
             buf.Write(AudioEntity);

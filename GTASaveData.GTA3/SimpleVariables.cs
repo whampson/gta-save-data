@@ -285,7 +285,7 @@ namespace GTASaveData.GTA3
                 return 0xBC;
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("File type not supported yet!");
         }
 
         public override bool Equals(object obj)

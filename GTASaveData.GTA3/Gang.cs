@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     [Size(0x10)]
-    public class GangInfo : SaveDataObject, IEquatable<GangInfo>
+    public class Gang : SaveDataObject, IEquatable<Gang>
     {
         private int m_vehicleModel;
         private sbyte m_pedModelOverride;
@@ -36,8 +36,7 @@ namespace GTASaveData.GTA3
             set { m_weapon2 = value; OnPropertyChanged(); }
         }
 
-
-        public GangInfo()
+        public Gang()
         {
             VehicleModel = -1;
             PedModelOverride = -1;
@@ -51,7 +50,7 @@ namespace GTASaveData.GTA3
             Weapon1 = (WeaponType) buf.ReadInt32();
             Weapon2 = (WeaponType) buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOf<GangInfo>());
+            Debug.Assert(buf.Offset == SizeOf<Gang>());
         }
 
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
@@ -62,15 +61,15 @@ namespace GTASaveData.GTA3
             buf.Write((int) Weapon1);
             buf.Write((int) Weapon2);
 
-            Debug.Assert(buf.Offset == SizeOf<GangInfo>());
+            Debug.Assert(buf.Offset == SizeOf<Gang>());
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as GangInfo);
+            return Equals(obj as Gang);
         }
 
-        public bool Equals(GangInfo other)
+        public bool Equals(Gang other)
         {
             if (other == null)
             {

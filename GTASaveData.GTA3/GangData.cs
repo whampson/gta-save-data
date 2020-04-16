@@ -1,5 +1,4 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 
@@ -13,8 +12,8 @@ namespace GTASaveData.GTA3
             public const int NumberOfGangs = 9;
         }
 
-        private Array<GangInfo> m_gangs;
-        public Array<GangInfo> Gangs
+        private Array<Gang> m_gangs;
+        public Array<Gang> Gangs
         {
             get { return m_gangs; }
             set { m_gangs = value;OnPropertyChanged(); }
@@ -22,14 +21,14 @@ namespace GTASaveData.GTA3
 
         public GangData()
         {
-            Gangs = new Array<GangInfo>();
+            Gangs = new Array<Gang>();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "GNG");
 
-            Gangs = buf.ReadArray<GangInfo>(Limits.NumberOfGangs);
+            Gangs = buf.ReadArray<Gang>(Limits.NumberOfGangs);
 
             Debug.Assert(buf.Offset == SizeOf<GangData>());
             Debug.Assert(size == SizeOf<GangData>() - GTA3Save.SaveHeaderSize);

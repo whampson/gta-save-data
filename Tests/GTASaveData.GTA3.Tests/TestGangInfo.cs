@@ -3,11 +3,11 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestGangInfo : Base<GangInfo>
+    public class TestGangInfo : Base<Gang>
     {
-        public override GangInfo GenerateTestObject(DataFormat format)
+        public override Gang GenerateTestObject(DataFormat format)
         {
-            Faker<GangInfo> model = new Faker<GangInfo>()
+            Faker<Gang> model = new Faker<Gang>()
                 .RuleFor(x => x.VehicleModel, f => f.Random.Int())
                 .RuleFor(x => x.PedModelOverride, f => f.Random.SByte())
                 .RuleFor(x => x.Weapon1, f => f.PickRandom<WeaponType>())
@@ -19,8 +19,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void Serialization()
         {
-            GangInfo x0 = GenerateTestObject();
-            GangInfo x1 = CreateSerializedCopy(x0, out byte[] data);
+            Gang x0 = GenerateTestObject();
+            Gang x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.VehicleModel, x1.VehicleModel);
             Assert.Equal(x0.PedModelOverride, x1.PedModelOverride);
