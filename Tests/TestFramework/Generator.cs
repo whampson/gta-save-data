@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using GTASaveData;
-using GTASaveData.Types;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -9,12 +8,12 @@ namespace TestFramework
 {
     public static class Generator
     {
-        public static Array<T> CreateArray<T>(int count) where T : new()
+        public static T[] CreateArray<T>(int count) where T : new()
         {
             return Enumerable.Range(0, count).Select(x => new T()).ToArray();
         }
 
-        public static Array<T> CreateArray<T>(int count, Func<int, T> itemGenerator)
+        public static T[] CreateArray<T>(int count, Func<int, T> itemGenerator)
         {
             return Enumerable.Range(0, count).Select(itemGenerator).ToArray();
         }
