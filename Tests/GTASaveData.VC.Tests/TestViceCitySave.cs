@@ -10,7 +10,7 @@ namespace GTASaveData.VC.Tests
 {
     public class TestViceCitySave : Base<ViceCitySave>
     {
-        public override ViceCitySave GenerateTestObject(SaveFileFormat format)
+        public override ViceCitySave GenerateTestObject(DataFormat format)
         {
             Faker<ViceCitySave> model = new Faker<ViceCitySave>()
                 .RuleFor(x => x.FileFormat, format)
@@ -42,17 +42,17 @@ namespace GTASaveData.VC.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void FileFormatDetection(SaveFileFormat expectedFormat, string filename)
+        public void FileFormatDetection(DataFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.VC, expectedFormat, filename);
-            SaveFile.GetFileFormat<ViceCitySave>(path, out SaveFileFormat detectedFormat);
+            SaveFile.GetFileFormat<ViceCitySave>(path, out DataFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(SaveFileFormat format)
+        public void RandomDataSerialization(DataFormat format)
         {
             using ViceCitySave x0 = GenerateTestObject(format);
             using ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -66,7 +66,7 @@ namespace GTASaveData.VC.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealDataSerialization(SaveFileFormat format, string filename)
+        public void RealDataSerialization(DataFormat format, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.VC, format, filename);
 

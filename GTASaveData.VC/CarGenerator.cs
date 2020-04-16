@@ -130,7 +130,7 @@ namespace GTASaveData.VC
             Position = new Vector();
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Model = buf.ReadInt32();
             Position = buf.Read<Vector>();
@@ -152,7 +152,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(Model);
             buf.Write(Position);

@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestGTA3Save : Base<GTA3Save>
     {
-        public override GTA3Save GenerateTestObject(SaveFileFormat format)
+        public override GTA3Save GenerateTestObject(DataFormat format)
         {
             Faker<GTA3Save> model = new Faker<GTA3Save>()
                 .RuleFor(x => x.FileFormat, format)
@@ -41,17 +41,17 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void FileFormatDetection(SaveFileFormat expectedFormat, string filename)
+        public void FileFormatDetection(DataFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.III, expectedFormat, filename);
-            SaveFile.GetFileFormat<GTA3Save>(path, out SaveFileFormat detectedFormat);
+            SaveFile.GetFileFormat<GTA3Save>(path, out DataFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(SaveFileFormat format)
+        public void RandomDataSerialization(DataFormat format)
         {
             using GTA3Save x0 = GenerateTestObject(format);
             using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -65,7 +65,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealDataSerialization(SaveFileFormat format, string filename)
+        public void RealDataSerialization(DataFormat format, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.III, format, filename);
 
@@ -98,7 +98,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Throws<SerializationException>(() => x.Load(data));
 
             // Make the script space huge
-            x.Scripts.GlobalSpace = Helpers.CreateArray<byte>(100000);
+            x.Scripts.GlobalSpace = ArrayHelper.CreateArray<byte>(100000);
             Assert.Throws<SerializationException>(() => x.Save(out byte[] _));
         }
 

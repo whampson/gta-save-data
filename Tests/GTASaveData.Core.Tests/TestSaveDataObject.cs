@@ -1,7 +1,6 @@
-﻿using GTASaveData.Types;
-using Xunit;
+﻿using Xunit;
 
-namespace GTASaveData.Core.Tests.Types
+namespace GTASaveData.Core.Tests
 {
     public class TestSaveDataObject
     {
@@ -32,14 +31,14 @@ namespace GTASaveData.Core.Tests.Types
             private float m_field04h;
             private bool m_field08h;
 
-            protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+            protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
             {
                 m_field00h = buf.ReadInt32();
                 m_field04h = buf.ReadFloat();
                 m_field08h = buf.ReadBool(4);
             }
 
-            protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+            protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
             {
                 buf.Write(m_field00h);
                 buf.Write(m_field04h);

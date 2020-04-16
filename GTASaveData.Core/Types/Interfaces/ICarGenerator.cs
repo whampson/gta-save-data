@@ -1,5 +1,8 @@
 ﻿namespace GTASaveData.Types.Interfaces
 {
+    /// <summary>
+    /// A genericized car generator.
+    /// </summary>
     public interface ICarGenerator
     {
         int Model { get; set; }

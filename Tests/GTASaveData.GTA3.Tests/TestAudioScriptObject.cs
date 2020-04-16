@@ -8,7 +8,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestAudioScriptObject : Base<AudioScriptObject>
     {
-        public override AudioScriptObject GenerateTestObject(SaveFileFormat format)
+        public override AudioScriptObject GenerateTestObject(DataFormat format)
         {
             Faker<AudioScriptObject> model = new Faker<AudioScriptObject>()
                 .RuleFor(x => x.Index, f => f.Random.Int())

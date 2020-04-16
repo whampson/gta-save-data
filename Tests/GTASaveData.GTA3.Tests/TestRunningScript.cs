@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestRunningScript : Base<RunningScript>
     {
-        public override RunningScript GenerateTestObject(SaveFileFormat format)
+        public override RunningScript GenerateTestObject(DataFormat format)
         {
             Faker<RunningScript> model = new Faker<RunningScript>()
                 .RuleFor(x => x.NextScriptPointer, f => f.Random.UInt())
@@ -33,7 +33,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void Serialization(SaveFileFormat format)
+        public void Serialization(DataFormat format)
         {
             RunningScript x0 = GenerateTestObject(format);
             RunningScript x1 = CreateSerializedCopy(x0, format, out byte[] data);

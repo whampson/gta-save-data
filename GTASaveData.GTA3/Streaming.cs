@@ -25,14 +25,14 @@ namespace GTASaveData.GTA3
             ModelFlags = new Array<byte>();
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             ModelFlags = buf.ReadArray<byte>(Limits.NumberOfModelFlags);
 
             Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(ModelFlags.ToArray(), Limits.NumberOfModelFlags);
 

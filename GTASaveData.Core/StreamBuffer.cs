@@ -1,5 +1,4 @@
-﻿using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,30 +6,70 @@ using System.Text;
 
 namespace GTASaveData
 {
-    public sealed class DataBuffer : IDisposable
+    /// <summary>
+    /// A byte buffer that can be read from and written to like a data stream.
+    /// </summary>
+    public sealed class StreamBuffer : IDisposable
     {
         private readonly MemoryStream m_buffer;
         private bool m_disposed;
 
+        #region Properties
+        /// <summary>
+        /// Gets or sets a value indicating whether to read and write data in big-endian byte order.
+        /// </summary>
         public bool BigEndian { get; set; }
-        public int Mark { get; set; }
-        public int Position => (int) m_buffer.Position;
-        public int Offset => Position - Mark;
-        public int Length => (int) m_buffer.Length;
-        public int Capacity => m_buffer.Capacity;
 
-        public DataBuffer()
+        /// <summary>
+        /// Gets or sets a saved position in the buffer.
+        /// </summary>
+        public int Mark { get; set; }
+
+        /// <summary>
+        /// Gets the current buffer position.
+        /// </summary>
+        public int Cursor => (int) m_buffer.Position;
+
+        /// <summary>
+        /// Gets the number of bytes spanning from <see cref="Mark"/> to <see cref="Cursor"/>.
+        /// </summary>
+        public int Offset => Cursor - Mark;
+
+        /// <summary>
+        /// Gets the length of the buffer in bytes.
+        /// </summary>
+        public int Length => (int) m_buffer.Length;
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Creates a new expandable <see cref="StreamBuffer"/>.
+        /// </summary>
+        public StreamBuffer()
             : this(new MemoryStream())
         { }
 
-        public DataBuffer(byte[] data)
+        /// <summary>
+        /// Creates a new fixed-size <see cref="StreamBuffer"/> with the specified data.
+        /// </summary>
+        /// <param name="data">The data to contain within the buffer.</param>
+        public StreamBuffer(byte[] data)
             : this(new MemoryStream(data))
         { }
 
-        private DataBuffer(MemoryStream buffer)
+        /// <summary>
+        /// Creates a new fixed-size <see cref="StreamBuffer"/>.
+        /// </summary>
+        /// <param name="size">The buffer size.</param>
+        public StreamBuffer(int size)
+            : this(new byte[size])
+        { }
+
+        private StreamBuffer(MemoryStream buffer)
         {
             m_buffer = buffer;
         }
+        #endregion
 
         #region Read Functions
         public bool ReadBool(int byteCount = 1)
@@ -89,7 +128,7 @@ namespace GTASaveData
         public char ReadChar(bool unicode = false)
         {
             return (unicode)
-                ? (char) ReadUInt16()   // "Unicode", aka UCS-2/UTF-16
+                ? (char) ReadUInt16()
                 : (char) ReadByte();
         }
 
@@ -194,15 +233,15 @@ namespace GTASaveData
             return s;
         }
 
-        public T Read<T>() where T : ISaveDataObject, new()
+        public T Read<T>() where T : ISerializable, new()
         {
             T obj = new T();
-            obj.ReadObjectData(this);
+            obj.ReadObjectData(this, DataFormat.Default);
 
             return obj;
         }
 
-        public T Read<T>(SaveFileFormat format) where T : ISaveDataObject, new()
+        public T Read<T>(DataFormat format) where T : ISerializable, new()
         {
             T obj = new T();
             obj.ReadObjectData(this, format);
@@ -214,11 +253,11 @@ namespace GTASaveData
             int itemLength = 0,
             bool unicode = false)
         {
-            return ReadArray<T>(count, SaveFileFormat.Default, itemLength, unicode);
+            return ReadArray<T>(count, DataFormat.Default, itemLength, unicode);
         }
 
         public T[] ReadArray<T>(int count,
-            SaveFileFormat format,
+            DataFormat format,
             int itemLength = 0,     // Note: only applies to bool string types.
             bool unicode = false)
         {
@@ -232,14 +271,14 @@ namespace GTASaveData
             return items.ToArray();
         }
 
-        internal int GenericRead<T>(SaveFileFormat format,
+        internal int GenericRead<T>(DataFormat format,
             out T obj,
             int length = 0,
             bool unicode = false)
         {
             Type t = typeof(T);
             object o = null;
-            int mark = Position;
+            int mark = Cursor;
 
             if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
 
@@ -299,9 +338,9 @@ namespace GTASaveData
             {
                 o = (length == 0) ? ReadString(unicode) : ReadString(length, unicode);
             }
-            else if (t.GetInterface(nameof(ISaveDataObject)) != null)
+            else if (t.GetInterface(nameof(ISerializable)) != null)
             {
-                var m = GetType().GetMethod(nameof(Read), new Type[] { typeof(SaveFileFormat) }).MakeGenericMethod(t);
+                var m = GetType().GetMethod(nameof(Read), new Type[] { typeof(DataFormat) }).MakeGenericMethod(t);
                 o = m.Invoke(this, new object[] { format });
             }
             else
@@ -310,7 +349,7 @@ namespace GTASaveData
             }
 
             obj = (T) o;
-            return Position - mark;
+            return Cursor - mark;
         }
         #endregion
 
@@ -367,7 +406,7 @@ namespace GTASaveData
             }
 
             return (unicode)
-                ? Write((ushort) value)     // "Unicode", aka UCS-2/UTF-16
+                ? Write((ushort) value)
                 : Write((byte) value);
         }
 
@@ -523,12 +562,12 @@ namespace GTASaveData
             return bytesWritten + numPadding;
         }
 
-        public int Write<T>(T value) where T : ISaveDataObject
+        public int Write<T>(T value) where T : ISerializable
         {
-            return Write(value, SaveFileFormat.Default);
+            return Write(value, DataFormat.Default);
         }
 
-        public int Write<T>(T value, SaveFileFormat format) where T : ISaveDataObject
+        public int Write<T>(T value, DataFormat format) where T : ISerializable
         {
             return value.WriteObjectData(this, format);
         }
@@ -539,11 +578,11 @@ namespace GTASaveData
             bool unicode = false)
             where T : new()
         {
-            return Write(items, SaveFileFormat.Default, count, itemLength, unicode);
+            return Write(items, DataFormat.Default, count, itemLength, unicode);
         }
 
         public int Write<T>(T[] items,
-            SaveFileFormat format,
+            DataFormat format,
             int? count = null,
             int itemLength = 0, // Note: only applies to "bool" and "string types
             bool unicode = false)
@@ -562,7 +601,7 @@ namespace GTASaveData
             return bytesWritten;
         }
 
-        internal int GenericWrite<T>(T value, SaveFileFormat format,
+        internal int GenericWrite<T>(T value, DataFormat format,
             int length = 0,
             bool unicode = false)
         {
@@ -629,16 +668,16 @@ namespace GTASaveData
             {
                 return Write(Convert.ToString(value), length, unicode);
             }
-            else if (t.GetInterface(nameof(ISaveDataObject)) != null)
+            else if (t.GetInterface(nameof(ISerializable)) != null)
             {
-                return Write((ISaveDataObject) value, format);
+                return Write((ISerializable) value, format);
             }
 
             throw SerializationNotSupported(typeof(T));
         }
         #endregion
 
-        #region Helper Functions
+        #region Other Functions
         public void Dispose()
         {
             if (!m_disposed)
@@ -648,33 +687,56 @@ namespace GTASaveData
             }
         }
 
+        /// <summary>
+        /// Rounds an address up to the next multiple of 4.
+        /// </summary>
+        /// <param name="addr">The address to align.</param>
+        /// <returns>The aligned address.</returns>
         public static int Align4Bytes(int addr)
         {
             const int WordSize = 4;
             return (addr + WordSize - 1) & ~(WordSize - 1);
         }
 
+        /// <summary>
+        /// Sets the cursor to the next multiple of 4.
+        /// </summary>
         public void Align4Bytes()
         {
-            Skip(Align4Bytes(Position) - Position);
+            Skip(Align4Bytes(Cursor) - Cursor);
         }
 
+        /// <summary>
+        /// Sets the cursor and mark to 0.
+        /// </summary>
         public void Reset()
         {
             Seek(0);
-            MarkPosition();
+            MarkCurrentPosition();
         }
 
-        public int MarkPosition()
+        /// <summary>
+        /// Sets <see cref="Mark"/> to the current cursor position.
+        /// </summary>
+        /// <returns>The marked position.</returns>
+        public int MarkCurrentPosition()
         {
-            return Mark = Position;
+            return Mark = Cursor;
         }
 
+        /// <summary>
+        /// Sets the cursor to the specified offset in the buffer.
+        /// </summary>
+        /// <param name="pos">The new position in the buffer.</param>
         public void Seek(int pos)
         {
             m_buffer.Position = pos;
         }
 
+        /// <summary>
+        /// Advances the cursor ahead or behind the specified number of bytes.
+        /// </summary>
+        /// <param name="count">The number of bytes to skip</param>
         public void Skip(int count)
         {
             if (m_buffer.Position + count > m_buffer.Length)
@@ -687,16 +749,26 @@ namespace GTASaveData
             }
         }
 
+        /// <summary>
+        /// Gets all data up to the current cursor position.
+        /// </summary>
+        /// <returns>The data up to the current position.</returns>
         public byte[] GetBytes()
+        {
+            return GetAllBytes().Take(Cursor).ToArray();
+        }
+
+        /// <summary>
+        /// Gets all data in the buffer.
+        /// </summary>
+        /// <returns>The data in the buffer.</returns>
+        public byte[] GetAllBytes()
         {
             return m_buffer.ToArray();
         }
+        #endregion
 
-        public byte[] GetBytesUpToCursor()
-        {
-            return GetBytes().Take(Position).ToArray();
-        }
-
+        #region Helpers
         private static SerializationException SerializationNotSupported(Type t)
         {
             return new SerializationException(Strings.Error_SerializationNotAllowed, t.Name);

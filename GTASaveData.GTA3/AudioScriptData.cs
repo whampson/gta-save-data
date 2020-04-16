@@ -19,7 +19,7 @@ namespace GTASaveData.GTA3
             AudioScriptObjects = new Array<AudioScriptObject>();
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "AUD");
 
@@ -30,7 +30,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOf(this) - GTA3Save.SaveHeaderSize);
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             GTA3Save.WriteSaveHeader(buf, "AUD", SizeOf(this) - GTA3Save.SaveHeaderSize);
 
@@ -40,7 +40,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf(this));
         }
 
-        protected override int GetSize(SaveFileFormat fmt)
+        protected override int GetSize(DataFormat fmt)
         {
             return SizeOf<AudioScriptObject>() * AudioScriptObjects.Count
                 + GTA3Save.SaveHeaderSize

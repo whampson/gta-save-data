@@ -82,7 +82,7 @@ namespace GTASaveData.Types
             Millisecond = (ushort) dateTime.Millisecond;
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Year = buf.ReadUInt16();
             Month = buf.ReadUInt16();
@@ -96,7 +96,7 @@ namespace GTASaveData.Types
             Debug.Assert(buf.Offset == SizeOf<SystemTime>());
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(Year);
             buf.Write(Month);
@@ -124,7 +124,7 @@ namespace GTASaveData.Types
 
         public override string ToString()
         {
-            return ToDateTime().ToString();
+            return ToDateTime().ToString("dd MMM yyyy HH:mm:ss");
         }
 
         public override bool Equals(object obj)

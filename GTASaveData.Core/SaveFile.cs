@@ -11,13 +11,13 @@ namespace GTASaveData
     /// <summary>
     /// Represents a saved <i>Grand Theft Auto</i> game.
     /// </summary>
-    public abstract class SaveFile : SaveDataObject, IGTASaveFile
+    public abstract class SaveFile : SaveDataObject, ISaveFile
     {
         private static readonly byte[] DefaultPadding = new byte[1] { 0 };
 
         private PaddingType m_padding;
         private byte[] m_paddingBytes;
-        private SaveFileFormat m_fileFormat;
+        private DataFormat m_fileFormat;
 
         [JsonIgnore]
         public PaddingType Padding
@@ -34,7 +34,7 @@ namespace GTASaveData
         }
 
         [JsonIgnore]
-        public SaveFileFormat FileFormat
+        public DataFormat FileFormat
         {
             get { return m_fileFormat; }
             set { m_fileFormat = value; OnPropertyChanged(); }
@@ -48,10 +48,10 @@ namespace GTASaveData
         {
             Padding = PaddingType.Default;
             PaddingBytes = DefaultPadding;
-            FileFormat = SaveFileFormat.Default;
+            FileFormat = DataFormat.Default;
         }
 
-        public static bool GetFileFormat<T>(string path, out SaveFileFormat fmt) where T : SaveFile, new()
+        public static bool GetFileFormat<T>(string path, out DataFormat fmt) where T : SaveFile, new()
         {
             byte[] data = File.ReadAllBytes(path);
             return new T().DetectFileFormat(data, out fmt);
@@ -59,7 +59,7 @@ namespace GTASaveData
 
         public static T Load<T>(string path) where T : SaveFile, new()
         {
-            bool valid = GetFileFormat<T>(path, out SaveFileFormat fmt);
+            bool valid = GetFileFormat<T>(path, out DataFormat fmt);
             if (!valid)
             {
                 return null;
@@ -68,7 +68,7 @@ namespace GTASaveData
             return Load<T>(path, fmt);
         }
 
-        public static T Load<T>(string path, SaveFileFormat fmt) where T : SaveFile, new()
+        public static T Load<T>(string path, DataFormat fmt) where T : SaveFile, new()
         {
             T obj = new T() { FileFormat = fmt };
             obj.Load(path);
@@ -139,17 +139,17 @@ namespace GTASaveData
             throw new InvalidOperationException(Strings.Error_InvalidPaddingType);
         }
 
-        protected abstract void LoadAllData(DataBuffer file);
-        protected abstract void SaveAllData(DataBuffer file);
-        protected abstract bool DetectFileFormat(byte[] data, out SaveFileFormat fmt);
+        protected abstract void LoadAllData(StreamBuffer file);
+        protected abstract void SaveAllData(StreamBuffer file);
+        protected abstract bool DetectFileFormat(byte[] data, out DataFormat fmt);
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             FileFormat = fmt;
             LoadAllData(buf);
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             FileFormat = fmt;
             SaveAllData(buf);

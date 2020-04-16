@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3
             Position = new Vector();
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Index = buf.ReadInt32();
             AudioId = buf.ReadInt16();
@@ -53,7 +53,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<AudioScriptObject>());
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(Index);
             buf.Write(AudioId);

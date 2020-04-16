@@ -26,7 +26,7 @@ namespace TestApp
         public EventHandler<MessageBoxEventArgs> MessageBoxRequested;
 
         private SaveFile m_currentSaveFile;
-        private SaveFileFormat m_currentFileFormat;
+        private GTASaveData.DataFormat m_currentFileFormat;
         private GameType m_selectedGame;
         private int m_selectedBlockIndex;
         private bool m_showEntireFileChecked;
@@ -39,7 +39,7 @@ namespace TestApp
             set { m_currentSaveFile = value; OnPropertyChanged(); }
         }
 
-        public SaveFileFormat CurrentFileFormat
+        public GTASaveData.DataFormat CurrentFileFormat
         {
             get { return m_currentFileFormat; }
             set { m_currentFileFormat = value; OnPropertyChanged(); }
@@ -179,7 +179,7 @@ namespace TestApp
             
             try
             {
-                if (!SaveFile.GetFileFormat<T>(path, out SaveFileFormat fmt))
+                if (!SaveFile.GetFileFormat<T>(path, out GTASaveData.DataFormat fmt))
                 {
                     RequestMessageBoxError(string.Format("Invalid save file! (Game: {0})", SelectedGame));
                     return false;
@@ -223,7 +223,7 @@ namespace TestApp
         {
             CleanupOldSaveData();
             CurrentSaveFile = null;
-            CurrentFileFormat = SaveFileFormat.Default;
+            CurrentFileFormat = GTASaveData.DataFormat.Default;
             SelectedBlockIndex = -1;
 
             UpdateTextBox();

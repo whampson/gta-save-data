@@ -67,7 +67,7 @@ namespace GTASaveData.GTA3
         public PedTypeInfo()
         { }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Flag = (PedTypeFlags) buf.ReadInt32();
             Unknown0 = buf.ReadFloat();
@@ -81,7 +81,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PedTypeInfo>());
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write((int) Flag);
             buf.Write(Unknown0);

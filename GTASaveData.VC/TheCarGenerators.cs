@@ -57,7 +57,7 @@ namespace GTASaveData.VC
             CarGeneratorArray = new Array<CarGenerator>();
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             int infoSize = buf.ReadInt32();
             Debug.Assert(infoSize == SizeOfCarGeneratorData);
@@ -73,7 +73,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == SizeOf<TheCarGenerators>());
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(SizeOfCarGeneratorData);
             buf.Write(NumberOfCarGenerators);

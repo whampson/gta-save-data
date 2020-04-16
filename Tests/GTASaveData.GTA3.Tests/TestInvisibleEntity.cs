@@ -5,7 +5,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestInvisibleEntity : Base<InvisibleEntity>
     {
-        public override InvisibleEntity GenerateTestObject(SaveFileFormat format)
+        public override InvisibleEntity GenerateTestObject(DataFormat format)
         {
             Faker<InvisibleEntity> model = new Faker<InvisibleEntity>()
                 .RuleFor(x => x.Type, f => f.PickRandom<ObjectType>())

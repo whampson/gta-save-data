@@ -8,7 +8,7 @@ namespace GTASaveData.Types
     /// <summary>
     /// A container for arbitraty data.
     /// </summary>
-    public class DummyObject : PreAllocatedSaveDataObject, IEquatable<DummyObject>
+    public class Dummy : PreAllocatedSaveDataObject, IEquatable<Dummy>
     {
         private Array<byte> m_data;
 
@@ -19,44 +19,44 @@ namespace GTASaveData.Types
             set { m_data = value; OnPropertyChanged(); }
         }
 
-        public DummyObject()
+        public Dummy()
             : base(0)
         { }
 
-        public DummyObject(int size)
+        public Dummy(int size)
             : base(size)
         { }
-
-        public static DummyObject Load(byte[] data)
-        {
-            DummyObject o = new DummyObject(data.Length);
-            Serializer.Read(o, data, SaveFileFormat.Default);
-
-            return o;
-        }
 
         protected override void PreAllocate(int size)
         {
             Data = new byte[size];
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        public static Dummy Load(byte[] data)
+        {
+            Dummy o = new Dummy(data.Length);
+            Serializer.Read(o, data, DataFormat.Default);
+
+            return o;
+        }
+
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             int count = Data.Count;
             Data = buf.ReadBytes(count);
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(Data.ToArray());
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as DummyObject);
+            return Equals(obj as Dummy);
         }
 
-        public bool Equals(DummyObject other)
+        public bool Equals(Dummy other)
         {
             if (other == null)
             {

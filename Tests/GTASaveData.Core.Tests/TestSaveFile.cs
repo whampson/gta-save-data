@@ -1,5 +1,4 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -56,17 +55,17 @@ namespace GTASaveData.Core.Tests
                 return GenerateSpecialPadding(length);
             }
 
-            protected override void LoadAllData(DataBuffer buf)
+            protected override void LoadAllData(StreamBuffer buf)
             {
                 throw new NotImplementedException();
             }
 
-            protected override void SaveAllData(DataBuffer buf)
+            protected override void SaveAllData(StreamBuffer buf)
             {
                 throw new NotImplementedException();
             }
 
-            protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
+            protected override bool DetectFileFormat(byte[] data, out DataFormat fmt)
             {
                 throw new NotImplementedException();
             }

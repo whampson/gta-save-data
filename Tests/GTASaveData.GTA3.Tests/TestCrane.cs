@@ -8,7 +8,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestCrane : Base<Crane>
     {
-        public override Crane GenerateTestObject(SaveFileFormat format)
+        public override Crane GenerateTestObject(DataFormat format)
         {
             Faker<Crane> model = new Faker<Crane>()
                 .RuleFor(x => x.CraneEntityPointer, f => f.Random.UInt())

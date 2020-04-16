@@ -9,7 +9,7 @@ namespace GTASaveData.SA.Tests
 {
     public class TestSanAndreasSave : Base<SanAndreasSave>
     {
-        public override SanAndreasSave GenerateTestObject(SaveFileFormat format)
+        public override SanAndreasSave GenerateTestObject(DataFormat format)
         {
             Faker<SanAndreasSave> model = new Faker<SanAndreasSave>()
                 .RuleFor(x => x.FileFormat, format)
@@ -21,17 +21,17 @@ namespace GTASaveData.SA.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void FileFormatDetection(SaveFileFormat expectedFormat, string filename)
+        public void FileFormatDetection(DataFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.SA, expectedFormat, filename);
-            SaveFile.GetFileFormat<SanAndreasSave>(path, out SaveFileFormat detectedFormat);
+            SaveFile.GetFileFormat<SanAndreasSave>(path, out DataFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(SaveFileFormat format)
+        public void RandomDataSerialization(DataFormat format)
         {
             using SanAndreasSave x0 = GenerateTestObject(format);
             using SanAndreasSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -45,7 +45,7 @@ namespace GTASaveData.SA.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealDataSerialization(SaveFileFormat format, string filename)
+        public void RealDataSerialization(DataFormat format, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.SA, format, filename);
 

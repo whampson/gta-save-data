@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Types;
 using System;
 using System.Linq;
 using TestFramework;
@@ -7,7 +6,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestDataBuffer
+    public class TestStreamBuffer
     {
         [Fact]
         public void Alignment()
@@ -22,16 +21,16 @@ namespace GTASaveData.Core.Tests
             bool b1;
             float f1;
 
-            using (DataBuffer wb = new DataBuffer())
+            using (StreamBuffer wb = new StreamBuffer())
             {
                 wb.Write(b0);
                 wb.Align4Bytes();
                 wb.Write(i0);
                 wb.Write(f0);
-                data = wb.GetBytes();
+                data = wb.GetAllBytes();
             }
 
-            using (DataBuffer wb = new DataBuffer(data))
+            using (StreamBuffer wb = new StreamBuffer(data))
             {
                 b1 = wb.ReadBool();
                 wb.Align4Bytes();
@@ -78,13 +77,13 @@ namespace GTASaveData.Core.Tests
             byte[] data;
             bool x1;
 
-            using (DataBuffer wb = new DataBuffer())
+            using (StreamBuffer wb = new StreamBuffer())
             {
                 wb.Write(x0, numBytes);
-                data = wb.GetBytes();
+                data = wb.GetAllBytes();
             }
 
-            using (DataBuffer wb = new DataBuffer(data))
+            using (StreamBuffer wb = new StreamBuffer(data))
             {
                 x1 = wb.ReadBool(numBytes);
             }
@@ -129,7 +128,7 @@ namespace GTASaveData.Core.Tests
             byte[] data = Serializer.Write(x0);
             byte[] x1;
 
-            using (DataBuffer wb = new DataBuffer(data))
+            using (StreamBuffer wb = new StreamBuffer(data))
             {
                 x1 = wb.ReadBytes(data.Length);
             }
@@ -166,13 +165,13 @@ namespace GTASaveData.Core.Tests
             byte[] data;
             char x1;
 
-            using (DataBuffer wb = new DataBuffer())
+            using (StreamBuffer wb = new StreamBuffer())
             {
                 wb.Write(x0, true);
-                data = wb.GetBytes();
+                data = wb.GetAllBytes();
             }
 
-            using (DataBuffer wb = new DataBuffer(data))
+            using (StreamBuffer wb = new StreamBuffer(data))
             {
                 x1 = wb.ReadChar(true);
             }
@@ -519,14 +518,14 @@ namespace GTASaveData.Core.Tests
             public TestObject()
             { }
 
-            protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+            protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
             {
                 Integer = buf.ReadInt32();
                 Boolean = buf.ReadBool();
                 Single = buf.ReadFloat();
             }
 
-            protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+            protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
             {
                 buf.Write(Integer);
                 buf.Write(Boolean);
@@ -580,16 +579,16 @@ namespace GTASaveData.Core.Tests
             bool unicode = false,
             bool zeroTerminate = true)
         {
-            using (DataBuffer wb = new DataBuffer())
+            using (StreamBuffer wb = new StreamBuffer())
             {
                 wb.Write(x, length, unicode, zeroTerminate);
-                return wb.GetBytes();
+                return wb.GetAllBytes();
             }
         }
 
         public static string BytesToString(byte[] data, int length = 0, bool unicode = false)
         {
-            using (DataBuffer wb = new DataBuffer(data))
+            using (StreamBuffer wb = new StreamBuffer(data))
             {
                 return wb.ReadString(length, unicode);
             }
@@ -601,10 +600,10 @@ namespace GTASaveData.Core.Tests
             bool unicode = false)
             where T : new()
         {
-            using (DataBuffer wb = new DataBuffer())
+            using (StreamBuffer wb = new StreamBuffer())
             {
                 wb.Write(items, count, itemLength, unicode);
-                return wb.GetBytes();
+                return wb.GetAllBytes();
             }
         }
 
@@ -612,7 +611,7 @@ namespace GTASaveData.Core.Tests
             int itemLength = 0,
             bool unicode = false)
         {
-            using (DataBuffer wb = new DataBuffer(data))
+            using (StreamBuffer wb = new StreamBuffer(data))
             {
                 return wb.ReadArray<T>(count, itemLength, unicode);
             }

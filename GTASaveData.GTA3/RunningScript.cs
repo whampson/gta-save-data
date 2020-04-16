@@ -152,7 +152,7 @@ namespace GTASaveData.GTA3
             m_localVariables = new Array<uint>();
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             m_pNextScript = buf.ReadUInt32();
             m_pPrevScript = buf.ReadUInt32();
@@ -179,7 +179,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(m_pNextScript);
             buf.Write(m_pPrevScript);
@@ -206,9 +206,9 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(SaveFileFormat fmt)
+        protected override int GetSize(DataFormat fmt)
         {
-            return (fmt.SupportedOnPS2)
+            return (fmt.IsSupportedOnPS2)
                 ? SizeOfRunningScriptPS2
                 : SizeOfRunningScript;
         }
@@ -245,9 +245,9 @@ namespace GTASaveData.GTA3
                 && m_missionFlag.Equals(other.m_missionFlag);
         }
 
-        public static int GetMaxStackDepth(SaveFileFormat fmt)
+        public static int GetMaxStackDepth(DataFormat fmt)
         {
-            return (fmt.SupportedOnPS2)
+            return (fmt.IsSupportedOnPS2)
                 ? Limits.MaxStackDepthPS2
                 : Limits.MaxStackDepth;
         }

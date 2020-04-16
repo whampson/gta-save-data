@@ -25,17 +25,17 @@ namespace GTASaveData.GTA3
         public static PathData Load(byte[] data)
         {
             PathData p = new PathData(data.Length);
-            Serializer.Read(p, data, SaveFileFormat.Default);
+            Serializer.Read(p, data, DataFormat.Default);
 
             return p;
         }
 
         protected override void PreAllocate(int saveSize)
         {
-            m_pathNodes = Helpers.CreateArray<PathNode>((saveSize / 2) * 8);
+            m_pathNodes = ArrayHelper.CreateArray<PathNode>((saveSize / 2) * 8);
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             int size = SizeOf(this);
             byte[] data = buf.ReadBytes(size);
@@ -54,7 +54,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == size);
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             int size = SizeOf(this);
             byte[] data = new byte[size];
@@ -80,7 +80,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == size);
         }
 
-        protected override int GetSize(SaveFileFormat fmt)
+        protected override int GetSize(DataFormat fmt)
         {
             return ((PathNodes.Count + 7) / 8) * 2;
         }

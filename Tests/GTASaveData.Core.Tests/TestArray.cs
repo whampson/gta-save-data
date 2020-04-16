@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Types;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -9,7 +8,7 @@ using TestFramework;
 using WpfEssentials;
 using Xunit;
 
-namespace GTASaveData.Core.Tests.Types
+namespace GTASaveData.Core.Tests
 {
     public class TestArray
     {

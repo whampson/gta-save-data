@@ -161,7 +161,7 @@ namespace GTASaveData.GTA4
             Rotation = new Vector();
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Index = buf.ReadInt32();
             Unknown04h = buf.ReadInt32();
@@ -188,7 +188,7 @@ namespace GTASaveData.GTA4
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(Index);
             buf.Write(Unknown04h);

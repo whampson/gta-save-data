@@ -7,7 +7,7 @@ namespace GTASaveData.Core.Tests.Types
 {
     public class TestVector2D : SaveDataObjectTestBase<Vector2D>
     {
-        public override Vector2D GenerateTestObject(SaveFileFormat format)
+        public override Vector2D GenerateTestObject(DataFormat format)
         {
             Faker<Vector2D> model = new Faker<Vector2D>()
                 .RuleFor(x => x.X, f => f.Random.Float(-4000, 4000))

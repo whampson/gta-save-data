@@ -8,7 +8,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestStoredCar : Base<StoredCar>
     {
-        public override StoredCar GenerateTestObject(SaveFileFormat format)
+        public override StoredCar GenerateTestObject(DataFormat format)
         {
             Faker<StoredCar> model = new Faker<StoredCar>()
                 .RuleFor(x => x.Model, f => f.Random.Int())

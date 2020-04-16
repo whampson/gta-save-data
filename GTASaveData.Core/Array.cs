@@ -6,10 +6,10 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using WpfEssentials;
 
-namespace GTASaveData.Types
+namespace GTASaveData
 {
     /// <summary>
-    /// Represents a collection of objects with sequential and contiguous storage.
+    /// A collection of objects with sequential and contiguous storage.
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
     /// <remarks>

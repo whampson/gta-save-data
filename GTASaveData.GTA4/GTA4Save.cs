@@ -11,14 +11,14 @@ namespace GTASaveData.GTA4
     /// <summary>
     /// Represents a <i>Grand Theft Auto IV</i> save file.
     /// </summary>
-    public class GTA4Save : SaveFile, IGTASaveFile, IEquatable<GTA4Save>
+    public class GTA4Save : SaveFile, ISaveFile, IEquatable<GTA4Save>
     {
         public static class Limits
         {
             public const int MaxNameLength = 128;
         }
 
-        private DataBuffer m_file;
+        private StreamBuffer m_file;
 
         private int m_saveVersion;
         private int m_saveSizeInBytes;
@@ -27,39 +27,39 @@ namespace GTASaveData.GTA4
         private DateTime m_timeLastSaved;   // Not in savefile
 
         private SimpleVariables m_simpleVars;
-        private DummyObject m_playerInfo;
-        private DummyObject m_extraContent;
-        private DummyObject m_scripts;
-        private DummyObject m_garages;
-        private DummyObject m_gameLogic;
-        private DummyObject m_paths;
+        private Dummy m_playerInfo;
+        private Dummy m_extraContent;
+        private Dummy m_scripts;
+        private Dummy m_garages;
+        private Dummy m_gameLogic;
+        private Dummy m_paths;
         private Pickups m_pickups;
-        private DummyObject m_restartPoints;
-        private DummyObject m_radarBlips;
-        private DummyObject m_zones;
-        private DummyObject m_gangData;
-        private DummyObject m_carGenerators;
-        private DummyObject m_stats;
-        private DummyObject m_iplStore;
-        private DummyObject m_stuntJumps;
-        private DummyObject m_radio;
-        private DummyObject m_objects;
-        private DummyObject m_relationships;
-        private DummyObject m_inventory;
-        private DummyObject m_unusedPools;
-        private DummyObject m_unusedPhoneInfo;
-        private DummyObject m_unusedAudioScript;
-        private DummyObject m_unusedSetPieces;
-        private DummyObject m_unusedStreaming;
-        private DummyObject m_unusedPedTypeInfo;
-        private DummyObject m_unusedTags;
-        private DummyObject m_unusedShopping;
-        private DummyObject m_unusedGangWars;
-        private DummyObject m_unusedEntryExits;
-        private DummyObject m_unused3dMarkers;
-        private DummyObject m_unusedVehicles;
-        private DummyObject m_unusedExtraBlock;
-        private DummyObject m_gfwlData;
+        private Dummy m_restartPoints;
+        private Dummy m_radarBlips;
+        private Dummy m_zones;
+        private Dummy m_gangData;
+        private Dummy m_carGenerators;
+        private Dummy m_stats;
+        private Dummy m_iplStore;
+        private Dummy m_stuntJumps;
+        private Dummy m_radio;
+        private Dummy m_objects;
+        private Dummy m_relationships;
+        private Dummy m_inventory;
+        private Dummy m_unusedPools;
+        private Dummy m_unusedPhoneInfo;
+        private Dummy m_unusedAudioScript;
+        private Dummy m_unusedSetPieces;
+        private Dummy m_unusedStreaming;
+        private Dummy m_unusedPedTypeInfo;
+        private Dummy m_unusedTags;
+        private Dummy m_unusedShopping;
+        private Dummy m_unusedGangWars;
+        private Dummy m_unusedEntryExits;
+        private Dummy m_unused3dMarkers;
+        private Dummy m_unusedVehicles;
+        private Dummy m_unusedExtraBlock;
+        private Dummy m_gfwlData;
 
         public override string Name
         {
@@ -97,37 +97,37 @@ namespace GTASaveData.GTA4
             set { m_simpleVars = value; OnPropertyChanged(); }
         }
 
-        public DummyObject PlayerInfo
+        public Dummy PlayerInfo
         {
             get { return m_playerInfo; }
             set { m_playerInfo = value; OnPropertyChanged(); }
         }
 
-        public DummyObject ExtraContent
+        public Dummy ExtraContent
         {
             get { return m_extraContent; }
             set { m_extraContent = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Scripts
+        public Dummy Scripts
         {
             get { return m_scripts; }
             set { m_scripts = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Garages
+        public Dummy Garages
         {
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
         }
 
-        public DummyObject GameLogic
+        public Dummy GameLogic
         {
             get { return m_gameLogic; }
             set { m_gameLogic = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Paths
+        public Dummy Paths
         {
             get { return m_paths; }
             set { m_paths = value; OnPropertyChanged(); }
@@ -139,157 +139,157 @@ namespace GTASaveData.GTA4
             set { m_pickups = value; OnPropertyChanged(); }
         }
 
-        public DummyObject RestartPoints
+        public Dummy RestartPoints
         {
             get { return m_restartPoints; }
             set { m_restartPoints = value; OnPropertyChanged(); }
         }
 
-        public DummyObject RadarBlips
+        public Dummy RadarBlips
         {
             get { return m_radarBlips; }
             set { m_radarBlips = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Zones
+        public Dummy Zones
         {
             get { return m_zones; }
             set { m_zones = value; OnPropertyChanged(); }
         }
 
-        public DummyObject GangData
+        public Dummy GangData
         {
             get { return m_gangData; }
             set { m_gangData = value; OnPropertyChanged(); }
         }
 
-        public DummyObject CarGenerators
+        public Dummy CarGenerators
         {
             get { return m_carGenerators; }
             set { m_carGenerators = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Stats
+        public Dummy Stats
         {
             get { return m_stats; }
             set { m_stats = value; OnPropertyChanged(); }
         }
 
-        public DummyObject IplStore
+        public Dummy IplStore
         {
             get { return m_iplStore; }
             set { m_iplStore = value; OnPropertyChanged(); }
         }
 
-        public DummyObject StuntJumps
+        public Dummy StuntJumps
         {
             get { return m_stuntJumps; }
             set { m_stuntJumps = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Radio
+        public Dummy Radio
         {
             get { return m_radio; }
             set { m_radio = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Objects
+        public Dummy Objects
         {
             get { return m_objects; }
             set { m_objects = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Relationships
+        public Dummy Relationships
         {
             get { return m_relationships; }
             set { m_relationships = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Inventory
+        public Dummy Inventory
         {
             get { return m_inventory; }
             set { m_inventory = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedPools
+        public Dummy UnusedPools
         {
             get { return m_unusedPools; }
             set { m_unusedPools = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedPhoneInfo
+        public Dummy UnusedPhoneInfo
         {
             get { return m_unusedPhoneInfo; }
             set { m_unusedPhoneInfo = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedAudioScript
+        public Dummy UnusedAudioScript
         {
             get { return m_unusedAudioScript; }
             set { m_unusedAudioScript = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedSetPieces
+        public Dummy UnusedSetPieces
         {
             get { return m_unusedSetPieces; }
             set { m_unusedSetPieces = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedStreaming
+        public Dummy UnusedStreaming
         {
             get { return m_unusedStreaming; }
             set { m_unusedStreaming = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedPedTypeInfo
+        public Dummy UnusedPedTypeInfo
         {
             get { return m_unusedPedTypeInfo; }
             set { m_unusedPedTypeInfo = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedTags
+        public Dummy UnusedTags
         {
             get { return m_unusedTags; }
             set { m_unusedTags = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedShopping
+        public Dummy UnusedShopping
         {
             get { return m_unusedShopping; }
             set { m_unusedShopping = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedGangWars
+        public Dummy UnusedGangWars
         {
             get { return m_unusedGangWars; }
             set { m_unusedGangWars = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedEntryExits
+        public Dummy UnusedEntryExits
         {
             get { return m_unusedEntryExits; }
             set { m_unusedEntryExits = value; OnPropertyChanged(); }
         }
 
-        public DummyObject Unused3dMarkers
+        public Dummy Unused3dMarkers
         {
             get { return m_unused3dMarkers; }
             set { m_unused3dMarkers = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedVehicles
+        public Dummy UnusedVehicles
         {
             get { return m_unusedVehicles; }
             set { m_unusedVehicles = value; OnPropertyChanged(); }
         }
 
-        public DummyObject UnusedExtraBlock
+        public Dummy UnusedExtraBlock
         {
             get { return m_unusedExtraBlock; }
             set { m_unusedExtraBlock = value; OnPropertyChanged(); }
         }
 
-        public DummyObject GfwlData
+        public Dummy GfwlData
         {
             get { return m_gfwlData; }
             set { m_gfwlData = value; OnPropertyChanged(); }
@@ -338,39 +338,39 @@ namespace GTASaveData.GTA4
         {
             Name = "";
             SimpleVars = new SimpleVariables();
-            PlayerInfo = new DummyObject();
-            ExtraContent = new DummyObject();
-            Scripts = new DummyObject();
-            Garages = new DummyObject();
-            GameLogic = new DummyObject();
-            Paths = new DummyObject();
+            PlayerInfo = new Dummy();
+            ExtraContent = new Dummy();
+            Scripts = new Dummy();
+            Garages = new Dummy();
+            GameLogic = new Dummy();
+            Paths = new Dummy();
             Pickups = new Pickups();
-            RestartPoints = new DummyObject();
-            RadarBlips = new DummyObject();
-            Zones = new DummyObject();
-            GangData = new DummyObject();
-            CarGenerators = new DummyObject();
-            Stats = new DummyObject();
-            IplStore = new DummyObject();
-            StuntJumps = new DummyObject();
-            Radio = new DummyObject();
-            Objects = new DummyObject();
-            Relationships = new DummyObject();
-            Inventory = new DummyObject();
-            UnusedPools = new DummyObject();
-            UnusedPhoneInfo = new DummyObject();
-            UnusedAudioScript = new DummyObject();
-            UnusedSetPieces = new DummyObject();
-            UnusedStreaming = new DummyObject();
-            UnusedPedTypeInfo = new DummyObject();
-            UnusedTags = new DummyObject();
-            UnusedShopping = new DummyObject();
-            UnusedGangWars = new DummyObject();
-            UnusedEntryExits = new DummyObject();
-            Unused3dMarkers = new DummyObject();
-            UnusedVehicles = new DummyObject();
-            UnusedExtraBlock = new DummyObject();
-            GfwlData = new DummyObject();
+            RestartPoints = new Dummy();
+            RadarBlips = new Dummy();
+            Zones = new Dummy();
+            GangData = new Dummy();
+            CarGenerators = new Dummy();
+            Stats = new Dummy();
+            IplStore = new Dummy();
+            StuntJumps = new Dummy();
+            Radio = new Dummy();
+            Objects = new Dummy();
+            Relationships = new Dummy();
+            Inventory = new Dummy();
+            UnusedPools = new Dummy();
+            UnusedPhoneInfo = new Dummy();
+            UnusedAudioScript = new Dummy();
+            UnusedSetPieces = new Dummy();
+            UnusedStreaming = new Dummy();
+            UnusedPedTypeInfo = new Dummy();
+            UnusedTags = new Dummy();
+            UnusedShopping = new Dummy();
+            UnusedGangWars = new Dummy();
+            UnusedEntryExits = new Dummy();
+            Unused3dMarkers = new Dummy();
+            UnusedVehicles = new Dummy();
+            UnusedExtraBlock = new Dummy();
+            GfwlData = new Dummy();
         }
 
         private void LoadFileHeader()
@@ -380,7 +380,7 @@ namespace GTASaveData.GTA4
             ScriptSpace = m_file.ReadInt32();
 
             string sig = m_file.ReadString(4);
-            if (FileFormat.SupportedOnWin32)
+            if (FileFormat.IsSupportedOnWin32)
             {
                 Name = m_file.ReadString(Limits.MaxNameLength, unicode: true);
             }
@@ -394,10 +394,10 @@ namespace GTASaveData.GTA4
             string sig = m_file.ReadString(4);
             Debug.Assert(sig == "END", "Invalid 'END' signature!");
 
-            if (FileFormat.SupportedOnWin32)
+            if (FileFormat.IsSupportedOnWin32)
             {
-                int size = m_file.Length - m_file.Position;
-                GfwlData = new DummyObject(m_file.ReadBytes(size));
+                int size = m_file.Length - m_file.Cursor;
+                GfwlData = new Dummy(m_file.ReadBytes(size));
             }
         }
 
@@ -407,16 +407,16 @@ namespace GTASaveData.GTA4
             int size = m_file.ReadInt32();
             Debug.Assert(sig == "BLOCK", "Invalid 'BLOCK' signature!");
 
-            m_file.MarkPosition();
+            m_file.MarkCurrentPosition();
             T obj = m_file.Read<T>();
             Debug.Assert(m_file.Offset == size - 9);
 
             return obj;
         }
 
-        private DummyObject LoadDummy(byte[] data)
+        private Dummy LoadDummy(byte[] data)
         {
-            return new DummyObject(data);
+            return new Dummy(data);
         }
 
         private byte[] LoadBlockData()
@@ -425,21 +425,21 @@ namespace GTASaveData.GTA4
             int size = m_file.ReadInt32();
             Debug.Assert(sig == "BLOCK", "Invalid 'BLOCK' signature!");
             
-            m_file.MarkPosition();
+            m_file.MarkCurrentPosition();
             byte[] data = m_file.ReadBytes(size - 9);
             Debug.Assert(m_file.Offset == size - 9);
             
             return data;
         }
 
-        protected override void LoadAllData(DataBuffer file)
+        protected override void LoadAllData(StreamBuffer file)
         {
             m_file = file;
-            m_file.BigEndian = (FileFormat.SupportedOnXbox360 || FileFormat.SupportedOnPS3);
+            m_file.BigEndian = (FileFormat.IsSupportedOnXbox360 || FileFormat.IsSupportedOnPS3);
 
             LoadFileHeader();
 
-            int blockCount = (FileFormat.SupportedOnPS3) ? 33 : 32;
+            int blockCount = (FileFormat.IsSupportedOnPS3) ? 33 : 32;
             int index = 0;
 
             while (index < blockCount)
@@ -486,14 +486,14 @@ namespace GTASaveData.GTA4
             LoadFileFooter();
         }
 
-        protected override void SaveAllData(DataBuffer file)
+        protected override void SaveAllData(StreamBuffer file)
         {
             throw new NotImplementedException();
         }
 
-        protected override bool DetectFileFormat(byte[] data, out SaveFileFormat fmt)
+        protected override bool DetectFileFormat(byte[] data, out DataFormat fmt)
         {
-            using (DataBuffer b = new DataBuffer(data))
+            using (StreamBuffer b = new StreamBuffer(data))
             {
                 int version = b.ReadInt32();
                 if (version == 0x39)
@@ -523,7 +523,7 @@ namespace GTASaveData.GTA4
                 }
             }
 
-            fmt = SaveFileFormat.Default;
+            fmt = DataFormat.Default;
             return false;
         }
 
@@ -581,25 +581,25 @@ namespace GTASaveData.GTA4
 
         public static class FileFormats
         {
-            public static readonly SaveFileFormat PC = new SaveFileFormat(
+            public static readonly DataFormat PC = new DataFormat(
                 "PC", "PC", "Windows",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam)
             );
 
-            public static readonly SaveFileFormat PS3 = new SaveFileFormat(
+            public static readonly DataFormat PS3 = new DataFormat(
                 "PS3", "PS3", "PlayStation 3",
                 new GameConsole(ConsoleType.PS3)
             );
 
-            public static readonly SaveFileFormat Xbox360 = new SaveFileFormat(
+            public static readonly DataFormat Xbox360 = new DataFormat(
                 "Xbox360", "Xbox 360", "Xbox 360",
                 new GameConsole(ConsoleType.Xbox360)
             );
 
-            public static SaveFileFormat[] GetAll()
+            public static DataFormat[] GetAll()
             {
-                return new SaveFileFormat[] { PC, PS3, Xbox360 };
+                return new DataFormat[] { PC, PS3, Xbox360 };
             }
         }
     }

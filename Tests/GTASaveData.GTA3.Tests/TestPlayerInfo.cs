@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPlayerInfo : Base<PlayerInfo>
     {
-        public override PlayerInfo GenerateTestObject(SaveFileFormat format)
+        public override PlayerInfo GenerateTestObject(DataFormat format)
         {
             Faker<PlayerInfo> model = new Faker<PlayerInfo>()
                 .RuleFor(x => x.Money, f => f.Random.Int())

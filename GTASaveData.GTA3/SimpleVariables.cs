@@ -202,7 +202,7 @@ namespace GTASaveData.GTA3
             CompileDateAndTime = new Date();
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             LastMissionPassedName = buf.ReadString(Limits.MaxNameLength, unicode: true);
             TimeLastSaved = buf.Read<SystemTime>();
@@ -240,7 +240,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(LastMissionPassedName, Limits.MaxNameLength, unicode: true);
             buf.Write(TimeLastSaved);
@@ -278,9 +278,9 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(SaveFileFormat fmt)
+        protected override int GetSize(DataFormat fmt)
         {
-            if (fmt.SupportedOnPC)
+            if (fmt.IsSupportedOnPC)
             {
                 return 0xBC;
             }

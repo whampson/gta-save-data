@@ -5,8 +5,20 @@ using System.Collections.Generic;
 
 namespace GTASaveData.Converters
 {
+    /// <summary>
+    /// Converts an <see cref="Array{T}"/> (where the generic type argument is <see cref="byte"/>)
+    /// to a base64 string if the array is sufficiently large.
+    /// </summary>
     public class ByteArrayConverter : JsonConverter<Array<byte>>
     {
+        public const int DefaultThreshold = 32;
+
+        /// <summary>
+        /// The maximum array length at which bytes will be encoded as a JSON array.
+        /// After the threshold is surpassed, the byte array will be encoded as a base64 string.
+        /// </summary>
+        public static int Threshold { get; set; }
+
         public override Array<byte> ReadJson(JsonReader reader, Type objectType, Array<byte> existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
@@ -44,9 +56,6 @@ namespace GTASaveData.Converters
                         break;
                     case JsonToken.EndArray:
                         return byteList.ToArray();
-                    case JsonToken.Comment:
-                        // skip
-                        break;
                     default:
                         throw new JsonSerializationException(string.Format(Strings.Error_JsonBinaryUnexpectedToken, reader.TokenType));
                 }
@@ -63,7 +72,7 @@ namespace GTASaveData.Converters
             }
             else
             {
-                if (value.Count < 100)
+                if (value.Count < Threshold)
                 {
                     // Regular ol' array
                     serializer.Serialize(writer, value);

@@ -4,33 +4,33 @@ using System.Linq;
 
 namespace GTASaveData
 {
-    public struct SaveFileFormat : IEquatable<SaveFileFormat>
+    public struct DataFormat : IEquatable<DataFormat>
     {
-        public static readonly SaveFileFormat Default = new SaveFileFormat("Default", "", "");
+        public static readonly DataFormat Default = new DataFormat("Default", "", "");
 
         private readonly string m_id;
         private readonly string m_name;
         private readonly string m_description;
         private readonly IEnumerable<GameConsole> m_supportedConsoles;
 
-        public string Id => m_id ?? string.Empty;
-        public string Name => m_name ?? string.Empty;
-        public string Description => m_description ?? string.Empty;
+        public string Id => m_id ?? "";
+        public string Name => m_name ?? "";
+        public string Description => m_description ?? "";
         public IEnumerable<GameConsole> SupportedConsoles => m_supportedConsoles ?? new List<GameConsole>();
 
-        public bool SupportedOnAndroid => IsSupportedOn(ConsoleType.Android);
-        public bool SupportedOniOS => IsSupportedOn(ConsoleType.iOS);
-        public bool SupportedOnMacOS => IsSupportedOn(ConsoleType.MacOS);
-        public bool SupportedOnMobile => SupportedOnAndroid || SupportedOniOS;
-        public bool SupportedOnPC => SupportedOnMacOS || SupportedOnWin32;
-        public bool SupportedOnPS2 => IsSupportedOn(ConsoleType.PS2);
-        public bool SupportedOnPS3 => IsSupportedOn(ConsoleType.PS3);
-        public bool SupportedOnPSP => IsSupportedOn(ConsoleType.PSP);
-        public bool SupportedOnWin32 => IsSupportedOn(ConsoleType.Win32);
-        public bool SupportedOnXbox => IsSupportedOn(ConsoleType.Xbox);
-        public bool SupportedOnXbox360 => IsSupportedOn(ConsoleType.Xbox360);
+        public bool IsSupportedOnAndroid => IsSupportedOn(ConsoleType.Android);
+        public bool IsSupportedOniOS => IsSupportedOn(ConsoleType.iOS);
+        public bool IsSupportedOnMacOS => IsSupportedOn(ConsoleType.MacOS);
+        public bool IsSupportedOnMobile => IsSupportedOnAndroid || IsSupportedOniOS;
+        public bool IsSupportedOnPC => IsSupportedOnMacOS || IsSupportedOnWin32;
+        public bool IsSupportedOnPS2 => IsSupportedOn(ConsoleType.PS2);
+        public bool IsSupportedOnPS3 => IsSupportedOn(ConsoleType.PS3);
+        public bool IsSupportedOnPSP => IsSupportedOn(ConsoleType.PSP);
+        public bool IsSupportedOnWin32 => IsSupportedOn(ConsoleType.Win32);
+        public bool IsSupportedOnXbox => IsSupportedOn(ConsoleType.Xbox);
+        public bool IsSupportedOnXbox360 => IsSupportedOn(ConsoleType.Xbox360);
 
-        public SaveFileFormat(string id, string name, string description, params GameConsole[] supportedConsoles)
+        public DataFormat(string id, string name, string description, params GameConsole[] supportedConsoles)
         {
             m_id = id;
             m_name = name;
@@ -60,14 +60,15 @@ namespace GTASaveData
         }
         public override bool Equals(object obj)
         {
-            if (!(obj is SaveFileFormat))
+            if (!(obj is DataFormat))
             {
                 return false;
             }
-            return Equals((SaveFileFormat) obj);
+
+            return Equals((DataFormat) obj);
         }
 
-        public bool Equals(SaveFileFormat other)
+        public bool Equals(DataFormat other)
         {
             return SupportedConsoles.SequenceEqual(other.SupportedConsoles);
         }
@@ -77,12 +78,12 @@ namespace GTASaveData
             return Name;
         }
 
-        public static bool operator ==(SaveFileFormat left, SaveFileFormat right)
+        public static bool operator ==(DataFormat left, DataFormat right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(SaveFileFormat left, SaveFileFormat right)
+        public static bool operator !=(DataFormat left, DataFormat right)
         {
             return !left.Equals(right);
         }

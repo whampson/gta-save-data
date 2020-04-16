@@ -13,35 +13,35 @@ namespace TestFramework
 
         public int GetSizeOfTestObject(T obj)
         {
-            return SaveDataObject.SizeOf<T>(obj, SaveFileFormat.Default);
+            return SaveDataObject.SizeOf<T>(obj, DataFormat.Default);
         }
 
-        public int GetSizeOfTestObject(SaveFileFormat format)
+        public int GetSizeOfTestObject(DataFormat format)
         {
             return SaveDataObject.SizeOf<T>(format);
         }
 
-        public int GetSizeOfTestObject(T obj, SaveFileFormat format)
+        public int GetSizeOfTestObject(T obj, DataFormat format)
         {
             return SaveDataObject.SizeOf<T>(obj, format);
         }
 
         public T CreateSerializedCopy(T obj)
         {
-            return CreateSerializedCopy(obj, SaveFileFormat.Default, out byte[] _);
+            return CreateSerializedCopy(obj, DataFormat.Default, out byte[] _);
         }
 
         public T CreateSerializedCopy(T obj, out byte[] bytes)
         {
-            return CreateSerializedCopy(obj, SaveFileFormat.Default, out bytes);
+            return CreateSerializedCopy(obj, DataFormat.Default, out bytes);
         }
 
-        public T CreateSerializedCopy(T obj, SaveFileFormat format)
+        public T CreateSerializedCopy(T obj, DataFormat format)
         {
             return CreateSerializedCopy(obj, format, out byte[] _);
         }
 
-        public T CreateSerializedCopy(T obj, SaveFileFormat format, out byte[] bytes)
+        public T CreateSerializedCopy(T obj, DataFormat format, out byte[] bytes)
         {
             bytes = Serializer.Write(obj, format);
             return Serializer.Read<T>(bytes, format);
@@ -49,9 +49,9 @@ namespace TestFramework
 
         public T GenerateTestObject()
         {
-            return GenerateTestObject(SaveFileFormat.Default);
+            return GenerateTestObject(DataFormat.Default);
         }
 
-        public abstract T GenerateTestObject(SaveFileFormat format);
+        public abstract T GenerateTestObject(DataFormat format);
     }
 }

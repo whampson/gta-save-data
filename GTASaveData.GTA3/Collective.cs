@@ -27,13 +27,13 @@ namespace GTASaveData.GTA3
             Field04h = 0;
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Index = buf.ReadInt32();
             Field04h = buf.ReadInt32();
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(Index);
             buf.Write(Field04h);

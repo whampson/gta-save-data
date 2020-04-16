@@ -33,13 +33,13 @@ namespace GTASaveData.Types
             Y = y;
         }
 
-        protected override void ReadObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             X = buf.ReadFloat();
             Y = buf.ReadFloat();
         }
 
-        protected override void WriteObjectData(DataBuffer buf, SaveFileFormat fmt)
+        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(X);
             buf.Write(Y);

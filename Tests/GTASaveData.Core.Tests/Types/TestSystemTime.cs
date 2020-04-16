@@ -8,7 +8,7 @@ namespace GTASaveData.Core.Tests.Types
 {
     public class TestSystemTime : SaveDataObjectTestBase<SystemTime>
     {
-        public override SystemTime GenerateTestObject(SaveFileFormat format)
+        public override SystemTime GenerateTestObject(DataFormat format)
         {
             return new SystemTime(
                 new Faker().Date.Between(new DateTime(1970, 1, 1), DateTime.Now));
