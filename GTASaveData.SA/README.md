@@ -1,4 +1,4 @@
-# GTASaveData.GTA3
+# GTASaveData.SA
 *Grand Theft Auto: San Andreas* support.
 
 ## To-Do List
