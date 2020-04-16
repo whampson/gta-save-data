@@ -12,7 +12,18 @@ namespace GTASaveData.Extensions
         /// <returns>True if the type is observable, false otherwise.</returns>
         public static bool IsObservable(this Type t)
         {
-            return t.GetInterface(nameof(INotifyPropertyChanged)) != null;
+            return t.Implements(typeof(INotifyPropertyChanged));
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this type implements an interface.
+        /// </summary>
+        /// <param name="t">The type to check.</param>
+        /// <param name="iface">the interface type to check for implementation</param>
+        /// <returns>True if the type implements the interface, false otherwise.</returns>
+        public static bool Implements(this Type t, Type iface)
+        {
+            return t.GetInterface(iface.Name) != null;
         }
     }
 }
