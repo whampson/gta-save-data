@@ -144,8 +144,7 @@ namespace GTASaveData.GTA3
             buf.Write(GetOutOfHospitalFree);
             buf.Write(PlayerName, Limits.PlayerNameLength);
 
-            // More garbage is written here on actual game
-            // due to incorrect size calculation
+            // Game writes some garbage here due to incorrect size calculation
 
             Debug.Assert(buf.Offset == SizeOf<PlayerInfo>());
         }

@@ -4,6 +4,7 @@ using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3.Tests
 {
     public class TestSimpleVariables : Base<SimpleVariables>
@@ -22,13 +23,13 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.GameClockMinutes, f => f.Random.Byte())
                 .RuleFor(x => x.CurrPadMode, f => f.Random.Short())
                 .RuleFor(x => x.TimeInMilliseconds, f => f.Random.UInt())
-                .RuleFor(x => x.TimerTimeScale, f => f.Random.Float())
-                .RuleFor(x => x.TimerTimeStep, f => f.Random.Float())
-                .RuleFor(x => x.TimerTimeStepNonClipped, f => f.Random.Float())
-                .RuleFor(x => x.FrameCounter, f => f.Random.UInt())
-                .RuleFor(x => x.TimeStep, f => f.Random.Float())
-                .RuleFor(x => x.FramesPerUpdate, f => f.Random.Float())
                 .RuleFor(x => x.TimeScale, f => f.Random.Float())
+                .RuleFor(x => x.TimeStep, f => f.Random.Float())
+                .RuleFor(x => x.TimeStepNonClipped, f => f.Random.Float())
+                .RuleFor(x => x.FrameCounter, f => f.Random.UInt())
+                .RuleFor(x => x.TimeStep2, f => f.Random.Float())
+                .RuleFor(x => x.FramesPerUpdate, f => f.Random.Float())
+                .RuleFor(x => x.TimeScale2, f => f.Random.Float())
                 .RuleFor(x => x.OldWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.NewWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.ForcedWeatherType, f => f.PickRandom<WeatherType>())
@@ -59,13 +60,13 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.GameClockMinutes, x1.GameClockMinutes);
             Assert.Equal(x0.CurrPadMode, x1.CurrPadMode);
             Assert.Equal(x0.TimeInMilliseconds, x1.TimeInMilliseconds);
-            Assert.Equal(x0.TimerTimeScale, x1.TimerTimeScale);
-            Assert.Equal(x0.TimerTimeStep, x1.TimerTimeStep);
-            Assert.Equal(x0.TimerTimeStepNonClipped, x1.TimerTimeStepNonClipped);
-            Assert.Equal(x0.FrameCounter, x1.FrameCounter);
-            Assert.Equal(x0.TimeStep, x1.TimeStep);
-            Assert.Equal(x0.FramesPerUpdate, x1.FramesPerUpdate);
             Assert.Equal(x0.TimeScale, x1.TimeScale);
+            Assert.Equal(x0.TimeStep, x1.TimeStep);
+            Assert.Equal(x0.TimeStepNonClipped, x1.TimeStepNonClipped);
+            Assert.Equal(x0.FrameCounter, x1.FrameCounter);
+            Assert.Equal(x0.TimeStep2, x1.TimeStep2);
+            Assert.Equal(x0.FramesPerUpdate, x1.FramesPerUpdate);
+            Assert.Equal(x0.TimeScale2, x1.TimeScale2);
             Assert.Equal(x0.OldWeatherType, x1.OldWeatherType);
             Assert.Equal(x0.NewWeatherType, x1.NewWeatherType);
             Assert.Equal(x0.ForcedWeatherType, x1.ForcedWeatherType);
@@ -81,3 +82,4 @@ namespace GTASaveData.GTA3.Tests
         
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete

@@ -1,10 +1,10 @@
 ﻿using GTASaveData.Converters;
-using GTASaveData.Types;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.Linq;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
     public class ScriptData : SaveDataObject, IEquatable<ScriptData>
@@ -22,8 +22,8 @@ namespace GTASaveData.GTA3
         private Array<byte> m_globalSpace;
         private int m_onAMissionFlag;
         private Array<Contact> m_contacts;
-        private Array<Collective> m_collectives;
-        private int m_nextFreeCollectiveIndex;
+        private Array<Collective> m_collectives;    // not used
+        private int m_nextFreeCollectiveIndex;      // not used
         private Array<BuildingSwap> m_buildingSwapArray;
         private Array<InvisibleEntity> m_invisibilitySettingArray;
         private bool m_usingAMultiScriptFile;
@@ -54,12 +54,14 @@ namespace GTASaveData.GTA3
             set { m_contacts = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Not used by the game.")]
         public Array<Collective> Collectives
         {
             get { return m_collectives; }
             set { m_collectives = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Not used by the game.")]
         public int NextFreeCollectiveIndex
         {
             get { return m_nextFreeCollectiveIndex; }
@@ -251,3 +253,4 @@ namespace GTASaveData.GTA3
         }
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete

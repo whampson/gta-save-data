@@ -45,12 +45,6 @@ namespace GTASaveData.GTA3
     }
 
     [Flags]
-    public enum CollectCars3
-    {
-        Landstalker = (1 << 0)
-    }
-
-    [Flags]
     public enum CollectCarsMilitaryCrane
     {
         Firetruck   = (1 << 0),

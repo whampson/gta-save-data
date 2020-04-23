@@ -1,8 +1,8 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
     [Size(0x1478)]
@@ -18,12 +18,12 @@ namespace GTASaveData.GTA3
         private int m_numGarages;
         private bool m_bombsAreFree;
         private bool m_respraysAreFree;
-        private int m_carsCollected;
+        private int m_carsCollected;        // not used
         private int m_bankVansCollected;
-        private int m_policeCarsCollected;
+        private int m_policeCarsCollected;  // not used
         private CollectCars1 m_carTypesCollected1;
         private CollectCars2 m_carTypesCollected2;
-        private CollectCars3 m_carTypesCollected3;
+        private int m_carTypesCollected3;   // not used
         private int m_lastTimeHelpMessage;
         private Array<StoredCar> m_carsInSafeHouse;
         private Array<Garage> m_garages;
@@ -46,6 +46,7 @@ namespace GTASaveData.GTA3
             set { m_respraysAreFree = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Not used by the game.")]
         public int CarsCollected
         { 
             get { return m_carsCollected; }
@@ -58,6 +59,7 @@ namespace GTASaveData.GTA3
             set { m_bankVansCollected = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Not used by the game.")]
         public int PoliceCarsCollected
         { 
             get { return m_policeCarsCollected; }
@@ -76,7 +78,8 @@ namespace GTASaveData.GTA3
             set { m_carTypesCollected2 = value; OnPropertyChanged(); }
         }
 
-        public CollectCars3 CarTypesCollected3
+        [Obsolete("Not used by the game.")]
+        public int CarTypesCollected3
         { 
             get { return m_carTypesCollected3; }
             set { m_carTypesCollected3 = value; OnPropertyChanged(); }
@@ -116,7 +119,7 @@ namespace GTASaveData.GTA3
             PoliceCarsCollected = buf.ReadInt32();
             CarTypesCollected1 = (CollectCars1) buf.ReadInt32();
             CarTypesCollected2 = (CollectCars2) buf.ReadInt32();
-            CarTypesCollected3 = (CollectCars3) buf.ReadInt32();
+            CarTypesCollected3 = buf.ReadInt32();
             LastTimeHelpMessage = buf.ReadInt32();
             CarsInSafeHouse = buf.ReadArray<StoredCar>(Limits.NumberOfCarsPerSafeHouse * Limits.NumberOfSafeHouses);
             Garages = buf.ReadArray<Garage>(Limits.NumberOfGarages);
@@ -134,13 +137,12 @@ namespace GTASaveData.GTA3
             buf.Write(PoliceCarsCollected);
             buf.Write((int) CarTypesCollected1);
             buf.Write((int) CarTypesCollected2);
-            buf.Write((int) CarTypesCollected3);
+            buf.Write(CarTypesCollected3);
             buf.Write(LastTimeHelpMessage);
             buf.Write(CarsInSafeHouse.ToArray(), Limits.NumberOfCarsPerSafeHouse * Limits.NumberOfSafeHouses);
             buf.Write(Garages.ToArray(), Limits.NumberOfGarages);
 
-            // More garbage is written here on actual game
-            // due to incorrect size calculation
+            // Game writes some garbage here due to incorrect size calculation
 
             Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }
@@ -172,3 +174,4 @@ namespace GTASaveData.GTA3
         }
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete

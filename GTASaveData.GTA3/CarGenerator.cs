@@ -19,7 +19,7 @@ namespace GTASaveData.GTA3
         private ushort m_minDelay;
         private ushort m_maxDelay;
         private uint m_timer;
-        private int m_vehicleHandle;
+        private int m_handle;
         private short m_usesRemaining;
         private bool m_isBlocking;
         private Vector m_vecInf;
@@ -92,10 +92,10 @@ namespace GTASaveData.GTA3
             set { m_timer = value; OnPropertyChanged(); }
         }
 
-        public int VehicleHandle
+        public int Handle
         {
-            get { return m_vehicleHandle; }
-            set { m_vehicleHandle = value; OnPropertyChanged(); }
+            get { return m_handle; }
+            set { m_handle = value; OnPropertyChanged(); }
         }
 
         public short UsesRemaining
@@ -110,19 +110,19 @@ namespace GTASaveData.GTA3
             set { m_isBlocking = value; OnPropertyChanged(); }
         }
 
-        public Vector VecInf
+        public Vector CollisionBoundingMin
         {
             get { return m_vecInf; }
             set { m_vecInf = value; OnPropertyChanged(); }
         }
 
-        public Vector VecSup
+        public Vector CollisionBoundingMax
         {
             get { return m_vecSup; }
             set { m_vecSup = value; OnPropertyChanged(); }
         }
 
-        public float Size
+        public float CollisionSize
         {
             get { return m_size; }
             set { m_size= value; OnPropertyChanged(); }
@@ -149,8 +149,8 @@ namespace GTASaveData.GTA3
         public CarGenerator()
         {
             Position = new Vector();
-            VecInf = new Vector();
-            VecSup = new Vector();
+            CollisionBoundingMin = new Vector();
+            CollisionBoundingMax = new Vector();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
@@ -167,13 +167,13 @@ namespace GTASaveData.GTA3
             MinDelay = buf.ReadUInt16();
             MaxDelay = buf.ReadUInt16();
             Timer = buf.ReadUInt32();
-            VehicleHandle = buf.ReadInt32();
+            Handle = buf.ReadInt32();
             UsesRemaining = buf.ReadInt16();
             IsBlocking = buf.ReadBool();
             buf.ReadByte();
-            VecInf = buf.Read<Vector>();
-            VecSup = buf.Read<Vector>();
-            Size = buf.ReadFloat();
+            CollisionBoundingMin = buf.Read<Vector>();
+            CollisionBoundingMax = buf.Read<Vector>();
+            CollisionSize = buf.ReadFloat();
 
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
@@ -192,13 +192,13 @@ namespace GTASaveData.GTA3
             buf.Write(MinDelay);
             buf.Write(MaxDelay);
             buf.Write(Timer);
-            buf.Write(VehicleHandle);
+            buf.Write(Handle);
             buf.Write(UsesRemaining);
             buf.Write(IsBlocking);
             buf.Write((byte) 0);
-            buf.Write(VecInf);
-            buf.Write(VecSup);
-            buf.Write(Size);
+            buf.Write(CollisionBoundingMin);
+            buf.Write(CollisionBoundingMax);
+            buf.Write(CollisionSize);
 
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
@@ -226,12 +226,12 @@ namespace GTASaveData.GTA3
                 && MinDelay.Equals(other.MinDelay)
                 && MaxDelay.Equals(other.MaxDelay)
                 && Timer.Equals(other.Timer)
-                && VehicleHandle.Equals(other.VehicleHandle)
+                && Handle.Equals(other.Handle)
                 && UsesRemaining.Equals(other.UsesRemaining)
                 && IsBlocking.Equals(other.IsBlocking)
-                && VecInf.Equals(other.VecInf)
-                && VecSup.Equals(other.VecSup)
-                && Size.Equals(other.Size);
+                && CollisionBoundingMin.Equals(other.CollisionBoundingMin)
+                && CollisionBoundingMax.Equals(other.CollisionBoundingMax)
+                && CollisionSize.Equals(other.CollisionSize);
         }
     }
 }

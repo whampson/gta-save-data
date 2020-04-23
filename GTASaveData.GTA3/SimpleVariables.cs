@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
     public class SimpleVariables : SaveDataObject, IEquatable<SimpleVariables>
@@ -22,13 +23,13 @@ namespace GTASaveData.GTA3
         private byte m_gameClockMinutes;
         private short m_currPadMode;
         private uint m_timeInMilliseconds;
-        private float m_timerTimeScale;
-        private float m_timerTimeStep;
-        private float m_timerTimeStepNonClipped;
-        private uint m_frameCounter;
-        private float m_timeStep;
-        private float m_framesPerUpdate;
         private float m_timeScale;
+        private float m_timeStep;
+        private float m_timeStepNonClipped;
+        private uint m_frameCounter;
+        private float m_timeStep2;
+        private float m_framesPerUpdate;
+        private float m_timeScale2;
         private WeatherType m_oldWeatherType;
         private WeatherType m_newWeatherType;
         private WeatherType m_forcedWeatherType;
@@ -104,28 +105,10 @@ namespace GTASaveData.GTA3
             set { m_timeInMilliseconds = value; OnPropertyChanged(); }
         }
 
-        public float TimerTimeScale
+        public float TimeScale
         {
-            get { return m_timerTimeScale; }
-            set { m_timerTimeScale = value; OnPropertyChanged(); }
-        }
-
-        public float TimerTimeStep
-        {
-            get { return m_timerTimeStep; }
-            set { m_timerTimeStep = value; OnPropertyChanged(); }
-        }
-
-        public float TimerTimeStepNonClipped
-        {
-            get { return m_timerTimeStepNonClipped; }
-            set { m_timerTimeStepNonClipped = value; OnPropertyChanged(); }
-        }
-
-        public uint FrameCounter
-        {
-            get { return m_frameCounter; }
-            set { m_frameCounter = value; OnPropertyChanged(); }
+            get { return m_timeScale; }
+            set { m_timeScale = value; OnPropertyChanged(); }
         }
 
         public float TimeStep
@@ -134,16 +117,37 @@ namespace GTASaveData.GTA3
             set { m_timeStep = value; OnPropertyChanged(); }
         }
 
+        public float TimeStepNonClipped
+        {
+            get { return m_timeStepNonClipped; }
+            set { m_timeStepNonClipped = value; OnPropertyChanged(); }
+        }
+
+        public uint FrameCounter
+        {
+            get { return m_frameCounter; }
+            set { m_frameCounter = value; OnPropertyChanged(); }
+        }
+
+        [Obsolete("Not used by the game.")]
+        public float TimeStep2
+        {
+            get { return m_timeStep2; }
+            set { m_timeStep2 = value; OnPropertyChanged(); }
+        }
+
+        [Obsolete("Not used by the game.")]
         public float FramesPerUpdate
         {
             get { return m_framesPerUpdate; }
             set { m_framesPerUpdate = value; OnPropertyChanged(); }
         }
 
-        public float TimeScale
+        [Obsolete("Not used by the game.")]
+        public float TimeScale2
         {
-            get { return m_timeScale; }
-            set { m_timeScale = value; OnPropertyChanged(); }
+            get { return m_timeScale2; }
+            set { m_timeScale2 = value; OnPropertyChanged(); }
         }
 
         public WeatherType OldWeatherType
@@ -170,6 +174,7 @@ namespace GTASaveData.GTA3
             set { m_weatherInterpolationValue = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Not used by the game.")]
         public Date CompileDateAndTime
         {
             get { return m_compileDateAndTime; }
@@ -218,13 +223,13 @@ namespace GTASaveData.GTA3
             CurrPadMode = buf.ReadInt16();
             buf.Align4Bytes();
             TimeInMilliseconds = buf.ReadUInt32();
-            TimerTimeScale = buf.ReadFloat();
-            TimerTimeStep = buf.ReadFloat();
-            TimerTimeStepNonClipped = buf.ReadFloat();
-            FrameCounter = buf.ReadUInt32();
-            TimeStep = buf.ReadFloat();
-            FramesPerUpdate = buf.ReadFloat();
             TimeScale = buf.ReadFloat();
+            TimeStep = buf.ReadFloat();
+            TimeStepNonClipped = buf.ReadFloat();
+            FrameCounter = buf.ReadUInt32();
+            TimeStep2 = buf.ReadFloat();
+            FramesPerUpdate = buf.ReadFloat();
+            TimeScale2 = buf.ReadFloat();
             OldWeatherType = (WeatherType) buf.ReadInt16();
             buf.Align4Bytes();
             NewWeatherType = (WeatherType) buf.ReadInt16();
@@ -256,13 +261,13 @@ namespace GTASaveData.GTA3
             buf.Write(CurrPadMode);
             buf.Align4Bytes();
             buf.Write(TimeInMilliseconds);
-            buf.Write(TimerTimeScale);
-            buf.Write(TimerTimeStep);
-            buf.Write(TimerTimeStepNonClipped);
-            buf.Write(FrameCounter);
-            buf.Write(TimeStep);
-            buf.Write(FramesPerUpdate);
             buf.Write(TimeScale);
+            buf.Write(TimeStep);
+            buf.Write(TimeStepNonClipped);
+            buf.Write(FrameCounter);
+            buf.Write(TimeStep2);
+            buf.Write(FramesPerUpdate);
+            buf.Write(TimeScale2);
             buf.Write((short) OldWeatherType);
             buf.Align4Bytes();
             buf.Write((short) NewWeatherType);
@@ -311,13 +316,13 @@ namespace GTASaveData.GTA3
                 && GameClockMinutes.Equals(other.GameClockMinutes)
                 && CurrPadMode.Equals(other.CurrPadMode)
                 && TimeInMilliseconds.Equals(other.TimeInMilliseconds)
-                && TimerTimeScale.Equals(other.TimerTimeScale)
-                && TimerTimeStep.Equals(other.TimerTimeStep)
-                && TimerTimeStepNonClipped.Equals(other.TimerTimeStepNonClipped)
-                && FrameCounter.Equals(other.FrameCounter)
-                && TimeStep.Equals(other.TimeStep)
-                && FramesPerUpdate.Equals(other.FramesPerUpdate)
                 && TimeScale.Equals(other.TimeScale)
+                && TimeStep.Equals(other.TimeStep)
+                && TimeStepNonClipped.Equals(other.TimeStepNonClipped)
+                && FrameCounter.Equals(other.FrameCounter)
+                && TimeStep2.Equals(other.TimeStep2)
+                && FramesPerUpdate.Equals(other.FramesPerUpdate)
+                && TimeScale2.Equals(other.TimeScale2)
                 && OldWeatherType.Equals(other.OldWeatherType)
                 && NewWeatherType.Equals(other.NewWeatherType)
                 && ForcedWeatherType.Equals(other.ForcedWeatherType)
@@ -329,3 +334,4 @@ namespace GTASaveData.GTA3
         }
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete

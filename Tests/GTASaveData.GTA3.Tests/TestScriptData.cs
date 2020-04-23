@@ -2,6 +2,7 @@
 using TestFramework;
 using Xunit;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3.Tests
 {
     public class TestScriptData : Base<ScriptData>
@@ -79,3 +80,4 @@ namespace GTASaveData.GTA3.Tests
         }
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete

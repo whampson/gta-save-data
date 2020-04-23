@@ -8,7 +8,7 @@
         Garages,
         VehiclePool,
         ObjectPool,
-        Paths,
+        PathFind,
         Cranes,
         Pickups,
         PhoneInfo,

@@ -11,9 +11,9 @@ namespace GTASaveData.GTA3.Tests
         public override Crane GenerateTestObject(DataFormat format)
         {
             Faker<Crane> model = new Faker<Crane>()
-                .RuleFor(x => x.CraneEntityPointer, f => f.Random.UInt())
-                .RuleFor(x => x.HookPointer, f => f.Random.UInt())
-                .RuleFor(x => x.AudioEntity, f => f.Random.Int())
+                .RuleFor(x => x.Handle, f => f.Random.UInt())
+                .RuleFor(x => x.HookHandle, f => f.Random.UInt())
+                .RuleFor(x => x.AudioHandle, f => f.Random.Int())
                 .RuleFor(x => x.PickupX1, f => f.Random.Float())
                 .RuleFor(x => x.PickupX2, f => f.Random.Float())
                 .RuleFor(x => x.PickupY1, f => f.Random.Float())
@@ -27,12 +27,12 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.PickupHeight, f => f.Random.Float())
                 .RuleFor(x => x.DropoffHeight, f => f.Random.Float())
                 .RuleFor(x => x.HookAngle, f => f.Random.Float())
-                .RuleFor(x => x.HookOffset, f => f.Random.Float())
+                .RuleFor(x => x.HookDistance, f => f.Random.Float())
                 .RuleFor(x => x.HookHeight, f => f.Random.Float())
                 .RuleFor(x => x.HookInitialPosition, Generator.Generate<Vector, TestVector>())
                 .RuleFor(x => x.HookCurrentPosition, Generator.Generate<Vector, TestVector>())
                 .RuleFor(x => x.HookVelocity, f => Generator.Generate<Vector2D, TestVector2D>())
-                .RuleFor(x => x.VehiclePickedUpPointer, f => f.Random.UInt())
+                .RuleFor(x => x.VehiclePickedUpHandle, f => f.Random.UInt())
                 .RuleFor(x => x.TimeForNextCheck, f => f.Random.UInt())
                 .RuleFor(x => x.Status, f => f.PickRandom<CraneStatus>())
                 .RuleFor(x => x.State, f => f.PickRandom<CraneState>())
@@ -51,9 +51,9 @@ namespace GTASaveData.GTA3.Tests
             Crane x0 = GenerateTestObject();
             Crane x1 = CreateSerializedCopy(x0, out byte[] data);
 
-            Assert.Equal(x0.CraneEntityPointer, x1.CraneEntityPointer);
-            Assert.Equal(x0.HookPointer, x1.HookPointer);
-            Assert.Equal(x0.AudioEntity, x1.AudioEntity);
+            Assert.Equal(x0.Handle, x1.Handle);
+            Assert.Equal(x0.HookHandle, x1.HookHandle);
+            Assert.Equal(x0.AudioHandle, x1.AudioHandle);
             Assert.Equal(x0.PickupX1, x1.PickupX1);
             Assert.Equal(x0.PickupX2, x1.PickupX2);
             Assert.Equal(x0.PickupY1, x1.PickupY1);
@@ -67,12 +67,12 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.PickupHeight, x1.PickupHeight);
             Assert.Equal(x0.DropoffHeight, x1.DropoffHeight);
             Assert.Equal(x0.HookAngle, x1.HookAngle);
-            Assert.Equal(x0.HookOffset, x1.HookOffset);
+            Assert.Equal(x0.HookDistance, x1.HookDistance);
             Assert.Equal(x0.HookHeight, x1.HookHeight);
             Assert.Equal(x0.HookInitialPosition, x1.HookInitialPosition);
             Assert.Equal(x0.HookCurrentPosition, x1.HookCurrentPosition);
             Assert.Equal(x0.HookVelocity, x1.HookVelocity);
-            Assert.Equal(x0.VehiclePickedUpPointer, x1.VehiclePickedUpPointer);
+            Assert.Equal(x0.VehiclePickedUpHandle, x1.VehiclePickedUpHandle);
             Assert.Equal(x0.TimeForNextCheck, x1.TimeForNextCheck);
             Assert.Equal(x0.Status, x1.Status);
             Assert.Equal(x0.State, x1.State);

@@ -2,6 +2,7 @@
 using TestFramework;
 using Xunit;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3.Tests
 {
     public class TestGarageData : Base<GarageData>
@@ -17,7 +18,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.PoliceCarsCollected, f => f.Random.Int())
                 .RuleFor(x => x.CarTypesCollected1, f => f.PickRandom<CollectCars1>())
                 .RuleFor(x => x.CarTypesCollected2, f => f.PickRandom<CollectCars2>())
-                .RuleFor(x => x.CarTypesCollected3, f => f.PickRandom<CollectCars3>())
+                .RuleFor(x => x.CarTypesCollected3, f => f.Random.Int())
                 .RuleFor(x => x.LastTimeHelpMessage, f => f.Random.Int())
                 .RuleFor(x => x.CarsInSafeHouse, f => Generator.CreateArray(GarageData.Limits.NumberOfCarsPerSafeHouse * GarageData.Limits.NumberOfSafeHouses, g => Generator.Generate<StoredCar, TestStoredCar>()))
                 .RuleFor(x => x.Garages, f => Generator.CreateArray(GarageData.Limits.NumberOfGarages, g => Generator.Generate<Garage, TestGarage>()));
@@ -48,3 +49,4 @@ namespace GTASaveData.GTA3.Tests
         }
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete

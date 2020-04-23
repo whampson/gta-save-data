@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
     public class RunningScript : SaveDataObject, IEquatable<RunningScript>
@@ -17,18 +18,18 @@ namespace GTASaveData.GTA3
         private const int SizeOfRunningScript = 136;
         private const int SizeOfRunningScriptPS2 = 128;
 
-        private uint m_pNextScript;
-        private uint m_pPrevScript;
-        private string m_scriptName;
+        private uint m_pNextScript; // not loaded
+        private uint m_pPrevScript; // not loaded
+        private string m_name;
         private uint m_ip;
-        private Array<uint> m_stack;
+        private Array<int> m_stack;
         private ushort m_stackPointer;
-        private Array<uint> m_localVariables;
+        private Array<int> m_localVariables;
         private uint m_timerA;
         private uint m_timerB;
         private bool m_condResult;
         private bool m_isMissionScript;
-        private bool m_skipWakeTime;
+        private bool m_clearMessages;
         private uint m_wakeTime;
         private ushort m_andOrState;
         private bool m_notFlag;
@@ -36,12 +37,14 @@ namespace GTASaveData.GTA3
         private bool m_deathArrestExecuted;
         private bool m_missionFlag;
 
+        [Obsolete("Value overridden by the game.")]
         public uint NextScriptPointer
         {
             get { return m_pNextScript; }
             set { m_pNextScript = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Value overridden by the game.")]
         public uint PrevScriptPointer
         {
             get { return m_pPrevScript; }
@@ -50,8 +53,8 @@ namespace GTASaveData.GTA3
 
         public string Name
         {
-            get { return m_scriptName; }
-            set { m_scriptName = value; OnPropertyChanged(); }
+            get { return m_name; }
+            set { m_name = value; OnPropertyChanged(); }
         }
 
         public uint IP
@@ -60,7 +63,7 @@ namespace GTASaveData.GTA3
             set { m_ip = value; OnPropertyChanged(); }
         }
 
-        public Array<uint> Stack
+        public Array<int> Stack
         {
             get { return m_stack; }
             set { m_stack = value; OnPropertyChanged(); }
@@ -72,7 +75,7 @@ namespace GTASaveData.GTA3
             set { m_stackPointer = value; OnPropertyChanged(); }
         }
 
-        public Array<uint> LocalVariables
+        public Array<int> LocalVariables
         {
             get { return m_localVariables; }
             set { m_localVariables = value; OnPropertyChanged(); }
@@ -102,10 +105,10 @@ namespace GTASaveData.GTA3
             set { m_isMissionScript = value; OnPropertyChanged(); }
         }
 
-        public bool SkipWakeTime
+        public bool ClearMessages
         {
-            get { return m_skipWakeTime; }
-            set { m_skipWakeTime = value; OnPropertyChanged(); }
+            get { return m_clearMessages; }
+            set { m_clearMessages = value; OnPropertyChanged(); }
         }
 
         public uint WakeTime
@@ -126,13 +129,13 @@ namespace GTASaveData.GTA3
             set { m_notFlag = value; OnPropertyChanged(); }
         }
 
-        public bool DeathArrestCheckEnabled
+        public bool WastedBustedCheckEnabled
         {
             get { return m_deathArrestEnabled; }
             set { m_deathArrestEnabled = value; OnPropertyChanged(); }
         }
 
-        public bool DeathArrestCheckExecuted
+        public bool WastedBustedCheckResult
         {
             get { return m_deathArrestExecuted; }
             set { m_deathArrestExecuted = value; OnPropertyChanged(); }
@@ -146,33 +149,33 @@ namespace GTASaveData.GTA3
 
         public RunningScript()
         {
-            m_scriptName = string.Empty;
-            m_stack = new Array<uint>();
-            m_localVariables = new Array<uint>();
+            m_name = "noname";
+            m_stack = new Array<int>();
+            m_localVariables = new Array<int>();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            m_pNextScript = buf.ReadUInt32();
-            m_pPrevScript = buf.ReadUInt32();
-            m_scriptName = buf.ReadString(Limits.MaxNameLength);
-            m_ip = buf.ReadUInt32();
-            m_stack = buf.ReadArray<uint>(GetMaxStackDepth(fmt));
-            m_stackPointer = buf.ReadUInt16();
+            NextScriptPointer = buf.ReadUInt32();
+            PrevScriptPointer = buf.ReadUInt32();
+            Name = buf.ReadString(Limits.MaxNameLength);
+            IP = buf.ReadUInt32();
+            Stack = buf.ReadArray<int>(GetMaxStackDepth(fmt));
+            StackPointer = buf.ReadUInt16();
             buf.Align4Bytes();
-            m_localVariables = buf.ReadArray<uint>(Limits.NumberOfLocalVariables);
-            m_timerA = buf.ReadUInt32();
-            m_timerB = buf.ReadUInt32();
-            m_condResult = buf.ReadBool();
-            m_isMissionScript = buf.ReadBool();
-            m_skipWakeTime = buf.ReadBool();
+            LocalVariables = buf.ReadArray<int>(Limits.NumberOfLocalVariables);
+            TimerA = buf.ReadUInt32();
+            TimerB = buf.ReadUInt32();
+            ConditionResult = buf.ReadBool();
+            IsMissionScript = buf.ReadBool();
+            ClearMessages = buf.ReadBool();
             buf.Align4Bytes();
-            m_wakeTime = buf.ReadUInt32();
-            m_andOrState = buf.ReadUInt16();
-            m_notFlag = buf.ReadBool();
-            m_deathArrestEnabled = buf.ReadBool();
-            m_deathArrestExecuted = buf.ReadBool();
-            m_missionFlag = buf.ReadBool();
+            WakeTime = buf.ReadUInt32();
+            AndOrState = buf.ReadUInt16();
+            NotFlag = buf.ReadBool();
+            WastedBustedCheckEnabled = buf.ReadBool();
+            WastedBustedCheckResult = buf.ReadBool();
+            MissionFlag = buf.ReadBool();
             buf.Align4Bytes();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
@@ -180,26 +183,26 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            buf.Write(m_pNextScript);
-            buf.Write(m_pPrevScript);
-            buf.Write(m_scriptName, Limits.MaxNameLength);
-            buf.Write(m_ip);
-            buf.Write(m_stack.ToArray(), GetMaxStackDepth(fmt));
-            buf.Write(m_stackPointer);
+            buf.Write(NextScriptPointer);
+            buf.Write(PrevScriptPointer);
+            buf.Write(Name, Limits.MaxNameLength);
+            buf.Write(IP);
+            buf.Write(Stack.ToArray(), GetMaxStackDepth(fmt));
+            buf.Write(StackPointer);
             buf.Align4Bytes();
-            buf.Write(m_localVariables.ToArray(), Limits.NumberOfLocalVariables);
-            buf.Write(m_timerA);
-            buf.Write(m_timerB);
-            buf.Write(m_condResult);
-            buf.Write(m_isMissionScript);
-            buf.Write(m_skipWakeTime);
+            buf.Write(LocalVariables.ToArray(), Limits.NumberOfLocalVariables);
+            buf.Write(TimerA);
+            buf.Write(TimerB);
+            buf.Write(ConditionResult);
+            buf.Write(IsMissionScript);
+            buf.Write(ClearMessages);
             buf.Align4Bytes();
-            buf.Write(m_wakeTime);
-            buf.Write(m_andOrState);
-            buf.Write(m_notFlag);
-            buf.Write(m_deathArrestEnabled);
-            buf.Write(m_deathArrestExecuted);
-            buf.Write(m_missionFlag);
+            buf.Write(WakeTime);
+            buf.Write(AndOrState);
+            buf.Write(NotFlag);
+            buf.Write(WastedBustedCheckEnabled);
+            buf.Write(WastedBustedCheckResult);
+            buf.Write(MissionFlag);
             buf.Align4Bytes();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
@@ -224,24 +227,24 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return m_pNextScript.Equals(other.m_pNextScript)
-                && m_pPrevScript.Equals(other.m_pPrevScript)
-                && m_scriptName.Equals(other.m_scriptName)
-                && m_ip.Equals(other.m_ip)
-                && m_stack.SequenceEqual(other.m_stack)
-                && m_stackPointer.Equals(other.m_stackPointer)
-                && m_localVariables.SequenceEqual(other.m_localVariables)
-                && m_timerA.Equals(other.m_timerA)
-                && m_timerB.Equals(other.m_timerB)
-                && m_condResult.Equals(other.m_condResult)
-                && m_isMissionScript.Equals(other.m_isMissionScript)
-                && m_skipWakeTime.Equals(other.m_skipWakeTime)
-                && m_wakeTime.Equals(other.m_wakeTime)
-                && m_andOrState.Equals(other.m_andOrState)
-                && m_notFlag.Equals(other.m_notFlag)
-                && m_deathArrestEnabled.Equals(other.m_deathArrestEnabled)
-                && m_deathArrestExecuted.Equals(other.m_deathArrestExecuted)
-                && m_missionFlag.Equals(other.m_missionFlag);
+            return NextScriptPointer.Equals(other.NextScriptPointer)
+                && PrevScriptPointer.Equals(other.PrevScriptPointer)
+                && Name.Equals(other.Name)
+                && IP.Equals(other.IP)
+                && Stack.SequenceEqual(other.Stack)
+                && StackPointer.Equals(other.StackPointer)
+                && LocalVariables.SequenceEqual(other.LocalVariables)
+                && TimerA.Equals(other.TimerA)
+                && TimerB.Equals(other.TimerB)
+                && ConditionResult.Equals(other.ConditionResult)
+                && IsMissionScript.Equals(other.IsMissionScript)
+                && ClearMessages.Equals(other.ClearMessages)
+                && WakeTime.Equals(other.WakeTime)
+                && AndOrState.Equals(other.AndOrState)
+                && NotFlag.Equals(other.NotFlag)
+                && WastedBustedCheckEnabled.Equals(other.WastedBustedCheckEnabled)
+                && WastedBustedCheckResult.Equals(other.WastedBustedCheckResult)
+                && MissionFlag.Equals(other.MissionFlag);
         }
 
         public static int GetMaxStackDepth(DataFormat fmt)
@@ -252,3 +255,4 @@ namespace GTASaveData.GTA3
         }
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete

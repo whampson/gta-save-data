@@ -7,9 +7,9 @@ namespace GTASaveData.GTA3
     [Size(0x80)]
     public class Crane : SaveDataObject, IEquatable<Crane>
     {
-        private uint m_pCraneEntity;
-        private uint m_pHook;
-        private int m_audioEntity;
+        private uint m_handle;
+        private uint m_hookHandle;
+        private int m_audioHandle;
         private float m_pickupX1;
         private float m_pickupX2;
         private float m_pickupY1;
@@ -23,12 +23,12 @@ namespace GTASaveData.GTA3
         private float m_pickupHeight;
         private float m_dropoffHeight;
         private float m_hookAngle;
-        private float m_hookOffset;
+        private float m_hookDistance;
         private float m_hookHeight;
         private Vector m_hookInitialPosition;
         private Vector m_hookCurrentPosition;
         private Vector2D m_hookVelocity;
-        private uint m_pVehiclePickedUp;
+        private uint m_vehiclePickedUpHandle;
         private uint m_timeForNextCheck;
         private CraneStatus m_status;
         private CraneState m_state;
@@ -38,22 +38,22 @@ namespace GTASaveData.GTA3
         private bool m_wasMilitaryCrane;
         private bool m_isTop;       // model is cranetopa or cranetopb
 
-        public uint CraneEntityPointer
+        public uint Handle
         {
-            get { return m_pCraneEntity; }
-            set { m_pCraneEntity = value; OnPropertyChanged(); }
+            get { return m_handle; }
+            set { m_handle = value; OnPropertyChanged(); }
         }
 
-        public uint HookPointer
+        public uint HookHandle
         {
-            get { return m_pHook; }
-            set { m_pHook = value; OnPropertyChanged(); }
+            get { return m_hookHandle; }
+            set { m_hookHandle = value; OnPropertyChanged(); }
         }
 
-        public int AudioEntity
+        public int AudioHandle
         {
-            get { return m_audioEntity; }
-            set { m_audioEntity = value; OnPropertyChanged(); }
+            get { return m_audioHandle; }
+            set { m_audioHandle = value; OnPropertyChanged(); }
         }
 
         public float PickupX1
@@ -134,10 +134,10 @@ namespace GTASaveData.GTA3
             set { m_hookAngle = value; OnPropertyChanged(); }
         }
 
-        public float HookOffset
+        public float HookDistance
         {
-            get { return m_hookOffset; }
-            set { m_hookOffset = value; OnPropertyChanged(); }
+            get { return m_hookDistance; }
+            set { m_hookDistance = value; OnPropertyChanged(); }
         }
 
         public float HookHeight
@@ -164,10 +164,10 @@ namespace GTASaveData.GTA3
             set { m_hookVelocity = value; OnPropertyChanged(); }
         }
 
-        public uint VehiclePickedUpPointer
+        public uint VehiclePickedUpHandle
         {
-            get { return m_pVehiclePickedUp; }
-            set { m_pVehiclePickedUp = value; OnPropertyChanged(); }
+            get { return m_vehiclePickedUpHandle; }
+            set { m_vehiclePickedUpHandle = value; OnPropertyChanged(); }
         }
 
         public uint TimeForNextCheck
@@ -228,9 +228,9 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            CraneEntityPointer = buf.ReadUInt32();
-            HookPointer = buf.ReadUInt32();
-            AudioEntity = buf.ReadInt32();
+            Handle = buf.ReadUInt32();
+            HookHandle = buf.ReadUInt32();
+            AudioHandle = buf.ReadInt32();
             PickupX1 = buf.ReadFloat();
             PickupX2 = buf.ReadFloat();
             PickupY1 = buf.ReadFloat();
@@ -244,12 +244,12 @@ namespace GTASaveData.GTA3
             PickupHeight = buf.ReadFloat();
             DropoffHeight = buf.ReadFloat();
             HookAngle = buf.ReadFloat();
-            HookOffset = buf.ReadFloat();
+            HookDistance = buf.ReadFloat();
             HookHeight = buf.ReadFloat();
             HookInitialPosition = buf.Read<Vector>();
             HookCurrentPosition = buf.Read<Vector>();
             HookVelocity = buf.Read<Vector2D>();
-            VehiclePickedUpPointer = buf.ReadUInt32();
+            VehiclePickedUpHandle = buf.ReadUInt32();
             TimeForNextCheck = buf.ReadUInt32();
             Status = (CraneStatus) buf.ReadByte();
             State = (CraneState) buf.ReadByte();
@@ -265,9 +265,9 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            buf.Write(CraneEntityPointer);
-            buf.Write(HookPointer);
-            buf.Write(AudioEntity);
+            buf.Write(Handle);
+            buf.Write(HookHandle);
+            buf.Write(AudioHandle);
             buf.Write(PickupX1);
             buf.Write(PickupX2);
             buf.Write(PickupY1);
@@ -281,12 +281,12 @@ namespace GTASaveData.GTA3
             buf.Write(PickupHeight);
             buf.Write(DropoffHeight);
             buf.Write(HookAngle);
-            buf.Write(HookOffset);
+            buf.Write(HookDistance);
             buf.Write(HookHeight);
             buf.Write(HookInitialPosition);
             buf.Write(HookCurrentPosition);
             buf.Write(HookVelocity);
-            buf.Write(VehiclePickedUpPointer);
+            buf.Write(VehiclePickedUpHandle);
             buf.Write(TimeForNextCheck);
             buf.Write((byte) Status);
             buf.Write((byte) State);
@@ -312,9 +312,9 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return CraneEntityPointer.Equals(other.CraneEntityPointer)
-                && HookPointer.Equals(other.HookPointer)
-                && AudioEntity.Equals(other.AudioEntity)
+            return Handle.Equals(other.Handle)
+                && HookHandle.Equals(other.HookHandle)
+                && AudioHandle.Equals(other.AudioHandle)
                 && PickupX1.Equals(other.PickupX1)
                 && PickupX2.Equals(other.PickupX2)
                 && PickupY1.Equals(other.PickupY1)
@@ -328,12 +328,12 @@ namespace GTASaveData.GTA3
                 && PickupHeight.Equals(other.PickupHeight)
                 && DropoffHeight.Equals(other.DropoffHeight)
                 && HookAngle.Equals(other.HookAngle)
-                && HookOffset.Equals(other.HookOffset)
+                && HookDistance.Equals(other.HookDistance)
                 && HookHeight.Equals(other.HookHeight)
                 && HookInitialPosition.Equals(other.HookInitialPosition)
                 && HookCurrentPosition.Equals(other.HookCurrentPosition)
                 && HookVelocity.Equals(other.HookVelocity)
-                && VehiclePickedUpPointer.Equals(other.VehiclePickedUpPointer)
+                && VehiclePickedUpHandle.Equals(other.VehiclePickedUpHandle)
                 && TimeForNextCheck.Equals(other.TimeForNextCheck)
                 && Status.Equals(other.Status)
                 && State.Equals(other.State)

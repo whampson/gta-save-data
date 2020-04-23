@@ -34,13 +34,13 @@ namespace GTASaveData.GTA3
             set { m_quantity = value; OnPropertyChanged(); }
         }
 
-        public uint ObjectIndex
+        public uint Handle
         {
             get { return m_pObject; }
             set { m_pObject = value; OnPropertyChanged(); }
         }
 
-        public uint Timer
+        public uint RegenerationTime
         {
             get { return m_timer; }
             set { m_timer = value; OnPropertyChanged(); }
@@ -52,7 +52,7 @@ namespace GTASaveData.GTA3
             set { m_modelIndex = value; OnPropertyChanged(); }
         }
 
-        public short Index
+        public short PickupIndex
         {
             get { return m_index; }
             set { m_index = value; OnPropertyChanged(); }
@@ -67,7 +67,7 @@ namespace GTASaveData.GTA3
         public Pickup()
         {
             Position = new Vector();
-            Index = 1;
+            PickupIndex = 1;
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
@@ -75,10 +75,10 @@ namespace GTASaveData.GTA3
             Type = (PickupType) buf.ReadByte();
             HasBeenPickedUp = buf.ReadBool();
             Quantity = buf.ReadUInt16();
-            ObjectIndex = buf.ReadUInt32();
-            Timer = buf.ReadUInt32();
+            Handle = buf.ReadUInt32();
+            RegenerationTime = buf.ReadUInt32();
             ModelIndex = buf.ReadInt16();
-            Index = buf.ReadInt16();
+            PickupIndex = buf.ReadInt16();
             Position = buf.Read<Vector>();
 
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
@@ -89,10 +89,10 @@ namespace GTASaveData.GTA3
             buf.Write((byte) Type);
             buf.Write(HasBeenPickedUp);
             buf.Write(Quantity);
-            buf.Write(ObjectIndex);
-            buf.Write(Timer);
+            buf.Write(Handle);
+            buf.Write(RegenerationTime);
             buf.Write(ModelIndex);
-            buf.Write(Index);
+            buf.Write(PickupIndex);
             buf.Write(Position);
 
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
@@ -113,10 +113,10 @@ namespace GTASaveData.GTA3
             return Type.Equals(other.Type)
                 && HasBeenPickedUp.Equals(other.HasBeenPickedUp)
                 && Quantity.Equals(other.Quantity)
-                && ObjectIndex.Equals(other.ObjectIndex)
-                && Timer.Equals(other.Timer)
+                && Handle.Equals(other.Handle)
+                && RegenerationTime.Equals(other.RegenerationTime)
                 && ModelIndex.Equals(other.ModelIndex)
-                && Index.Equals(other.Index)
+                && PickupIndex.Equals(other.PickupIndex)
                 && Position.Equals(other.Position);
         }
     }

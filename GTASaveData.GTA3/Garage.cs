@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
     [Size(0x8C)]
@@ -9,31 +10,30 @@ namespace GTASaveData.GTA3
     {
         private GarageType m_type;
         private GarageState m_state;
-        private byte m_field02h;
+        private bool m_field02h;    // not used by game
         private bool m_closingWithoutTargetCar;
         private bool m_deactivated;
         private bool m_resprayHappened;
         private int m_targetModelIndex;
-        private uint m_pDoor1;
-        private uint m_pDoor2;
-        private byte m_door1PoolIndex;
-        private byte m_door2PoolIndex;
+        private uint m_pDoor1;      // zeroed on load
+        private uint m_pDoor2;      // zeroed on load
+        private byte m_door1Handle;
+        private byte m_door2Handle;
         private bool m_isDoor1Dummy;
         private bool m_isDoor2Dummy;
-        private bool m_recreateDoorOnNextRefresh;
+        private bool m_recreateDoorOnNextRefresh;   // set to true on load
         private bool m_rotatedDoor;
         private bool m_cameraFollowsPlayer;
-        private byte m_field27h;
         private Vector m_posInf;
         private Vector m_posSup;
-        private float m_doorPos;
-        private float m_doorHeight;
+        private float m_doorOpenOffset;
+        private float m_doorOpenMax;
         private Vector m_door1Pos;
         private Vector m_door2Pos;
         private uint m_timeToStartAction;
         private byte m_collectedCarsState;
-        private uint m_pTargetCar;
-        private int m_field96h;
+        private uint m_pTargetCar;  // zeroed on load
+        private int m_field96h; // not used by game
         private StoredCar m_storedCar;
 
         public GarageType Type
@@ -48,7 +48,8 @@ namespace GTASaveData.GTA3
             set { m_state = value; OnPropertyChanged(); }
         }
 
-        public byte Field02h
+        [Obsolete("Not used by the game.")]
+        public bool Field02h
         {
             get { return m_field02h; }
             set { m_field02h = value; OnPropertyChanged(); }
@@ -78,42 +79,45 @@ namespace GTASaveData.GTA3
             set { m_targetModelIndex = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Value overridden by the game.")]
         public uint Door1Pointer
         {
             get { return m_pDoor1; }
             set { m_pDoor1 = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Value overridden by the game.")]
         public uint Door2Pointer
         {
             get { return m_pDoor2; }
             set { m_pDoor2 = value; OnPropertyChanged(); }
         }
 
-        public byte Door1PoolIndex
+        public byte Door1Handle
         {
-            get { return m_door1PoolIndex; }
-            set { m_door1PoolIndex = value; OnPropertyChanged(); }
+            get { return m_door1Handle; }
+            set { m_door1Handle = value; OnPropertyChanged(); }
         }
 
-        public byte Door2PoolIndex
+        public byte Door2Handle
         {
-            get { return m_door2PoolIndex; }
-            set { m_door2PoolIndex = value; OnPropertyChanged(); }
+            get { return m_door2Handle; }
+            set { m_door2Handle = value; OnPropertyChanged(); }
         }
 
-        public bool IsDoor1Object
+        public bool IsDoor1Dummy
         {
             get { return m_isDoor1Dummy; }
             set { m_isDoor1Dummy = value; OnPropertyChanged(); }
         }
 
-        public bool IsDoor2Object
+        public bool IsDoor2Dummy
         {
             get { return m_isDoor2Dummy; }
             set { m_isDoor2Dummy = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Value overridden by the game.")]
         public bool RecreateDoorOnNextRefresh
         {
             get { return m_recreateDoorOnNextRefresh; }
@@ -132,43 +136,37 @@ namespace GTASaveData.GTA3
             set { m_cameraFollowsPlayer = value; OnPropertyChanged(); }
         }
 
-        public byte Field27h
-        {
-            get { return m_field27h; }
-            set { m_field27h = value; OnPropertyChanged(); }
-        }
-
-        public Vector Position1
+        public Vector PositionMin
         {
             get { return m_posInf; }
             set { m_posInf = value; OnPropertyChanged(); }
         }
 
-        public Vector Position2
+        public Vector PositionMax
         {
             get { return m_posSup; }
             set { m_posSup = value; OnPropertyChanged(); }
         }
 
-        public float DoorPosition
+        public float DoorOpenOffset
         {
-            get { return m_doorPos; }
-            set { m_doorPos = value; OnPropertyChanged(); }
+            get { return m_doorOpenOffset; }
+            set { m_doorOpenOffset = value; OnPropertyChanged(); }
         }
 
-        public float DoorHeight
+        public float DoorOpenMax
         {
-            get { return m_doorHeight; }
-            set { m_doorHeight = value; OnPropertyChanged(); }
+            get { return m_doorOpenMax; }
+            set { m_doorOpenMax = value; OnPropertyChanged(); }
         }
 
-        public Vector Door1Pos
+        public Vector Door1Position
         {
             get { return m_door1Pos; }
             set { m_door1Pos = value; OnPropertyChanged(); }
         }
 
-        public Vector Door2Pos
+        public Vector Door2Position
         {
             get { return m_door2Pos; }
             set { m_door2Pos = value; OnPropertyChanged(); }
@@ -186,12 +184,14 @@ namespace GTASaveData.GTA3
             set { m_collectedCarsState = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Value overridden by the game.")]
         public uint TargetCarPointer
         {
             get { return m_pTargetCar; }
             set { m_pTargetCar = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Not used by the game.")]
         public int Field96h
         {
             get { return m_field96h; }
@@ -206,10 +206,10 @@ namespace GTASaveData.GTA3
 
         public Garage()
         {
-            Position1 = new Vector();
-            Position2 = new Vector();
-            Door1Pos = new Vector();
-            Door2Pos = new Vector();
+            PositionMin = new Vector();
+            PositionMax = new Vector();
+            Door1Position = new Vector();
+            Door2Position = new Vector();
             StoredCar = new StoredCar();
         }
 
@@ -217,7 +217,7 @@ namespace GTASaveData.GTA3
         {
             Type = (GarageType) buf.ReadByte();
             State = (GarageState) buf.ReadByte();
-            Field02h = buf.ReadByte();
+            Field02h = buf.ReadBool();
             ClosingWithoutTargetVehicle = buf.ReadBool();
             Deactivated = buf.ReadBool();
             ResprayHappened = buf.ReadBool();
@@ -225,28 +225,28 @@ namespace GTASaveData.GTA3
             TargetModelIndex = buf.ReadInt32();
             Door1Pointer = buf.ReadUInt32();
             Door2Pointer = buf.ReadUInt32();
-            Door1PoolIndex = buf.ReadByte();
-            Door2PoolIndex = buf.ReadByte();
-            IsDoor1Object = buf.ReadBool();
-            IsDoor2Object = buf.ReadBool();
+            Door1Handle = buf.ReadByte();
+            Door2Handle = buf.ReadByte();
+            IsDoor1Dummy = buf.ReadBool();
+            IsDoor2Dummy = buf.ReadBool();
             RecreateDoorOnNextRefresh = buf.ReadBool();
             RotatedDoor = buf.ReadBool();
             CameraFollowsPlayer = buf.ReadBool();
-            Field27h = buf.ReadByte();
-            Position1.X = buf.ReadFloat();
-            Position2.X = buf.ReadFloat();
-            Position1.Y = buf.ReadFloat();
-            Position2.Y = buf.ReadFloat();
-            Position1.Z = buf.ReadFloat();
-            Position2.Z = buf.ReadFloat();
-            DoorPosition = buf.ReadFloat();
-            DoorHeight = buf.ReadFloat();
-            Door1Pos.X = buf.ReadFloat();
-            Door1Pos.Y = buf.ReadFloat();
-            Door2Pos.X = buf.ReadFloat();
-            Door2Pos.Y = buf.ReadFloat();
-            Door1Pos.Z = buf.ReadFloat();
-            Door2Pos.Z = buf.ReadFloat();
+            buf.Align4Bytes();
+            PositionMin.X = buf.ReadFloat();
+            PositionMax.X = buf.ReadFloat();
+            PositionMin.Y = buf.ReadFloat();
+            PositionMax.Y = buf.ReadFloat();
+            PositionMin.Z = buf.ReadFloat();
+            PositionMax.Z = buf.ReadFloat();
+            DoorOpenOffset = buf.ReadFloat();
+            DoorOpenMax = buf.ReadFloat();
+            Door1Position.X = buf.ReadFloat();
+            Door1Position.Y = buf.ReadFloat();
+            Door2Position.X = buf.ReadFloat();
+            Door2Position.Y = buf.ReadFloat();
+            Door1Position.Z = buf.ReadFloat();
+            Door2Position.Z = buf.ReadFloat();
             DoorLastOpenTime = buf.ReadUInt32();
             CollectedCarsState = buf.ReadByte();
             buf.Align4Bytes();
@@ -269,28 +269,28 @@ namespace GTASaveData.GTA3
             buf.Write(TargetModelIndex);
             buf.Write(Door1Pointer);
             buf.Write(Door2Pointer);
-            buf.Write(Door1PoolIndex);
-            buf.Write(Door2PoolIndex);
-            buf.Write(IsDoor1Object);
-            buf.Write(IsDoor2Object);
+            buf.Write(Door1Handle);
+            buf.Write(Door2Handle);
+            buf.Write(IsDoor1Dummy);
+            buf.Write(IsDoor2Dummy);
             buf.Write(RecreateDoorOnNextRefresh);
             buf.Write(RotatedDoor);
             buf.Write(CameraFollowsPlayer);
-            buf.Write(Field27h);
-            buf.Write(Position1.X);
-            buf.Write(Position2.X);
-            buf.Write(Position1.Y);
-            buf.Write(Position2.Y);
-            buf.Write(Position1.Z);
-            buf.Write(Position2.Z);
-            buf.Write(DoorPosition);
-            buf.Write(DoorHeight);
-            buf.Write(Door1Pos.X);
-            buf.Write(Door1Pos.Y);
-            buf.Write(Door2Pos.X);
-            buf.Write(Door2Pos.Y);
-            buf.Write(Door1Pos.Z);
-            buf.Write(Door2Pos.Z);
+            buf.Align4Bytes();
+            buf.Write(PositionMin.X);
+            buf.Write(PositionMax.X);
+            buf.Write(PositionMin.Y);
+            buf.Write(PositionMax.Y);
+            buf.Write(PositionMin.Z);
+            buf.Write(PositionMax.Z);
+            buf.Write(DoorOpenOffset);
+            buf.Write(DoorOpenMax);
+            buf.Write(Door1Position.X);
+            buf.Write(Door1Position.Y);
+            buf.Write(Door2Position.X);
+            buf.Write(Door2Position.Y);
+            buf.Write(Door1Position.Z);
+            buf.Write(Door2Position.Z);
             buf.Write(DoorLastOpenTime);
             buf.Write(CollectedCarsState);
             buf.Align4Bytes();
@@ -322,20 +322,19 @@ namespace GTASaveData.GTA3
                 && TargetModelIndex.Equals(other.TargetModelIndex)
                 && Door1Pointer.Equals(other.Door1Pointer)
                 && Door2Pointer.Equals(other.Door2Pointer)
-                && Door1PoolIndex.Equals(other.Door1PoolIndex)
-                && Door2PoolIndex.Equals(other.Door2PoolIndex)
-                && IsDoor1Object.Equals(other.IsDoor1Object)
-                && IsDoor2Object.Equals(other.IsDoor2Object)
+                && Door1Handle.Equals(other.Door1Handle)
+                && Door2Handle.Equals(other.Door2Handle)
+                && IsDoor1Dummy.Equals(other.IsDoor1Dummy)
+                && IsDoor2Dummy.Equals(other.IsDoor2Dummy)
                 && RecreateDoorOnNextRefresh.Equals(other.RecreateDoorOnNextRefresh)
                 && RotatedDoor.Equals(other.RotatedDoor)
                 && CameraFollowsPlayer.Equals(other.CameraFollowsPlayer)
-                && Field27h.Equals(other.Field27h)
-                && Position1.Equals(other.Position1)
-                && Position2.Equals(other.Position2)
-                && DoorPosition.Equals(other.DoorPosition)
-                && DoorHeight.Equals(other.DoorHeight)
-                && Door1Pos.Equals(other.Door1Pos)
-                && Door2Pos.Equals(other.Door2Pos)
+                && PositionMin.Equals(other.PositionMin)
+                && PositionMax.Equals(other.PositionMax)
+                && DoorOpenOffset.Equals(other.DoorOpenOffset)
+                && DoorOpenMax.Equals(other.DoorOpenMax)
+                && Door1Position.Equals(other.Door1Position)
+                && Door2Position.Equals(other.Door2Position)
                 && DoorLastOpenTime.Equals(other.DoorLastOpenTime)
                 && CollectedCarsState.Equals(other.CollectedCarsState)
                 && TargetCarPointer.Equals(other.TargetCarPointer)
@@ -344,3 +343,4 @@ namespace GTASaveData.GTA3
         }
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete
