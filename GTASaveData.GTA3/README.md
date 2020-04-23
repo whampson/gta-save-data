@@ -1,4 +1,4 @@
-# GTASaveData.GTA3
+## GTASaveData.GTA3
 *Grand Theft Auto III* support.
 
 ## To-Do List
@@ -12,9 +12,9 @@
 - [x] Paths
 - [x] Cranes
 - [x] Pickups
-- [ ] PhoneInfo
-- [ ] RestartPoints
-- [ ] RadarBlips
+- [x] PhoneInfo
+- [x] RestartPoints
+- [x] RadarBlips
 - [ ] Zones
 - [x] GangData
 - [x] CarGenerators

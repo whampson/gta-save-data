@@ -13,8 +13,8 @@ namespace GTASaveData.GTA3
             public const int NumberOfPedTypes = 23;
         }
 
-        private Array<PedTypeInfo> m_pedTypes;
-        public Array<PedTypeInfo> PedTypes
+        private Array<PedType> m_pedTypes;
+        public Array<PedType> PedTypes
         {
             get { return m_pedTypes; }
             set { m_pedTypes = value; OnPropertyChanged(); }
@@ -22,40 +22,40 @@ namespace GTASaveData.GTA3
 
         public PedTypeData()
         {
-            PedTypes = new Array<PedTypeInfo>();
+            PedTypes = new Array<PedType>();
         }
 
-        public PedTypeFlags GetFlag(PedType type)
+        public PedTypeFlags GetFlag(PedTypeId type)
         {
             return m_pedTypes[(int) type].Flag;
         }
 
-        public PedTypeFlags GetAvoid(PedType type)
+        public PedTypeFlags GetAvoid(PedTypeId type)
         {
             return m_pedTypes[(int) type].Avoid;
         }
 
-        public PedTypeFlags GetThreats(PedType type)
+        public PedTypeFlags GetThreats(PedTypeId type)
         {
             return m_pedTypes[(int) type].Threats;
         }
 
-        public void SetThreats(PedType type, PedTypeFlags threat)
+        public void SetThreats(PedTypeId type, PedTypeFlags threat)
         {
             m_pedTypes[(int) type].Threats = threat;
         }
 
-        public void AddThreat(PedType type, PedTypeFlags threat)
+        public void AddThreat(PedTypeId type, PedTypeFlags threat)
         {
             m_pedTypes[(int) type].Threats |= threat;
         }
 
-        public void RemoveThreat(PedType type, PedTypeFlags threat)
+        public void RemoveThreat(PedTypeId type, PedTypeFlags threat)
         {
             m_pedTypes[(int) type].Threats &= ~threat;
         }
 
-        public bool IsThreat(PedType type, PedTypeFlags threat)
+        public bool IsThreat(PedTypeId type, PedTypeFlags threat)
         {
             return m_pedTypes[(int) type].Threats.HasFlag(threat);
         }
@@ -64,7 +64,7 @@ namespace GTASaveData.GTA3
         {
             int size = GTA3Save.ReadSaveHeader(buf, "PTP");
 
-            PedTypes = buf.ReadArray<PedTypeInfo>(Limits.NumberOfPedTypes);
+            PedTypes = buf.ReadArray<PedType>(Limits.NumberOfPedTypes);
 
             Debug.Assert(buf.Offset == SizeOf<PedTypeData>());
             Debug.Assert(size == SizeOf<PedTypeData>() - GTA3Save.SaveHeaderSize);

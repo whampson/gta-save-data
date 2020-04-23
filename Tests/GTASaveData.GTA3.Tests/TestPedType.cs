@@ -3,11 +3,11 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestPedTypeInfo : Base<PedTypeInfo>
+    public class TestPedType : Base<PedType>
     {
-        public override PedTypeInfo GenerateTestObject(DataFormat format)
+        public override PedType GenerateTestObject(DataFormat format)
         {
-            Faker<PedTypeInfo> model = new Faker<PedTypeInfo>()
+            Faker<PedType> model = new Faker<PedType>()
                 .RuleFor(x => x.Flag, f => f.PickRandom<PedTypeFlags>())
                 .RuleFor(x => x.Unknown0, f => f.Random.Float())
                 .RuleFor(x => x.Unknown1, f => f.Random.Float())
@@ -23,8 +23,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void Serialization()
         {
-            PedTypeInfo x0 = GenerateTestObject();
-            PedTypeInfo x1 = CreateSerializedCopy(x0, out byte[] data);
+            PedType x0 = GenerateTestObject();
+            PedType x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Flag, x1.Flag);
             Assert.Equal(x0.Unknown0, x1.Unknown0);

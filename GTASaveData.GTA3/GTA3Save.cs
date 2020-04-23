@@ -34,9 +34,9 @@ namespace GTASaveData.GTA3
         private PathData m_paths;
         private CraneData m_cranes;
         private PickupData m_pickups;
-        private Dummy m_phoneInfo;    // PhoneInfo
-        private Dummy m_restartPoints;    // Restarts
-        private Dummy m_radarBlips;   // Radar
+        private PhoneData m_phoneInfo;
+        private RestartData m_restartPoints;
+        private RadarData m_radarBlips;
         private Dummy m_zones;    // TheZones
         private GangData m_gangs;
         private CarGeneratorData m_carGenerators;
@@ -101,19 +101,19 @@ namespace GTASaveData.GTA3
             set { m_pickups = value; OnPropertyChanged(); }
         }
 
-        public Dummy PhoneInfo
+        public PhoneData PhoneInfo
         {
             get { return m_phoneInfo; }
             set { m_phoneInfo = value; OnPropertyChanged(); }
         }
 
-        public Dummy RestartPoints
+        public RestartData RestartPoints
         {
             get { return m_restartPoints; }
             set { m_restartPoints = value; OnPropertyChanged(); }
         }
 
-        public Dummy RadarBlips
+        public RadarData RadarBlips
         {
             get { return m_radarBlips; }
             set { m_radarBlips = value; OnPropertyChanged(); }
@@ -234,9 +234,9 @@ namespace GTASaveData.GTA3
             Paths = new PathData();
             Cranes = new CraneData();
             Pickups = new PickupData();
-            PhoneInfo = new Dummy();
-            RestartPoints = new Dummy();
-            RadarBlips = new Dummy();
+            PhoneInfo = new PhoneData();
+            RestartPoints = new RestartData();
+            RadarBlips = new RadarData();
             Zones = new Dummy();
             Gangs = new GangData();
             CarGenerators = new CarGeneratorData();
@@ -393,9 +393,9 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); Paths = LoadPreAlloc<PathData>();
             totalSize += ReadBlock(file); Cranes = Load<CraneData>();
             totalSize += ReadBlock(file); Pickups = Load<PickupData>();
-            totalSize += ReadBlock(file); PhoneInfo = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); RestartPoints = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); RadarBlips = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); PhoneInfo = Load<PhoneData>();
+            totalSize += ReadBlock(file); RestartPoints = Load<RestartData>();
+            totalSize += ReadBlock(file); RadarBlips = Load<RadarData>();
             totalSize += ReadBlock(file); Zones = LoadPreAlloc<Dummy>();
             totalSize += ReadBlock(file); Gangs = Load<GangData>();
             totalSize += ReadBlock(file); CarGenerators = Load<CarGeneratorData>();

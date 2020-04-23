@@ -3,7 +3,7 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestGangInfo : Base<Gang>
+    public class TestGang : Base<Gang>
     {
         public override Gang GenerateTestObject(DataFormat format)
         {
