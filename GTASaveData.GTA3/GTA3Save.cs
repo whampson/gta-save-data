@@ -37,7 +37,7 @@ namespace GTASaveData.GTA3
         private PhoneData m_phoneInfo;
         private RestartData m_restartPoints;
         private RadarData m_radarBlips;
-        private Dummy m_zones;    // TheZones
+        private ZoneData m_zones;
         private GangData m_gangs;
         private CarGeneratorData m_carGenerators;
         private Dummy m_particleObjects;  // ParticleObjects
@@ -119,7 +119,7 @@ namespace GTASaveData.GTA3
             set { m_radarBlips = value; OnPropertyChanged(); }
         }
 
-        public Dummy Zones
+        public ZoneData Zones
         {
             get { return m_zones; }
             set { m_zones = value; OnPropertyChanged(); }
@@ -237,7 +237,7 @@ namespace GTASaveData.GTA3
             PhoneInfo = new PhoneData();
             RestartPoints = new RestartData();
             RadarBlips = new RadarData();
-            Zones = new Dummy();
+            Zones = new ZoneData();
             Gangs = new GangData();
             CarGenerators = new CarGeneratorData();
             ParticleObjects = new Dummy();
@@ -396,7 +396,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); PhoneInfo = Load<PhoneData>();
             totalSize += ReadBlock(file); RestartPoints = Load<RestartData>();
             totalSize += ReadBlock(file); RadarBlips = Load<RadarData>();
-            totalSize += ReadBlock(file); Zones = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Zones = Load<ZoneData>();
             totalSize += ReadBlock(file); Gangs = Load<GangData>();
             totalSize += ReadBlock(file); CarGenerators = Load<CarGeneratorData>();
             totalSize += ReadBlock(file); ParticleObjects = LoadPreAlloc<Dummy>();

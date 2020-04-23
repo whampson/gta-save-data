@@ -96,6 +96,7 @@ namespace GTASaveData.GTA3
         {
             RadarPosition = new Vector2D();
             WorldPosition = new Vector();
+            BlipIndex = 1;
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)

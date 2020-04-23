@@ -15,7 +15,7 @@
 - [x] PhoneInfo
 - [x] RestartPoints
 - [x] RadarBlips
-- [ ] Zones
+- [x] Zones
 - [x] GangData
 - [x] CarGenerators
 - [ ] ParticleObjects
