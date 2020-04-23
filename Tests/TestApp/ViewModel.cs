@@ -1,9 +1,5 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
-using GTASaveData.GTA4;
-using GTASaveData.VC;
-using GTASaveData.SA;
-using GTASaveData.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,9 +9,9 @@ using WpfEssentials;
 using WpfEssentials.Win32;
 
 using IIIBlock = GTASaveData.GTA3.Block;
-using IVBlock = GTASaveData.GTA4.Block;
-using VCBlock = GTASaveData.VC.Block;
-using SABlock = GTASaveData.SA.Block;
+//using IVBlock = GTASaveData.GTA4.Block;
+//using VCBlock = GTASaveData.VC.Block;
+//using SABlock = GTASaveData.SA.Block;
 
 namespace TestApp
 {
@@ -155,11 +151,11 @@ namespace TestApp
             switch (SelectedGame)
             {
                 case GameType.III: DoLoad<GTA3Save>(path); break;
-                case GameType.VC: DoLoad<ViceCitySave>(path); break;
-                case GameType.SA: DoLoad<SanAndreasSave>(path); break;
+                //case GameType.VC: DoLoad<ViceCitySave>(path); break;
+                //case GameType.SA: DoLoad<SanAndreasSave>(path); break;
                 //case GameType.LCS: DoLoad<LibertyCityStoriesSave>(path); break;
                 //case GameType.VCS: DoLoad<ViceCityStoriesSave>(path); break;
-                case GameType.IV: DoLoad<GTA4Save>(path); break;
+                //case GameType.IV: DoLoad<GTA4Save>(path); break;
                 default: RequestMessageBoxError("Selected game not yet supported!"); return;
             }
 
@@ -209,14 +205,14 @@ namespace TestApp
             {
                 (CurrentSaveFile as GTA3Save).Dispose();
             }
-            else if (CurrentSaveFile is ViceCitySave)
-            {
-                (CurrentSaveFile as ViceCitySave).Dispose();
-            }
-            else if (CurrentSaveFile is SanAndreasSave)
-            {
-                (CurrentSaveFile as SanAndreasSave).Dispose();
-            }
+            //else if (CurrentSaveFile is ViceCitySave)
+            //{
+            //    (CurrentSaveFile as ViceCitySave).Dispose();
+            //}
+            //else if (CurrentSaveFile is SanAndreasSave)
+            //{
+            //    (CurrentSaveFile as SanAndreasSave).Dispose();
+            //}
         }
 
         public void CloseSaveData()
@@ -245,9 +241,9 @@ namespace TestApp
         public static Dictionary<GameType, string[]> BlockNames => new Dictionary<GameType, string[]>()
         {
             { GameType.III, Enum.GetNames(typeof(IIIBlock)) },
-            { GameType.VC, Enum.GetNames(typeof(VCBlock)) },
-            { GameType.SA, Enum.GetNames(typeof(SABlock)) },
-            { GameType.IV, Enum.GetNames(typeof(IVBlock)) },
+            //{ GameType.VC, Enum.GetNames(typeof(VCBlock)) },
+            //{ GameType.SA, Enum.GetNames(typeof(SABlock)) },
+            //{ GameType.IV, Enum.GetNames(typeof(IVBlock)) },
         };
 
         #region UI Controls
