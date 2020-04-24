@@ -9,11 +9,11 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int NumberOfModelFlags = 200;
+            public const int NumberOfModels = 200;
         }
 
-        private Array<byte> m_modelFlags;
-        public Array<byte> ModelFlags
+        private Array<StreamingFlags> m_modelFlags;
+        public Array<StreamingFlags> ModelFlags
         {
             get { return m_modelFlags; }
             set { m_modelFlags = value; OnPropertyChanged(); }
@@ -21,19 +21,19 @@ namespace GTASaveData.GTA3
 
         public Streaming()
         {
-            ModelFlags = new Array<byte>();
+            ModelFlags = new Array<StreamingFlags>();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            ModelFlags = buf.Read<byte>(Limits.NumberOfModelFlags);
+            ModelFlags = buf.Read<StreamingFlags>(Limits.NumberOfModels);
 
             Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }
 
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            buf.Write(ModelFlags.ToArray(), Limits.NumberOfModelFlags);
+            buf.Write(ModelFlags.ToArray(), Limits.NumberOfModels);
 
             Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }
@@ -52,5 +52,19 @@ namespace GTASaveData.GTA3
 
             return ModelFlags.SequenceEqual(other.ModelFlags);
         }
+    }
+
+    [Flags]
+    public enum StreamingFlags : byte
+    {
+        None,
+        DontRemove = 1,
+        ScriptOwned = 2,
+        Dependency = 4,
+        Priority = 8,
+        NoFade = 16,
+
+        CantRemove = DontRemove | ScriptOwned,
+        KeepInMemory = DontRemove | ScriptOwned | Dependency
     }
 }

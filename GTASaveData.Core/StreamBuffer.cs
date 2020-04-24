@@ -116,6 +116,8 @@ namespace GTASaveData
             bool unicode = false)
         {
             Type t = typeof(T);
+            if (t.IsEnum) t = Enum.GetUnderlyingType(t);
+
             object o = null;
             int mark = Cursor;
 
@@ -502,6 +504,7 @@ namespace GTASaveData
             bool unicode = false)
         {
             Type t = typeof(T);
+            if (t.IsEnum) t = Enum.GetUnderlyingType(t);
 
             if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
 
