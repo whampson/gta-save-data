@@ -43,10 +43,10 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            Pickups = buf.ReadArray<Pickup>(Limits.NumberOfPickups);
+            Pickups = buf.Read<Pickup>(Limits.NumberOfPickups);
             LastCollectedIndex = buf.ReadInt16();
             buf.ReadInt16();
-            PickupsCollected = buf.ReadArray<int>(Limits.NumberOfCollectedPickups);
+            PickupsCollected = buf.Read<int>(Limits.NumberOfCollectedPickups);
 
             Debug.Assert(buf.Offset == SizeOf<PickupData>());
         }

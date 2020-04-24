@@ -113,12 +113,12 @@ namespace GTASaveData.GTA3
             CurrentLevel = (LevelType) buf.ReadInt32();
             FindIndex = buf.ReadInt16();
             buf.Align4Bytes();
-            Zones = buf.ReadArray<Zone>(Limits.MaxNumZones);
-            ZoneInfo = buf.ReadArray<ZoneInfo>(Limits.MaxNumZoneInfos);
+            Zones = buf.Read<Zone>(Limits.MaxNumZones);
+            ZoneInfo = buf.Read<ZoneInfo>(Limits.MaxNumZoneInfos);
             NumberOfZones = buf.ReadInt16();
             NumberOfZoneInfos = buf.ReadInt16();
-            MapZones = buf.ReadArray<Zone>(Limits.MaxNumMapZones);
-            AudioZones = buf.ReadArray<short>(Limits.MaxNumAudioZones);
+            MapZones = buf.Read<Zone>(Limits.MaxNumMapZones);
+            AudioZones = buf.Read<short>(Limits.MaxNumAudioZones);
             NumberOfMapZones = buf.ReadInt16();
             NumberOfAudioZones = buf.ReadInt16();
 

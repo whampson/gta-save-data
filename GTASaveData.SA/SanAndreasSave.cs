@@ -23,7 +23,7 @@ namespace GTASaveData.SA
         private const string BlockTagName = "BLOCK";
 
         private readonly StreamBuffer m_workBuffer;
-        private int m_bufferSize => (FileFormat.IsSupportedOnMobile) ? 65000 : 51200;
+        private int m_bufferSize => (FileFormat.Mobile) ? 65000 : 51200;
         private int m_checkSum;
         private bool m_disposed;
 
@@ -466,11 +466,11 @@ namespace GTASaveData.SA
 
                 // Padding after final block has no clear beginning marker,
                 // need to know exact size of last block
-                if (numCounted == 27 && !FileFormat.IsSupportedOnMobile)
+                if (numCounted == 27 && !FileFormat.Mobile)
                 {
                     size = 0x8C;    // TODO: use SizeOf<C3dMarkers>()
                 }
-                else if (numCounted == 28 && FileFormat.IsSupportedOnMobile)
+                else if (numCounted == 28 && FileFormat.Mobile)
                 {
                     size = 0x160;   // TODO: use SizeOf<PostEffects>();
                 }
@@ -483,7 +483,7 @@ namespace GTASaveData.SA
                 numCounted++;
             }
 
-            numBlocks = (FileFormat.IsSupportedOnMobile) ? BlockCountMobile : BlockCount;
+            numBlocks = (FileFormat.Mobile) ? BlockCountMobile : BlockCount;
             Debug.Assert(numCounted >= numBlocks);
 
             // Init pointer at end so loader thinks buffer is full and refills it
@@ -542,7 +542,7 @@ namespace GTASaveData.SA
             m_checkSum = 0;
             m_workBuffer.Seek(0);
 
-            count = (FileFormat.IsSupportedOnMobile) ? BlockCountMobile : BlockCount;
+            count = (FileFormat.Mobile) ? BlockCountMobile : BlockCount;
             for (index = 0; index < count; index++)
             {
                 size = 0;

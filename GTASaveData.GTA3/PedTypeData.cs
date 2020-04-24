@@ -64,7 +64,7 @@ namespace GTASaveData.GTA3
         {
             int size = GTA3Save.ReadSaveHeader(buf, "PTP");
 
-            PedTypes = buf.ReadArray<PedType>(Limits.NumberOfPedTypes);
+            PedTypes = buf.Read<PedType>(Limits.NumberOfPedTypes);
 
             Debug.Assert(buf.Offset == SizeOf<PedTypeData>());
             Debug.Assert(size == SizeOf<PedTypeData>() - GTA3Save.SaveHeaderSize);

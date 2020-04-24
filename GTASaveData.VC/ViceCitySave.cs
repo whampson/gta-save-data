@@ -19,7 +19,7 @@ namespace GTASaveData.VC
         public const int MaxBufferSize = 65536;
 
         private readonly StreamBuffer m_workBuff;
-        private int m_bufferSize => (FileFormat.IsSupportedOnMobile) ? 65536 : 55000;
+        private int m_bufferSize => (FileFormat.Mobile) ? 65536 : 55000;
         private int m_checkSum;
         private bool m_blockSizeChecks;
         private bool m_disposed;

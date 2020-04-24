@@ -68,7 +68,7 @@ namespace GTASaveData.VC
             buf.ReadInt16();
             int carGensSize = buf.ReadInt32();
             Debug.Assert(carGensSize == SizeOfCarGeneratorArray);
-            CarGeneratorArray = buf.ReadArray<CarGenerator>(Limits.NumberOfCarGenerators);
+            CarGeneratorArray = buf.Read<CarGenerator>(Limits.NumberOfCarGenerators);
 
             Debug.Assert(buf.Offset == SizeOf<TheCarGenerators>());
         }

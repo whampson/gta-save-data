@@ -44,7 +44,7 @@ namespace GTASaveData.GTA3
         {
             NumCranes = buf.ReadInt32();
             CarsCollectedMilitaryCrane = (CollectCarsMilitaryCrane) buf.ReadInt32();
-            Cranes = buf.ReadArray<Crane>(Limits.NumberOfCranes);
+            Cranes = buf.Read<Crane>(Limits.NumberOfCranes);
 
             Debug.Assert(buf.Offset == SizeOf<CraneData>());
         }

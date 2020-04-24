@@ -27,7 +27,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "RDR");
-            RadarBlips = buf.ReadArray<RadarBlip>(Limits.MaxNumRadarBlips);
+            RadarBlips = buf.Read<RadarBlip>(Limits.MaxNumRadarBlips);
 
             Debug.Assert(buf.Offset == size + GTA3Save.SaveHeaderSize);
             Debug.Assert(size == SizeOf<RadarData>() - GTA3Save.SaveHeaderSize);

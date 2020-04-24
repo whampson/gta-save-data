@@ -23,7 +23,7 @@ namespace GTASaveData.GTA3
         private bool m_disposed;
         private int m_checkSum;
 
-        private int BufferSize => (FileFormat.IsSupportedOnPS2) ? 50000 : 55000;
+        private int BufferSize => (FileFormat.PS2) ? 50000 : 55000;
 
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
@@ -643,6 +643,16 @@ namespace GTASaveData.GTA3
             {
                 return new DataFormat[] { Android, iOS, PC, PS2_AU, PS2_JP, PS2_NAEU, Xbox };
             }
+        }
+
+        public static bool IsAusrtalianPS2(DataFormat fmt)
+        {
+            return fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Australia);
+        }
+
+        public static bool IsJapanesePS2(DataFormat fmt)
+        {
+            return fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Japan);
         }
     }
 }

@@ -426,11 +426,11 @@ namespace GTASaveData
         /// </param>
         /// <param name="unicode">A value indicating whether to read UTF-16 characters.</param>
         /// <returns>An array of type <typeparamref name="T"/>.</returns>
-        public T[] ReadArray<T>(int count,
+        public T[] Read<T>(int count,
             int itemLength = 0,
             bool unicode = false)
         {
-            return ReadArray<T>(count, DataFormat.Default, itemLength, unicode);
+            return Read<T>(count, DataFormat.Default, itemLength, unicode);
         }
 
         /// <summary>
@@ -447,7 +447,7 @@ namespace GTASaveData
         /// </param>
         /// <param name="unicode">A value indicating whether to read UTF-16 characters.</param>
         /// <returns>An array of type <typeparamref name="T"/>.</returns>
-        public T[] ReadArray<T>(int count, DataFormat format,
+        public T[] Read<T>(int count, DataFormat format,
             int itemLength = 0,
             bool unicode = false)
         {

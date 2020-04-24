@@ -613,7 +613,7 @@ namespace GTASaveData.Core.Tests
         {
             using (StreamBuffer wb = new StreamBuffer(data))
             {
-                return wb.ReadArray<T>(count, itemLength, unicode);
+                return wb.Read<T>(count, itemLength, unicode);
             }
         }
         #endregion

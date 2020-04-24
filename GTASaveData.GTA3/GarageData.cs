@@ -121,8 +121,8 @@ namespace GTASaveData.GTA3
             CarTypesCollected2 = (CollectCars2) buf.ReadInt32();
             CarTypesCollected3 = buf.ReadInt32();
             LastTimeHelpMessage = buf.ReadInt32();
-            CarsInSafeHouse = buf.ReadArray<StoredCar>(Limits.NumberOfCarsPerSafeHouse * Limits.NumberOfSafeHouses);
-            Garages = buf.ReadArray<Garage>(Limits.NumberOfGarages);
+            CarsInSafeHouse = buf.Read<StoredCar>(Limits.NumberOfCarsPerSafeHouse * Limits.NumberOfSafeHouses);
+            Garages = buf.Read<Garage>(Limits.NumberOfGarages);
 
             Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }

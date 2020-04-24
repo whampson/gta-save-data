@@ -527,7 +527,7 @@ namespace GTASaveData.SA
 
         protected override int GetSize(DataFormat fmt)
         {
-            if (fmt.IsSupportedOnPC)
+            if (fmt.PC)
             {
                 return SizeOfSimpleVariablesPC;
             }

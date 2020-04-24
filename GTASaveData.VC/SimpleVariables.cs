@@ -299,7 +299,7 @@ namespace GTASaveData.VC
             ExtraColour = buf.ReadInt32();
             ExtraColourOn = buf.ReadBool(4);
             ExtraColourInterpolation = buf.ReadFloat();
-            RadioStationPositionList = buf.ReadArray<int>(Limits.RadioStationListCount);
+            RadioStationPositionList = buf.Read<int>(Limits.RadioStationListCount);
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
@@ -353,7 +353,7 @@ namespace GTASaveData.VC
 
         protected override int GetSize(DataFormat fmt)
         {
-            if (fmt.IsSupportedOnPC)
+            if (fmt.PC)
             {
                 if (IsSteamWin32(fmt))
                 {

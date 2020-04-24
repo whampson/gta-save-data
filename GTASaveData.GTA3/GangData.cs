@@ -28,7 +28,7 @@ namespace GTASaveData.GTA3
         {
             int size = GTA3Save.ReadSaveHeader(buf, "GNG");
 
-            Gangs = buf.ReadArray<Gang>(Limits.NumberOfGangs);
+            Gangs = buf.Read<Gang>(Limits.NumberOfGangs);
 
             Debug.Assert(buf.Offset == SizeOf<GangData>());
             Debug.Assert(size == SizeOf<GangData>() - GTA3Save.SaveHeaderSize);

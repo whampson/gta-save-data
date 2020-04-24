@@ -13,22 +13,21 @@ namespace GTASaveData
         private readonly string m_description;
         private readonly IEnumerable<GameConsole> m_supportedConsoles;
 
-        public string Id => m_id ?? "";
-        public string Name => m_name ?? "";
-        public string Description => m_description ?? "";
+        public string FormatId => m_id ?? "";
+        public string FormatName => m_name ?? "";
+        public string FormatDescription => m_description ?? "";
         public IEnumerable<GameConsole> SupportedConsoles => m_supportedConsoles ?? new List<GameConsole>();
-
-        public bool IsSupportedOnAndroid => IsSupportedOn(ConsoleType.Android);
-        public bool IsSupportedOniOS => IsSupportedOn(ConsoleType.iOS);
-        public bool IsSupportedOnMacOS => IsSupportedOn(ConsoleType.MacOS);
-        public bool IsSupportedOnMobile => IsSupportedOnAndroid || IsSupportedOniOS;
-        public bool IsSupportedOnPC => IsSupportedOnMacOS || IsSupportedOnWin32;
-        public bool IsSupportedOnPS2 => IsSupportedOn(ConsoleType.PS2);
-        public bool IsSupportedOnPS3 => IsSupportedOn(ConsoleType.PS3);
-        public bool IsSupportedOnPSP => IsSupportedOn(ConsoleType.PSP);
-        public bool IsSupportedOnWin32 => IsSupportedOn(ConsoleType.Win32);
-        public bool IsSupportedOnXbox => IsSupportedOn(ConsoleType.Xbox);
-        public bool IsSupportedOnXbox360 => IsSupportedOn(ConsoleType.Xbox360);
+        public bool Android => IsSupportedOn(ConsoleType.Android);
+        public bool iOS => IsSupportedOn(ConsoleType.iOS);
+        public bool MacOS => IsSupportedOn(ConsoleType.MacOS);
+        public bool Mobile => Android || iOS;
+        public bool PC => MacOS || Win32;
+        public bool PS2 => IsSupportedOn(ConsoleType.PS2);
+        public bool PS3 => IsSupportedOn(ConsoleType.PS3);
+        public bool PSP => IsSupportedOn(ConsoleType.PSP);
+        public bool Win32 => IsSupportedOn(ConsoleType.Win32);
+        public bool Xbox => IsSupportedOn(ConsoleType.Xbox);
+        public bool Xbox360 => IsSupportedOn(ConsoleType.Xbox360);
 
         public DataFormat(string id, string name, string description, params GameConsole[] supportedConsoles)
         {
@@ -75,7 +74,7 @@ namespace GTASaveData
 
         public override string ToString()
         {
-            return Name;
+            return FormatName;
         }
 
         public static bool operator ==(DataFormat left, DataFormat right)

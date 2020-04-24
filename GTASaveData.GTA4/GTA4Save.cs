@@ -380,7 +380,7 @@ namespace GTASaveData.GTA4
             ScriptSpace = m_file.ReadInt32();
 
             string sig = m_file.ReadString(4);
-            if (FileFormat.IsSupportedOnWin32)
+            if (FileFormat.Win32)
             {
                 Name = m_file.ReadString(Limits.MaxNameLength, unicode: true);
             }
@@ -394,7 +394,7 @@ namespace GTASaveData.GTA4
             string sig = m_file.ReadString(4);
             Debug.Assert(sig == "END", "Invalid 'END' signature!");
 
-            if (FileFormat.IsSupportedOnWin32)
+            if (FileFormat.Win32)
             {
                 int size = m_file.Length - m_file.Cursor;
                 GfwlData = new Dummy(m_file.ReadBytes(size));
@@ -435,11 +435,11 @@ namespace GTASaveData.GTA4
         protected override void LoadAllData(StreamBuffer file)
         {
             m_file = file;
-            m_file.BigEndian = (FileFormat.IsSupportedOnXbox360 || FileFormat.IsSupportedOnPS3);
+            m_file.BigEndian = (FileFormat.Xbox360 || FileFormat.PS3);
 
             LoadFileHeader();
 
-            int blockCount = (FileFormat.IsSupportedOnPS3) ? 33 : 32;
+            int blockCount = (FileFormat.PS3) ? 33 : 32;
             int index = 0;
 
             while (index < blockCount)

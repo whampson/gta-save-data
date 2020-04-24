@@ -69,7 +69,7 @@ namespace GTASaveData.GTA3
             buf.ReadInt16();
             int carGensSize = buf.ReadInt32();
             Debug.Assert(carGensSize == CarGeneratorArraySize);
-            CarGenerators = buf.ReadArray<CarGenerator>(Limits.NumberOfCarGenerators);
+            CarGenerators = buf.Read<CarGenerator>(Limits.NumberOfCarGenerators);
 
             Debug.Assert(buf.Offset == SizeOf<CarGeneratorData>());
             Debug.Assert(size == SizeOf<CarGeneratorData>() - GTA3Save.SaveHeaderSize);

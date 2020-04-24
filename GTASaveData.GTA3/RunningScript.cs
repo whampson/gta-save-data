@@ -160,10 +160,10 @@ namespace GTASaveData.GTA3
             PrevScriptPointer = buf.ReadUInt32();
             Name = buf.ReadString(Limits.MaxNameLength);
             IP = buf.ReadUInt32();
-            Stack = buf.ReadArray<int>(GetMaxStackDepth(fmt));
+            Stack = buf.Read<int>(GetMaxStackDepth(fmt));
             StackPointer = buf.ReadUInt16();
             buf.Align4Bytes();
-            LocalVariables = buf.ReadArray<int>(Limits.NumberOfLocalVariables);
+            LocalVariables = buf.Read<int>(Limits.NumberOfLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
             ConditionResult = buf.ReadBool();
@@ -210,7 +210,7 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(DataFormat fmt)
         {
-            return (fmt.IsSupportedOnPS2)
+            return (fmt.PS2)
                 ? SizeOfRunningScriptPS2
                 : SizeOfRunningScript;
         }
@@ -249,7 +249,7 @@ namespace GTASaveData.GTA3
 
         public static int GetMaxStackDepth(DataFormat fmt)
         {
-            return (fmt.IsSupportedOnPS2)
+            return (fmt.PS2)
                 ? Limits.MaxStackDepthPS2
                 : Limits.MaxStackDepth;
         }

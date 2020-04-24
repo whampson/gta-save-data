@@ -285,7 +285,7 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(DataFormat fmt)
         {
-            if (fmt.IsSupportedOnPC)
+            if (fmt.PC)
             {
                 return 0xBC;
             }

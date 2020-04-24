@@ -23,7 +23,7 @@ namespace GTASaveData.GTA3
             int size = GTA3Save.ReadSaveHeader(buf, "AUD");
 
             int count = buf.ReadInt32();
-            AudioScriptObjects = buf.ReadArray<AudioScriptObject>(count);
+            AudioScriptObjects = buf.Read<AudioScriptObject>(count);
 
             Debug.Assert(buf.Offset == size + GTA3Save.SaveHeaderSize);
             Debug.Assert(size == SizeOf(this) - GTA3Save.SaveHeaderSize);

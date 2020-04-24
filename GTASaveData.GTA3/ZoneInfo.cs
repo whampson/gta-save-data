@@ -81,12 +81,12 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             CarDensity = buf.ReadInt16();
-            CarThreshold = buf.ReadArray<short>(Limits.MaxNumCarThreshold);
+            CarThreshold = buf.Read<short>(Limits.MaxNumCarThreshold);
             CopCarDensity = buf.ReadInt16();
-            GangCarDensity = buf.ReadArray<short>(Limits.MaxNumGangDensity);
+            GangCarDensity = buf.Read<short>(Limits.MaxNumGangDensity);
             PedDensity = buf.ReadInt16();
             CopPedDensity = buf.ReadInt16();
-            GangPedDensity = buf.ReadArray<short>(Limits.MaxNumGangDensity);
+            GangPedDensity = buf.Read<short>(Limits.MaxNumGangDensity);
             PedGroup = buf.ReadInt16();
 
             Debug.Assert(buf.Offset == SizeOf<ZoneInfo>());

@@ -50,7 +50,7 @@ namespace GTASaveData.GTA4
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             PickupsCount = buf.ReadInt32();
-            PickupsArray = buf.ReadArray<Pickup>(Limits.MaxPickupsCount);
+            PickupsArray = buf.Read<Pickup>(Limits.MaxPickupsCount);
             WeaponPickupMessagesRemaining = buf.ReadByte();
             Unknown = buf.ReadInt32();
 

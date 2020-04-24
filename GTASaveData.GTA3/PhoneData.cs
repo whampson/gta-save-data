@@ -44,7 +44,7 @@ namespace GTASaveData.GTA3
         {
             NumPhones = buf.ReadInt32();
             NumActivePhones = buf.ReadInt32();
-            Phones = buf.ReadArray<Phone>(Limits.MaxNumPhones);
+            Phones = buf.Read<Phone>(Limits.MaxNumPhones);
 
             Debug.Assert(buf.Offset == SizeOf<PhoneData>());
         }

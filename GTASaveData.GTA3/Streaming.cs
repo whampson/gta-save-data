@@ -26,7 +26,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            ModelFlags = buf.ReadArray<byte>(Limits.NumberOfModelFlags);
+            ModelFlags = buf.Read<byte>(Limits.NumberOfModelFlags);
 
             Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }

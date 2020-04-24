@@ -165,16 +165,16 @@ namespace GTASaveData.GTA3
             int size = GTA3Save.ReadSaveHeader(buf, "SCR");
 
             int varSpace = buf.ReadInt32();
-            GlobalSpace = buf.ReadArray<byte>(varSpace);
+            GlobalSpace = buf.Read<byte>(varSpace);
             buf.Align4Bytes();
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
             OnAMissionFlag = buf.ReadInt32();
-            Contacts = buf.ReadArray<Contact>(Limits.NumberOfContacts);
-            Collectives = buf.ReadArray<Collective>(Limits.NumberOfCollectives);
+            Contacts = buf.Read<Contact>(Limits.NumberOfContacts);
+            Collectives = buf.Read<Collective>(Limits.NumberOfCollectives);
             NextFreeCollectiveIndex = buf.ReadInt32();
-            BuildingSwaps = buf.ReadArray<BuildingSwap>(Limits.NumberOfBuildingSwaps);
-            InvisibilitySettings = buf.ReadArray<InvisibleEntity>(Limits.NumberOfInvisibilitySettings);
+            BuildingSwaps = buf.Read<BuildingSwap>(Limits.NumberOfBuildingSwaps);
+            InvisibilitySettings = buf.Read<InvisibleEntity>(Limits.NumberOfInvisibilitySettings);
             UsingAMultiScriptFile = buf.ReadBool();
             buf.ReadByte();
             buf.ReadUInt16();
@@ -183,7 +183,7 @@ namespace GTASaveData.GTA3
             NumberOfMissionScripts = buf.ReadInt16();
             buf.ReadUInt16();
             int runningScripts = buf.ReadInt32();
-            ActiveScripts = buf.ReadArray<RunningScript>(runningScripts, fmt);
+            ActiveScripts = buf.Read<RunningScript>(runningScripts, fmt);
 
             Debug.Assert(buf.Offset == size + GTA3Save.SaveHeaderSize);
             Debug.Assert(size == SizeOf(this, fmt) - GTA3Save.SaveHeaderSize);

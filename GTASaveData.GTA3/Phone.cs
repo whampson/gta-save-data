@@ -66,7 +66,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Position = buf.Read<Vector>();
-            Messages = buf.ReadArray<uint>(Limits.MaxNumMessages);
+            Messages = buf.Read<uint>(Limits.MaxNumMessages);
             RepeatedMessageStartTime = buf.ReadUInt32();
             Handle = buf.ReadInt32();
             State = (PhoneState) buf.ReadUInt32();

@@ -96,8 +96,8 @@ namespace GTASaveData.GTA3
         {
             int size = GTA3Save.ReadSaveHeader(buf, "RST");
 
-            WastedRestartPoints = buf.ReadArray<RestartPoint>(Limits.MaxNumWastedRestartPoints);
-            BustedRestartPoints = buf.ReadArray<RestartPoint>(Limits.MaxNumBustedRestartPoints);
+            WastedRestartPoints = buf.Read<RestartPoint>(Limits.MaxNumWastedRestartPoints);
+            BustedRestartPoints = buf.Read<RestartPoint>(Limits.MaxNumBustedRestartPoints);
             NumberOfWastedRestartPoints = buf.ReadInt16();
             NumberOfBustedRestartPoints = buf.ReadInt16();
             OverrideNextRestart = buf.ReadBool();
