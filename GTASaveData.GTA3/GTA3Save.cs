@@ -40,7 +40,7 @@ namespace GTASaveData.GTA3
         private ZoneData m_zones;
         private GangData m_gangs;
         private CarGeneratorData m_carGenerators;
-        private Dummy m_particleObjects;  // ParticleObjects
+        private ParticleData m_particleObjects;
         private AudioScriptData m_audioScriptObjects;
         private PlayerInfo m_playerInfo;
         private Stats m_stats;
@@ -137,7 +137,7 @@ namespace GTASaveData.GTA3
             set { m_carGenerators = value; OnPropertyChanged(); }
         }
 
-        public Dummy ParticleObjects
+        public ParticleData ParticleObjects
         {
             get { return m_particleObjects; }
             set { m_particleObjects = value; OnPropertyChanged(); }
@@ -240,7 +240,7 @@ namespace GTASaveData.GTA3
             Zones = new ZoneData();
             Gangs = new GangData();
             CarGenerators = new CarGeneratorData();
-            ParticleObjects = new Dummy();
+            ParticleObjects = new ParticleData();
             AudioScriptObjects = new AudioScriptData();
             PlayerInfo = new PlayerInfo();
             Stats = new Stats();
@@ -399,7 +399,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); Zones = Load<ZoneData>();
             totalSize += ReadBlock(file); Gangs = Load<GangData>();
             totalSize += ReadBlock(file); CarGenerators = Load<CarGeneratorData>();
-            totalSize += ReadBlock(file); ParticleObjects = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); ParticleObjects = Load<ParticleData>();
             totalSize += ReadBlock(file); AudioScriptObjects = Load<AudioScriptData>();
             totalSize += ReadBlock(file); PlayerInfo = Load<PlayerInfo>();
             totalSize += ReadBlock(file); Stats = Load<Stats>();

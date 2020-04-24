@@ -29,7 +29,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Zones, Generator.Generate<ZoneData, TestZoneData>(format))
                 .RuleFor(x => x.Gangs, Generator.Generate<GangData, TestGangData>(format))
                 .RuleFor(x => x.CarGenerators, Generator.Generate<CarGeneratorData, TestCarGeneratorData>(format))
-                //.RuleFor(x => x.ParticleObjects, Generator.Generate<ParticleData, TestParticleData>(format))
+                .RuleFor(x => x.ParticleObjects, Generator.Generate<ParticleData, TestParticleData>(format))
                 .RuleFor(x => x.AudioScriptObjects, Generator.Generate<AudioScriptData, TestAudioScriptData>(format))
                 .RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))
                 .RuleFor(x => x.Stats, Generator.Generate<Stats, TestStats>(format))

@@ -18,7 +18,7 @@
 - [x] Zones
 - [x] GangData
 - [x] CarGenerators
-- [ ] ParticleObjects
+- [x] ParticleObjects
 - [x] AudioScriptObjects
 - [x] PlayerInfo
 - [x] Stats
