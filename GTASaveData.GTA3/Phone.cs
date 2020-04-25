@@ -13,14 +13,14 @@ namespace GTASaveData.GTA3
             public const int MaxNumMessages = 6;
         }
 
-        private Vector m_position;
+        private Vector3D m_position;
         private Array<uint> m_messages;     // wchar pointers
         private uint m_repeatedMessageStartTime;
         private int m_handle;
         private PhoneState m_state;
         private bool m_visibleToCam;
 
-        public Vector Position
+        public Vector3D Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -59,13 +59,13 @@ namespace GTASaveData.GTA3
 
         public Phone()
         {
-            Position = new Vector();
+            Position = new Vector3D();
             Messages = new Array<uint>();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            Position = buf.Read<Vector>();
+            Position = buf.Read<Vector3D>();
             Messages = buf.Read<uint>(Limits.MaxNumMessages);
             RepeatedMessageStartTime = buf.ReadUInt32();
             Handle = buf.ReadInt32();

@@ -7,7 +7,7 @@ namespace GTASaveData.Types
     /// A 3-dimensional vector.
     /// </summary>
     [Size(12)]
-    public class Vector : SaveDataObject, IEquatable<Vector>
+    public class Vector3D : SaveDataObject, IEquatable<Vector3D>
     {
         private float m_x;
         private float m_y;
@@ -31,11 +31,11 @@ namespace GTASaveData.Types
             set { m_z = value; OnPropertyChanged(); }
         }
 
-        public Vector()
+        public Vector3D()
             : this(0, 0, 0)
         { }
 
-        public Vector(float x, float y, float z)
+        public Vector3D(float x, float y, float z)
         {
             X = x;
             Y = y;
@@ -63,10 +63,10 @@ namespace GTASaveData.Types
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Vector);
+            return Equals(obj as Vector3D);
         }
 
-        public bool Equals(Vector other)
+        public bool Equals(Vector3D other)
         {
             if (other == null)
             {
@@ -78,14 +78,14 @@ namespace GTASaveData.Types
                 && Z.Equals(other.Z);
         }
 
-        public static implicit operator Vector3(Vector v)
+        public static implicit operator Vector3(Vector3D v)
         {
             return new Vector3(v.X, v.Y, v.Z);
         }
 
-        public static implicit operator Vector(Vector3 v)
+        public static implicit operator Vector3D(Vector3 v)
         {
-            return new Vector(v.X, v.Y, v.Z);
+            return new Vector3D(v.X, v.Y, v.Z);
         }
     }
 }

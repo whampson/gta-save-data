@@ -16,7 +16,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.TimeLastSaved, f => Generator.Generate<SystemTime, TestSystemTime>())
                 .RuleFor(x => x.SaveSize, f => f.Random.Int())
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<LevelType>())
-                .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector, TestVector>())
+                .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector3D, TestVector3D>())
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
                 .RuleFor(x => x.GameClockHours, f => f.Random.Byte())

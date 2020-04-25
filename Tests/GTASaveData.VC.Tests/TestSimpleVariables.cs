@@ -15,7 +15,7 @@ namespace GTASaveData.VC.Tests
                 .RuleFor(x => x.TimeLastSaved, f => Generator.Generate<SystemTime, TestSystemTime>())
                 .RuleFor(x => x.SaveSize, f => f.Random.Int())
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<LevelType>())
-                .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector, TestVector>())
+                .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector3D, TestVector3D>())
                 .RuleFor(x => x.SteamWin32Only, (SimpleVariables.IsSteamWin32(format)) ? SimpleVariables.SteamWin32OnlyValue : 0)
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())

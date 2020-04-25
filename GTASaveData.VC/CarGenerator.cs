@@ -9,7 +9,7 @@ namespace GTASaveData.VC
     public class CarGenerator : SaveDataObject, ICarGenerator, IEquatable<CarGenerator>
     {
         private int m_modelIndex;
-        private Vector m_position;
+        private Vector3D m_position;
         private float m_angle;
         private short m_color1;
         private short m_color2;
@@ -29,7 +29,7 @@ namespace GTASaveData.VC
             set { m_modelIndex = value; OnPropertyChanged(); }
         }
 
-        public Vector Position
+        public Vector3D Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -127,13 +127,13 @@ namespace GTASaveData.VC
 
         public CarGenerator()
         {
-            Position = new Vector();
+            Position = new Vector3D();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Model = buf.ReadInt32();
-            Position = buf.Read<Vector>();
+            Position = buf.Read<Vector3D>();
             Angle = buf.ReadFloat();
             Color1 = buf.ReadInt16();
             Color2 = buf.ReadInt16();

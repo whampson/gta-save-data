@@ -15,7 +15,7 @@ namespace GTASaveData.SA.Tests
                 .RuleFor(x => x.LastMissionPassedName, f => Generator.RandomAsciiString(f, SimpleVariables.Limits.MaxNameLength - 1))
                 .RuleFor(x => x.MissionPackGame, f => f.Random.Byte())
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<LevelType>())
-                .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector, TestVector>())
+                .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector3D, TestVector3D>())
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
                 .RuleFor(x => x.GameClockMonths, f => f.Random.Byte())

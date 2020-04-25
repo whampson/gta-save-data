@@ -18,7 +18,7 @@ namespace GTASaveData.GTA3
         private byte m_skipFrames;
         private ushort m_frameCounter;
         private ParticleObjectState m_state;
-        private Vector m_target;
+        private Vector3D m_target;
         private float m_spread;
         private float m_size;
         private uint m_color;
@@ -90,7 +90,7 @@ namespace GTASaveData.GTA3
             set { m_state = value; OnPropertyChanged(); }
         }
 
-        public Vector Target
+        public Vector3D Target
         {
             get { return m_target; }
             set { m_target = value; OnPropertyChanged(); }
@@ -128,7 +128,7 @@ namespace GTASaveData.GTA3
 
         public ParticleObject()
         {
-            Target = new Vector();
+            Target = new Vector3D();
         }
 
         public Color GetColor()
@@ -163,7 +163,7 @@ namespace GTASaveData.GTA3
             buf.Align4Bytes();
             FrameCounter = buf.ReadUInt16();
             State = (ParticleObjectState) buf.ReadInt16();
-            Target = buf.Read<Vector>();
+            Target = buf.Read<Vector3D>();
             Spread = buf.ReadFloat();
             Size = buf.ReadFloat();
             Color = buf.ReadUInt32();

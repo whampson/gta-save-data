@@ -12,7 +12,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<CarGenerator> model = new Faker<CarGenerator>()
                 .RuleFor(x => x.Model, f => f.Random.Int())
-                .RuleFor(x => x.Position, f => Generator.Generate<Vector, TestVector>())
+                .RuleFor(x => x.Position, f => Generator.Generate<Vector3D, TestVector3D>())
                 .RuleFor(x => x.Angle, f => f.Random.Float())
                 .RuleFor(x => x.Color1, f => f.Random.Short())
                 .RuleFor(x => x.Color2, f => f.Random.Short())
@@ -25,8 +25,8 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Handle, f => f.Random.Int())
                 .RuleFor(x => x.UsesRemaining, f => f.Random.Short())
                 .RuleFor(x => x.IsBlocking, f => f.Random.Bool())
-                .RuleFor(x => x.CollisionBoundingMin, f => Generator.Generate<Vector, TestVector>())
-                .RuleFor(x => x.CollisionBoundingMax, f => Generator.Generate<Vector, TestVector>())
+                .RuleFor(x => x.CollisionBoundingMin, f => Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.CollisionBoundingMax, f => Generator.Generate<Vector3D, TestVector3D>())
                 .RuleFor(x => x.CollisionSize, f => f.Random.Float());
 
             return model.Generate();

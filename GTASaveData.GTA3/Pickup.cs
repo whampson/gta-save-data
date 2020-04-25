@@ -14,7 +14,7 @@ namespace GTASaveData.GTA3
         private uint m_timer;
         private short m_modelIndex;
         private short m_index;
-        private Vector m_position;
+        private Vector3D m_position;
 
         public PickupType Type
         {
@@ -58,7 +58,7 @@ namespace GTASaveData.GTA3
             set { m_index = value; OnPropertyChanged(); }
         }
 
-        public Vector Position
+        public Vector3D Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -66,7 +66,7 @@ namespace GTASaveData.GTA3
 
         public Pickup()
         {
-            Position = new Vector();
+            Position = new Vector3D();
             PickupIndex = 1;
         }
 
@@ -79,7 +79,7 @@ namespace GTASaveData.GTA3
             RegenerationTime = buf.ReadUInt32();
             ModelIndex = buf.ReadInt16();
             PickupIndex = buf.ReadInt16();
-            Position = buf.Read<Vector>();
+            Position = buf.Read<Vector3D>();
 
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }

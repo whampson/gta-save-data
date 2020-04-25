@@ -8,16 +8,16 @@ namespace GTASaveData.GTA3
     {
         // Almost none of this is editable
         private int m_pVtbl;
-        private Vector m_right;
+        private Vector3D m_right;
         private int m_flags;
-        private Vector m_up;
-        private Vector m_at;
-        private Vector m_pos;
+        private Vector3D m_up;
+        private Vector3D m_at;
+        private Vector3D m_pos;
         private int m_pAttachment;
         private bool m_hasAttachment;
         private int[] m_unknown0;
 
-        public Vector Position
+        public Vector3D Position
         {
             get { return m_pos; }
             set { m_pos = value; OnPropertyChanged(); }
@@ -25,10 +25,10 @@ namespace GTASaveData.GTA3
 
         public Placeable()
         {
-            m_right = new Vector();
-            m_up = new Vector();
-            m_at = new Vector();
-            m_pos = new Vector();
+            m_right = new Vector3D();
+            m_up = new Vector3D();
+            m_at = new Vector3D();
+            m_pos = new Vector3D();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
@@ -42,13 +42,13 @@ namespace GTASaveData.GTA3
             }
 
             // RwMatrix
-            m_right = buf.Read<Vector>();
+            m_right = buf.Read<Vector3D>();
             m_flags = buf.ReadInt32();
-            m_up = buf.Read<Vector>();
+            m_up = buf.Read<Vector3D>();
             buf.Skip(4);
-            m_at = buf.Read<Vector>();
+            m_at = buf.Read<Vector3D>();
             buf.Skip(4);
-            Position = buf.Read<Vector>();
+            Position = buf.Read<Vector3D>();
             buf.Skip(4);
 
             if (!ps2jp)

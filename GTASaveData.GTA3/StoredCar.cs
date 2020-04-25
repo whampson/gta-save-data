@@ -8,8 +8,8 @@ namespace GTASaveData.GTA3
     public class StoredCar : SaveDataObject, IEquatable<StoredCar>
     {
         private int m_model;
-        private Vector m_position;
-        private Vector m_angle;
+        private Vector3D m_position;
+        private Vector3D m_angle;
         private StoredCarFlags m_flags;
         private byte m_color1;
         private byte m_color2;
@@ -24,13 +24,13 @@ namespace GTASaveData.GTA3
             set { m_model = value; OnPropertyChanged(); }
         }
 
-        public Vector Position
+        public Vector3D Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
         }
 
-        public Vector Angle
+        public Vector3D Angle
         {
             get { return m_angle; }
             set { m_angle = value; OnPropertyChanged(); }
@@ -80,15 +80,15 @@ namespace GTASaveData.GTA3
 
         public StoredCar()
         {
-            Position = new Vector();
-            Angle = new Vector();
+            Position = new Vector3D();
+            Angle = new Vector3D();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Model = buf.ReadInt32();
-            Position = buf.Read<Vector>();
-            Angle = buf.Read<Vector>();
+            Position = buf.Read<Vector3D>();
+            Angle = buf.Read<Vector3D>();
             Flags = (StoredCarFlags) buf.ReadInt32();
             Color1 = buf.ReadByte();
             Color2 = buf.ReadByte();

@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3
     public class CarGenerator : SaveDataObject, ICarGenerator, IEquatable<CarGenerator>
     {
         private int m_modelIndex;
-        private Vector m_position;
+        private Vector3D m_position;
         private float m_angle;
         private short m_color1;
         private short m_color2;
@@ -22,8 +22,8 @@ namespace GTASaveData.GTA3
         private int m_handle;
         private short m_usesRemaining;
         private bool m_isBlocking;
-        private Vector m_vecInf;
-        private Vector m_vecSup;
+        private Vector3D m_vecInf;
+        private Vector3D m_vecSup;
         private float m_size;
 
         public int Model
@@ -32,7 +32,7 @@ namespace GTASaveData.GTA3
             set { m_modelIndex = value; OnPropertyChanged(); }
         }
 
-        public Vector Position
+        public Vector3D Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -110,13 +110,13 @@ namespace GTASaveData.GTA3
             set { m_isBlocking = value; OnPropertyChanged(); }
         }
 
-        public Vector CollisionBoundingMin
+        public Vector3D CollisionBoundingMin
         {
             get { return m_vecInf; }
             set { m_vecInf = value; OnPropertyChanged(); }
         }
 
-        public Vector CollisionBoundingMax
+        public Vector3D CollisionBoundingMax
         {
             get { return m_vecSup; }
             set { m_vecSup = value; OnPropertyChanged(); }
@@ -148,15 +148,15 @@ namespace GTASaveData.GTA3
 
         public CarGenerator()
         {
-            Position = new Vector();
-            CollisionBoundingMin = new Vector();
-            CollisionBoundingMax = new Vector();
+            Position = new Vector3D();
+            CollisionBoundingMin = new Vector3D();
+            CollisionBoundingMax = new Vector3D();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Model = buf.ReadInt32();
-            Position = buf.Read<Vector>();
+            Position = buf.Read<Vector3D>();
             Angle = buf.ReadFloat();
             Color1 = buf.ReadInt16();
             Color2 = buf.ReadInt16();
@@ -171,8 +171,8 @@ namespace GTASaveData.GTA3
             UsesRemaining = buf.ReadInt16();
             IsBlocking = buf.ReadBool();
             buf.ReadByte();
-            CollisionBoundingMin = buf.Read<Vector>();
-            CollisionBoundingMax = buf.Read<Vector>();
+            CollisionBoundingMin = buf.Read<Vector3D>();
+            CollisionBoundingMax = buf.Read<Vector3D>();
             CollisionSize = buf.ReadFloat();
 
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());

@@ -18,7 +18,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.RegenerationTime, f => f.Random.UInt())
                 .RuleFor(x => x.ModelIndex, f => f.Random.Short())
                 .RuleFor(x => x.PickupIndex, f => f.Random.Short())
-                .RuleFor(x => x.Position, f => Generator.Generate<Vector, TestVector>());
+                .RuleFor(x => x.Position, f => Generator.Generate<Vector3D, TestVector3D>());
 
             return model.Generate();
         }

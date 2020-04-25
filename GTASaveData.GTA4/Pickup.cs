@@ -15,10 +15,10 @@ namespace GTASaveData.GTA4
         private int m_unknown14h;
         private int blip;
         private uint timer;
-        private Vector m_position;
+        private Vector3D m_position;
         private int m_unknown2Ch;
         private int m_unknown30h;
-        private Vector m_rotation;  // maybe
+        private Vector3D m_rotation;  // maybe
         private int m_unknown40h;
         private short m_objectId;
         private short m_refNum;
@@ -77,7 +77,7 @@ namespace GTASaveData.GTA4
             set { timer = value; OnPropertyChanged(); }
         }
 
-        public Vector Position
+        public Vector3D Position
         { 
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -95,7 +95,7 @@ namespace GTASaveData.GTA4
             set { m_unknown30h = value; OnPropertyChanged(); }
         }
 
-        public Vector Rotation
+        public Vector3D Rotation
         {
             get { return m_rotation; }
             set { m_rotation = value; OnPropertyChanged(); }
@@ -157,8 +157,8 @@ namespace GTASaveData.GTA4
 
         public Pickup()
         {
-            Position = new Vector();
-            Rotation = new Vector();
+            Position = new Vector3D();
+            Rotation = new Vector3D();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
@@ -171,10 +171,10 @@ namespace GTASaveData.GTA4
             Unknown14h = buf.ReadInt32();
             Blip = buf.ReadInt32();
             Timer = buf.ReadUInt32();
-            Position = buf.Read<Vector>();
+            Position = buf.Read<Vector3D>();
             Unknown2Ch = buf.ReadInt32();
             Unknown30h = buf.ReadInt32();
-            Rotation = buf.Read<Vector>();
+            Rotation = buf.Read<Vector3D>();
             Unknown40h = buf.ReadInt32();
             ObjectId = buf.ReadInt16();
             RefNum = buf.ReadInt16();

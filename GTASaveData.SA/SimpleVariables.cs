@@ -19,7 +19,7 @@ namespace GTASaveData.SA
         private string m_lastMissionPassedName;
         private byte m_missionPackGame;
         private LevelType m_currLevel;
-        private Vector m_cameraPosition;
+        private Vector3D m_cameraPosition;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
         private byte m_gameClockMonths;
@@ -92,7 +92,7 @@ namespace GTASaveData.SA
             set { m_currLevel = value; OnPropertyChanged(); }
         }
 
-        public Vector CameraPosition
+        public Vector3D CameraPosition
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
@@ -384,7 +384,7 @@ namespace GTASaveData.SA
         {
             LastMissionPassedName = "";
             TimeLastSaved = new SystemTime();
-            CameraPosition = new Vector();
+            CameraPosition = new Vector3D();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
@@ -394,7 +394,7 @@ namespace GTASaveData.SA
             MissionPackGame = buf.ReadByte();
             buf.Align4Bytes();
             CurrLevel = (LevelType) buf.ReadInt32();
-            CameraPosition = buf.Read<Vector>();
+            CameraPosition = buf.Read<Vector3D>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockMonths = buf.ReadByte();

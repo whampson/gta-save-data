@@ -13,8 +13,8 @@ namespace GTASaveData.GTA3
         }
 
         private string m_name;
-        private Vector m_min;
-        private Vector m_max;
+        private Vector3D m_min;
+        private Vector3D m_max;
         private ZoneType m_type;
         private LevelType m_level;
         private short m_zoneInfoDay;
@@ -29,13 +29,13 @@ namespace GTASaveData.GTA3
             set { m_name = value; OnPropertyChanged(); }
         }
 
-        public Vector Min
+        public Vector3D Min
         {
             get { return m_min; }
             set { m_min = value; OnPropertyChanged(); }
         }
 
-        public Vector Max
+        public Vector3D Max
         {
             get { return m_max; }
             set { m_max = value; OnPropertyChanged(); }
@@ -87,15 +87,15 @@ namespace GTASaveData.GTA3
         public Zone()
         {
             Name = "";
-            Min = new Vector();
-            Max = new Vector();
+            Min = new Vector3D();
+            Max = new Vector3D();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Name = buf.ReadString(Limits.MaxNameLength);
-            Min = buf.Read<Vector>();
-            Max = buf.Read<Vector>();
+            Min = buf.Read<Vector3D>();
+            Max = buf.Read<Vector3D>();
             Type = (ZoneType) buf.ReadInt32();
             Level = (LevelType) buf.ReadInt32();
             ZoneInfoDay = buf.ReadInt16();

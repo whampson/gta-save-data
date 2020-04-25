@@ -7,10 +7,10 @@ namespace GTASaveData.GTA3
     [Size(16)]
     public class RestartPoint : SaveDataObject, IEquatable<RestartPoint>
     {
-        private Vector m_position;
+        private Vector3D m_position;
         private float m_angle;
 
-        public Vector Position
+        public Vector3D Position
         { 
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -24,12 +24,12 @@ namespace GTASaveData.GTA3
 
         public RestartPoint()
         {
-            Position = new Vector();
+            Position = new Vector3D();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            Position = buf.Read<Vector>();
+            Position = buf.Read<Vector3D>();
             Angle = buf.ReadFloat();
 
             Debug.Assert(buf.Offset == SizeOf<RestartPoint>());

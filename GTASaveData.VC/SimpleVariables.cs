@@ -21,7 +21,7 @@ namespace GTASaveData.VC
         private SystemTime m_timeLastSaved;
         private int m_saveSize;
         private LevelType m_currLevel;
-        private Vector m_cameraPosition;
+        private Vector3D m_cameraPosition;
         private int m_steamWin32Only;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
@@ -75,7 +75,7 @@ namespace GTASaveData.VC
             set { m_currLevel = value; OnPropertyChanged(); }
         }
 
-        public Vector CameraPosition
+        public Vector3D CameraPosition
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
@@ -253,7 +253,7 @@ namespace GTASaveData.VC
         {
             LastMissionPassedName = "";
             TimeLastSaved = new SystemTime();
-            CameraPosition = new Vector();
+            CameraPosition = new Vector3D();
             RadioStationPositionList = new Array<int>();
         }
 
@@ -263,7 +263,7 @@ namespace GTASaveData.VC
             TimeLastSaved = buf.Read<SystemTime>();
             SaveSize = buf.ReadInt32();
             CurrLevel = (LevelType) buf.ReadInt32();
-            CameraPosition = buf.Read<Vector>();
+            CameraPosition = buf.Read<Vector3D>();
             if (IsSteamWin32(fmt)) SteamWin32Only = buf.ReadInt32();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();

@@ -24,12 +24,12 @@ namespace GTASaveData.GTA3
         private bool m_recreateDoorOnNextRefresh;   // set to true on load
         private bool m_rotatedDoor;
         private bool m_cameraFollowsPlayer;
-        private Vector m_posInf;
-        private Vector m_posSup;
+        private Vector3D m_posInf;
+        private Vector3D m_posSup;
         private float m_doorOpenOffset;
         private float m_doorOpenMax;
-        private Vector m_door1Pos;
-        private Vector m_door2Pos;
+        private Vector3D m_door1Pos;
+        private Vector3D m_door2Pos;
         private uint m_timeToStartAction;
         private byte m_collectedCarsState;
         private uint m_pTargetCar;  // zeroed on load
@@ -136,13 +136,13 @@ namespace GTASaveData.GTA3
             set { m_cameraFollowsPlayer = value; OnPropertyChanged(); }
         }
 
-        public Vector PositionMin
+        public Vector3D PositionMin
         {
             get { return m_posInf; }
             set { m_posInf = value; OnPropertyChanged(); }
         }
 
-        public Vector PositionMax
+        public Vector3D PositionMax
         {
             get { return m_posSup; }
             set { m_posSup = value; OnPropertyChanged(); }
@@ -160,13 +160,13 @@ namespace GTASaveData.GTA3
             set { m_doorOpenMax = value; OnPropertyChanged(); }
         }
 
-        public Vector Door1Position
+        public Vector3D Door1Position
         {
             get { return m_door1Pos; }
             set { m_door1Pos = value; OnPropertyChanged(); }
         }
 
-        public Vector Door2Position
+        public Vector3D Door2Position
         {
             get { return m_door2Pos; }
             set { m_door2Pos = value; OnPropertyChanged(); }
@@ -206,10 +206,10 @@ namespace GTASaveData.GTA3
 
         public Garage()
         {
-            PositionMin = new Vector();
-            PositionMax = new Vector();
-            Door1Position = new Vector();
-            Door2Position = new Vector();
+            PositionMin = new Vector3D();
+            PositionMax = new Vector3D();
+            Door1Position = new Vector3D();
+            Door2Position = new Vector3D();
             StoredCar = new StoredCar();
         }
 

@@ -15,7 +15,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Type, f => f.PickRandom<RadarBlipType>())
                 .RuleFor(x => x.Handle, f => f.Random.Int())
                 .RuleFor(x => x.RadarPosition, Generator.Generate<Vector2D, TestVector2D>())
-                .RuleFor(x => x.WorldPosition, Generator.Generate<Vector, TestVector>())
+                .RuleFor(x => x.WorldPosition, Generator.Generate<Vector3D, TestVector3D>())
                 .RuleFor(x => x.BlipIndex, f => f.Random.Short())
                 .RuleFor(x => x.Dim, f => f.Random.Bool())
                 .RuleFor(x => x.InUse, f => f.Random.Bool())

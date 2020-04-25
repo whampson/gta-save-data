@@ -11,7 +11,7 @@ namespace GTASaveData.GTA4
         private bool m_fadeInAfterLoad;
         private int m_unknown04h;
         private int m_unknown08h;
-        private Vector m_cameraPosition;
+        private Vector3D m_cameraPosition;
         private int m_unknown1Ch;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
@@ -74,7 +74,7 @@ namespace GTASaveData.GTA4
             set { m_unknown08h = value; OnPropertyChanged(); }
         }
 
-        public Vector CameraPosition
+        public Vector3D CameraPosition
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
@@ -304,7 +304,7 @@ namespace GTASaveData.GTA4
 
         public SimpleVariables()
         {
-            CameraPosition = new Vector();
+            CameraPosition = new Vector3D();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
@@ -314,7 +314,7 @@ namespace GTASaveData.GTA4
             buf.Skip(3);
             Unknown04h = buf.ReadInt32();
             Unknown08h = buf.ReadInt32();
-            CameraPosition = buf.Read<Vector>();
+            CameraPosition = buf.Read<Vector3D>();
             Unknown1Ch = buf.ReadInt32();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();

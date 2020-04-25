@@ -16,7 +16,7 @@ namespace GTASaveData.GTA3
         private SystemTime m_timeLastSaved;
         private int m_saveSize;
         private LevelType m_currLevel;
-        private Vector m_cameraPosition;
+        private Vector3D m_cameraPosition;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
         private byte m_gameClockHours;
@@ -63,7 +63,7 @@ namespace GTASaveData.GTA3
             set { m_currLevel = value; OnPropertyChanged(); }
         }
 
-        public Vector CameraPosition
+        public Vector3D CameraPosition
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
@@ -203,7 +203,7 @@ namespace GTASaveData.GTA3
         {
             SaveName = "";
             TimeLastSaved = new SystemTime();
-            CameraPosition = new Vector();
+            CameraPosition = new Vector3D();
             CompileDateAndTime = new Date();
         }
 
@@ -213,7 +213,7 @@ namespace GTASaveData.GTA3
             TimeLastSaved = buf.Read<SystemTime>();
             SaveSize = buf.ReadInt32();
             CurrLevel = (LevelType) buf.ReadInt32();
-            CameraPosition = buf.Read<Vector>();
+            CameraPosition = buf.Read<Vector3D>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockHours = (byte) buf.ReadInt32();

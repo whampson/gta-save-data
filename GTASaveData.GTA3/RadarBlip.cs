@@ -11,7 +11,7 @@ namespace GTASaveData.GTA3
         private RadarBlipType m_type;
         private int m_handle;
         private Vector2D m_radarPosition;
-        private Vector m_worldPosition;
+        private Vector3D m_worldPosition;
         private short m_blipIndex;
         private bool m_dim;
         private bool m_inUse;
@@ -44,7 +44,7 @@ namespace GTASaveData.GTA3
             set { m_radarPosition = value; OnPropertyChanged(); }
         }
 
-        public Vector WorldPosition
+        public Vector3D WorldPosition
         {
             get { return m_worldPosition; }
             set { m_worldPosition = value; OnPropertyChanged(); }
@@ -95,7 +95,7 @@ namespace GTASaveData.GTA3
         public RadarBlip()
         {
             RadarPosition = new Vector2D();
-            WorldPosition = new Vector();
+            WorldPosition = new Vector3D();
             BlipIndex = 1;
         }
 
@@ -105,7 +105,7 @@ namespace GTASaveData.GTA3
             Type = (RadarBlipType) buf.ReadInt32();
             Handle = buf.ReadInt32();
             RadarPosition = buf.Read<Vector2D>();
-            WorldPosition = buf.Read<Vector>();
+            WorldPosition = buf.Read<Vector3D>();
             BlipIndex = buf.ReadInt16();
             Dim = buf.ReadBool();
             InUse = buf.ReadBool();

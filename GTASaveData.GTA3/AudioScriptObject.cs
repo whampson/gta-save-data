@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3
     {
         private int m_index;
         private short m_audioId;
-        private Vector m_position;
+        private Vector3D m_position;
         private int m_audioEntity;
 
         public int Index
@@ -24,7 +24,7 @@ namespace GTASaveData.GTA3
             set { m_audioId = value; OnPropertyChanged(); }
         }
 
-        public Vector Position
+        public Vector3D Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -39,7 +39,7 @@ namespace GTASaveData.GTA3
 
         public AudioScriptObject()
         {
-            Position = new Vector();
+            Position = new Vector3D();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
@@ -47,7 +47,7 @@ namespace GTASaveData.GTA3
             Index = buf.ReadInt32();
             AudioId = buf.ReadInt16();
             buf.Align4Bytes();
-            Position = buf.Read<Vector>();
+            Position = buf.Read<Vector3D>();
             AudioEntity = buf.ReadInt32();
 
             Debug.Assert(buf.Offset == SizeOf<AudioScriptObject>());
