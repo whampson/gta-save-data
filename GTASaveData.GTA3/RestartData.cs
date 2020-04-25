@@ -9,8 +9,8 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int MaxNumWastedRestartPoints = 8;
-            public const int MaxNumBustedRestartPoints = 8;
+            public const int MaxNumWastedRestarts = 8;
+            public const int MaxNumBustedRestarts = 8;
         }
 
         private Array<RestartPoint> m_wastedRestartPoints;
@@ -96,8 +96,8 @@ namespace GTASaveData.GTA3
         {
             int size = GTA3Save.ReadSaveHeader(buf, "RST");
 
-            WastedRestartPoints = buf.Read<RestartPoint>(Limits.MaxNumWastedRestartPoints);
-            BustedRestartPoints = buf.Read<RestartPoint>(Limits.MaxNumBustedRestartPoints);
+            WastedRestartPoints = buf.Read<RestartPoint>(Limits.MaxNumWastedRestarts);
+            BustedRestartPoints = buf.Read<RestartPoint>(Limits.MaxNumBustedRestarts);
             NumberOfWastedRestartPoints = buf.ReadInt16();
             NumberOfBustedRestartPoints = buf.ReadInt16();
             OverrideNextRestart = buf.ReadBool();
@@ -116,8 +116,8 @@ namespace GTASaveData.GTA3
         {
             GTA3Save.WriteSaveHeader(buf, "RST", SizeOf<RestartData>() - GTA3Save.SaveHeaderSize);
 
-            buf.Write(WastedRestartPoints.ToArray(), Limits.MaxNumWastedRestartPoints);
-            buf.Write(BustedRestartPoints.ToArray(), Limits.MaxNumBustedRestartPoints);
+            buf.Write(WastedRestartPoints.ToArray(), Limits.MaxNumWastedRestarts);
+            buf.Write(BustedRestartPoints.ToArray(), Limits.MaxNumBustedRestarts);
             buf.Write(NumberOfWastedRestartPoints);
             buf.Write(NumberOfBustedRestartPoints);
             buf.Write(OverrideNextRestart);

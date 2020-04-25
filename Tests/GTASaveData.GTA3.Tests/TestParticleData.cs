@@ -10,21 +10,22 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<ParticleData> model = new Faker<ParticleData>()
                 .RuleFor(x => x.ParticleObjects,
-                    f => Generator.CreateArray(f.Random.Int(1, 50), g => Generator.Generate<ParticleObject, TestParticleObject>()));
+                    f => Generator.CreateArray(f.Random.Int(1, 50), g => Generator.Generate<ParticleObject, TestParticleObject>(format)));
 
             return model.Generate();
         }
 
-        [Fact]
-        public void Serialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void Serialization(DataFormat fmt)
         {
-            ParticleData x0 = GenerateTestObject();
-            ParticleData x1 = CreateSerializedCopy(x0, out byte[] data);
+            ParticleData x0 = GenerateTestObject(fmt);
+            ParticleData x1 = CreateSerializedCopy(x0, fmt, out byte[] data);
 
             Assert.Equal(x0.ParticleObjects, x1.ParticleObjects);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, fmt), data.Length);
         }
     }
 }

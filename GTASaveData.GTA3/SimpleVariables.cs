@@ -39,7 +39,7 @@ namespace GTASaveData.GTA3
         private float m_cameraCarZoomIndicator;
         private float m_cameraPedZoomIndicator;
 
-        public string LastMissionPassedName
+        public string SaveName
         {
             get { return m_lastMissionPassedName; }
             set { m_lastMissionPassedName = value; OnPropertyChanged(); }
@@ -201,7 +201,7 @@ namespace GTASaveData.GTA3
 
         public SimpleVariables()
         {
-            LastMissionPassedName = "";
+            SaveName = "";
             TimeLastSaved = new SystemTime();
             CameraPosition = new Vector();
             CompileDateAndTime = new Date();
@@ -209,7 +209,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            LastMissionPassedName = buf.ReadString(Limits.MaxNameLength, unicode: true);
+            SaveName = buf.ReadString(Limits.MaxNameLength, unicode: true);
             TimeLastSaved = buf.Read<SystemTime>();
             SaveSize = buf.ReadInt32();
             CurrLevel = (LevelType) buf.ReadInt32();
@@ -247,7 +247,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            buf.Write(LastMissionPassedName, Limits.MaxNameLength, unicode: true);
+            buf.Write(SaveName, Limits.MaxNameLength, unicode: true);
             buf.Write(TimeLastSaved);
             buf.Write(SaveSize);
             buf.Write((int) CurrLevel);
@@ -305,7 +305,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return LastMissionPassedName.Equals(other.LastMissionPassedName)
+            return SaveName.Equals(other.SaveName)
                 && TimeLastSaved.Equals(other.TimeLastSaved)
                 && SaveSize.Equals(other.SaveSize)
                 && CurrLevel.Equals(other.CurrLevel)

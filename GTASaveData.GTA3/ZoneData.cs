@@ -96,7 +96,6 @@ namespace GTASaveData.GTA3
             set { m_numberOfAudioZones = value; OnPropertyChanged(); }
         }
 
-
         public ZoneData()
         {
             Zones = new Array<Zone>();

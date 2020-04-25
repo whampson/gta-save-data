@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -15,7 +13,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.PeopleKilledByOthers, f => f.Random.Int())
                 .RuleFor(x => x.CarsExploded, f => f.Random.Int())
                 .RuleFor(x => x.RoundsFiredByPlayer, f => f.Random.Int())
-                .RuleFor(x => x.PedsKilledOfThisType, f => Generator.CreateArray<int>(Stats.Limits.PedTypeCount))
+                .RuleFor(x => x.PedsKilledOfThisType, f => Generator.CreateArray<int>(PedTypeData.Limits.NumberOfPedTypes))
                 .RuleFor(x => x.HelisDestroyed, f => f.Random.Int())
                 .RuleFor(x => x.ProgressMade, f => f.Random.Int())
                 .RuleFor(x => x.TotalProgressInGame, f => f.Random.Int())
@@ -58,11 +56,11 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.NumberKillFrenziesPassed, f => f.Random.Int())
                 .RuleFor(x => x.TotalNumberKillFrenzies, f => f.Random.Int())
                 .RuleFor(x => x.TotalNumberMissions, f => f.Random.Int())
-                .RuleFor(x => x.FastestTimes, Generator.CreateArray<int>(Stats.Limits.FastestTimesCount))
-                .RuleFor(x => x.HighestScores, Generator.CreateArray<int>(Stats.Limits.HighestScoresCount))
+                .RuleFor(x => x.FastestTimes, Generator.CreateArray<int>(Stats.Limits.MaxNumFastestTimes))
+                .RuleFor(x => x.HighestScores, Generator.CreateArray<int>(Stats.Limits.MaxNumHighestScores))
                 .RuleFor(x => x.KillsSinceLastCheckpoint, f => f.Random.Int())
                 .RuleFor(x => x.TotalLegitimateKills, f => f.Random.Int())
-                .RuleFor(x => x.LastMissionPassedName, f => Generator.RandomAsciiString(f, Stats.Limits.LastMissionPassedLength - 1));
+                .RuleFor(x => x.LastMissionPassedName, f => Generator.RandomAsciiString(f, Stats.Limits.MaxLastMissionPassedNameLength - 1));
 
             return model.Generate();
         }

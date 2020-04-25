@@ -134,7 +134,7 @@ namespace TestApp
             }
 
             var scr = save.Scripts;
-            var ptp = save.PedType;
+            var ptp = save.PedTypeInfo;
 
             int oldV = scr.GetGlobal(34);
             scr.SetGlobal(34, 6969);

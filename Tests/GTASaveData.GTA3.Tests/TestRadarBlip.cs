@@ -12,7 +12,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<RadarBlip> model = new Faker<RadarBlip>()
                 .RuleFor(x => x.ColorId, f => f.Random.Int())
-                .RuleFor(x => x.Type, f => f.PickRandom<BlipType>())
+                .RuleFor(x => x.Type, f => f.PickRandom<RadarBlipType>())
                 .RuleFor(x => x.Handle, f => f.Random.Int())
                 .RuleFor(x => x.RadarPosition, Generator.Generate<Vector2D, TestVector2D>())
                 .RuleFor(x => x.WorldPosition, Generator.Generate<Vector, TestVector>())
@@ -21,8 +21,8 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.InUse, f => f.Random.Bool())
                 .RuleFor(x => x.Radius, f => f.Random.Float())
                 .RuleFor(x => x.Scale, f => f.Random.Short())
-                .RuleFor(x => x.Display, f => f.PickRandom<BlipDisplay>())
-                .RuleFor(x => x.Sprite, f => f.PickRandom<BlipSprite>());
+                .RuleFor(x => x.Display, f => f.PickRandom<RadarBlipDisplay>())
+                .RuleFor(x => x.Sprite, f => f.PickRandom<RadarBlipSprite>());
 
             return model.Generate();
         }

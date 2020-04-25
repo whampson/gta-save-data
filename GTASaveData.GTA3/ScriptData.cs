@@ -11,15 +11,15 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int NumberOfContacts = 16;
-            public const int NumberOfCollectives = 32;
-            public const int NumberOfBuildingSwaps = 25;
-            public const int NumberOfInvisibilitySettings = 20;
+            public const int MaxNumContacts = 16;
+            public const int MaxNumCollectives = 32;
+            public const int MaxNumBuildingSwaps = 25;
+            public const int MaxNumInvisibilitySettings = 20;
         }
 
         private const int ScriptDataSize = 968;
 
-        private Array<byte> m_globalSpace;
+        private Array<byte> m_scriptSpace;
         private int m_onAMissionFlag;
         private Array<Contact> m_contacts;
         private Array<Collective> m_collectives;    // not used
@@ -33,13 +33,13 @@ namespace GTASaveData.GTA3
         private Array<RunningScript> m_activeScripts;
 
         [JsonIgnore]
-        public int NumberOfGlobalVariables => GlobalSpace.Count / 4;
+        public int NumberOfGlobalVariables => ScriptSpace.Count / 4;
 
         [JsonConverter(typeof(ByteArrayConverter))]
-        public Array<byte> GlobalSpace
+        public Array<byte> ScriptSpace
         {
-            get { return m_globalSpace; }
-            set { m_globalSpace = value; OnPropertyChanged(); }
+            get { return m_scriptSpace; }
+            set { m_scriptSpace = value; OnPropertyChanged(); }
         }
 
         public int OnAMissionFlag
@@ -112,7 +112,7 @@ namespace GTASaveData.GTA3
 
         public ScriptData()
         {
-            GlobalSpace = new Array<byte>();
+            ScriptSpace = new Array<byte>();
             Contacts = new Array<Contact>();
             Collectives = new Array<Collective>();
             BuildingSwaps = new Array<BuildingSwap>();
@@ -125,7 +125,7 @@ namespace GTASaveData.GTA3
             byte[] intBits = new byte[4];
             for (int i = 0; i < 4; i++)
             {
-                intBits[i] = GlobalSpace[(index * 4) + i];
+                intBits[i] = ScriptSpace[(index * 4) + i];
             }
 
             return BitConverter.ToInt32(intBits, 0);
@@ -136,7 +136,7 @@ namespace GTASaveData.GTA3
             byte[] floatBits = new byte[4];
             for (int i = 0; i < 4; i++)
             {
-                floatBits[i] = GlobalSpace[(index * 4) + i];
+                floatBits[i] = ScriptSpace[(index * 4) + i];
             }
 
             return BitConverter.ToSingle(floatBits, 0);
@@ -147,7 +147,7 @@ namespace GTASaveData.GTA3
             byte[] intBits = BitConverter.GetBytes(value);
             for (int i = 0; i < 4; i++)
             {
-                GlobalSpace[(index * 4) + i] = intBits[i];
+                ScriptSpace[(index * 4) + i] = intBits[i];
             }
         }
 
@@ -156,25 +156,27 @@ namespace GTASaveData.GTA3
             byte[] floatBits = BitConverter.GetBytes(value);
             for (int i = 0; i < 4; i++)
             {
-                GlobalSpace[(index * 4) + i] = floatBits[i];
+                ScriptSpace[(index * 4) + i] = floatBits[i];
             }
         }
+
+        // tODO: read/write script
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "SCR");
 
             int varSpace = buf.ReadInt32();
-            GlobalSpace = buf.Read<byte>(varSpace);
+            ScriptSpace = buf.Read<byte>(varSpace);
             buf.Align4Bytes();
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
             OnAMissionFlag = buf.ReadInt32();
-            Contacts = buf.Read<Contact>(Limits.NumberOfContacts);
-            Collectives = buf.Read<Collective>(Limits.NumberOfCollectives);
+            Contacts = buf.Read<Contact>(Limits.MaxNumContacts);
+            Collectives = buf.Read<Collective>(Limits.MaxNumCollectives);
             NextFreeCollectiveIndex = buf.ReadInt32();
-            BuildingSwaps = buf.Read<BuildingSwap>(Limits.NumberOfBuildingSwaps);
-            InvisibilitySettings = buf.Read<InvisibleEntity>(Limits.NumberOfInvisibilitySettings);
+            BuildingSwaps = buf.Read<BuildingSwap>(Limits.MaxNumBuildingSwaps);
+            InvisibilitySettings = buf.Read<InvisibleEntity>(Limits.MaxNumInvisibilitySettings);
             UsingAMultiScriptFile = buf.ReadBool();
             buf.ReadByte();
             buf.ReadUInt16();
@@ -194,16 +196,16 @@ namespace GTASaveData.GTA3
             int size = SizeOf(this, fmt);
             GTA3Save.WriteSaveHeader(buf, "SCR", size - GTA3Save.SaveHeaderSize);
 
-            buf.Write(GlobalSpace.Count);
-            buf.Write(GlobalSpace.ToArray());
+            buf.Write(ScriptSpace.Count);
+            buf.Write(ScriptSpace.ToArray());
             buf.Align4Bytes();
             buf.Write(ScriptDataSize);
             buf.Write(OnAMissionFlag);
-            buf.Write(Contacts.ToArray(), Limits.NumberOfContacts);
-            buf.Write(Collectives.ToArray(), Limits.NumberOfCollectives);
+            buf.Write(Contacts.ToArray(), Limits.MaxNumContacts);
+            buf.Write(Collectives.ToArray(), Limits.MaxNumCollectives);
             buf.Write(NextFreeCollectiveIndex);
-            buf.Write(BuildingSwaps.ToArray(), Limits.NumberOfBuildingSwaps);
-            buf.Write(InvisibilitySettings.ToArray(), Limits.NumberOfInvisibilitySettings);
+            buf.Write(BuildingSwaps.ToArray(), Limits.MaxNumBuildingSwaps);
+            buf.Write(InvisibilitySettings.ToArray(), Limits.MaxNumInvisibilitySettings);
             buf.Write(UsingAMultiScriptFile);
             buf.Write((byte) 0);
             buf.Write((short) 0);
@@ -220,7 +222,7 @@ namespace GTASaveData.GTA3
         protected override int GetSize(DataFormat fmt)
         {
             return SizeOf<RunningScript>(fmt) * ActiveScripts.Count
-                + StreamBuffer.Align4Bytes(GlobalSpace.Count)
+                + StreamBuffer.Align4Bytes(ScriptSpace.Count)
                 + ScriptDataSize
                 + GTA3Save.SaveHeaderSize
                 + 3 * sizeof(int);
@@ -238,7 +240,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return GlobalSpace.SequenceEqual(other.GlobalSpace)
+            return ScriptSpace.SequenceEqual(other.ScriptSpace)
                 && OnAMissionFlag.Equals(other.OnAMissionFlag)
                 && Contacts.SequenceEqual(other.Contacts)
                 && Collectives.SequenceEqual(other.Collectives)

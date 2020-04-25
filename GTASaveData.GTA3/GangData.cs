@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int NumberOfGangs = 9;
+            public const int MaxNumGangs = 9;
         }
 
         private Array<Gang> m_gangs;
@@ -28,7 +28,7 @@ namespace GTASaveData.GTA3
         {
             int size = GTA3Save.ReadSaveHeader(buf, "GNG");
 
-            Gangs = buf.Read<Gang>(Limits.NumberOfGangs);
+            Gangs = buf.Read<Gang>(Limits.MaxNumGangs);
 
             Debug.Assert(buf.Offset == SizeOf<GangData>());
             Debug.Assert(size == SizeOf<GangData>() - GTA3Save.SaveHeaderSize);
@@ -37,7 +37,7 @@ namespace GTASaveData.GTA3
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             GTA3Save.WriteSaveHeader(buf, "GNG", SizeOf<GangData>() - GTA3Save.SaveHeaderSize);
-            buf.Write(Gangs.ToArray(), Limits.NumberOfGangs);
+            buf.Write(Gangs.ToArray(), Limits.MaxNumGangs);
 
             Debug.Assert(buf.Offset == SizeOf<GangData>());
         }

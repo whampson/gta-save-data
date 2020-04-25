@@ -12,7 +12,7 @@ namespace GTASaveData.GTA3.Tests
             Faker<PathNode> nodeModel = new Faker<PathNode>()
                 .RuleFor(x => x.Disabled, f => f.Random.Bool())
                 .RuleFor(x => x.BetweenLevels, f => f.Random.Bool());
-
+              
             Faker<PathData> model = new Faker<PathData>()
                 .RuleFor(x => x.PathNodes, f => Generator.CreateArray(nodeCount, g => nodeModel.Generate()));
 

@@ -147,12 +147,4 @@ namespace GTASaveData.GTA3
                 && NextZoneIndex.Equals(other.NextZoneIndex);
         }
     }
-
-    public enum ZoneType
-    {
-        Audio,
-        Info,
-        Navig,
-        Map
-    }
 }

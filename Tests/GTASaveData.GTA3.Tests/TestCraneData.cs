@@ -11,7 +11,7 @@ namespace GTASaveData.GTA3.Tests
             Faker<CraneData> model = new Faker<CraneData>()
                 .RuleFor(x => x.NumCranes, f => f.Random.Int())
                 .RuleFor(x => x.CarsCollectedMilitaryCrane, f => f.PickRandom<CollectCarsMilitaryCrane>())
-                .RuleFor(x => x.Cranes, f => Generator.CreateArray<Crane>(CraneData.Limits.NumberOfCranes));
+                .RuleFor(x => x.Cranes, f => Generator.CreateArray(CraneData.Limits.MaxNumCranes, g => Generator.Generate<Crane, TestCrane>()));
 
             return model.Generate();
         }

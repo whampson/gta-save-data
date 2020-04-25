@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int NumberOfCranes = 8;
+            public const int MaxNumCranes = 8;
         }
 
         private int m_numCranes;
@@ -44,7 +44,7 @@ namespace GTASaveData.GTA3
         {
             NumCranes = buf.ReadInt32();
             CarsCollectedMilitaryCrane = (CollectCarsMilitaryCrane) buf.ReadInt32();
-            Cranes = buf.Read<Crane>(Limits.NumberOfCranes);
+            Cranes = buf.Read<Crane>(Limits.MaxNumCranes);
 
             Debug.Assert(buf.Offset == SizeOf<CraneData>());
         }
@@ -53,7 +53,7 @@ namespace GTASaveData.GTA3
         {
             buf.Write(NumCranes);
             buf.Write((int) CarsCollectedMilitaryCrane);
-            buf.Write(Cranes.ToArray(), Limits.NumberOfCranes);
+            buf.Write(Cranes.ToArray(), Limits.MaxNumCranes);
 
             Debug.Assert(buf.Offset == SizeOf<CraneData>());
         }

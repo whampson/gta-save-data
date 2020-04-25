@@ -10,9 +10,9 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int NumberOfCarsPerSafeHouse = 6;
+            public const int CarsPerSafeHouse = 6;
             public const int NumberOfSafeHouses = 3;
-            public const int NumberOfGarages = 32;
+            public const int MaxNumGarages = 32;
         }
 
         private int m_numGarages;
@@ -121,8 +121,8 @@ namespace GTASaveData.GTA3
             CarTypesCollected2 = (CollectCars2) buf.ReadInt32();
             CarTypesCollected3 = buf.ReadInt32();
             LastTimeHelpMessage = buf.ReadInt32();
-            CarsInSafeHouse = buf.Read<StoredCar>(Limits.NumberOfCarsPerSafeHouse * Limits.NumberOfSafeHouses);
-            Garages = buf.Read<Garage>(Limits.NumberOfGarages);
+            CarsInSafeHouse = buf.Read<StoredCar>(Limits.CarsPerSafeHouse * Limits.NumberOfSafeHouses);
+            Garages = buf.Read<Garage>(Limits.MaxNumGarages);
 
             Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }
@@ -139,8 +139,8 @@ namespace GTASaveData.GTA3
             buf.Write((int) CarTypesCollected2);
             buf.Write(CarTypesCollected3);
             buf.Write(LastTimeHelpMessage);
-            buf.Write(CarsInSafeHouse.ToArray(), Limits.NumberOfCarsPerSafeHouse * Limits.NumberOfSafeHouses);
-            buf.Write(Garages.ToArray(), Limits.NumberOfGarages);
+            buf.Write(CarsInSafeHouse.ToArray(), Limits.CarsPerSafeHouse * Limits.NumberOfSafeHouses);
+            buf.Write(Garages.ToArray(), Limits.MaxNumGarages);
 
             // Game writes some garbage here due to incorrect size calculation
 

@@ -15,13 +15,13 @@ namespace GTASaveData.GTA3.Tests
             int runningScripts = faker.Random.Int(1, 10);
 
             Faker<ScriptData> model = new Faker<ScriptData>()
-                .RuleFor(x => x.GlobalSpace, f => Generator.CreateArray(varSpace, g => f.Random.Byte()))
+                .RuleFor(x => x.ScriptSpace, f => Generator.CreateArray(varSpace, g => f.Random.Byte()))
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
-                .RuleFor(x => x.Contacts, f => Generator.CreateArray(ScriptData.Limits.NumberOfContacts, g => Generator.Generate<Contact, TestContact>()))
-                .RuleFor(x => x.Collectives, f => Generator.CreateArray(ScriptData.Limits.NumberOfCollectives, g => Generator.Generate<Collective, TestCollective>()))
+                .RuleFor(x => x.Contacts, f => Generator.CreateArray(ScriptData.Limits.MaxNumContacts, g => Generator.Generate<Contact, TestContact>()))
+                .RuleFor(x => x.Collectives, f => Generator.CreateArray(ScriptData.Limits.MaxNumCollectives, g => Generator.Generate<Collective, TestCollective>()))
                 .RuleFor(x => x.NextFreeCollectiveIndex, f => f.Random.Int())
-                .RuleFor(x => x.BuildingSwaps, f => Generator.CreateArray(ScriptData.Limits.NumberOfBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
-                .RuleFor(x => x.InvisibilitySettings, f => Generator.CreateArray(ScriptData.Limits.NumberOfInvisibilitySettings, g => Generator.Generate<InvisibleEntity, TestInvisibleEntity>()))
+                .RuleFor(x => x.BuildingSwaps, f => Generator.CreateArray(ScriptData.Limits.MaxNumBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
+                .RuleFor(x => x.InvisibilitySettings, f => Generator.CreateArray(ScriptData.Limits.MaxNumInvisibilitySettings, g => Generator.Generate<InvisibleEntity, TestInvisibleEntity>()))
                 .RuleFor(x => x.UsingAMultiScriptFile, f => f.Random.Bool())
                 .RuleFor(x => x.MainScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.LargestMissionScriptSize, f => f.Random.Int())
@@ -38,7 +38,7 @@ namespace GTASaveData.GTA3.Tests
             ScriptData x0 = GenerateTestObject(format);
             ScriptData x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
-            Assert.Equal(x0.GlobalSpace, x1.GlobalSpace);
+            Assert.Equal(x0.ScriptSpace, x1.ScriptSpace);
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
             Assert.Equal(x0.Contacts, x1.Contacts);
             Assert.Equal(x0.Collectives, x1.Collectives);

@@ -8,7 +8,7 @@ namespace GTASaveData.GTA3
     public class RadarBlip : SaveDataObject, IEquatable<RadarBlip>
     {
         private int m_colorId;
-        private BlipType m_type;
+        private RadarBlipType m_type;
         private int m_handle;
         private Vector2D m_radarPosition;
         private Vector m_worldPosition;
@@ -17,8 +17,8 @@ namespace GTASaveData.GTA3
         private bool m_inUse;
         private float m_radius;
         private short m_scale;
-        private BlipDisplay m_display;
-        private BlipSprite m_sprite;
+        private RadarBlipDisplay m_display;
+        private RadarBlipSprite m_sprite;
 
         public int ColorId
         {
@@ -26,7 +26,7 @@ namespace GTASaveData.GTA3
             set { m_colorId = value; OnPropertyChanged(); }
         }
 
-        public BlipType Type
+        public RadarBlipType Type
         {
             get { return m_type; }
             set { m_type = value; OnPropertyChanged(); }
@@ -80,13 +80,13 @@ namespace GTASaveData.GTA3
             set { m_scale = value; OnPropertyChanged(); }
         }
 
-        public BlipDisplay Display
+        public RadarBlipDisplay Display
         {
             get { return m_display; }
             set { m_display = value; OnPropertyChanged(); }
         }
 
-        public BlipSprite Sprite
+        public RadarBlipSprite Sprite
         {
             get { return m_sprite; }
             set { m_sprite = value; OnPropertyChanged(); }
@@ -102,7 +102,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             ColorId = buf.ReadInt32();
-            Type = (BlipType) buf.ReadInt32();
+            Type = (RadarBlipType) buf.ReadInt32();
             Handle = buf.ReadInt32();
             RadarPosition = buf.Read<Vector2D>();
             WorldPosition = buf.Read<Vector>();
@@ -111,8 +111,8 @@ namespace GTASaveData.GTA3
             InUse = buf.ReadBool();
             Radius = buf.ReadFloat();
             Scale = buf.ReadInt16();
-            Display = (BlipDisplay) buf.ReadInt16();
-            Sprite = (BlipSprite) buf.ReadInt16();
+            Display = (RadarBlipDisplay) buf.ReadInt16();
+            Sprite = (RadarBlipSprite) buf.ReadInt16();
             buf.Align4Bytes();
 
             Debug.Assert(buf.Offset == SizeOf<RadarBlip>());
@@ -162,49 +162,5 @@ namespace GTASaveData.GTA3
                 && Display.Equals(other.Display)
                 && Sprite.Equals(other.Sprite);
         }
-    }
-
-    public enum BlipType
-    {
-        None,
-        Car,
-        Char,
-        Object,
-        Coord,
-        ContactPoint
-    }
-
-    [Flags]
-    public enum BlipDisplay
-    {
-        None,
-        Marker,
-        Blip,
-        MarkerAndBlip
-    }
-
-    public enum BlipSprite
-    {
-        None,
-        Asuka,
-        Bomb,
-        Cat,
-        Center,
-        Copcar,
-        Don,
-        Eight,
-        El,
-        Ice,
-        Joey,
-        Kenji,
-        Liz,
-        Luigi,
-        North,
-        Ray,
-        Sal,
-        Save,
-        Spray,
-        Tony,
-        Weapon
     }
 }

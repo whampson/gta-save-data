@@ -167,7 +167,7 @@ namespace GTASaveData.GTA3
             set { m_streaming = value; OnPropertyChanged(); }
         }
 
-        public PedTypeData PedType
+        public PedTypeData PedTypeInfo
         {
             get { return m_pedType; }
             set { m_pedType = value; OnPropertyChanged(); }
@@ -183,8 +183,8 @@ namespace GTASaveData.GTA3
         [JsonIgnore]
         public override string Name
         {
-            get { return SimpleVars.LastMissionPassedName; }
-            set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
+            get { return SimpleVars.SaveName; }
+            set { SimpleVars.SaveName = value; OnPropertyChanged(); }
         }
 
         [JsonIgnore]
@@ -217,7 +217,7 @@ namespace GTASaveData.GTA3
             PlayerInfo,
             Stats,
             Streaming,
-            PedType
+            PedTypeInfo
         };
 
         public GTA3Save()
@@ -245,7 +245,7 @@ namespace GTASaveData.GTA3
             PlayerInfo = new PlayerInfo();
             Stats = new Stats();
             Streaming = new Streaming();
-            PedType = new PedTypeData();
+            PedTypeInfo = new PedTypeData();
 
         #if !DEBUG
             BlockSizeChecks = true;
@@ -404,7 +404,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); PlayerInfo = Load<PlayerInfo>();
             totalSize += ReadBlock(file); Stats = Load<Stats>();
             totalSize += ReadBlock(file); Streaming = Load<Streaming>();
-            totalSize += ReadBlock(file); PedType = Load<PedTypeData>();
+            totalSize += ReadBlock(file); PedTypeInfo = Load<PedTypeData>();
 
             while (file.Cursor < file.Length - 4)
             {
@@ -444,7 +444,7 @@ namespace GTASaveData.GTA3
             Save(PlayerInfo); totalSize += WriteBlock(file);
             Save(Stats); totalSize += WriteBlock(file);
             Save(Streaming); totalSize += WriteBlock(file);
-            Save(PedType); totalSize += WriteBlock(file);
+            Save(PedTypeInfo); totalSize += WriteBlock(file);
 
             for (int i = 0; i < 4; i++)
             {
@@ -584,7 +584,7 @@ namespace GTASaveData.GTA3
                 && PlayerInfo.Equals(other.PlayerInfo)
                 && Stats.Equals(other.Stats)
                 && Streaming.Equals(other.Streaming)
-                && PedType.Equals(other.PedType);
+                && PedTypeInfo.Equals(other.PedTypeInfo);
         }
 
         public void Dispose()

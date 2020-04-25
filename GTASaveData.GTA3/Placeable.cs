@@ -103,8 +103,14 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(DataFormat fmt)
         {
-            if (GTA3Save.IsJapanesePS2(fmt)) return 0x40;
-            else if (fmt.PS2) return 0x60;
+            if (GTA3Save.IsJapanesePS2(fmt))
+            {
+                return 0x40;
+            }
+            else if (fmt.PS2)
+            {
+                return 0x60;
+            }
 
             return 0x4C;
         }

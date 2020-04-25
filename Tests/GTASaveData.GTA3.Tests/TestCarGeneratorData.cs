@@ -13,7 +13,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.CurrentActiveCount, f => f.Random.Int())
                 .RuleFor(x => x.ProcessCounter, f => f.Random.Byte())
                 .RuleFor(x => x.GenerateEvenIfPlayerIsCloseCounter, f => f.Random.Byte())
-                .RuleFor(x => x.CarGenerators, f => Generator.CreateArray(CarGeneratorData.Limits.NumberOfCarGenerators, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
+                .RuleFor(x => x.CarGenerators, f => Generator.CreateArray(CarGeneratorData.Limits.MaxNumCarGenerators, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
 
             return model.Generate();
         }

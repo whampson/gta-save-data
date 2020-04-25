@@ -9,8 +9,8 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int MaxNumCarThreshold = 6;
-            public const int MaxNumGangDensity = 9;
+            public const int CarThresholdCapacity = 6;
+            public const int GangDensityCapacity = 9;
         }
 
         private short m_carDensity;
@@ -70,7 +70,6 @@ namespace GTASaveData.GTA3
             set { m_pedGroup = value; OnPropertyChanged(); }
         }
 
-
         public ZoneInfo()
         {
             CarThreshold = new Array<short>();
@@ -81,12 +80,12 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             CarDensity = buf.ReadInt16();
-            CarThreshold = buf.Read<short>(Limits.MaxNumCarThreshold);
+            CarThreshold = buf.Read<short>(Limits.CarThresholdCapacity);
             CopCarDensity = buf.ReadInt16();
-            GangCarDensity = buf.Read<short>(Limits.MaxNumGangDensity);
+            GangCarDensity = buf.Read<short>(Limits.GangDensityCapacity);
             PedDensity = buf.ReadInt16();
             CopPedDensity = buf.ReadInt16();
-            GangPedDensity = buf.Read<short>(Limits.MaxNumGangDensity);
+            GangPedDensity = buf.Read<short>(Limits.GangDensityCapacity);
             PedGroup = buf.ReadInt16();
 
             Debug.Assert(buf.Offset == SizeOf<ZoneInfo>());
@@ -95,12 +94,12 @@ namespace GTASaveData.GTA3
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(CarDensity);
-            buf.Write(CarThreshold.ToArray(), Limits.MaxNumCarThreshold);
+            buf.Write(CarThreshold.ToArray(), Limits.CarThresholdCapacity);
             buf.Write(CopCarDensity);
-            buf.Write(GangCarDensity.ToArray(), Limits.MaxNumGangDensity);
+            buf.Write(GangCarDensity.ToArray(), Limits.GangDensityCapacity);
             buf.Write(PedDensity);
             buf.Write(CopPedDensity);
-            buf.Write(GangPedDensity.ToArray(), Limits.MaxNumGangDensity);
+            buf.Write(GangPedDensity.ToArray(), Limits.GangDensityCapacity);
             buf.Write(PedGroup);
 
             Debug.Assert(buf.Offset == SizeOf<ZoneInfo>());

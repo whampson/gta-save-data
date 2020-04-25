@@ -8,7 +8,7 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int PlayerNameLength = 70;
+            public const int MaxPlayerNameLength = 70;
         }
 
         private int m_money;
@@ -123,7 +123,7 @@ namespace GTASaveData.GTA3
             FastReload = buf.ReadBool();
             GetOutOfJailFree = buf.ReadBool();
             GetOutOfHospitalFree = buf.ReadBool();
-            PlayerName = buf.ReadString(Limits.PlayerNameLength);
+            PlayerName = buf.ReadString(Limits.MaxPlayerNameLength);
 
             Debug.Assert(buf.Offset == SizeOf<PlayerInfo>());
         }
@@ -142,7 +142,7 @@ namespace GTASaveData.GTA3
             buf.Write(FastReload);
             buf.Write(GetOutOfJailFree);
             buf.Write(GetOutOfHospitalFree);
-            buf.Write(PlayerName, Limits.PlayerNameLength);
+            buf.Write(PlayerName, Limits.MaxPlayerNameLength);
 
             // Game writes some garbage here due to incorrect size calculation
 

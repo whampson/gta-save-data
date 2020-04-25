@@ -22,6 +22,6 @@
         PlayerInfo,
         Stats,
         Streaming,
-        PedType
+        PedTypeInfo
     }
 }

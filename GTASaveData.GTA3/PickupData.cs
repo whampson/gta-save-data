@@ -9,8 +9,8 @@ namespace GTASaveData.GTA3
     {
         public static class Limits
         {
-            public const int NumberOfPickups = 336;
-            public const int NumberOfCollectedPickups = 20;
+            public const int MaxNumPickups = 336;
+            public const int MaxNumCollectedPickups = 20;
         }
 
         private Array<Pickup> m_pickUps;
@@ -43,20 +43,20 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            Pickups = buf.Read<Pickup>(Limits.NumberOfPickups);
+            Pickups = buf.Read<Pickup>(Limits.MaxNumPickups);
             LastCollectedIndex = buf.ReadInt16();
             buf.ReadInt16();
-            PickupsCollected = buf.Read<int>(Limits.NumberOfCollectedPickups);
+            PickupsCollected = buf.Read<int>(Limits.MaxNumCollectedPickups);
 
             Debug.Assert(buf.Offset == SizeOf<PickupData>());
         }
 
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            buf.Write(Pickups.ToArray(), Limits.NumberOfPickups);
+            buf.Write(Pickups.ToArray(), Limits.MaxNumPickups);
             buf.Write(LastCollectedIndex);
             buf.Write((short) 0);
-            buf.Write(PickupsCollected.ToArray(), Limits.NumberOfCollectedPickups);
+            buf.Write(PickupsCollected.ToArray(), Limits.MaxNumCollectedPickups);
 
             Debug.Assert(buf.Offset == SizeOf<PickupData>());
         }
