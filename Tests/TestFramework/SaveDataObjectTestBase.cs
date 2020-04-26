@@ -1,29 +1,27 @@
 ﻿using GTASaveData;
-using GTASaveData.Types;
 
 namespace TestFramework
 {
-    public abstract class SaveDataObjectTestBase<T>
-        where T : SaveDataObject, new()
+    public abstract class TestBase<T> where T : new()
     {
         public int GetSizeOfTestObject()
         {
-            return SaveDataObject.SizeOf<T>();
+            return Serializer.SizeOf<T>();
         }
 
         public int GetSizeOfTestObject(T obj)
         {
-            return SaveDataObject.SizeOf<T>(obj, DataFormat.Default);
+            return Serializer.SizeOf(obj, DataFormat.Default);
         }
 
         public int GetSizeOfTestObject(DataFormat format)
         {
-            return SaveDataObject.SizeOf<T>(format);
+            return Serializer.SizeOf<T>(format);
         }
 
         public int GetSizeOfTestObject(T obj, DataFormat format)
         {
-            return SaveDataObject.SizeOf<T>(obj, format);
+            return Serializer.SizeOf(obj, format);
         }
 
         public T CreateSerializedCopy(T obj)
@@ -46,7 +44,11 @@ namespace TestFramework
             bytes = Serializer.Write(obj, format);
             return Serializer.Read<T>(bytes, format);
         }
+    }
 
+    public abstract class SaveDataObjectTestBase<T> : TestBase<T>
+        where T : SaveDataObject, new()
+    {
         public T GenerateTestObject()
         {
             return GenerateTestObject(DataFormat.Default);

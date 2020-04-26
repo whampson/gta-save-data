@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using GTASaveData;
+using GTASaveData.Types;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -8,17 +9,27 @@ namespace TestFramework
 {
     public static class Generator
     {
-        public static T[] CreateArray<T>(int count) where T : new()
-        {
-            return Enumerable.Range(0, count).Select(x => new T()).ToArray();
-        }
-
-        public static T[] CreateArray<T>(int count, Func<int, T> itemGenerator)
+        public static T[] Array<T>(int count, Func<int, T> itemGenerator)
         {
             return Enumerable.Range(0, count).Select(itemGenerator).ToArray();
         }
 
-        public static string RandomWords(Faker f, int maxLength)
+        public static Vector2D Vector2D(Faker f)
+        {
+            return new Vector2D(f.Random.Float(), f.Random.Float());
+        }
+
+        public static Vector3D Vector3D(Faker f)
+        {
+            return new Vector3D(f.Random.Float(), f.Random.Float(), f.Random.Float());
+        }
+
+        public static DateTime Date(Faker f)
+        {
+            return f.Date.Between(new DateTime(1970, 1, 1), DateTime.Now);
+        }
+
+        public static string Words(Faker f, int maxLength)
         {
             string s = f.Random.Words();
             if (s.Length > maxLength)
@@ -29,12 +40,12 @@ namespace TestFramework
             return s;
         }
 
-        public static string RandomAsciiString(Faker f, int length)
+        public static string AsciiString(Faker f, int length)
         {
             return new string(f.Random.Chars('\u0020', '\u007E', length));
         }
 
-        public static string RandomUnicodeString(Faker f, int length)
+        public static string UnicodeString(Faker f, int length)
         {
             return new string(f.Random.Chars('\u0000', '\uD7FF', length));  // exclude surrogates
         }
