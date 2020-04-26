@@ -736,6 +736,7 @@ namespace GTASaveData
 
         public int Write<T>(T value, DataFormat format) where T : ISerializable
         {
+            if (value == null) throw new ArgumentNullException("The value cannot be null.", nameof(value));
             return value.WriteObjectData(this, format);
         }
 

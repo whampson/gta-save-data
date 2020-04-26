@@ -1,4 +1,7 @@
-﻿namespace GTASaveData
+﻿using GTASaveData.Extensions;
+using System;
+
+namespace GTASaveData
 {
     /// <summary>
     /// A <see cref="StreamBuffer"/> wrapper for serializing and deserializing data.
@@ -140,6 +143,73 @@
         public static int Write<T>(StreamBuffer buf, T obj, DataFormat fmt) where T : ISerializable
         {
             return obj.WriteObjectData(buf, fmt);
+        }
+
+        /// <summary>
+        /// Gets the serialized size of the specified type.
+        /// </summary>
+        /// <exception cref="SerializationException">
+        /// Thrown if the type is not serializable.
+        /// </exception>
+        public static int SizeOf<T>() where T : new()
+        {
+            // Get size from SizeAttribute if present
+            SizeAttribute sizeAttr = (SizeAttribute) Attribute.GetCustomAttribute(typeof(T), typeof(SizeAttribute));
+            if (sizeAttr != null)
+            {
+                return sizeAttr.Size;
+            }
+
+            return SizeOf(new T(), DataFormat.Default);
+        }
+
+        /// <summary>
+        /// Gets the serialized size of the specified type using the
+        /// specified data format.
+        /// </summary>
+        /// <exception cref="SerializationException">
+        /// Thrown if the type is not serializable.
+        /// </exception>
+        public static int SizeOf<T>(DataFormat fmt) where T : new()
+        {
+            // Get size from SizeAttribute if present
+            var sizeAttr = Attribute.GetCustomAttribute(typeof(T), typeof(SizeAttribute));
+            if (sizeAttr != null)
+            {
+                return ((SizeAttribute) sizeAttr).Size;
+            }
+
+            return SizeOf(new T(), fmt);
+        }
+
+        /// <summary>
+        /// Gets the serialized size of an object.
+        /// </summary>
+        /// <exception cref="SerializationException">
+        /// Thrown if the type is not serializable.
+        /// </exception>
+        public static int SizeOf<T>(T obj)
+        {
+            return SizeOf(obj, DataFormat.Default);
+        }
+
+        /// <summary>
+        /// Gets the serialized size of an object using the
+        /// specified data format.
+        /// </summary>
+        /// <exception cref="SerializationException">
+        /// Thrown if the type is not serializable.
+        /// </exception>
+        public static int SizeOf<T>(T obj, DataFormat fmt)
+        {
+            // Get size from GetSize() function if T is ISerializable
+            if (typeof(T).Implements(typeof(ISerializable)))
+            {
+                return ((ISerializable) obj).GetSize(fmt);
+            }
+
+            // Last resort: get size by serializing the data
+            return Write(obj, fmt, out byte[] _);
         }
     }
 }

@@ -78,7 +78,7 @@ namespace GTASaveData
         {
             m_monitor = new BusyMonitor();
             m_items = new List<T>();
-            m_itemsAreObservable = typeof(T).IsObservable();
+            m_itemsAreObservable = typeof(T).Implements(typeof(INotifyPropertyChanged));
         }
 
         /// <summary>

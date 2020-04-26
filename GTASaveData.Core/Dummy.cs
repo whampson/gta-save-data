@@ -3,12 +3,12 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 
-namespace GTASaveData.Types
+namespace GTASaveData
 {
     /// <summary>
     /// A container for arbitraty data.
     /// </summary>
-    public class Dummy : PreAllocatedSaveDataObject, IEquatable<Dummy>
+    public class Dummy : SaveDataObject, IEquatable<Dummy>
     {
         private Array<byte> m_data;
 
@@ -20,24 +20,12 @@ namespace GTASaveData.Types
         }
 
         public Dummy()
-            : base(0)
+            : this(0)
         { }
 
         public Dummy(int size)
-            : base(size)
-        { }
-
-        protected override void PreAllocate(int size)
         {
             Data = new byte[size];
-        }
-
-        public static Dummy Load(byte[] data)
-        {
-            Dummy o = new Dummy(data.Length);
-            Serializer.Read(o, data, DataFormat.Default);
-
-            return o;
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)

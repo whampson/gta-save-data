@@ -1,31 +1,16 @@
 ﻿using System;
-using System.Numerics;
 
 namespace GTASaveData.Types
 {
     /// <summary>
     /// A 2-dimensional vector.
     /// </summary>
-    [Size(8)]
-    public class Vector2D : SaveDataObject, IEquatable<Vector2D>
+    public struct Vector2D : ISerializable, IEquatable<Vector2D>
     {
-        private float m_x;
-        private float m_y;
+        private const int Size = 8;
 
-        public float X
-        {
-            get { return m_x; }
-            set { m_x = value; OnPropertyChanged(); }
-        }
-
-        public float Y
-        {
-            get { return m_y; }
-            set { m_y = value; OnPropertyChanged(); }
-        }
-        public Vector2D()
-            : this(0, 0)
-        { }
+        public float X;
+        public float Y;
 
         public Vector2D(float x, float y)
         {
@@ -33,47 +18,144 @@ namespace GTASaveData.Types
             Y = y;
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        public Vector2D(Vector2D other)
+        {
+            X = other.X;
+            Y = other.Y;
+        }
+
+        public float GetHeading()
+        {
+            return (float) Math.Atan2(-X, Y);
+        }
+
+        public float GetMagnitude()
+        {
+            return (float) Math.Sqrt((X * X) + (Y * Y));
+        }
+
+        public float GetMagnitudeSquared()
+        {
+            return (X * X) + (Y * Y);
+        }
+
+        public static Vector2D Normalize(Vector2D v)
+        {
+            return Normalize(v);
+        }
+
+        public static Vector2D Normalize(Vector2D v, float norm)
+        {
+            float mag = v.GetMagnitude();
+            if (mag > 0)
+            {
+                float invSq = norm / mag;
+                v.X *= invSq;
+                v.Y *= invSq;
+            }
+
+            return v;
+        }
+
+        public static float Dot(Vector2D v1, Vector2D v2)
+        {
+            return (v1.X * v2.X) + (v1.Y * v2.Y);
+        }
+
+        public static float Distance(Vector2D v1, Vector2D v2)
+        {
+            return (v2 - v1).GetMagnitude();
+        }
+
+        public static Vector2D operator -(Vector2D v)
+        {
+            return new Vector2D(-v.X, -v.Y);
+        }
+
+        public static Vector2D operator +(Vector2D left, Vector2D right)
+        {
+            return new Vector2D(left.X + right.X, left.Y + right.Y);
+        }
+
+        public static Vector2D operator -(Vector2D left, Vector2D right)
+        {
+            return new Vector2D(left.X - right.X, left.Y - right.Y);
+        }
+
+        public static Vector2D operator *(Vector2D left, float right)
+        {
+            return new Vector2D(left.X * right, left.Y * right);
+        }
+
+        public static Vector2D operator *(float left, Vector2D right)
+        {
+            return new Vector2D(left * right.X, left * right.Y);
+        }
+
+        public static Vector2D operator /(Vector2D left, float right)
+        {
+            return new Vector2D(left.X / right, left.Y / right);
+        }
+
+        public static bool operator ==(Vector2D v1, Vector2D v2)
+        {
+            return v1.Equals(v2);
+        }
+
+        public static bool operator !=(Vector2D v1, Vector2D v2)
+        {
+            return !v1.Equals(v2);
+        }
+
+        int ISerializable.ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             X = buf.ReadFloat();
             Y = buf.ReadFloat();
+
+            return Size;
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        int ISerializable.WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(X);
             buf.Write(Y);
+
+            return Size;
+        }
+
+        int ISerializable.GetSize(DataFormat fmt)
+        {
+            return Size;
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            hash += 23 * X.GetHashCode();
+            hash += 23 * Y.GetHashCode();
+
+            return hash;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Vector2D))
+            {
+                return false;
+            }
+
+            return Equals((Vector2D) obj);
+        }
+
+        public bool Equals(Vector2D other)
+        {
+            return X.Equals(other.X)
+                && Y.Equals(other.Y);
         }
 
         public override string ToString()
         {
             return string.Format("<{0:0.###},{1:0.###}>", X, Y);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as Vector2D);
-        }
-
-        public bool Equals(Vector2D other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            return X.Equals(other.X)
-                && Y.Equals(other.Y);
-        }
-
-        public static implicit operator Vector2(Vector2D v)
-        {
-            return new Vector2(v.X, v.Y);
-        }
-
-        public static implicit operator Vector2D(Vector2 v)
-        {
-            return new Vector2D(v.X, v.Y);
         }
     }
 }

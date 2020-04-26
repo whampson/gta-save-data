@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace GTASaveData
 {
@@ -40,39 +39,44 @@ namespace GTASaveData
             return len;
         }
 
+        int ISerializable.GetSize(DataFormat fmt)
+        {
+            return GetSize(fmt);
+        }
+
         protected abstract void ReadObjectData(StreamBuffer buf, DataFormat fmt);
+
         protected abstract void WriteObjectData(StreamBuffer buf, DataFormat fmt);
 
+        // TODO: remove this, force implementation on children >:)
         protected virtual int GetSize(DataFormat fmt)
         {
             Debug.WriteLine("Warning: {0}#GetSize() has not been overridden! Calling {0}#WriteObjectData() to compute size.", (object) GetType().Name);
-            return Serializer.Write(this, fmt, out byte[] _);
-        }
-
-        public static int SizeOf<T>() where T : SaveDataObject, new()
-        {
-            SizeAttribute sizeAttr = (SizeAttribute) Attribute.GetCustomAttribute(typeof(T), typeof(SizeAttribute));
-            if (sizeAttr == null)
+            using (StreamBuffer buf = new StreamBuffer())
             {
-                return SizeOf(new T());
+                return ((ISerializable) this).WriteObjectData(buf, fmt);
             }
-
-            return sizeAttr.Size;
         }
 
-        public static int SizeOf<T>(T obj)  where T : SaveDataObject
+        // Wrappers for convenience
+        protected static int SizeOf<T>() where T : new()
         {
-            return SizeOf(obj, DataFormat.Default);
+            return Serializer.SizeOf<T>();
         }
 
-        public static int SizeOf<T>(DataFormat fmt) where T : SaveDataObject, new()
+        protected static int SizeOf<T>(DataFormat fmt) where T : new()
         {
-            return SizeOf(new T(), fmt);
+            return Serializer.SizeOf<T>(fmt);
         }
 
-        public static int SizeOf<T>(T obj, DataFormat fmt) where T : SaveDataObject
+        protected static int SizeOf<T>(T obj)
         {
-            return obj.GetSize(fmt);
+            return Serializer.SizeOf(obj);
+        }
+
+        protected static int SizeOf<T>(T obj, DataFormat fmt)
+        {
+            return Serializer.SizeOf(obj, fmt);
         }
     }
 }

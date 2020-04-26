@@ -25,5 +25,12 @@
         /// <param name="fmt">The data format.</param>
         /// <returns>The number of bytes written.</returns>
         int WriteObjectData(StreamBuffer buf, DataFormat fmt);
+
+        /// <summary>
+        /// Gets the size in bytes of the serialized data.
+        /// </summary>
+        /// <param name="fmt">The data format.</param>
+        /// <returns>The size of the serialized object in bytes.</returns>
+        int GetSize(DataFormat fmt);
     }
 }

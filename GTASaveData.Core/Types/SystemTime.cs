@@ -1,102 +1,62 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace GTASaveData.Types
 {
     /// <summary>
-    /// A .NET version of the Win32 <c>SYSTEMTIME</c> structure.
+    /// A .NET version of the Win32 <c>SYSTEMTIME</c> structure, which is stored in some GTA save files.
     /// </summary>
-    [Size(16)]
-    public class SystemTime : SaveDataObject, IEquatable<SystemTime>
+    public struct SystemTime : ISerializable, IEquatable<SystemTime>
     {
-        private ushort m_year;
-        private ushort m_month;
-        private ushort m_dayOfWeek;
-        private ushort m_day;
-        private ushort m_hour;
-        private ushort m_minute;
-        private ushort m_second;
-        private ushort m_millisecond;
+        private const int Size = 16;
 
-        public ushort Year
+        public short Year;
+        public short Month;
+        public short DayOfWeek;
+        public short Day;
+        public short Hour;
+        public short Minute;
+        public short Second;
+        public short Millisecond;
+
+        public SystemTime(short year, short month, short dayOfWeek, short day, short hour, short minute, short second, short millisecond)
         {
-            get { return m_year; }
-            set { m_year = value; OnPropertyChanged(); }
+            Millisecond = millisecond;
+            Second = second;
+            Minute = minute;
+            Hour = hour;
+            Day = day;
+            DayOfWeek = dayOfWeek;
+            Month = month;
+            Year = year;
         }
-
-        public ushort Month
-        {
-            get { return m_month; }
-            set { m_month = value; OnPropertyChanged(); }
-        }
-
-        public ushort DayOfWeek
-        {
-            get { return m_dayOfWeek; }
-            set { m_dayOfWeek = value; OnPropertyChanged(); }
-        }
-
-        public ushort Day
-        {
-            get { return m_day; }
-            set { m_day= value; OnPropertyChanged(); }
-        }
-
-        public ushort Hour
-        {
-            get { return m_hour; }
-            set { m_hour = value; OnPropertyChanged(); }
-        }
-
-        public ushort Minute
-        {
-            get { return m_minute; }
-            set { m_minute = value; OnPropertyChanged(); }
-        }
-
-        public ushort Second
-        {
-            get { return m_second; }
-            set { m_second = value; OnPropertyChanged(); }
-        }
-
-        public ushort Millisecond
-        {
-            get { return m_millisecond; }
-            set { m_millisecond = value; OnPropertyChanged(); }
-        }
-
-        public SystemTime()
-            : this(DateTime.Now)
-        { }
 
         public SystemTime(DateTime dateTime)
         {
-            Year = (ushort) dateTime.Year;
-            Month = (ushort) dateTime.Month;
-            DayOfWeek = (ushort) dateTime.DayOfWeek;
-            Day = (ushort) dateTime.Day;
-            Hour = (ushort) dateTime.Hour;
-            Minute = (ushort) dateTime.Minute;
-            Second = (ushort) dateTime.Second;
-            Millisecond = (ushort) dateTime.Millisecond;
+            Year = (short) dateTime.Year;
+            Month = (short) dateTime.Month;
+            DayOfWeek = (short) dateTime.DayOfWeek;
+            Day = (short) dateTime.Day;
+            Hour = (short) dateTime.Hour;
+            Minute = (short) dateTime.Minute;
+            Second = (short) dateTime.Second;
+            Millisecond = (short) dateTime.Millisecond;
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        int ISerializable.ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            Year = buf.ReadUInt16();
-            Month = buf.ReadUInt16();
-            DayOfWeek = buf.ReadUInt16();
-            Day = buf.ReadUInt16();
-            Hour = buf.ReadUInt16();
-            Minute = buf.ReadUInt16();
-            Second = buf.ReadUInt16();
-            Millisecond = buf.ReadUInt16();
+            Year = buf.ReadInt16();
+            Month = buf.ReadInt16();
+            DayOfWeek = buf.ReadInt16();
+            Day = buf.ReadInt16();
+            Hour = buf.ReadInt16();
+            Minute = buf.ReadInt16();
+            Second = buf.ReadInt16();
+            Millisecond = buf.ReadInt16();
 
-            Debug.Assert(buf.Offset == SizeOf<SystemTime>());
+            return Size;
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        int ISerializable.WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(Year);
             buf.Write(Month);
@@ -107,7 +67,12 @@ namespace GTASaveData.Types
             buf.Write(Second);
             buf.Write(Millisecond);
 
-            Debug.Assert(buf.Offset == SizeOf<SystemTime>());
+            return Size;
+        }
+
+        int ISerializable.GetSize(DataFormat fmt)
+        {
+            return Size;
         }
 
         public DateTime ToDateTime()
@@ -122,23 +87,33 @@ namespace GTASaveData.Types
                 Millisecond);
         }
 
-        public override string ToString()
+        public override int GetHashCode()
         {
-            return ToDateTime().ToString("dd MMM yyyy HH:mm:ss");
+            int hash = 17;
+            hash += 23 * Year;
+            hash += 23 * Month;
+            hash += 23 * DayOfWeek;
+            hash += 23 * Day;
+            hash += 23 * Hour;
+            hash += 23 * Minute;
+            hash += 23 * Second;
+            hash += 23 * Millisecond;
+
+            return hash;
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as SystemTime);
-        }
-
-        public bool Equals(SystemTime other)
-        {
-            if (other == null)
+            if (!(obj is SystemTime))
             {
                 return false;
             }
 
+            return Equals((SystemTime) obj);
+        }
+
+        public bool Equals(SystemTime other)
+        {
             return Year.Equals(other.Year)
                 && Month.Equals(other.Month)
                 && DayOfWeek.Equals(other.DayOfWeek)
@@ -147,6 +122,21 @@ namespace GTASaveData.Types
                 && Minute.Equals(other.Minute)
                 && Second.Equals(other.Second)
                 && Millisecond.Equals(other.Millisecond);
+        }
+
+        public override string ToString()
+        {
+            return ToDateTime().ToString("dd MMM yyyy HH:mm:ss");
+        }
+
+        public static bool operator ==(SystemTime d1, SystemTime d2)
+        {
+            return d1.Equals(d2);
+        }
+
+        public static bool operator !=(SystemTime d1, SystemTime d2)
+        {
+            return !d1.Equals(d2);
         }
 
         public static implicit operator DateTime(SystemTime t)

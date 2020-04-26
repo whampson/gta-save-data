@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+#pragma warning disable IDE1006 // Naming Styles
 namespace GTASaveData
 {
     public struct DataFormat : IEquatable<DataFormat>
@@ -88,3 +89,4 @@ namespace GTASaveData
         }
     }
 }
+#pragma warning restore IDE1006 // Naming Styles

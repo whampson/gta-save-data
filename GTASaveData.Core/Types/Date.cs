@@ -1,60 +1,30 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace GTASaveData.Types
 {
     /// <summary>
-    /// Represents a date and time.
+    /// Represents a date and time as stored in a GTA save file.
     /// </summary>
-    [Size(24)]
-    public class Date : SaveDataObject, IEquatable<Date>
+    public struct Date : ISerializable, IEquatable<Date>
     {
-        private int m_second;
-        private int m_minute;
-        private int m_hour;
-        private int m_day;
-        private int m_month;
-        private int m_year;
+        private const int Size = 24;
 
-        public int Year
+        public int Second;
+        public int Minute;
+        public int Hour;
+        public int Day;
+        public int Month;
+        public int Year;
+
+        public Date(int year, int month, int day, int hour, int minute, int second)
         {
-            get { return m_year; }
-            set { m_year = value; OnPropertyChanged(); }
+            Second = second;
+            Minute = minute;
+            Hour = hour;
+            Day = day;
+            Month = month;
+            Year = year;
         }
-
-        public int Month
-        {
-            get { return m_month; }
-            set { m_month = value; OnPropertyChanged(); }
-        }
-
-        public int Day
-        {
-            get { return m_day; }
-            set { m_day = value; OnPropertyChanged(); }
-        }
-
-        public int Hour
-        {
-            get { return m_hour; }
-            set { m_hour = value; OnPropertyChanged(); }
-        }
-
-        public int Minute
-        {
-            get { return m_minute; }
-            set { m_minute = value; OnPropertyChanged(); }
-        }
-
-        public int Second
-        {
-            get { return m_second; }
-            set { m_second = value; OnPropertyChanged(); }
-        }
-
-        public Date()
-            : this(DateTime.Now)
-        { }
 
         public Date(DateTime dateTime)
         {
@@ -66,7 +36,7 @@ namespace GTASaveData.Types
             Year = dateTime.Year;
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        int ISerializable.ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             Second = buf.ReadInt32();
             Minute = buf.ReadInt32();
@@ -75,10 +45,10 @@ namespace GTASaveData.Types
             Month = buf.ReadInt32();
             Year = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOf<Date>());
+            return Size;
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        int ISerializable.WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             buf.Write(Second);
             buf.Write(Minute);
@@ -87,7 +57,12 @@ namespace GTASaveData.Types
             buf.Write(Month);
             buf.Write(Year);
 
-            Debug.Assert(buf.Offset == SizeOf<Date>());
+            return Size;
+        }
+
+        int ISerializable.GetSize(DataFormat fmt)
+        {
+            return Size;
         }
 
         public DateTime ToDateTime()
@@ -101,29 +76,52 @@ namespace GTASaveData.Types
                 Second);
         }
 
-        public override string ToString()
+        public override int GetHashCode()
         {
-            return ToDateTime().ToString("dd MMM yyyy HH:mm:ss");
+            int hash = 17;
+            hash += 23 * Year;
+            hash += 23 * Month;
+            hash += 23 * Day;
+            hash += 23 * Hour;
+            hash += 23 * Minute;
+            hash += 23 * Second;
+
+            return hash;
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Date);
-        }
-
-        public bool Equals(Date other)
-        {
-            if (other == null)
+            if (!(obj is Date))
             {
                 return false;
             }
 
+            return Equals((Date) obj);
+        }
+
+        public bool Equals(Date other)
+        {
             return Year.Equals(other.Year)
                 && Month.Equals(other.Month)
                 && Day.Equals(other.Day)
                 && Hour.Equals(other.Hour)
                 && Minute.Equals(other.Minute)
                 && Second.Equals(other.Second);
+        }
+
+        public override string ToString()
+        {
+            return ToDateTime().ToString("dd MMM yyyy HH:mm:ss");
+        }
+
+        public static bool operator ==(Date d1, Date d2)
+        {
+            return d1.Equals(d2);
+        }
+
+        public static bool operator !=(Date d1, Date d2)
+        {
+            return !d1.Equals(d2);
         }
 
         public static implicit operator DateTime(Date t)

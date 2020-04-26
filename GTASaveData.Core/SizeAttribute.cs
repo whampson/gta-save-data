@@ -2,10 +2,12 @@
 
 namespace GTASaveData
 {
+    // TODO: consider removing
+
     /// <summary>
-    /// Specifies the size of a <see cref="SaveDataObject"/> in bytes.
+    /// Specifies the size of an <see cref="ISerializable"/> type in bytes.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
     public class SizeAttribute : Attribute
     {
         public int Size { get; }

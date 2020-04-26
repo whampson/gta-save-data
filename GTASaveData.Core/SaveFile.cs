@@ -1,5 +1,4 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Types.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
