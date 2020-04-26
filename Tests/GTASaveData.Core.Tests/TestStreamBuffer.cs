@@ -319,7 +319,7 @@ namespace GTASaveData.Core.Tests
             TestObject x1 = Serializer.Read<TestObject>(data);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(SaveDataObject.SizeOf<TestObject>(), data.Length);
+            Assert.Equal(Serializer.SizeOf<TestObject>(), data.Length);
         }
 
         [Fact]
@@ -334,7 +334,7 @@ namespace GTASaveData.Core.Tests
         public void AsciiString()
         {
             Faker f = new Faker();
-            string s0 = Generator.RandomAsciiString(f, f.Random.Int(1, 100));
+            string s0 = Generator.AsciiString(f, f.Random.Int(1, 100));
             byte[] data = StringToBytes(s0);
             string s1 = BytesToString(data);
 
@@ -349,7 +349,7 @@ namespace GTASaveData.Core.Tests
         public void AsciiStringFixedLength(int bufferLength, int initialLength, int expectedLength)
         {
             Faker f = new Faker();
-            string s0 = Generator.RandomAsciiString(f, initialLength);
+            string s0 = Generator.AsciiString(f, initialLength);
             byte[] data = StringToBytes(s0, bufferLength);
             string s1 = BytesToString(data, bufferLength);
 
@@ -366,7 +366,7 @@ namespace GTASaveData.Core.Tests
         public void AsciiStringFixedLengthNoZero(int bufferLength, int initialLength, int expectedLength)
         {
             Faker f = new Faker();
-            string s0 = Generator.RandomAsciiString(f, initialLength);
+            string s0 = Generator.AsciiString(f, initialLength);
             byte[] data = StringToBytes(s0, bufferLength, zeroTerminate: false);
             string s1 = BytesToString(data, bufferLength);
 
@@ -380,7 +380,7 @@ namespace GTASaveData.Core.Tests
         public void UnicodeString()
         {
             Faker f = new Faker();
-            string s0 = Generator.RandomUnicodeString(f, f.Random.Int(1, 100));
+            string s0 = Generator.UnicodeString(f, f.Random.Int(1, 100));
             byte[] data = StringToBytes(s0, unicode: true);
             string s1 = BytesToString(data, unicode: true);
 
@@ -396,7 +396,7 @@ namespace GTASaveData.Core.Tests
         public void UnicodeStringFixedLength(int bufferLength, int initialLength, int expectedLength)
         {
             Faker f = new Faker();
-            string s0 = Generator.RandomUnicodeString(f, initialLength);
+            string s0 = Generator.UnicodeString(f, initialLength);
             byte[] data = StringToBytes(s0, bufferLength, true);
             string s1 = BytesToString(data, bufferLength, true);
 
@@ -414,7 +414,7 @@ namespace GTASaveData.Core.Tests
         public void UnicodeStringFixedLengthNoZero(int bufferLength, int initialLength, int expectedLength)
         {
             Faker f = new Faker();
-            string s0 = Generator.RandomUnicodeString(f, initialLength);
+            string s0 = Generator.UnicodeString(f, initialLength);
             byte[] data = StringToBytes(s0, bufferLength, true, false);
             string s1 = BytesToString(data, bufferLength, true);
 
@@ -431,7 +431,7 @@ namespace GTASaveData.Core.Tests
             Faker f = new Faker();
             int count = f.Random.Int(1, 10);
 
-            int[] x0 = Generator.CreateArray(count, g => f.Random.Int());
+            int[] x0 = Generator.Array(count, g => f.Random.Int());
             byte[] data = ArrayToBytes(x0);
             int[] x1 = BytesToArray<int>(data, count);
 
@@ -448,7 +448,7 @@ namespace GTASaveData.Core.Tests
         {
             Faker f = new Faker();
 
-            int[] x0 = Generator.CreateArray(initialCount, g => f.Random.Int());
+            int[] x0 = Generator.Array(initialCount, g => f.Random.Int());
             byte[] data = ArrayToBytes(x0, bufferCount);
             int[] x1 = BytesToArray<int>(data, bufferCount);
 
@@ -464,13 +464,13 @@ namespace GTASaveData.Core.Tests
             Faker f = new Faker();
             int count = f.Random.Int(1, 10);
 
-            TestObject[] x0 = Generator.CreateArray(count, g => TestObject.Generate());
+            TestObject[] x0 = Generator.Array(count, g => TestObject.Generate());
             byte[] data = ArrayToBytes(x0);
             TestObject[] x1 = BytesToArray<TestObject>(data, count);
 
             Assert.Equal(count, x1.Length);
             Assert.Equal(x0, x1);
-            Assert.Equal(SaveDataObject.SizeOf<TestObject>() * count, data.Length);
+            Assert.Equal(Serializer.SizeOf<TestObject>() * count, data.Length);
         }
 
         [Theory]
@@ -481,14 +481,14 @@ namespace GTASaveData.Core.Tests
         {
             Faker f = new Faker();
 
-            TestObject[] x0 = Generator.CreateArray(initialCount, g => TestObject.Generate());
+            TestObject[] x0 = Generator.Array(initialCount, g => TestObject.Generate());
             byte[] data = ArrayToBytes(x0, bufferCount);
             TestObject[] x1 = BytesToArray<TestObject>(data, bufferCount);
 
             Assert.Equal(initialCount, x0.Length);
             Assert.Equal(expectedCount, x1.Length);
             Assert.Equal(x0.Take(Math.Min(bufferCount, initialCount)), x1.Take(Math.Min(bufferCount, initialCount)));
-            Assert.Equal(SaveDataObject.SizeOf<TestObject>() * bufferCount, data.Length);
+            Assert.Equal(Serializer.SizeOf<TestObject>() * bufferCount, data.Length);
         }
 
         [Fact]
@@ -498,7 +498,7 @@ namespace GTASaveData.Core.Tests
             int count = f.Random.Int(10, 100);
             int numBytes = f.Random.Int(1, 8);
 
-            bool[] x0 = Generator.CreateArray(count, g => f.Random.Bool());
+            bool[] x0 = Generator.Array(count, g => f.Random.Bool());
             byte[] data = ArrayToBytes(x0, itemLength: numBytes);
             bool[] x1 = BytesToArray<bool>(data, count, itemLength: numBytes);
 

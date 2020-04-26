@@ -5,22 +5,14 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests.Types
 {
-    public class TestVector3D : SaveDataObjectTestBase<Vector3D>
+    public class TestVector3D : TestBase<Vector3D>
     {
-        public override Vector3D GenerateTestObject(DataFormat format)
-        {
-            Faker<Vector3D> model = new Faker<Vector3D>()
-                .RuleFor(x => x.X, f => f.Random.Float())
-                .RuleFor(x => x.Y, f => f.Random.Float())
-                .RuleFor(x => x.Z, f => f.Random.Float());
-
-            return model.Generate();
-        }
-
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
-            Vector3D x0 = GenerateTestObject();
+            Faker f = new Faker();
+
+            Vector3D x0 = Generator.Vector3D(f);
             Vector3D x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.X, x1.X);

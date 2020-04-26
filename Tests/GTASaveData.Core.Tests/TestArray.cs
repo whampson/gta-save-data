@@ -32,7 +32,7 @@ namespace GTASaveData.Core.Tests
             var raisedCollectionEvents = new List<NotifyCollectionChangedEventArgs>();
             var raisedPropertyEvents = new List<PropertyChangedEventArgs>();
 
-            Array<int> a = Generator.CreateArray<int>(10);
+            Array<int> a = ArrayHelper.CreateArray<int>(10);
 
             a.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
             {
@@ -62,7 +62,7 @@ namespace GTASaveData.Core.Tests
             var raisedCollectionEvents = new List<NotifyCollectionChangedEventArgs>();
             var raisedPropertyEvents = new List<PropertyChangedEventArgs>();
 
-            Array<int> a = Generator.CreateArray<int>(10);
+            Array<int> a = ArrayHelper.CreateArray<int>(10);
             a.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
             {
                 raisedCollectionEvents.Add(e);
@@ -88,7 +88,7 @@ namespace GTASaveData.Core.Tests
             var raisedCollectionEvents = new List<NotifyCollectionChangedEventArgs>();
             var raisedPropertyEvents = new List<PropertyChangedEventArgs>();
 
-            Array<int> a = Generator.CreateArray<int>(10);
+            Array<int> a = ArrayHelper.CreateArray<int>(10);
             a.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
             {
                 raisedCollectionEvents.Add(e);
@@ -117,7 +117,7 @@ namespace GTASaveData.Core.Tests
             var raisedItemEvents = new List<ItemStateChangedEventArgs>();
             var raisedPropertyEvents = new List<PropertyChangedEventArgs>();
 
-            Array<TestObject> a = Generator.CreateArray(10, g => TestObject.GenerateRandom());
+            Array<TestObject> a = Generator.Array(10, g => TestObject.GenerateRandom());
 
             a.ItemStateChanged += delegate (object sender, ItemStateChangedEventArgs e)
             {
@@ -142,7 +142,7 @@ namespace GTASaveData.Core.Tests
             var raisedCollectionEvents = new List<NotifyCollectionChangedEventArgs>();
             var raisedPropertyEvents = new List<PropertyChangedEventArgs>();
 
-            Array<int> a = Generator.CreateArray<int>(10);
+            Array<int> a = ArrayHelper.CreateArray<int>(10);
             a[5] = 1234;
 
             a.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
@@ -172,7 +172,7 @@ namespace GTASaveData.Core.Tests
             var raisedCollectionEvents = new List<NotifyCollectionChangedEventArgs>();
             var raisedPropertyEvents = new List<PropertyChangedEventArgs>();
 
-            Array<int> a = Generator.CreateArray<int>(10);
+            Array<int> a = ArrayHelper.CreateArray<int>(10);
             a[5] = 1234;
 
             a.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
@@ -202,7 +202,7 @@ namespace GTASaveData.Core.Tests
             var raisedCollectionEvents = new List<NotifyCollectionChangedEventArgs>();
             var raisedPropertyEvents = new List<PropertyChangedEventArgs>();
 
-            Array<int> a = Generator.CreateArray<int>(10);
+            Array<int> a = ArrayHelper.CreateArray<int>(10);
             a[5] = 1234;
 
             a.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
@@ -232,7 +232,7 @@ namespace GTASaveData.Core.Tests
             var raisedCollectionEvents = new List<NotifyCollectionChangedEventArgs>();
             var raisedPropertyEvents = new List<PropertyChangedEventArgs>();
 
-            Array<int> a = Generator.CreateArray<int>(10);
+            Array<int> a = ArrayHelper.CreateArray<int>(10);
 
             a.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
             {

@@ -5,18 +5,18 @@ namespace GTASaveData.Core.Tests
     public class TestSaveDataObject
     {
         [Fact]
-        public void TestSizeOf_Attribute()
+        public void SizeOfFromAttribute()
         {
-            int size = SaveDataObject.SizeOf<TestObject>();
+            int size = Serializer.SizeOf<TestObject>();
 
             Assert.Equal(DummySize, size);
         }
 
         [Fact]
-        public void TestSizeOf_Serialization()
+        public void SizeOfFromSerialization()
         {
             TestObject o = new TestObject();
-            int size = SaveDataObject.SizeOf(o);
+            int size = Serializer.SizeOf(o);
 
             Assert.Equal(ActualSize, size);
         }

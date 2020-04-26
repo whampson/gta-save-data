@@ -1,23 +1,18 @@
 ﻿using Bogus;
 using GTASaveData.Types;
-using System;
 using TestFramework;
 using Xunit;
 
 namespace GTASaveData.Core.Tests.Types
 {
-    public class TestDate : SaveDataObjectTestBase<Date>
+    public class TestDate : TestBase<Date>
     {
-        public override Date GenerateTestObject(DataFormat format)
-        {
-            return new Date(
-                new Faker().Date.Between(new DateTime(1970, 1, 1), DateTime.Now));
-        }
-
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
-            Date x0 = GenerateTestObject();
+            Faker f = new Faker();
+
+            Date x0 = (Date) Generator.Date(f);
             Date x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Year, x1.Year);
@@ -29,5 +24,6 @@ namespace GTASaveData.Core.Tests.Types
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(), data.Length);
         }
+
     }
 }
