@@ -11,7 +11,7 @@ namespace GTASaveData.VC.Tests
         public override SimpleVariables GenerateTestObject(DataFormat format)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.LastMissionPassedName, f => Generator.RandomUnicodeString(f, SimpleVariables.Limits.MaxNameLength - 1))
+                .RuleFor(x => x.LastMissionPassedName, f => Generator.UnicodeString(f, SimpleVariables.Limits.MaxNameLength - 1))
                 .RuleFor(x => x.TimeLastSaved, f => Generator.Generate<SystemTime, TestSystemTime>())
                 .RuleFor(x => x.SaveSize, f => f.Random.Int())
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<LevelType>())
@@ -43,7 +43,7 @@ namespace GTASaveData.VC.Tests
                 .RuleFor(x => x.ExtraColour, f => f.Random.Int())
                 .RuleFor(x => x.ExtraColourOn, f => f.Random.Bool())
                 .RuleFor(x => x.ExtraColourInterpolation, f => f.Random.Float())
-                .RuleFor(x => x.RadioStationPositionList, f => Generator.CreateArray(SimpleVariables.Limits.RadioStationListCount, g => f.Random.Int()));
+                .RuleFor(x => x.RadioStationPositionList, f => Generator.Array(SimpleVariables.Limits.RadioStationListCount, g => f.Random.Int()));
 
             return model.Generate();
         }

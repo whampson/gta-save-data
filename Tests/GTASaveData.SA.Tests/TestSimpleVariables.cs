@@ -12,7 +12,7 @@ namespace GTASaveData.SA.Tests
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
                 .RuleFor(x => x.VersionId, f => f.Random.UInt())
-                .RuleFor(x => x.LastMissionPassedName, f => Generator.RandomAsciiString(f, SimpleVariables.Limits.MaxNameLength - 1))
+                .RuleFor(x => x.LastMissionPassedName, f => Generator.AsciiString(f, SimpleVariables.Limits.MaxNameLength - 1))
                 .RuleFor(x => x.MissionPackGame, f => f.Random.Byte())
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<LevelType>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector3D, TestVector3D>())

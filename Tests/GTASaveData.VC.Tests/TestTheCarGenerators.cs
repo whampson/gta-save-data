@@ -13,7 +13,7 @@ namespace GTASaveData.VC.Tests
                 .RuleFor(x => x.CurrentActiveCount, f => f.Random.Int())
                 .RuleFor(x => x.ProcessCounter, f => f.Random.Byte())
                 .RuleFor(x => x.GenerateEvenIfPlayerIsCloseCounter, f => f.Random.Byte())
-                .RuleFor(x => x.CarGeneratorArray, f => Generator.CreateArray(TheCarGenerators.Limits.NumberOfCarGenerators, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
+                .RuleFor(x => x.CarGeneratorArray, f => Generator.Array(TheCarGenerators.Limits.NumberOfCarGenerators, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
 
             return model.Generate();
         }
