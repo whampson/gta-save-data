@@ -11,9 +11,9 @@ namespace GTASaveData.GTA3.Tests
         public override Zone GenerateTestObject(DataFormat format)
         {
             Faker<Zone> model = new Faker<Zone>()
-                .RuleFor(x => x.Name, f => Generator.RandomAsciiString(f, Zone.Limits.MaxNameLength - 1))
-                .RuleFor(x => x.Min, f => Generator.Generate<Vector3D, TestVector3D>())
-                .RuleFor(x => x.Max, f => Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.Name, f => Generator.Words(f, Zone.Limits.MaxNameLength - 1))
+                .RuleFor(x => x.Min, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Max, f => Generator.Vector3D(f))
                 .RuleFor(x => x.Type, f => f.PickRandom<ZoneType>())
                 .RuleFor(x => x.Level, f => f.PickRandom<LevelType>())
                 .RuleFor(x => x.ZoneInfoDay, f => f.Random.Short())
@@ -26,7 +26,7 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             Zone x0 = GenerateTestObject();
             Zone x1 = CreateSerializedCopy(x0, out byte[] data);

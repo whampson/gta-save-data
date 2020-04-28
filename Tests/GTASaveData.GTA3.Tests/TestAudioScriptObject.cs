@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -13,14 +11,14 @@ namespace GTASaveData.GTA3.Tests
             Faker<AudioScriptObject> model = new Faker<AudioScriptObject>()
                 .RuleFor(x => x.Index, f => f.Random.Int())
                 .RuleFor(x => x.AudioId, f => f.Random.Short())
-                .RuleFor(x => x.Position, Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
                 .RuleFor(x => x.AudioEntity, f => f.Random.Int());
 
             return model.Generate();
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             AudioScriptObject x0 = GenerateTestObject();
             AudioScriptObject x1 = CreateSerializedCopy(x0, out byte[] data);

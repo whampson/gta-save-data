@@ -4,7 +4,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(16)]
     public class RestartPoint : SaveDataObject, IEquatable<RestartPoint>
     {
         private Vector3D m_position;
@@ -41,6 +40,11 @@ namespace GTASaveData.GTA3
             buf.Write(Angle);
 
             Debug.Assert(buf.Offset == SizeOf<RestartPoint>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 16;
         }
 
         public override bool Equals(object obj)

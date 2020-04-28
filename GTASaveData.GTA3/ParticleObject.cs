@@ -127,9 +127,7 @@ namespace GTASaveData.GTA3
         }
 
         public ParticleObject()
-        {
-            Target = new Vector3D();
-        }
+        { }
 
         public Color GetColor()
         {

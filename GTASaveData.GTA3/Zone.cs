@@ -4,7 +4,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(56)]
     public class Zone : SaveDataObject, IEquatable<Zone>
     {
         public static class Limits
@@ -87,8 +86,6 @@ namespace GTASaveData.GTA3
         public Zone()
         {
             Name = "";
-            Min = new Vector3D();
-            Max = new Vector3D();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
@@ -121,6 +118,11 @@ namespace GTASaveData.GTA3
             buf.Write(NextZoneIndex);
 
             Debug.Assert(buf.Offset == SizeOf<Zone>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 56;
         }
 
         public override bool Equals(object obj)

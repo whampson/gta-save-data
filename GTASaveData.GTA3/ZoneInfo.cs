@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    [Size(58)]
     public class ZoneInfo : SaveDataObject, IEquatable<ZoneInfo>
     {
         public static class Limits
@@ -103,6 +102,11 @@ namespace GTASaveData.GTA3
             buf.Write(PedGroup);
 
             Debug.Assert(buf.Offset == SizeOf<ZoneInfo>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 58;      // not aligned
         }
 
         public override bool Equals(object obj)

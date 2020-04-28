@@ -508,7 +508,6 @@ namespace GTASaveData.Core.Tests
         }
 
         #region Test Objects
-        [Size(9)]
         public class TestObject : SaveDataObject, IEquatable<TestObject>
         {
             public int Integer { get; set; }
@@ -532,12 +531,17 @@ namespace GTASaveData.Core.Tests
                 buf.Write(Single);
             }
 
+            protected override int GetSize(DataFormat fmt)
+            {
+                return sizeof(int) + sizeof(float) + sizeof(bool);
+            }
+
             public override int GetHashCode()
             {
                 int hash = 17;
-                hash *= Integer.GetHashCode();
-                hash *= Boolean.GetHashCode();
-                hash *= Single.GetHashCode();
+                hash += 23 * Integer.GetHashCode();
+                hash += 23 * Boolean.GetHashCode();
+                hash += 23 * Single.GetHashCode();
 
                 return hash;
             }

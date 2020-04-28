@@ -15,13 +15,14 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             InvisibleEntity x0 = GenerateTestObject();
             InvisibleEntity x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Type, x1.Type);
             Assert.Equal(x0.Handle, x1.Handle);
+
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(), data.Length);
         }

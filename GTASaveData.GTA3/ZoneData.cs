@@ -5,7 +5,6 @@ using System.Linq;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    [Size(0x2774)]
     public class ZoneData : SaveDataObject, IEquatable<ZoneData>
     {
         public static class Limits
@@ -143,6 +142,11 @@ namespace GTASaveData.GTA3
             buf.Write(NumberOfAudioZones);
 
             Debug.Assert(buf.Offset == SizeOf<ZoneData>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x2774;
         }
 
         public override bool Equals(object obj)

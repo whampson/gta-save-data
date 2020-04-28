@@ -69,6 +69,11 @@ namespace GTASaveData.Core.Tests
             {
                 throw new NotImplementedException();
             }
+
+            protected override int GetSize(DataFormat fmt)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

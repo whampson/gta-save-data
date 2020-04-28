@@ -6,13 +6,13 @@ namespace GTASaveData.GTA3
 {
     public class Placeable : SaveDataObject, IEquatable<Placeable>
     {
-        // Almost none of this is editable
+        // Almost all of this gets overridden by the game
         private int m_pVtbl;
         private Vector3D m_right;
         private int m_flags;
         private Vector3D m_up;
         private Vector3D m_at;
-        private Vector3D m_pos;
+        private Vector3D m_pos; // not this though
         private int m_pAttachment;
         private bool m_hasAttachment;
         private int[] m_unknown0;
@@ -25,10 +25,7 @@ namespace GTASaveData.GTA3
 
         public Placeable()
         {
-            m_right = new Vector3D();
-            m_up = new Vector3D();
-            m_at = new Vector3D();
-            m_pos = new Vector3D();
+            m_unknown0 = new int[0];
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)

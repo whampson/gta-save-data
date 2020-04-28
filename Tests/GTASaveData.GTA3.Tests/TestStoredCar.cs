@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -12,8 +10,8 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<StoredCar> model = new Faker<StoredCar>()
                 .RuleFor(x => x.Model, f => f.Random.Int())
-                .RuleFor(x => x.Position, f => Generator.Generate<Vector3D, TestVector3D>())
-                .RuleFor(x => x.Angle, f => Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Angle, f => Generator.Vector3D(f))
                 .RuleFor(x => x.Flags, f => f.PickRandom<StoredCarFlags>())
                 .RuleFor(x => x.Color1, f => f.Random.Byte())
                 .RuleFor(x => x.Color2, f => f.Random.Byte())
@@ -26,7 +24,7 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             StoredCar x0 = GenerateTestObject();
             StoredCar x1 = CreateSerializedCopy(x0, out byte[] data);
@@ -41,6 +39,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Extra1, x1.Extra1);
             Assert.Equal(x0.Extra2, x1.Extra2);
             Assert.Equal(x0.Bomb, x1.Bomb);
+
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(), data.Length);
         }

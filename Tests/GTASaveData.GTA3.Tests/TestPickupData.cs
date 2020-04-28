@@ -9,15 +9,15 @@ namespace GTASaveData.GTA3.Tests
         public override PickupData GenerateTestObject(DataFormat format)
         {
             Faker<PickupData> model = new Faker<PickupData>()
-                .RuleFor(x => x.Pickups, f => Generator.CreateArray(PickupData.Limits.MaxNumPickups, g => Generator.Generate<Pickup, TestPickup>()))
+                .RuleFor(x => x.Pickups, f => Generator.Array(PickupData.Limits.MaxNumPickups, g => Generator.Generate<Pickup, TestPickup>()))
                 .RuleFor(x => x.LastCollectedIndex, f => f.Random.Short())
-                .RuleFor(x => x.PickupsCollected, f => Generator.CreateArray(PickupData.Limits.MaxNumCollectedPickups, g => f.Random.Int()));
+                .RuleFor(x => x.PickupsCollected, f => Generator.Array(PickupData.Limits.MaxNumCollectedPickups, g => f.Random.Int()));
 
             return model.Generate();
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             PickupData x0 = GenerateTestObject();
             PickupData x1 = CreateSerializedCopy(x0, out byte[] data);

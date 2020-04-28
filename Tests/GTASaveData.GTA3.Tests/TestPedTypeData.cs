@@ -9,13 +9,13 @@ namespace GTASaveData.GTA3.Tests
         public override PedTypeData GenerateTestObject(DataFormat format)
         {
             Faker<PedTypeData> model = new Faker<PedTypeData>()
-                .RuleFor(x => x.PedTypes, f => Generator.CreateArray(PedTypeData.Limits.NumberOfPedTypes, g => Generator.Generate<PedType, TestPedType>()));
+                .RuleFor(x => x.PedTypes, f => Generator.Array(PedTypeData.Limits.NumberOfPedTypes, g => Generator.Generate<PedType, TestPedType>()));
 
             return model.Generate();
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             PedTypeData x0 = GenerateTestObject();
             PedTypeData x1 = CreateSerializedCopy(x0, out byte[] data);

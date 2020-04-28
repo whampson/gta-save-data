@@ -160,7 +160,7 @@ namespace GTASaveData.GTA3
             }
         }
 
-        // tODO: read/write script
+        // TODO: script read/write byte, short, int functions
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {

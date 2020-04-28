@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x124)]
     public class RestartData : SaveDataObject, IEquatable<RestartData>
     {
         public static class Limits
@@ -84,7 +83,6 @@ namespace GTASaveData.GTA3
             set { m_overridePoliceStationLevel = value; OnPropertyChanged(); }
         }
 
-
         public RestartData()
         {
             WastedRestartPoints = new Array<RestartPoint>();
@@ -129,6 +127,11 @@ namespace GTASaveData.GTA3
             buf.Write((byte) OverridePoliceStationLevel);
 
             Debug.Assert(buf.Offset == SizeOf<RestartData>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x124;
         }
 
         public override bool Equals(object obj)

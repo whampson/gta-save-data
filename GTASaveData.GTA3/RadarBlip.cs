@@ -4,7 +4,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x30)]
     public class RadarBlip : SaveDataObject, IEquatable<RadarBlip>
     {
         private int m_colorId;
@@ -94,8 +93,6 @@ namespace GTASaveData.GTA3
 
         public RadarBlip()
         {
-            RadarPosition = new Vector2D();
-            WorldPosition = new Vector3D();
             BlipIndex = 1;
         }
 
@@ -135,6 +132,11 @@ namespace GTASaveData.GTA3
             buf.Align4Bytes();
 
             Debug.Assert(buf.Offset == SizeOf<RadarBlip>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x30;
         }
 
         public override bool Equals(object obj)

@@ -11,13 +11,13 @@ namespace GTASaveData.GTA3.Tests
             Faker<CraneData> model = new Faker<CraneData>()
                 .RuleFor(x => x.NumCranes, f => f.Random.Int())
                 .RuleFor(x => x.CarsCollectedMilitaryCrane, f => f.PickRandom<CollectCarsMilitaryCrane>())
-                .RuleFor(x => x.Cranes, f => Generator.CreateArray(CraneData.Limits.MaxNumCranes, g => Generator.Generate<Crane, TestCrane>()));
+                .RuleFor(x => x.Cranes, f => Generator.Array(CraneData.Limits.MaxNumCranes, g => Generator.Generate<Crane, TestCrane>()));
 
             return model.Generate();
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             CraneData x0 = GenerateTestObject();
             CraneData x1 = CreateSerializedCopy(x0, out byte[] data);

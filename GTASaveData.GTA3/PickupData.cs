@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x2514)]
     public class PickupData : SaveDataObject, IEquatable<PickupData>
     {
         public static class Limits
@@ -59,6 +58,11 @@ namespace GTASaveData.GTA3
             buf.Write(PickupsCollected.ToArray(), Limits.MaxNumCollectedPickups);
 
             Debug.Assert(buf.Offset == SizeOf<PickupData>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x2514;
         }
 
         public override bool Equals(object obj)

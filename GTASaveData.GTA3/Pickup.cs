@@ -4,7 +4,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x1C)]
     public class Pickup : SaveDataObject, IEquatable<Pickup>
     {
         private PickupType m_type;
@@ -66,7 +65,6 @@ namespace GTASaveData.GTA3
 
         public Pickup()
         {
-            Position = new Vector3D();
             PickupIndex = 1;
         }
 
@@ -96,6 +94,11 @@ namespace GTASaveData.GTA3
             buf.Write(Position);
 
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x1C;
         }
 
         public override bool Equals(object obj)

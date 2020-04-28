@@ -13,13 +13,13 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.CurrentActiveCount, f => f.Random.Int())
                 .RuleFor(x => x.ProcessCounter, f => f.Random.Byte())
                 .RuleFor(x => x.GenerateEvenIfPlayerIsCloseCounter, f => f.Random.Byte())
-                .RuleFor(x => x.CarGenerators, f => Generator.CreateArray(CarGeneratorData.Limits.MaxNumCarGenerators, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
+                .RuleFor(x => x.CarGenerators, f => Generator.Array(CarGeneratorData.Limits.MaxNumCarGenerators, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
 
             return model.Generate();
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             CarGeneratorData x0 = GenerateTestObject();
             CarGeneratorData x1 = CreateSerializedCopy(x0, out byte[] data);
@@ -29,6 +29,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.ProcessCounter, x1.ProcessCounter);
             Assert.Equal(x0.GenerateEvenIfPlayerIsCloseCounter, x1.GenerateEvenIfPlayerIsCloseCounter);
             Assert.Equal(x0.CarGenerators, x1.CarGenerators);
+
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(), data.Length);
         }

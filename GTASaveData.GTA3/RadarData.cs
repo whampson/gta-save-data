@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x608)]
     public class RadarData : SaveDataObject, IEquatable<RadarData>
     {
         public static class Limits
@@ -39,6 +38,11 @@ namespace GTASaveData.GTA3
             buf.Write(RadarBlips.ToArray(), Limits.MaxNumRadarBlips);
 
             Debug.Assert(buf.Offset == SizeOf<RadarData>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x608;
         }
 
         public override bool Equals(object obj)

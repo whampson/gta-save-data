@@ -12,11 +12,11 @@ namespace GTASaveData.GTA3.Tests
             Faker<RunningScript> model = new Faker<RunningScript>()
                 .RuleFor(x => x.NextScriptPointer, f => f.Random.UInt())
                 .RuleFor(x => x.PrevScriptPointer, f => f.Random.UInt())
-                .RuleFor(x => x.Name, f => Generator.RandomWords(f, 7))
+                .RuleFor(x => x.Name, f => Generator.Words(f, RunningScript.Limits.MaxNameLength - 1))
                 .RuleFor(x => x.IP, f => f.Random.UInt())
-                .RuleFor(x => x.Stack, f => Generator.CreateArray(RunningScript.GetMaxStackDepth(format), g => f.Random.Int()))
+                .RuleFor(x => x.Stack, f => Generator.Array(RunningScript.GetMaxStackDepth(format), g => f.Random.Int()))
                 .RuleFor(x => x.StackPointer, f => f.Random.UShort())
-                .RuleFor(x => x.LocalVariables, f => Generator.CreateArray(RunningScript.Limits.NumberOfLocalVariables, g => f.Random.Int()))
+                .RuleFor(x => x.LocalVariables, f => Generator.Array(RunningScript.Limits.NumberOfLocalVariables, g => f.Random.Int()))
                 .RuleFor(x => x.TimerA, f => f.Random.UInt())
                 .RuleFor(x => x.TimerB, f => f.Random.UInt())
                 .RuleFor(x => x.ConditionResult, f => f.Random.Bool())
@@ -34,7 +34,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void Serialization(DataFormat format)
+        public void RandomDataSerialization(DataFormat format)
         {
             RunningScript x0 = GenerateTestObject(format);
             RunningScript x1 = CreateSerializedCopy(x0, format, out byte[] data);

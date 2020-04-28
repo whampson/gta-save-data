@@ -14,13 +14,13 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.BetweenLevels, f => f.Random.Bool());
               
             Faker<PathData> model = new Faker<PathData>()
-                .RuleFor(x => x.PathNodes, f => Generator.CreateArray(nodeCount, g => nodeModel.Generate()));
+                .RuleFor(x => x.PathNodes, f => Generator.Array(nodeCount, g => nodeModel.Generate()));
 
             return model.Generate();
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             PathData x0 = GenerateTestObject();
             byte[] data = Serializer.Write(x0);
@@ -29,7 +29,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.PathNodes, x1.PathNodes);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(PathData.SizeOf(x0), data.Length);
+            Assert.Equal(Serializer.SizeOf(x0), data.Length);
         }
     }
 }

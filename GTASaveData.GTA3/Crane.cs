@@ -4,7 +4,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x80)]
     public class Crane : SaveDataObject, IEquatable<Crane>
     {
         private uint m_handle;
@@ -219,12 +218,7 @@ namespace GTASaveData.GTA3
         }
 
         public Crane()
-        {
-            DropoffTarget = new Vector3D();
-            HookInitialPosition = new Vector3D();
-            HookCurrentPosition = new Vector3D();
-            HookVelocity = new Vector2D();
-        }
+        { }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
@@ -298,6 +292,11 @@ namespace GTASaveData.GTA3
             buf.Align4Bytes();
 
             Debug.Assert(buf.Offset == SizeOf<Crane>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x80;
         }
 
         public override bool Equals(object obj)

@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -11,8 +9,8 @@ namespace GTASaveData.GTA3.Tests
         public override Phone GenerateTestObject(DataFormat format)
         {
             Faker<Phone> model = new Faker<Phone>()
-                .RuleFor(x => x.Position, f => Generator.Generate<Vector3D, TestVector3D>())
-                .RuleFor(x => x.Messages, f => Generator.CreateArray(Phone.Limits.MaxNumMessages, g => f.Random.UInt()))
+                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Messages, f => Generator.Array(Phone.Limits.MaxNumMessages, g => f.Random.UInt()))
                 .RuleFor(x => x.RepeatedMessageStartTime, f => f.Random.UInt())
                 .RuleFor(x => x.Handle, f => f.Random.Int())
                 .RuleFor(x => x.State, f => f.PickRandom<PhoneState>())
@@ -22,7 +20,7 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             Phone x0 = GenerateTestObject();
             Phone x1 = CreateSerializedCopy(x0, out byte[] data);

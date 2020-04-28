@@ -2,7 +2,6 @@
 
 namespace GTASaveData.GTA3
 {
-    [Size(8)]
     public class Collective : SaveDataObject, IEquatable<Collective>
     {
         private int m_index;
@@ -36,6 +35,11 @@ namespace GTASaveData.GTA3
         {
             buf.Write(Index);
             buf.Write(Field04h);
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 8;
         }
 
         public override bool Equals(object obj)

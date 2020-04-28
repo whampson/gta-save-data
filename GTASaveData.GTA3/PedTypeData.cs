@@ -1,11 +1,9 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x2E8)]
     public class PedTypeData : SaveDataObject, IEquatable<PedTypeData>
     {
         public static class Limits
@@ -77,6 +75,11 @@ namespace GTASaveData.GTA3
             buf.Write(PedTypes.ToArray(), Limits.NumberOfPedTypes);
 
             Debug.Assert(buf.Offset == SizeOf<PedTypeData>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x2E8;
         }
 
         public override bool Equals(object obj)

@@ -139,12 +139,12 @@ namespace GTASaveData.Types
             return !d1.Equals(d2);
         }
 
-        public static implicit operator DateTime(SystemTime t)
+        public static explicit operator DateTime(SystemTime t)
         {
             return t.ToDateTime();
         }
 
-        public static explicit operator SystemTime(DateTime t)
+        public static implicit operator SystemTime(DateTime t)
         {
             return new SystemTime(t);
         }

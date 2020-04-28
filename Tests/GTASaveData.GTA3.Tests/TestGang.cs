@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             Gang x0 = GenerateTestObject();
             Gang x1 = CreateSerializedCopy(x0, out byte[] data);

@@ -4,7 +4,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x28)]
     public class StoredCar : SaveDataObject, IEquatable<StoredCar>
     {
         private int m_model;
@@ -79,10 +78,7 @@ namespace GTASaveData.GTA3
         }
 
         public StoredCar()
-        {
-            Position = new Vector3D();
-            Angle = new Vector3D();
-        }
+        { }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
@@ -116,6 +112,11 @@ namespace GTASaveData.GTA3
             buf.Align4Bytes();
 
             Debug.Assert(buf.Offset == SizeOf<StoredCar>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x28;
         }
 
         public override bool Equals(object obj)

@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0xA30)]
     public class PhoneData : SaveDataObject, IEquatable<PhoneData>
     {
         public static class Limits
@@ -56,6 +55,11 @@ namespace GTASaveData.GTA3
             buf.Write(Phones.ToArray(), Limits.MaxNumPhones);
 
             Debug.Assert(buf.Offset == SizeOf<PhoneData>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0xA30;
         }
 
         public override bool Equals(object obj)

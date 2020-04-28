@@ -5,7 +5,6 @@ using System.Diagnostics;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    [Size(0x8C)]
     public class Garage : SaveDataObject, IEquatable<Garage>
     {
         private GarageType m_type;
@@ -206,15 +205,13 @@ namespace GTASaveData.GTA3
 
         public Garage()
         {
-            PositionMin = new Vector3D();
-            PositionMax = new Vector3D();
-            Door1Position = new Vector3D();
-            Door2Position = new Vector3D();
             StoredCar = new StoredCar();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
+            Vector3D posMin, posMax, door1Pos, door2Pos;
+
             Type = (GarageType) buf.ReadByte();
             State = (GarageState) buf.ReadByte();
             Field02h = buf.ReadBool();
@@ -233,26 +230,31 @@ namespace GTASaveData.GTA3
             RotatedDoor = buf.ReadBool();
             CameraFollowsPlayer = buf.ReadBool();
             buf.Align4Bytes();
-            PositionMin.X = buf.ReadFloat();
-            PositionMax.X = buf.ReadFloat();
-            PositionMin.Y = buf.ReadFloat();
-            PositionMax.Y = buf.ReadFloat();
-            PositionMin.Z = buf.ReadFloat();
-            PositionMax.Z = buf.ReadFloat();
+            posMin.X = buf.ReadFloat();
+            posMax.X = buf.ReadFloat();
+            posMin.Y = buf.ReadFloat();
+            posMax.Y = buf.ReadFloat();
+            posMin.Z = buf.ReadFloat();
+            posMax.Z = buf.ReadFloat();
             DoorOpenOffset = buf.ReadFloat();
             DoorOpenMax = buf.ReadFloat();
-            Door1Position.X = buf.ReadFloat();
-            Door1Position.Y = buf.ReadFloat();
-            Door2Position.X = buf.ReadFloat();
-            Door2Position.Y = buf.ReadFloat();
-            Door1Position.Z = buf.ReadFloat();
-            Door2Position.Z = buf.ReadFloat();
+            door1Pos.X = buf.ReadFloat();
+            door1Pos.Y = buf.ReadFloat();
+            door2Pos.X = buf.ReadFloat();
+            door2Pos.Y = buf.ReadFloat();
+            door1Pos.Z = buf.ReadFloat();
+            door2Pos.Z = buf.ReadFloat();
             DoorLastOpenTime = buf.ReadUInt32();
             CollectedCarsState = buf.ReadByte();
             buf.Align4Bytes();
             TargetCarPointer = buf.ReadUInt32();
             Field96h = buf.ReadInt32();
             StoredCar = buf.Read<StoredCar>();
+
+            PositionMin = posMin;
+            PositionMax = posMax;
+            Door1Position = door1Pos;
+            Door2Position = door2Pos;
 
             Debug.Assert(buf.Offset == SizeOf<Garage>());
         }
@@ -299,6 +301,11 @@ namespace GTASaveData.GTA3
             buf.Write(StoredCar);
 
             Debug.Assert(buf.Offset == SizeOf<Garage>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x8C;
         }
 
         public override bool Equals(object obj)

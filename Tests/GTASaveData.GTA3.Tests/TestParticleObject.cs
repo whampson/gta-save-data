@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -12,7 +10,7 @@ namespace GTASaveData.GTA3.Tests
         public override ParticleObject GenerateTestObject(DataFormat format)
         {
             Faker<ParticleObject> model = new Faker<ParticleObject>()
-                .RuleFor(x => x.Position, Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
                 .RuleFor(x => x.NextParticleObjectPointer, f => f.Random.UInt())
                 .RuleFor(x => x.PrevParticleObjectPointer, f => f.Random.UInt())
                 .RuleFor(x => x.ParticlePointer, f => f.Random.UInt())
@@ -23,7 +21,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.SkipFrames, f => f.Random.Byte())
                 .RuleFor(x => x.FrameCounter, f => f.Random.UShort())
                 .RuleFor(x => x.State, f => f.PickRandom<ParticleObjectState>())
-                .RuleFor(x => x.Target, Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.Target, f => Generator.Vector3D(f))
                 .RuleFor(x => x.Spread, f => f.Random.Float())
                 .RuleFor(x => x.Size, f => f.Random.Float())
                 .RuleFor(x => x.Color, f => f.Random.UInt())
@@ -34,7 +32,7 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             ParticleObject x0 = GenerateTestObject();
             ParticleObject x1 = CreateSerializedCopy(x0, out byte[] data);

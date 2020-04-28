@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -12,11 +10,11 @@ namespace GTASaveData.GTA3.Tests
         public override SimpleVariables GenerateTestObject(DataFormat format)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.SaveName, f => Generator.RandomUnicodeString(f, SimpleVariables.Limits.MaxNameLength - 1))
-                .RuleFor(x => x.TimeLastSaved, f => Generator.Generate<SystemTime, TestSystemTime>())
+                .RuleFor(x => x.SaveName, f => Generator.Words(f, SimpleVariables.Limits.MaxNameLength - 1))
+                .RuleFor(x => x.TimeLastSaved, f => Generator.Date(f))
                 .RuleFor(x => x.SaveSize, f => f.Random.Int())
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<LevelType>())
-                .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
                 .RuleFor(x => x.GameClockHours, f => f.Random.Byte())
@@ -34,7 +32,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.NewWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.ForcedWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.WeatherInterpolation, f => f.Random.Float())
-                .RuleFor(x => x.CompileDateAndTime, f => Generator.Generate<Date, TestDate>())
+                .RuleFor(x => x.CompileDateAndTime, f => Generator.Date(f))
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
                 .RuleFor(x => x.CameraCarZoomIndicator, f => f.Random.Float())
                 .RuleFor(x => x.CameraPedZoomIndicator, f => f.Random.Float());
@@ -44,7 +42,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void Serialization(DataFormat format)
+        public void RandomDataSerialization(DataFormat format)
         {
             SimpleVariables x0 = GenerateTestObject(format);
             SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -75,11 +73,10 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.WeatherTypeInList, x1.WeatherTypeInList);
             Assert.Equal(x0.CameraCarZoomIndicator, x1.CameraCarZoomIndicator);
             Assert.Equal(x0.CameraPedZoomIndicator, x1.CameraPedZoomIndicator);
+
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(format), data.Length);
         }
-
-        
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

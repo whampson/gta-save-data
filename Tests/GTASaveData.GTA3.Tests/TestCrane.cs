@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -18,7 +16,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.PickupX2, f => f.Random.Float())
                 .RuleFor(x => x.PickupY1, f => f.Random.Float())
                 .RuleFor(x => x.PickupY2, f => f.Random.Float())
-                .RuleFor(x => x.DropoffTarget, Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.DropoffTarget, f => Generator.Vector3D(f))
                 .RuleFor(x => x.DropoffHeading, f => f.Random.Float())
                 .RuleFor(x => x.PickupAngle, f => f.Random.Float())
                 .RuleFor(x => x.DropoffAngle, f => f.Random.Float())
@@ -29,9 +27,9 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.HookAngle, f => f.Random.Float())
                 .RuleFor(x => x.HookDistance, f => f.Random.Float())
                 .RuleFor(x => x.HookHeight, f => f.Random.Float())
-                .RuleFor(x => x.HookInitialPosition, Generator.Generate<Vector3D, TestVector3D>())
-                .RuleFor(x => x.HookCurrentPosition, Generator.Generate<Vector3D, TestVector3D>())
-                .RuleFor(x => x.HookVelocity, f => Generator.Generate<Vector2D, TestVector2D>())
+                .RuleFor(x => x.HookInitialPosition, f => Generator.Vector3D(f))
+                .RuleFor(x => x.HookCurrentPosition, f => Generator.Vector3D(f))
+                .RuleFor(x => x.HookVelocity, f => Generator.Vector2D(f))
                 .RuleFor(x => x.VehiclePickedUpHandle, f => f.Random.UInt())
                 .RuleFor(x => x.TimeForNextCheck, f => f.Random.UInt())
                 .RuleFor(x => x.Status, f => f.PickRandom<CraneStatus>())
@@ -46,7 +44,7 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             Crane x0 = GenerateTestObject();
             Crane x1 = CreateSerializedCopy(x0, out byte[] data);

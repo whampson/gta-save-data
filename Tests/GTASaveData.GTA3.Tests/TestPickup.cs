@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -18,13 +16,13 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.RegenerationTime, f => f.Random.UInt())
                 .RuleFor(x => x.ModelIndex, f => f.Random.Short())
                 .RuleFor(x => x.PickupIndex, f => f.Random.Short())
-                .RuleFor(x => x.Position, f => Generator.Generate<Vector3D, TestVector3D>());
+                .RuleFor(x => x.Position, f => Generator.Vector3D(f));
 
             return model.Generate();
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             Pickup x0 = GenerateTestObject();
             Pickup x1 = CreateSerializedCopy(x0, out byte[] data);

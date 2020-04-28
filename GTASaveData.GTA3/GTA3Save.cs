@@ -190,7 +190,7 @@ namespace GTASaveData.GTA3
         [JsonIgnore]
         public override DateTime TimeLastSaved
         {
-            get { return SimpleVars.TimeLastSaved; }
+            get { return (DateTime) SimpleVars.TimeLastSaved; }
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
 
@@ -251,7 +251,8 @@ namespace GTASaveData.GTA3
             BlockSizeChecks = true;
         #endif
         }
-
+        
+        // TODO: move to base class (GTA3VCSave)
         #region Shared between GTA3/VC
         public static int ReadSaveHeader(StreamBuffer buf, string tag)
         {
@@ -295,7 +296,7 @@ namespace GTASaveData.GTA3
             return bytesRead;
         }
 
-        private T LoadPreAlloc<T>() where T : PreAllocatedSaveDataObject
+        private T LoadPreAlloc<T>() where T : SaveDataObject
         {
             int size = m_workBuff.ReadInt32();
             if (!(Activator.CreateInstance(typeof(T), size) is T obj))
@@ -550,6 +551,12 @@ namespace GTASaveData.GTA3
 
             fmt = DataFormat.Default;
             return false;
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            // TODO:
+            throw new NotImplementedException();
         }
 
         public override bool Equals(object obj)

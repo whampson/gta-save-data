@@ -39,6 +39,11 @@ namespace GTASaveData
             buf.Write(Data.ToArray());
         }
 
+        protected override int GetSize(DataFormat fmt)
+        {
+            return Data.Count;
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as Dummy);

@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    [Size(420)]
     public class Stats : SaveDataObject, IEquatable<Stats>
     {
         public static class Limits
@@ -380,7 +379,6 @@ namespace GTASaveData.GTA3
             set { m_lastMissionPassedName = value; OnPropertyChanged(); }
         }
 
-
         public Stats()
         {
             PedsKilledOfThisType = new Array<int>();
@@ -503,6 +501,11 @@ namespace GTASaveData.GTA3
             buf.Write(LastMissionPassedName, Limits.MaxLastMissionPassedNameLength);
 
             Debug.Assert(buf.Offset == SizeOf<Stats>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 420;
         }
 
         public override bool Equals(object obj)

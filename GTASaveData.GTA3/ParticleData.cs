@@ -33,7 +33,7 @@ namespace GTASaveData.GTA3
             int numObjects = ParticleObjects.Count;
             buf.Write(numObjects);
             buf.Write(ParticleObjects.ToArray(), fmt, numObjects);
-            buf.Skip(SizeOf<ParticleObject>(fmt));
+            buf.Skip(SizeOf<ParticleObject>(fmt));  // game writes extra ParticleObject for some reason
 
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }

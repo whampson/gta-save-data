@@ -3,7 +3,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x65)]
     public class PlayerInfo : SaveDataObject, IEquatable<PlayerInfo>
     {
         public static class Limits
@@ -147,6 +146,11 @@ namespace GTASaveData.GTA3
             // Game writes some garbage here due to incorrect size calculation
 
             Debug.Assert(buf.Offset == SizeOf<PlayerInfo>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x65;        // no alignment
         }
 
         public override bool Equals(object obj)

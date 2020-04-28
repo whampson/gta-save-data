@@ -1,10 +1,8 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x10)]
     public class Gang : SaveDataObject, IEquatable<Gang>
     {
         private int m_vehicleModel;
@@ -62,6 +60,11 @@ namespace GTASaveData.GTA3
             buf.Write((int) Weapon2);
 
             Debug.Assert(buf.Offset == SizeOf<Gang>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 16;
         }
 
         public override bool Equals(object obj)

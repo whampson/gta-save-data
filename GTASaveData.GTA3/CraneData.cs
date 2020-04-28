@@ -1,11 +1,9 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x408)]
     public class CraneData : SaveDataObject, IEquatable<CraneData>
     {
         public static class Limits
@@ -56,6 +54,11 @@ namespace GTASaveData.GTA3
             buf.Write(Cranes.ToArray(), Limits.MaxNumCranes);
 
             Debug.Assert(buf.Offset == SizeOf<CraneData>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x408;
         }
 
         public override bool Equals(object obj)

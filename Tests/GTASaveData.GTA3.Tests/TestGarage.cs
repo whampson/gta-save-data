@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -28,12 +26,12 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.RecreateDoorOnNextRefresh, f => f.Random.Bool())
                 .RuleFor(x => x.RotatedDoor, f => f.Random.Bool())
                 .RuleFor(x => x.CameraFollowsPlayer, f => f.Random.Bool())
-                .RuleFor(x => x.PositionMin, f => Generator.Generate<Vector3D, TestVector3D>())
-                .RuleFor(x => x.PositionMax, f => Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.PositionMin, f => Generator.Vector3D(f))
+                .RuleFor(x => x.PositionMax, f => Generator.Vector3D(f))
                 .RuleFor(x => x.DoorOpenOffset, f => f.Random.Float())
                 .RuleFor(x => x.DoorOpenMax, f => f.Random.Float())
-                .RuleFor(x => x.Door1Position, f => Generator.Generate<Vector3D, TestVector3D>())
-                .RuleFor(x => x.Door2Position, f => Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.Door1Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Door2Position, f => Generator.Vector3D(f))
                 .RuleFor(x => x.DoorLastOpenTime, f => f.Random.UInt())
                 .RuleFor(x => x.CollectedCarsState, f => f.Random.Byte())
                 .RuleFor(x => x.TargetCarPointer, f => f.Random.UInt())
@@ -44,7 +42,7 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             Garage x0 = GenerateTestObject();
             Garage x1 = CreateSerializedCopy(x0, out byte[] data);

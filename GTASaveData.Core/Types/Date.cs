@@ -124,12 +124,12 @@ namespace GTASaveData.Types
             return !d1.Equals(d2);
         }
 
-        public static implicit operator DateTime(Date t)
+        public static explicit operator DateTime(Date t)
         {
             return t.ToDateTime();
         }
 
-        public static explicit operator Date(DateTime t)
+        public static implicit operator Date(DateTime t)
         {
             return new Date(t);
         }

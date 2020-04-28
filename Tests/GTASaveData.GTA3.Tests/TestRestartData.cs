@@ -9,8 +9,8 @@ namespace GTASaveData.GTA3.Tests
         public override RestartData GenerateTestObject(DataFormat format)
         {
             Faker<RestartData> model = new Faker<RestartData>()
-                .RuleFor(x => x.WastedRestartPoints, Generator.CreateArray(RestartData.Limits.MaxNumWastedRestarts, g => Generator.Generate<RestartPoint, TestRestartPoint>()))
-                .RuleFor(x => x.BustedRestartPoints, Generator.CreateArray(RestartData.Limits.MaxNumBustedRestarts, g => Generator.Generate<RestartPoint, TestRestartPoint>()))
+                .RuleFor(x => x.WastedRestartPoints, Generator.Array(RestartData.Limits.MaxNumWastedRestarts, g => Generator.Generate<RestartPoint, TestRestartPoint>()))
+                .RuleFor(x => x.BustedRestartPoints, Generator.Array(RestartData.Limits.MaxNumBustedRestarts, g => Generator.Generate<RestartPoint, TestRestartPoint>()))
                 .RuleFor(x => x.NumberOfWastedRestartPoints, f => f.Random.Short())
                 .RuleFor(x => x.NumberOfBustedRestartPoints, f => f.Random.Short())
                 .RuleFor(x => x.OverrideNextRestart, f => f.Random.Bool())
@@ -24,7 +24,7 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             RestartData x0 = GenerateTestObject();
             RestartData x1 = CreateSerializedCopy(x0, out byte[] data);

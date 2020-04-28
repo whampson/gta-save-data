@@ -15,13 +15,14 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             Contact x0 = GenerateTestObject();
             Contact x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
             Assert.Equal(x0.BaseBriefId, x1.BaseBriefId);
+
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(), data.Length);
         }

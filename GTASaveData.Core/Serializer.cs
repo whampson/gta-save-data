@@ -1,5 +1,4 @@
 ﻿using GTASaveData.Extensions;
-using System;
 
 namespace GTASaveData
 {
@@ -153,13 +152,6 @@ namespace GTASaveData
         /// </exception>
         public static int SizeOf<T>() where T : new()
         {
-            // Get size from SizeAttribute if present
-            SizeAttribute sizeAttr = (SizeAttribute) Attribute.GetCustomAttribute(typeof(T), typeof(SizeAttribute));
-            if (sizeAttr != null)
-            {
-                return sizeAttr.Size;
-            }
-
             return SizeOf(new T(), DataFormat.Default);
         }
 
@@ -172,13 +164,6 @@ namespace GTASaveData
         /// </exception>
         public static int SizeOf<T>(DataFormat fmt) where T : new()
         {
-            // Get size from SizeAttribute if present
-            var sizeAttr = Attribute.GetCustomAttribute(typeof(T), typeof(SizeAttribute));
-            if (sizeAttr != null)
-            {
-                return ((SizeAttribute) sizeAttr).Size;
-            }
-
             return SizeOf(new T(), fmt);
         }
 
@@ -208,7 +193,7 @@ namespace GTASaveData
                 return ((ISerializable) obj).GetSize(fmt);
             }
 
-            // Last resort: get size by serializing the data
+            // Otherwise get size by serializing the data
             return Write(obj, fmt, out byte[] _);
         }
     }

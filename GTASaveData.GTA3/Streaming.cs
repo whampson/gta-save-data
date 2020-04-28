@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    [Size(200)]
     public class Streaming : SaveDataObject, IEquatable<Streaming>
     {
         public static class Limits
@@ -36,6 +35,11 @@ namespace GTASaveData.GTA3
             buf.Write(ModelFlags.ToArray(), Limits.NumberOfModels);
 
             Debug.Assert(buf.Offset == SizeOf<Streaming>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 200;
         }
 
         public override bool Equals(object obj)

@@ -1,8 +1,6 @@
 ﻿using Bogus;
 using Xunit;
 using TestFramework;
-using GTASaveData.Types;
-using GTASaveData.Core.Tests.Types;
 
 namespace GTASaveData.GTA3.Tests
 {
@@ -12,7 +10,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<CarGenerator> model = new Faker<CarGenerator>()
                 .RuleFor(x => x.Model, f => f.Random.Int())
-                .RuleFor(x => x.Position, f => Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
                 .RuleFor(x => x.Angle, f => f.Random.Float())
                 .RuleFor(x => x.Color1, f => f.Random.Short())
                 .RuleFor(x => x.Color2, f => f.Random.Short())
@@ -25,15 +23,15 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Handle, f => f.Random.Int())
                 .RuleFor(x => x.UsesRemaining, f => f.Random.Short())
                 .RuleFor(x => x.IsBlocking, f => f.Random.Bool())
-                .RuleFor(x => x.CollisionBoundingMin, f => Generator.Generate<Vector3D, TestVector3D>())
-                .RuleFor(x => x.CollisionBoundingMax, f => Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.CollisionBoundingMin, f => Generator.Vector3D(f))
+                .RuleFor(x => x.CollisionBoundingMax, f => Generator.Vector3D(f))
                 .RuleFor(x => x.CollisionSize, f => f.Random.Float());
 
             return model.Generate();
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             CarGenerator x0 = GenerateTestObject();
             CarGenerator x1 = CreateSerializedCopy(x0, out byte[] data);
@@ -55,6 +53,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.CollisionBoundingMin, x1.CollisionBoundingMin);
             Assert.Equal(x0.CollisionBoundingMax, x1.CollisionBoundingMax);
             Assert.Equal(x0.CollisionSize, x1.CollisionSize);
+
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(), data.Length);
         }

@@ -3,7 +3,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(16)]
     public class BuildingSwap : SaveDataObject, IEquatable<BuildingSwap>
     {
         private ObjectType m_type;
@@ -37,8 +36,6 @@ namespace GTASaveData.GTA3
 
         public BuildingSwap()
         {
-            Type = ObjectType.None;
-            Handle = 0;
             NewModel = -1;
             OldModel = -1;
         }
@@ -61,6 +58,11 @@ namespace GTASaveData.GTA3
             buf.Write(OldModel);
 
             Debug.Assert(buf.Offset == SizeOf<BuildingSwap>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 16;
         }
 
         public override bool Equals(object obj)

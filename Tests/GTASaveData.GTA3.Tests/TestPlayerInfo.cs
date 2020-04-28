@@ -21,13 +21,13 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.FastReload, f => f.Random.Bool())
                 .RuleFor(x => x.GetOutOfJailFree, f => f.Random.Bool())
                 .RuleFor(x => x.GetOutOfHospitalFree, f => f.Random.Bool())
-                .RuleFor(x => x.PlayerName, f => Generator.RandomWords(f, PlayerInfo.Limits.MaxPlayerNameLength - 1));
+                .RuleFor(x => x.PlayerName, f => Generator.Words(f, PlayerInfo.Limits.MaxPlayerNameLength - 1));
 
             return model.Generate();
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             PlayerInfo x0 = GenerateTestObject();
             PlayerInfo x1 = CreateSerializedCopy(x0, out byte[] data);

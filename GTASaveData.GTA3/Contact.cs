@@ -2,7 +2,6 @@
 
 namespace GTASaveData.GTA3
 {
-    [Size(8)]
     public class Contact : SaveDataObject, IEquatable<Contact>
     {
         private int m_onAMissionFlag;
@@ -30,6 +29,11 @@ namespace GTASaveData.GTA3
         {
             buf.Write(OnAMissionFlag);
             buf.Write(BaseBriefId);
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 8;
         }
 
         public override bool Equals(object obj)

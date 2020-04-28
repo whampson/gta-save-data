@@ -202,9 +202,6 @@ namespace GTASaveData.GTA3
         public SimpleVariables()
         {
             SaveName = "";
-            TimeLastSaved = new SystemTime();
-            CameraPosition = new Vector3D();
-            CompileDateAndTime = new Date();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)

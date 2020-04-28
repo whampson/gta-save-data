@@ -5,7 +5,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x48)]
     public class CarGenerator : SaveDataObject, ICarGenerator, IEquatable<CarGenerator>
     {
         private int m_modelIndex;
@@ -147,11 +146,7 @@ namespace GTASaveData.GTA3
         }
 
         public CarGenerator()
-        {
-            Position = new Vector3D();
-            CollisionBoundingMin = new Vector3D();
-            CollisionBoundingMax = new Vector3D();
-        }
+        { }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
@@ -201,6 +196,11 @@ namespace GTASaveData.GTA3
             buf.Write(CollisionSize);
 
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x48;
         }
 
         public override bool Equals(object obj)

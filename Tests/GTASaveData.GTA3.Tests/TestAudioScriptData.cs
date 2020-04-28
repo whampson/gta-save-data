@@ -10,13 +10,13 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<AudioScriptData> model = new Faker<AudioScriptData>()
                 .RuleFor(x => x.AudioScriptObjects,
-                    f => Generator.CreateArray(f.Random.Int(1, 50), g => Generator.Generate<AudioScriptObject, TestAudioScriptObject>()));
+                    f => Generator.Array(f.Random.Int(1, 50), g => Generator.Generate<AudioScriptObject, TestAudioScriptObject>()));
 
             return model.Generate();
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             AudioScriptData x0 = GenerateTestObject();
             AudioScriptData x1 = CreateSerializedCopy(x0, out byte[] data);

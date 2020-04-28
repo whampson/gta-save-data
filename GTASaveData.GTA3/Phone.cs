@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x34)]
     public class Phone : SaveDataObject, IEquatable<Phone>
     {
         public static class Limits
@@ -56,10 +55,8 @@ namespace GTASaveData.GTA3
             set { m_visibleToCam = value; OnPropertyChanged(); }
         }
 
-
         public Phone()
         {
-            Position = new Vector3D();
             Messages = new Array<uint>();
         }
 
@@ -87,6 +84,11 @@ namespace GTASaveData.GTA3
             buf.Align4Bytes();
 
             Debug.Assert(buf.Offset == SizeOf<Phone>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 0x34;
         }
 
         public override bool Equals(object obj)

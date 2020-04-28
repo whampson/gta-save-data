@@ -21,7 +21,7 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             PedType x0 = GenerateTestObject();
             PedType x1 = CreateSerializedCopy(x0, out byte[] data);

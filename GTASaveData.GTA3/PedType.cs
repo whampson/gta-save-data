@@ -3,7 +3,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(0x20)]
     public class PedType : SaveDataObject, IEquatable<PedType>
     {
         private PedTypeFlags m_flag;
@@ -92,6 +91,11 @@ namespace GTASaveData.GTA3
             buf.Write((int) Avoid);
 
             Debug.Assert(buf.Offset == SizeOf<PedType>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 32;
         }
 
         public override bool Equals(object obj)

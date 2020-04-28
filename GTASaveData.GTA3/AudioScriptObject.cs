@@ -4,7 +4,6 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    [Size(24)]
     public class AudioScriptObject : SaveDataObject, IEquatable<AudioScriptObject>
     {
         private int m_index;
@@ -36,11 +35,8 @@ namespace GTASaveData.GTA3
             set { m_audioEntity = value; OnPropertyChanged(); }
         }
 
-
         public AudioScriptObject()
-        {
-            Position = new Vector3D();
-        }
+        { }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
@@ -62,6 +58,11 @@ namespace GTASaveData.GTA3
             buf.Write(AudioEntity);
 
             Debug.Assert(buf.Offset == SizeOf<AudioScriptObject>());
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 24;
         }
 
         public override bool Equals(object obj)

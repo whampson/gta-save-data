@@ -2,7 +2,6 @@
 
 namespace GTASaveData.GTA3
 {
-    [Size(8)]
     public class InvisibleEntity : SaveDataObject, IEquatable<InvisibleEntity>
     {
         private ObjectType m_type;
@@ -30,6 +29,11 @@ namespace GTASaveData.GTA3
         {
             buf.Write((int) Type);
             buf.Write(Handle);
+        }
+
+        protected override int GetSize(DataFormat fmt)
+        {
+            return 8;
         }
 
         public override bool Equals(object obj)

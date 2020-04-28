@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -14,8 +12,8 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.ColorId, f => f.Random.Int())
                 .RuleFor(x => x.Type, f => f.PickRandom<RadarBlipType>())
                 .RuleFor(x => x.Handle, f => f.Random.Int())
-                .RuleFor(x => x.RadarPosition, Generator.Generate<Vector2D, TestVector2D>())
-                .RuleFor(x => x.WorldPosition, Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.RadarPosition, f => Generator.Vector2D(f))
+                .RuleFor(x => x.WorldPosition, f => Generator.Vector3D(f))
                 .RuleFor(x => x.BlipIndex, f => f.Random.Short())
                 .RuleFor(x => x.Dim, f => f.Random.Bool())
                 .RuleFor(x => x.InUse, f => f.Random.Bool())
@@ -28,7 +26,7 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void Serialization()
+        public void RandomDataSerialization()
         {
             RadarBlip x0 = GenerateTestObject();
             RadarBlip x1 = CreateSerializedCopy(x0, out byte[] data);
