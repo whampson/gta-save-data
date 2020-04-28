@@ -14,15 +14,15 @@ namespace GTASaveData.Types
         public byte ForwardY;
         public byte ForwardZ;
 
-        public Matrix Decompress(CompressedMatrix cm)
+        public Matrix Decompress()
         {
-            Matrix m = new Matrix(cm.Position);
-            m.Right.X = cm.RightX / 127.0f;
-            m.Right.Y = cm.RightY / 127.0f;
-            m.Right.Z = cm.RightZ / 127.0f;
-            m.Forward.X = cm.ForwardX / 127.0f;
-            m.Forward.Y = cm.ForwardY / 127.0f;
-            m.Forward.Z = cm.ForwardZ / 127.0f;
+            Matrix m = new Matrix(Position);
+            m.Right.X = RightX / 127.0f;
+            m.Right.Y = RightY / 127.0f;
+            m.Right.Z = RightZ / 127.0f;
+            m.Forward.X = ForwardX / 127.0f;
+            m.Forward.Y = ForwardY / 127.0f;
+            m.Forward.Z = ForwardZ / 127.0f;
             m.Up = Vector3D.Cross(m.Right, m.Forward);
 
             return Matrix.Orthogonalize(m);
@@ -37,6 +37,7 @@ namespace GTASaveData.Types
             ForwardX = buf.ReadByte();
             ForwardY = buf.ReadByte();
             ForwardZ = buf.ReadByte();
+            buf.Skip(2);
 
             return Size;
         }
@@ -50,7 +51,7 @@ namespace GTASaveData.Types
             buf.Write(ForwardX);
             buf.Write(ForwardY);
             buf.Write(ForwardZ);
-            buf.Align4Bytes();
+            buf.Skip(2);
 
             return Size;
         }

@@ -30,7 +30,7 @@ namespace GTASaveData.GTA3
         private Dummy m_pedPool;  // PedPool
         private GarageData m_garages;
         private Dummy m_vehiclePool;  // VehiclePool
-        private Dummy m_objectPool;   // ObjectPool
+        private ObjectPool m_objectPool;
         private PathData m_paths;
         private CraneData m_cranes;
         private PickupData m_pickups;
@@ -77,7 +77,7 @@ namespace GTASaveData.GTA3
             set { m_vehiclePool = value; OnPropertyChanged(); }
         }
 
-        public Dummy ObjectPool
+        public ObjectPool ObjectPool
         {
             get { return m_objectPool; }
             set { m_objectPool = value; OnPropertyChanged(); }
@@ -230,7 +230,7 @@ namespace GTASaveData.GTA3
             PedPool = new Dummy();
             Garages = new GarageData();
             VehiclePool = new Dummy();
-            ObjectPool = new Dummy();
+            ObjectPool = new ObjectPool();
             Paths = new PathData();
             Cranes = new CraneData();
             Pickups = new PickupData();
@@ -390,7 +390,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); PedPool = LoadPreAlloc<Dummy>();
             totalSize += ReadBlock(file); Garages = Load<GarageData>();
             totalSize += ReadBlock(file); VehiclePool = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); ObjectPool = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); ObjectPool = Load<ObjectPool>();
             totalSize += ReadBlock(file); Paths = LoadPreAlloc<PathData>();
             totalSize += ReadBlock(file); Cranes = Load<CraneData>();
             totalSize += ReadBlock(file); Pickups = Load<PickupData>();
