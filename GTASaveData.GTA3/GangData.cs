@@ -61,4 +61,15 @@ namespace GTASaveData.GTA3
             return Gangs.SequenceEqual(other.Gangs);
         }
     }
+
+    public enum GangType
+    {
+        Mafia,
+        Triad,
+        Diablos,
+        Yakuza,
+        Yardie,
+        Columb,
+        Hoods
+    }
 }

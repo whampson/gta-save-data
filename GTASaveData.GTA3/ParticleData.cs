@@ -40,7 +40,7 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(DataFormat fmt)
         {
-            return SizeOf<ParticleObject>(fmt) * (ParticleObjects.Count + 1) + 4;
+            return (SizeOf<ParticleObject>(fmt) * (ParticleObjects.Count + 1)) + sizeof(int);
         }
 
         public override bool Equals(object obj)

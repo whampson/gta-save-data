@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3
         }
 
         private int m_currentZoneIndex;
-        private LevelType m_currentLevel;
+        private Level m_currentLevel;
         private short m_findIndex;      // useless field
         private Array<Zone> m_zones;
         private Array<ZoneInfo> m_zoneInfo;
@@ -34,7 +34,7 @@ namespace GTASaveData.GTA3
             set { m_currentZoneIndex = value; OnPropertyChanged(); }
         }
 
-        public LevelType CurrentLevel
+        public Level CurrentLevel
         {
             get { return m_currentLevel; }
             set { m_currentLevel = value; OnPropertyChanged(); }
@@ -108,7 +108,7 @@ namespace GTASaveData.GTA3
             int size = GTA3Save.ReadSaveHeader(buf, "ZNS");
 
             CurrentZoneIndex = buf.ReadInt32();
-            CurrentLevel = (LevelType) buf.ReadInt32();
+            CurrentLevel = (Level) buf.ReadInt32();
             FindIndex = buf.ReadInt16();
             buf.Align4Bytes();
             Zones = buf.Read<Zone>(Limits.MaxNumZones);

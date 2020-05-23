@@ -8,7 +8,7 @@
 - [ ] PedPool
 - [x] Garages
 - [ ] VehiclePool
-- [ ] ObjectPool
+- [x] ObjectPool
 - [x] Paths
 - [x] Cranes
 - [x] Pickups

@@ -129,6 +129,10 @@
   <data name="Error_Argument_SequenceTooBig" xml:space="preserve">
     <value>The sequence length must be less than or equal to the length of the array.</value>
   </data>
+  <data name="Error_BlockSizeExceeded" xml:space="preserve">
+    <value>Maximum block size exeeded. (value = {0}, max = {1})</value>
+    <comment>{0} = block size value, {1} = max allowed block size</comment>
+  </data>
   <data name="Error_EndOfStream" xml:space="preserve">
     <value>End of stream reached.</value>
   </data>
@@ -151,5 +155,9 @@
   <data name="Error_SerializationNotAllowed" xml:space="preserve">
     <value>The type '{0}' does not support serialization.</value>
     <comment>{0} = object type</comment>
+  </data>
+  <data name="Error_SizeNotDefined" xml:space="preserve">
+    <value>Size not defined for {0}.</value>
+    <comment>{0} = data format name</comment>
   </data>
 </root>

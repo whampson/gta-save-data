@@ -12,11 +12,8 @@ namespace GTASaveData.GTA3
             public const int MaxNameLength = 8;
             public const int MaxStackDepth = 6;
             public const int MaxStackDepthPS2 = 4;
-            public const int NumberOfLocalVariables = 16;
+            public const int NumLocalVariables = 16;
         }
-
-        private const int SizeOfRunningScript = 136;
-        private const int SizeOfRunningScriptPS2 = 128;
 
         private uint m_pNextScript; // not loaded
         private uint m_pPrevScript; // not loaded
@@ -163,7 +160,7 @@ namespace GTASaveData.GTA3
             Stack = buf.Read<int>(GetMaxStackDepth(fmt));
             StackPointer = buf.ReadUInt16();
             buf.Align4Bytes();
-            LocalVariables = buf.Read<int>(Limits.NumberOfLocalVariables);
+            LocalVariables = buf.Read<int>(Limits.NumLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
             ConditionResult = buf.ReadBool();
@@ -190,7 +187,7 @@ namespace GTASaveData.GTA3
             buf.Write(Stack.ToArray(), GetMaxStackDepth(fmt));
             buf.Write(StackPointer);
             buf.Align4Bytes();
-            buf.Write(LocalVariables.ToArray(), Limits.NumberOfLocalVariables);
+            buf.Write(LocalVariables.ToArray(), Limits.NumLocalVariables);
             buf.Write(TimerA);
             buf.Write(TimerB);
             buf.Write(ConditionResult);
@@ -210,9 +207,7 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(DataFormat fmt)
         {
-            return (fmt.PS2)
-                ? SizeOfRunningScriptPS2
-                : SizeOfRunningScript;
+            return (fmt.PS2) ? 0x80 : 0x88;
         }
 
         public override bool Equals(object obj)
@@ -249,9 +244,7 @@ namespace GTASaveData.GTA3
 
         public static int GetMaxStackDepth(DataFormat fmt)
         {
-            return (fmt.PS2)
-                ? Limits.MaxStackDepthPS2
-                : Limits.MaxStackDepth;
+            return (fmt.PS2) ? Limits.MaxStackDepthPS2 : Limits.MaxStackDepth;
         }
     }
 }

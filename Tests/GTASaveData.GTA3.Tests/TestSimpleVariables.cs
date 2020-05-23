@@ -13,7 +13,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.SaveName, f => Generator.Words(f, SimpleVariables.Limits.MaxNameLength - 1))
                 .RuleFor(x => x.TimeLastSaved, f => Generator.Date(f))
                 .RuleFor(x => x.SaveSize, f => f.Random.Int())
-                .RuleFor(x => x.CurrLevel, f => f.PickRandom<LevelType>())
+                .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())

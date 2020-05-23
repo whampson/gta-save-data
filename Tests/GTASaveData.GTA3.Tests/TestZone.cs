@@ -15,7 +15,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Min, f => Generator.Vector3D(f))
                 .RuleFor(x => x.Max, f => Generator.Vector3D(f))
                 .RuleFor(x => x.Type, f => f.PickRandom<ZoneType>())
-                .RuleFor(x => x.Level, f => f.PickRandom<LevelType>())
+                .RuleFor(x => x.Level, f => f.PickRandom<Level>())
                 .RuleFor(x => x.ZoneInfoDay, f => f.Random.Short())
                 .RuleFor(x => x.ZoneInfoNight, f => f.Random.Short())
                 .RuleFor(x => x.ChildZoneIndex, f => f.Random.Int())

@@ -5,25 +5,20 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace GTASaveData.GTA3
 {
     /// <summary>
     /// Represents a <i>Grand Theft Auto III</i> save file.
     /// </summary>
-    public class GTA3Save : SaveFile, ISaveFile, IEquatable<GTA3Save>, IDisposable
+    public class GTA3Save : GTA3VCSave, IDisposable, ISaveFile, IEquatable<GTA3Save>
     {
-        public const int SaveHeaderSize = 8;
         public const int SizeOfOneGameInBytes = 201729;
         public const int MaxBufferSize = 55000;
 
-        private readonly StreamBuffer m_workBuff;
-        private bool m_blockSizeChecks;
         private bool m_disposed;
-        private int m_checkSum;
 
-        private int BufferSize => (FileFormat.PS2) ? 50000 : 55000;
+        protected override int BufferSize => (FileFormat.PS2) ? 50000 : 55000;
 
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
@@ -174,13 +169,6 @@ namespace GTASaveData.GTA3
         }
 
         [JsonIgnore]
-        public bool BlockSizeChecks
-        {
-            get { return m_blockSizeChecks; }
-            set { m_blockSizeChecks = value; OnPropertyChanged(); }
-        }
-
-        [JsonIgnore]
         public override string Name
         {
             get { return SimpleVars.SaveName; }
@@ -220,10 +208,9 @@ namespace GTASaveData.GTA3
             PedTypeInfo
         };
 
-        public GTA3Save()
+        public GTA3Save() : base(MaxBufferSize)
         {
             m_disposed = false;
-            m_workBuff = new StreamBuffer(new byte[MaxBufferSize]);
 
             SimpleVars = new SimpleVariables();
             Scripts = new ScriptData();
@@ -251,134 +238,17 @@ namespace GTASaveData.GTA3
             BlockSizeChecks = true;
         #endif
         }
-        
-        // TODO: move to base class (GTA3VCSave)
-        #region Shared between GTA3/VC
-        public static int ReadSaveHeader(StreamBuffer buf, string tag)
-        {
-            string readTag = buf.ReadString(4);
-            int size = buf.ReadInt32();
 
-            Debug.Assert(readTag == tag, "Invalid block tag (expected: {0}, actual: {1})", tag, readTag);
-            return size;
+        protected override void LoadSimpleVars()
+        {
+            SimpleVars = WorkBuff.Read<SimpleVariables>(FileFormat);
         }
 
-        public static void WriteSaveHeader(StreamBuffer buf, string tag, int size)
-        {
-            buf.Write(tag, 4, zeroTerminate: true);
-            buf.Write(size);
-        }
-
-        private void LoadSimpleVars()
-        {
-            SimpleVars = m_workBuff.Read<SimpleVariables>(FileFormat);
-        }
-
-        private void SaveSimpleVars()
+        protected override void SaveSimpleVars()
         {
             SimpleVars.SaveSize = SizeOfOneGameInBytes;
-            m_workBuff.Write(SimpleVars, FileFormat);
+            WorkBuff.Write(SimpleVars, FileFormat);
         }
-
-        private T Load<T>() where T : SaveDataObject, new()
-        {
-            T obj = new T();
-            Load(obj);
-
-            return obj;
-        }
-        private int Load<T>(T obj) where T : SaveDataObject
-        {
-            m_workBuff.ReadInt32();     // Ignore size
-            int bytesRead = Serializer.Read(obj, m_workBuff, FileFormat);
-
-            Debug.WriteLine("{0}: {1} bytes read", typeof(T).Name, bytesRead);
-            return bytesRead;
-        }
-
-        private T LoadPreAlloc<T>() where T : SaveDataObject
-        {
-            int size = m_workBuff.ReadInt32();
-            if (!(Activator.CreateInstance(typeof(T), size) is T obj))
-            {
-                throw new SerializationException("Object cannot be pre-allocated.");
-            }
-            Debug.WriteLine("{0}: {1} bytes pre-allocated", typeof(T).Name, size);
-
-            int bytesRead = Serializer.Read(obj, m_workBuff, FileFormat);
-            Debug.WriteLine("{0}: {1} bytes read", typeof(T).Name, bytesRead);
-
-            return obj;
-        }
-
-        private void Save(SaveDataObject o)
-        {
-            int size, preSize, postData;
-                
-            preSize = m_workBuff.Cursor;
-            m_workBuff.Skip(4);
-            
-            size = Serializer.Write(m_workBuff, o, FileFormat);
-            postData = m_workBuff.Cursor;
-
-            m_workBuff.Seek(preSize);
-            m_workBuff.Write(size);
-            m_workBuff.Seek(postData);
-            m_workBuff.Align4Bytes();
-
-            Debug.WriteLine("{0}: {1} bytes written", o.GetType().Name, size);
-        }
-
-        private int ReadBlock(StreamBuffer file)
-        {
-            file.MarkCurrentPosition();
-            m_workBuff.Reset();
-
-            int size = file.ReadInt32();
-            if ((uint) size > BufferSize)
-            {
-                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
-                if (BlockSizeChecks)
-                {
-                    throw BlockSizeExceededException((uint) size, BufferSize);
-                }
-            }
-
-            m_workBuff.Write(file.ReadBytes(size));
-            Debug.Assert(file.Offset == size + 4);
-
-            m_workBuff.Reset();
-            return size;
-        }
-
-        private int WriteBlock(StreamBuffer file)
-        {
-            file.MarkCurrentPosition();
-
-            byte[] data = m_workBuff.GetBytes();
-            int size = data.Length;
-            if ((uint) size > BufferSize)
-            {
-                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
-                if (BlockSizeChecks)
-                {
-                    throw BlockSizeExceededException((uint) size, BufferSize);
-                }
-            }
-
-            file.Write(size);
-            file.Write(data);
-            file.Align4Bytes();
-
-            Debug.Assert(file.Offset == size + 4);
-
-            m_checkSum += BitConverter.GetBytes(size).Sum(x => x);
-            m_checkSum += data.Sum(x => x);
-
-            m_workBuff.Reset();
-            return size;
-        }
-        #endregion
 
         protected override void LoadAllData(StreamBuffer file)
         {
@@ -422,8 +292,8 @@ namespace GTASaveData.GTA3
             int totalSize = 0;
             int size;
 
-            m_workBuff.Reset();
-            m_checkSum = 0;
+            WorkBuff.Reset();
+            CheckSum = 0;
 
             SaveSimpleVars();
             Save(Scripts); totalSize += WriteBlock(file);
@@ -458,15 +328,15 @@ namespace GTASaveData.GTA3
                 {
                     if (Padding != PaddingType.Default)
                     {
-                        m_workBuff.Reset();
-                        m_workBuff.Write(GenerateSpecialPadding(size));
+                        WorkBuff.Reset();
+                        WorkBuff.Write(GenerateSpecialPadding(size));
                     }
-                    m_workBuff.Seek(size);
+                    WorkBuff.Seek(size);
                     totalSize += WriteBlock(file);
                 }
             }
 
-            file.Write(m_checkSum);
+            file.Write(CheckSum);
 
             Debug.WriteLine("Save successful!");
             Debug.WriteLine("Size of game data: {0} bytes", totalSize);
@@ -556,7 +426,7 @@ namespace GTASaveData.GTA3
         protected override int GetSize(DataFormat fmt)
         {
             // TODO:
-            throw new NotImplementedException();
+            throw SizeNotDefined(fmt);
         }
 
         public override bool Equals(object obj)
@@ -598,14 +468,9 @@ namespace GTASaveData.GTA3
         {
             if (!m_disposed)
             {
-                m_workBuff.Dispose();
+                WorkBuff.Dispose();
                 m_disposed = true;
             }
-        }
-
-        private SerializationException BlockSizeExceededException(uint value, int max)
-        {
-            return new SerializationException(Strings.Error_Serialization_BlockSizeExceeded, value, max);
         }
 
         public static class FileFormats
@@ -661,5 +526,30 @@ namespace GTASaveData.GTA3
         {
             return fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Japan);
         }
+    }
+
+    public enum DataBlock
+    {
+        SimpleVars,
+        Scripts,
+        PedPool,
+        Garages,
+        VehiclePool,
+        ObjectPool,
+        PathFind,
+        Cranes,
+        Pickups,
+        PhoneInfo,
+        RestartPoints,
+        RadarBlips,
+        Zones,
+        Gangs,
+        CarGenerators,
+        ParticleObjects,
+        AudioScriptObjects,
+        PlayerInfo,
+        Stats,
+        Streaming,
+        PedTypeInfo
     }
 }

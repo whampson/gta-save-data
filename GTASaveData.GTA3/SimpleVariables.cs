@@ -15,7 +15,7 @@ namespace GTASaveData.GTA3
         private string m_lastMissionPassedName;
         private SystemTime m_timeLastSaved;
         private int m_saveSize;
-        private LevelType m_currLevel;
+        private Level m_currLevel;
         private Vector3D m_cameraPosition;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
@@ -57,7 +57,7 @@ namespace GTASaveData.GTA3
             set { m_saveSize = value; OnPropertyChanged(); }
         }
 
-        public LevelType CurrLevel
+        public Level CurrLevel
         {
             get { return m_currLevel; }
             set { m_currLevel = value; OnPropertyChanged(); }
@@ -209,7 +209,7 @@ namespace GTASaveData.GTA3
             SaveName = buf.ReadString(Limits.MaxNameLength, unicode: true);
             TimeLastSaved = buf.Read<SystemTime>();
             SaveSize = buf.ReadInt32();
-            CurrLevel = (LevelType) buf.ReadInt32();
+            CurrLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.Read<Vector3D>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
@@ -287,7 +287,7 @@ namespace GTASaveData.GTA3
                 return 0xBC;
             }
 
-            throw new NotSupportedException("File type not supported yet!");
+            throw SizeNotDefined(fmt);
         }
 
         public override bool Equals(object obj)
@@ -329,6 +329,34 @@ namespace GTASaveData.GTA3
                 && CameraCarZoomIndicator.Equals(other.CameraCarZoomIndicator)
                 && CameraPedZoomIndicator.Equals(other.CameraPedZoomIndicator);
         }
+    }
+
+    public enum Language
+    {
+        English,
+        French,
+        German,
+        Italian,
+        Spanish,
+        Japanese,
+        Korean
+    }
+
+    public enum Level
+    {
+        None,
+        Industrial,
+        Commercial,
+        Suburban
+    }
+
+    public enum WeatherType
+    {
+        None = -1,
+        Sunny,
+        Cloudy,
+        Rainy,
+        Foggy
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

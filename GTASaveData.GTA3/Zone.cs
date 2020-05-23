@@ -15,7 +15,7 @@ namespace GTASaveData.GTA3
         private Vector3D m_min;
         private Vector3D m_max;
         private ZoneType m_type;
-        private LevelType m_level;
+        private Level m_level;
         private short m_zoneInfoDay;
         private short m_zoneInfoNight;
         private int m_childZoneIndex;
@@ -46,7 +46,7 @@ namespace GTASaveData.GTA3
             set { m_type = value; OnPropertyChanged(); }
         }
 
-        public LevelType Level
+        public Level Level
         {
             get { return m_level; }
             set { m_level = value; OnPropertyChanged(); }
@@ -94,7 +94,7 @@ namespace GTASaveData.GTA3
             Min = buf.Read<Vector3D>();
             Max = buf.Read<Vector3D>();
             Type = (ZoneType) buf.ReadInt32();
-            Level = (LevelType) buf.ReadInt32();
+            Level = (Level) buf.ReadInt32();
             ZoneInfoDay = buf.ReadInt16();
             ZoneInfoNight = buf.ReadInt16();
             ChildZoneIndex = buf.ReadInt32();
@@ -148,5 +148,13 @@ namespace GTASaveData.GTA3
                 && ParentZoneIndex.Equals(other.ParentZoneIndex)
                 && NextZoneIndex.Equals(other.NextZoneIndex);
         }
+    }
+
+    public enum ZoneType
+    {
+        Audio,
+        Info,
+        Navig,
+        Map
     }
 }

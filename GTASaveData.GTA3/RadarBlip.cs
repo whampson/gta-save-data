@@ -165,4 +165,48 @@ namespace GTASaveData.GTA3
                 && Sprite.Equals(other.Sprite);
         }
     }
+
+    [Flags]
+    public enum RadarBlipDisplay
+    {
+        None,
+        Marker,
+        Blip,
+        MarkerAndBlip
+    }
+
+    public enum RadarBlipType
+    {
+        None,
+        Car,
+        Char,
+        Object,
+        Coord,
+        ContactPoint
+    }
+
+    public enum RadarBlipSprite
+    {
+        None,
+        Asuka,
+        Bomb,
+        Cat,
+        Center,
+        Copcar,
+        Don,
+        Eight,
+        El,
+        Ice,
+        Joey,
+        Kenji,
+        Liz,
+        Luigi,
+        North,
+        Ray,
+        Sal,
+        Save,
+        Spray,
+        Tony,
+        Weapon
+    }
 }

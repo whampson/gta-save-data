@@ -17,8 +17,8 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.OverrideRestartPoint, f => Generator.Generate<RestartPoint, TestRestartPoint>())
                 .RuleFor(x => x.FadeInAfteNextDeath, f => f.Random.Bool())
                 .RuleFor(x => x.FadeInAfteNextArrest, f => f.Random.Bool())
-                .RuleFor(x => x.OverrideHospitalLevel, f => f.PickRandom<LevelType>())
-                .RuleFor(x => x.OverridePoliceStationLevel, f => f.PickRandom<LevelType>());
+                .RuleFor(x => x.OverrideHospitalLevel, f => f.PickRandom<Level>())
+                .RuleFor(x => x.OverridePoliceStationLevel, f => f.PickRandom<Level>());
 
             return model.Generate();
         }

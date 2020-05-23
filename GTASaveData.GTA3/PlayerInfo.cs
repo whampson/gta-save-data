@@ -102,7 +102,6 @@ namespace GTASaveData.GTA3
             set { m_playerName = value; OnPropertyChanged(); }
         }
 
-
         public PlayerInfo()
         {
             PlayerName = "";
@@ -179,5 +178,13 @@ namespace GTASaveData.GTA3
                 && GetOutOfHospitalFree.Equals(other.GetOutOfHospitalFree)
                 && PlayerName.Equals(other.PlayerName);
         }
+    }
+
+    public enum WastedBustedState
+    {
+        Playing,
+        Wasted,
+        Busted,
+        FailedCriticalMission
     }
 }

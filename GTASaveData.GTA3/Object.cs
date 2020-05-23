@@ -271,4 +271,13 @@ namespace GTASaveData.GTA3
                 && EntityFlags.Equals(EntityFlags);
         }
     }
+
+    public enum ObjectType
+    {
+        None,
+        Treadable,
+        Building,
+        Object,
+        Dummy
+    }
 }

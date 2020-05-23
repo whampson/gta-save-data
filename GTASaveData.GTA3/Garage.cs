@@ -349,5 +349,41 @@ namespace GTASaveData.GTA3
                 && StoredCar.Equals(other.StoredCar);
         }
     }
+
+    public enum GarageState
+    {
+        Closed,
+        Opened,
+        Closing,
+        Opening,
+        OpenedContainsCar,
+        ClosedAfterDropOff
+    }
+
+    public enum GarageType
+    {
+        None,
+        Mission,
+        BombShop1,
+        BombShop2,
+        BombShop3,
+        Respray,
+        CollectorsItems,
+        CollectSpecificCars,
+        CollectCars1,
+        CollectCars2,
+        CollectCars3,
+        ForCarToComeOutOf,
+        SixtySeconds,
+        Crusher,
+        MissionKeepCar,
+        ForScriptToOpen,
+        Hideout1,
+        Hideout2,
+        Hideout3,
+        ForScriptToOpenAndClose,
+        KeepsOpeningForSpecificCar,
+        MissionKeepCarRemainClosed
+    }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

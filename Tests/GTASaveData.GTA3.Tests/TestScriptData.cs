@@ -64,7 +64,7 @@ namespace GTASaveData.GTA3.Tests
 
             Assert.Equal(987.5, x.Scripts.GetGlobalAsFloat(804));
 
-            int numGlobals = x.Scripts.NumberOfGlobalVariables;
+            int numGlobals = x.Scripts.NumGlobalVariables;
             int i0 = f.Random.Int(0, numGlobals - 1);
             int i1 = f.Random.Int(0, numGlobals - 1);
             int v0 = f.Random.Int();

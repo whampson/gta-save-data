@@ -1,4 +1,6 @@
-﻿namespace GTASaveData
+﻿using System;
+
+namespace GTASaveData
 {
     /// <summary>
     /// A <see cref="GTAObject"/> that can be stored in a save data file.
@@ -48,17 +50,6 @@
 
         protected abstract int GetSize(DataFormat fmt);
 
-        // TODO: remove this, force implementation on children >:)
-        //protected virtual int GetSize(DataFormat fmt)
-        //{
-        //    Debug.WriteLine("Warning: {0}#GetSize() has not been overridden! Calling {0}#WriteObjectData() to compute size.", (object) GetType().Name);
-        //    using (StreamBuffer buf = new StreamBuffer())
-        //    {
-        //        return ((ISerializable) this).WriteObjectData(buf, fmt);
-        //    }
-        //}
-
-        // Wrappers for convenience
         protected static int SizeOf<T>() where T : new()
         {
             return Serializer.SizeOf<T>();
@@ -77,6 +68,11 @@
         protected static int SizeOf<T>(T obj, DataFormat fmt)
         {
             return Serializer.SizeOf(obj, fmt);
+        }
+
+        protected NotSupportedException SizeNotDefined(DataFormat fmt)
+        {
+            return new NotSupportedException(string.Format(Strings.Error_SizeNotDefined, fmt.FormatName));
         }
     }
 }

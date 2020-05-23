@@ -211,7 +211,7 @@ namespace GTASaveData.GTA3
             {
                 return 0x80;
             }
-            else if (fmt.PS2)
+            if (fmt.PS2)
             {
                 return 0xA0;
             }
@@ -249,6 +249,38 @@ namespace GTASaveData.GTA3
                 && DestroyWhenFar.Equals(other.DestroyWhenFar)
                 && CreationChance.Equals(other.CreationChance);
         }
+    }
+
+    public enum ParticleObjectState
+    {
+        Initialized,
+        UpdateClose,
+        UpdateFar,
+        Free,
+    }
+
+    public enum ParticleObjectType
+    {
+        PavementSteam,
+        PavementSteamSlowMotion,
+        WallSteam,
+        WallSteamSlowMotion,
+        DarkSmoke,
+        FireHydrant,
+        CarWaterSplash,
+        PedWaterSplash,
+        SplashesAround,
+        SmallFire,
+        BigFire,
+        DryIce,
+        DryIceSlowMotion,
+        FireTrail,
+        SmokeTrail,
+        FireballAndSmoke,
+        RocketTrail,
+        ExplosionOnce,
+        CatalinasGunFlash,
+        CatalinasShotgunFlash
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

@@ -16,7 +16,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.IP, f => f.Random.UInt())
                 .RuleFor(x => x.Stack, f => Generator.Array(RunningScript.GetMaxStackDepth(format), g => f.Random.Int()))
                 .RuleFor(x => x.StackPointer, f => f.Random.UShort())
-                .RuleFor(x => x.LocalVariables, f => Generator.Array(RunningScript.Limits.NumberOfLocalVariables, g => f.Random.Int()))
+                .RuleFor(x => x.LocalVariables, f => Generator.Array(RunningScript.Limits.NumLocalVariables, g => f.Random.Int()))
                 .RuleFor(x => x.TimerA, f => f.Random.UInt())
                 .RuleFor(x => x.TimerB, f => f.Random.UInt())
                 .RuleFor(x => x.ConditionResult, f => f.Random.Bool())

@@ -8,7 +8,7 @@ using System.Windows.Input;
 using WpfEssentials;
 using WpfEssentials.Win32;
 
-using IIIBlock = GTASaveData.GTA3.Block;
+using IIIBlock = GTASaveData.GTA3.DataBlock;
 //using IVBlock = GTASaveData.GTA4.Block;
 //using VCBlock = GTASaveData.VC.Block;
 //using SABlock = GTASaveData.SA.Block;
@@ -127,18 +127,28 @@ namespace TestApp
 
         public void OnLoad()
         {
-            GTA3Save save = CurrentSaveFile as GTA3Save;
-            if (save == null)
-            {
-                return;
-            }
+            DamageManager dm = new DamageManager();
+            dm.SetDoorStatus(Door.FrontLeft, DoorStatus.Missing);
+            dm.SetDoorStatus(Door.FrontRight, DoorStatus.Smashed);
+            dm.SetDoorStatus(Door.Trunk, DoorStatus.Missing);
+            dm.SetDoorStatus(Door.RearRight, DoorStatus.Swinging);
+            dm.SetLightStatus(Light.FrontLeft, LightStatus.Broken);
+            dm.SetLightStatus(Light.FrontRight, LightStatus.Broken);
+            dm.SetLightStatus(Light.RearRight, LightStatus.Broken);
+            dm.SetWheelStatus(Wheel.FrontLeft, WheelStatus.Burst);
+            dm.SetWheelStatus(Wheel.RearLeft, WheelStatus.Missing);
+            dm.SetPanelStatus(Panel.FrontLeft, PanelStatus.Missing);
+            dm.SetPanelStatus(Panel.FrontLeft, PanelStatus.Smashed2);
+            dm.SetPanelStatus(Panel.BumperRear, PanelStatus.Missing);
+            dm.SetPanelStatus(Panel.RearLeft, PanelStatus.Missing);
+            dm.SetPanelStatus(Panel.RearRight, PanelStatus.Smashed1);
 
-            var scr = save.Scripts;
-            var ptp = save.PedTypeInfo;
+            byte[] data = Serializer.Write(dm);
 
-            int oldV = scr.GetGlobal(34);
-            scr.SetGlobal(34, 6969);
-            int newV = scr.GetGlobal(34);
+            DamageManager dm2 = Serializer.Read<DamageManager>(data);
+
+            bool result = dm.Equals(dm2);
+
         }
 
         public ViewModel()

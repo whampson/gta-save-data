@@ -97,6 +97,15 @@ namespace GTASaveData {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Maximum block size exeeded. (value = {0}, max = {1}).
+        /// </summary>
+        internal static string Error_BlockSizeExceeded {
+            get {
+                return ResourceManager.GetString("Error_BlockSizeExceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to End of stream reached..
         /// </summary>
         internal static string Error_EndOfStream {
@@ -156,6 +165,15 @@ namespace GTASaveData {
         internal static string Error_SerializationNotAllowed {
             get {
                 return ResourceManager.GetString("Error_SerializationNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size not defined for {0}..
+        /// </summary>
+        internal static string Error_SizeNotDefined {
+            get {
+                return ResourceManager.GetString("Error_SizeNotDefined", resourceCulture);
             }
         }
     }

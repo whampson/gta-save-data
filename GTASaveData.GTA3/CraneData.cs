@@ -78,4 +78,33 @@ namespace GTASaveData.GTA3
                 && Cranes.SequenceEqual(other.Cranes);
         }
     }
+
+    public enum CraneState
+    {
+        Idle,
+        GoingTowardsTarget,
+        LiftingTarget,
+        GoingTowardsTargetOnlyHeight,
+        RotatingTarget,
+        DroppingTarget
+    }
+
+    public enum CraneStatus
+    {
+        None,
+        Activated,
+        Deactivated
+    }
+
+    [Flags]
+    public enum CollectCarsMilitaryCrane
+    {
+        Firetruck = (1 << 0),
+        Ambulance = (1 << 1),
+        Enforcer = (1 << 2),
+        FbiCar = (1 << 3),
+        Rhino = (1 << 4),
+        BarracksOL = (1 << 5),
+        Police = (1 << 6),
+    }
 }

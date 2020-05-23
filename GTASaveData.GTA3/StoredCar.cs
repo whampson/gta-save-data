@@ -143,4 +143,40 @@ namespace GTASaveData.GTA3
                 && Bomb.Equals(other.Bomb);
         }
     }
+
+    [Flags]
+    public enum StoredCarFlags
+    {
+        BulletProof     = 0b00001,
+        FireProof       = 0b00010,
+        ExplosionProof  = 0b00100,
+        CollisionProof  = 0b01000,
+        MeleeProof      = 0b10000
+    }
+
+    public enum BombType
+    {
+        None,
+        Timer,
+        Ignition,
+        Remote,
+        TimerArmed,
+        IgnitionArmed
+    }
+
+    public enum RadioStation
+    {
+        HeadRadio,
+        DoubleCleff,
+        JahRadio,
+        RiseFM,
+        Lips106,
+        GameFM,
+        MsxFM,
+        Flashback,
+        Chatterbox,
+        UserTrack,
+        PoliceRadio,
+        None
+    }
 }

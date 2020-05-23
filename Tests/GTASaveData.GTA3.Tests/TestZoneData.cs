@@ -11,7 +11,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<ZoneData> model = new Faker<ZoneData>()
                 .RuleFor(x => x.CurrentZoneIndex, f => f.Random.Int())
-                .RuleFor(x => x.CurrentLevel, f => f.PickRandom<LevelType>())
+                .RuleFor(x => x.CurrentLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.FindIndex, f => f.Random.Short())
                 .RuleFor(x => x.Zones, f => Generator.Array(ZoneData.Limits.MaxNumZones, g => Generator.Generate<Zone, TestZone>()))
                 .RuleFor(x => x.ZoneInfo, f => Generator.Array(ZoneData.Limits.MaxNumZoneInfos, g => Generator.Generate<ZoneInfo, TestZoneInfo>()))

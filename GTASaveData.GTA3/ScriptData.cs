@@ -33,7 +33,7 @@ namespace GTASaveData.GTA3
         private Array<RunningScript> m_activeScripts;
 
         [JsonIgnore]
-        public int NumberOfGlobalVariables => ScriptSpace.Count / 4;
+        public int NumGlobalVariables => ScriptSpace.Count / 4;
 
         [JsonConverter(typeof(ByteArrayConverter))]
         public Array<byte> ScriptSpace

@@ -37,7 +37,7 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(DataFormat fmt)
         {
-            return (Objects.Count * SizeOf<GameObject>(fmt)) + sizeof(int);
+            return (SizeOf<GameObject>(fmt) * Objects.Count) + sizeof(int);
         }
 
         public override bool Equals(object obj)
