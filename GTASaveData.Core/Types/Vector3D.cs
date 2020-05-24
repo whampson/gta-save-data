@@ -49,10 +49,10 @@ namespace GTASaveData.Types
 
         public static Vector3D Normalize(Vector3D v, float norm)
         {
-            float mag = v.GetMagnitude();
-            if (mag > 0)
+            float magSq = v.GetMagnitudeSquared();
+            if (magSq > 0)
             {
-                float invSq = norm / mag;
+                float invSq = (float) (norm / Math.Sqrt(magSq));
                 v.X *= invSq;
                 v.Y *= invSq;
                 v.Z *= invSq;

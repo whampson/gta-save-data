@@ -8,7 +8,6 @@ namespace GTASaveData.GTA3
     {
         private short m_modelIndex;
         private int m_handle;
-        private Matrix m_matrix;
         private float m_uprootLimit;
         private Matrix m_objectMatrix;
         private ObjectCreatedBy m_createdBy;
@@ -34,12 +33,6 @@ namespace GTASaveData.GTA3
         {
             get { return m_handle; }
             set { m_handle = value; OnPropertyChanged(); }
-        }
-
-        public Matrix Matrix
-        {
-            get { return m_matrix; }
-            set { m_matrix = value; OnPropertyChanged(); }
         }
 
         public float UprootLimit
@@ -128,9 +121,29 @@ namespace GTASaveData.GTA3
 
         public GameObject()
         {
-            Matrix = Matrix.Identity;
             ObjectMatrix = Matrix.Identity;
             EntityType = EntityType.Object;
+        }
+
+        public GameObject(GameObject other)
+            : base(other)
+        {
+            ModelIndex = other.ModelIndex;
+            Handle = other.Handle;
+            UprootLimit = other.UprootLimit;
+            ObjectMatrix = other.ObjectMatrix;
+            CreatedBy = other.CreatedBy;
+            IsPickup = other.IsPickup;
+            IsPickupInShop = other.IsPickupInShop;
+            IsPickupOutOfStock = other.IsPickupOutOfStock;
+            IsGlassCracked = other.IsGlassCracked;
+            IsGlassBroken = other.IsGlassBroken;
+            HasBeenDamaged = other.HasBeenDamaged;
+            UseCarColors = other.UseCarColors;
+            CollisionDamageMultiplier = other.CollisionDamageMultiplier;
+            CollisionDamageEffect = other.CollisionDamageEffect;
+            SpecialCollisionResponseCases = other.SpecialCollisionResponseCases;
+            EndOfLifeTime = other.EndOfLifeTime;
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)

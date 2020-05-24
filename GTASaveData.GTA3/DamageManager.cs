@@ -74,6 +74,17 @@ namespace GTASaveData.GTA3
             Field24h = 1;
         }
 
+        public DamageManager(DamageManager other)
+        {
+            WheelDamageEffect = other.WheelDamageEffect;
+            Engine = other.Engine;
+            Wheels = new Array<WheelStatus>(other.Wheels);
+            Doors = new Array<DoorStatus>(other.Doors);
+            Lights = new Array<LightStatus>(other.Lights);
+            Panels = new Array<PanelStatus>(other.Panels);
+            Field24h = other.Field24h;
+        }
+
         public WheelStatus GetWheelStatus(Wheel wheel)
         {
             return Wheels[(int) wheel];

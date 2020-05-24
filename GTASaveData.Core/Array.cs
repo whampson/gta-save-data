@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using WpfEssentials;
 
 namespace GTASaveData
@@ -512,7 +513,7 @@ namespace GTASaveData
 
         public static implicit operator List<T>(Array<T> array)
         {
-            return array;
+            return array.ToList();
         }
         #endregion
 

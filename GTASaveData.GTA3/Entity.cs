@@ -1,9 +1,13 @@
-﻿using System;
+﻿using GTASaveData.Types;
+using System;
 
 namespace GTASaveData.GTA3
 {
     public abstract class Entity : SaveDataObject
     {
+        // TODO: move to Placeable and extend Placeable
+        private Matrix m_matrix;
+
         private EntityType m_entityType;
         private EntityStatus m_entityStatus;
         private EntityFlags m_entityFlags;
@@ -26,11 +30,57 @@ namespace GTASaveData.GTA3
             set { m_entityFlags = value; OnPropertyChanged(); }
         }
 
+        public Matrix Matrix
+        {
+            get { return m_matrix; }
+            set { m_matrix = value; OnPropertyChanged(); }
+        }
+        
         public Entity()
         {
             EntityType = EntityType.None;
             EntityStatus = EntityStatus.Abandoned;
             EntityFlags = EntityFlags.IsVisible;
+            Matrix = Matrix.Identity;
+        }
+
+        public Entity(Entity other)
+        {
+            EntityType = other.EntityType;
+            EntityStatus = other.EntityStatus;
+            EntityFlags = other.EntityFlags;
+            Matrix = other.Matrix;
+        }
+
+        public Vector3D GetPosition()
+        {
+            return Matrix.Position;
+        }
+
+        public void SetPosition(Vector3D pos)
+        {
+            Matrix m = Matrix;
+            m.Position = pos;
+
+            Matrix = m;
+        }
+
+        public void SetHeading(float angle)
+        {
+            Matrix = Matrix.RotateZ(Matrix, angle);
+        }
+
+        public void SetOrientation(float xAngle, float yAngle, float zAngle)
+        {
+            Matrix = Matrix.Rotate(Matrix, xAngle, yAngle, zAngle);
+        }
+
+        public void ResetOrientation()
+        {
+            Matrix m = Matrix.Identity;
+            m.Position = Matrix.Position;
+
+            Matrix = m;
         }
 
         protected void LoadEntityFlags(StreamBuffer buf, DataFormat fmt)

@@ -1,5 +1,7 @@
 ﻿using GTASaveData;
+using GTASaveData.Extensions;
 using GTASaveData.GTA3;
+using GTASaveData.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -127,27 +129,39 @@ namespace TestApp
 
         public void OnLoad()
         {
-            DamageManager dm = new DamageManager();
-            dm.SetDoorStatus(Door.FrontLeft, DoorStatus.Missing);
-            dm.SetDoorStatus(Door.FrontRight, DoorStatus.Smashed);
-            dm.SetDoorStatus(Door.Trunk, DoorStatus.Missing);
-            dm.SetDoorStatus(Door.RearRight, DoorStatus.Swinging);
-            dm.SetLightStatus(Light.FrontLeft, LightStatus.Broken);
-            dm.SetLightStatus(Light.FrontRight, LightStatus.Broken);
-            dm.SetLightStatus(Light.RearRight, LightStatus.Broken);
-            dm.SetWheelStatus(Wheel.FrontLeft, WheelStatus.Burst);
-            dm.SetWheelStatus(Wheel.RearLeft, WheelStatus.Missing);
-            dm.SetPanelStatus(Panel.FrontLeft, PanelStatus.Missing);
-            dm.SetPanelStatus(Panel.FrontLeft, PanelStatus.Smashed2);
-            dm.SetPanelStatus(Panel.BumperRear, PanelStatus.Missing);
-            dm.SetPanelStatus(Panel.RearLeft, PanelStatus.Missing);
-            dm.SetPanelStatus(Panel.RearRight, PanelStatus.Smashed1);
+            GTA3Save x = CurrentSaveFile as GTA3Save;
 
-            byte[] data = Serializer.Write(dm);
+            Vector3D loc = new Vector3D(130, -622, 27);
 
-            DamageManager dm2 = Serializer.Read<DamageManager>(data);
+            Automobile car1 = new Automobile(92, 1337);
+            car1.SetPosition(loc);
+            car1.SetHeading((float) Math.PI);
+            car1.CreatedBy = VehicleCreatedBy.Mission;
+            car1.EntityStatus = EntityStatus.Physics; // Need this to get autopilot going
+            car1.AutoPilot.Mission = CarMission.RamPlayerFar;
+            car1.AutoPilot.DrivingStyle = CarDrivingStyle.PloughThrough;
+            car1.AutoPilot.MaxTrafficSpeed = 70;
+            car1.AutoPilot.CruiseSpeed = 70;
 
-            bool result = dm.Equals(dm2);
+            Automobile car2 = new Automobile(car1) { Handle = 6969 };
+            Automobile car3 = new Automobile(car1) { Handle = 4200 };
+            Automobile car4 = new Automobile(car1) { Handle = 6480 };
+            Automobile car5 = new Automobile(car1) { Handle = 1598 };
+
+            loc.X += 10;
+            car2.SetPosition(loc);
+            loc.X += 10;
+            car3.SetPosition(loc);
+            loc.X += 10;
+            car4.SetPosition(loc);
+            loc.X += 10;
+            car5.SetPosition(loc);
+
+            x.VehiclePool.Cars.Add(car1);
+            x.VehiclePool.Cars.Add(car2);
+            x.VehiclePool.Cars.Add(car3);
+            x.VehiclePool.Cars.Add(car4);
+            x.VehiclePool.Cars.Add(car5);
 
         }
 

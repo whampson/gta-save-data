@@ -16,6 +16,10 @@ namespace GTASaveData.GTA3
             : base(VehicleType.Boat, model, handle)
         { }
 
+        public Boat(Boat other)
+            : base(other)
+        { }
+
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             base.ReadObjectData(buf, fmt);

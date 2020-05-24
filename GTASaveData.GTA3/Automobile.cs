@@ -23,6 +23,12 @@ namespace GTASaveData.GTA3
             Damage = new DamageManager();
         }
 
+        public Automobile(Automobile other)
+            : base(other)
+        {
+            Damage = new DamageManager(other.Damage);
+        }
+
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             base.ReadObjectData(buf, fmt);

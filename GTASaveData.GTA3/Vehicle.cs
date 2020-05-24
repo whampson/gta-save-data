@@ -8,7 +8,6 @@ namespace GTASaveData.GTA3
         private VehicleType m_type;
         private short m_modelIndex;
         private int m_handle;
-        private Matrix m_matrix;
         private AutoPilot m_autoPilot;
         private byte m_color1;
         private byte m_color2;
@@ -51,12 +50,6 @@ namespace GTASaveData.GTA3
         {
             get { return m_handle; }
             set { m_handle = value; OnPropertyChanged(); }
-        }
-
-        public Matrix Matrix
-        {
-            get { return m_matrix; }
-            set { m_matrix = value; OnPropertyChanged(); }
         }
 
         public AutoPilot AutoPilot
@@ -211,24 +204,48 @@ namespace GTASaveData.GTA3
 
         public Vehicle(VehicleType type, short model, int handle)
         {
-            Matrix = Matrix.Identity;
             Type = type;
             ModelIndex = model;
             Handle = handle;
+            EntityType = EntityType.Vehicle;
+            EntityFlags |= EntityFlags.UsesCollision | EntityFlags.UseCollisionRecords | EntityFlags.IsInSafePosition;
+            Health = 1000;
+            IsEngineOn = true;
+            HasFreebies = true;
             AutoPilot = new AutoPilot();
         }
 
-        public Vector3D GetPosition()
+        public Vehicle(Vehicle other)
+            : base(other)
         {
-            return Matrix.Position;
-        }
-
-        public void SetPosition(Vector3D pos)
-        {
-            Matrix m = Matrix.Identity;
-            m.Position = pos;
-
-            Matrix = m;
+            Type = other.Type;
+            ModelIndex = other.ModelIndex;
+            Handle = other.Handle;
+            AutoPilot = new AutoPilot(other.AutoPilot);
+            Color1 = other.Color1;
+            Color2 = other.Color2;
+            AlarmState = other.AlarmState;
+            MaxNumPassengers = other.MaxNumPassengers;
+            Field1D0h = other.Field1D0h;
+            Field1D4h = other.Field1D4h;
+            Field1D8h = other.Field1D8h;
+            Field1DCh = other.Field1DCh;
+            SteerAngle = other.SteerAngle;
+            GasPedal = other.GasPedal;
+            BrakePedal = other.BrakePedal;
+            CreatedBy = other.CreatedBy;
+            IsLawEnforcer = other.IsLawEnforcer;
+            IsLockedByScript = other.IsLockedByScript;
+            IsEngineOn = other.IsEngineOn;
+            IsHandbrakeOn = other.IsHandbrakeOn;
+            LightsOn = other.LightsOn;
+            HasFreebies = other.HasFreebies;
+            Health = other.Health;
+            CurrentGear = other.CurrentGear;
+            ChangeGearTime = other.ChangeGearTime;
+            TimeOfDeath = other.TimeOfDeath;
+            BombTimer = other.BombTimer;
+            DoorLock = other.DoorLock;
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
@@ -394,6 +411,7 @@ namespace GTASaveData.GTA3
 
     public enum VehicleCreatedBy
     {
+        Unknown,
         Random,
         Mission,
         Parked,

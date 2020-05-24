@@ -205,7 +205,44 @@ namespace GTASaveData.GTA3
 
 
         public AutoPilot()
-        { }
+        {
+            TimeToSpendOnCurrentCurve = 1000;
+            NextDirection = 1;
+            CruiseSpeed = 10;
+            MaxTrafficSpeed = 10;
+        }
+
+        public AutoPilot(AutoPilot other)
+        {
+            CurrRouteNode = other.CurrRouteNode;
+            NextRouteNode = other.NextRouteNode;
+            PrevRouteNode = other.PrevRouteNode;
+            TimeEnteredCurve = other.TimeEnteredCurve;
+            TimeToSpendOnCurrentCurve = other.TimeToSpendOnCurrentCurve;
+            CurrPathNodeInfo = other.CurrPathNodeInfo;
+            NextPathNodeInfo = other.NextPathNodeInfo;
+            PrevPathNodeInfo = other.PrevPathNodeInfo;
+            AntiReverseTimer = other.AntiReverseTimer;
+            TimeToStartMission = other.TimeToStartMission;
+            PrevDirection = other.PrevDirection;
+            CurrDirection = other.CurrDirection;
+            NextDirection = other.NextDirection;
+            CurrLane = other.CurrLane;
+            NextLane = other.NextLane;
+            DrivingStyle = other.DrivingStyle;
+            Mission = other.Mission;
+            TempAction = other.TempAction;
+            TimeTempAction = other.TimeTempAction;
+            MaxTrafficSpeed = other.MaxTrafficSpeed;
+            CruiseSpeed = other.CruiseSpeed;
+            SlowedDownByCars = other.SlowedDownByCars;
+            SlowedDownByPeds = other.SlowedDownByPeds;
+            StayInCurrentLevel = other.StayInCurrentLevel;
+            StayInFastLane = other.StayInFastLane;
+            IgnorePathFinding = other.IgnorePathFinding;
+            Destination = other.Destination;
+            PathFindNodesCount = other.PathFindNodesCount;
+        }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
