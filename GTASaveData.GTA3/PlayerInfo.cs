@@ -123,6 +123,8 @@ namespace GTASaveData.GTA3
             GetOutOfHospitalFree = buf.ReadBool();
             PlayerName = buf.ReadString(Limits.MaxPlayerNameLength);
 
+            buf.Skip(215);
+
             Debug.Assert(buf.Offset == SizeOf<PlayerInfo>());
         }
 
@@ -143,13 +145,14 @@ namespace GTASaveData.GTA3
             buf.Write(PlayerName, Limits.MaxPlayerNameLength);
 
             // Game writes some garbage here due to incorrect size calculation
+            buf.Skip(215);
 
             Debug.Assert(buf.Offset == SizeOf<PlayerInfo>());
         }
 
         protected override int GetSize(DataFormat fmt)
         {
-            return 0x65;        // no alignment
+            return 0x13C;
         }
 
         public override bool Equals(object obj)

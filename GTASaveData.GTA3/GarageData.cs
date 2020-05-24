@@ -123,6 +123,8 @@ namespace GTASaveData.GTA3
             CarsInSafeHouse = buf.Read<StoredCar>(Limits.CarsPerSafeHouse * Limits.NumberOfSafeHouses);
             Garages = buf.Read<Garage>(Limits.MaxNumGarages);
 
+            buf.Skip(244);
+
             Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }
 
@@ -142,13 +144,14 @@ namespace GTASaveData.GTA3
             buf.Write(Garages.ToArray(), Limits.MaxNumGarages);
 
             // Game writes some garbage here due to incorrect size calculation
+            buf.Skip(244);
 
             Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }
 
         protected override int GetSize(DataFormat fmt)
         {
-            return 0x1478;
+            return 0x156C;
         }
 
         public override bool Equals(object obj)

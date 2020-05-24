@@ -280,9 +280,9 @@ namespace GTASaveData.GTA3
             Color2 = buf.ReadByte();
             buf.Skip(2);
             AlarmState = buf.ReadInt16();
-            buf.Skip(43);
+            buf.Skip(42);
             MaxNumPassengers = buf.ReadByte();
-            buf.Skip(2);
+            buf.Skip(3);
             Field1D0h = buf.ReadFloat();
             Field1D4h = buf.ReadFloat();
             Field1D8h = buf.ReadFloat();
@@ -334,9 +334,9 @@ namespace GTASaveData.GTA3
             buf.Write(Color2);
             buf.Skip(2);
             buf.Write(AlarmState);
-            buf.Skip(43);
+            buf.Skip(42);
             buf.Write(MaxNumPassengers);
-            buf.Skip(2);
+            buf.Skip(3);
             buf.Write(Field1D0h);
             buf.Write(Field1D4h);
             buf.Write(Field1D8h);

@@ -99,7 +99,7 @@ namespace GTASaveData.GTA3
             NumberOfWastedRestartPoints = buf.ReadInt16();
             NumberOfBustedRestartPoints = buf.ReadInt16();
             OverrideNextRestart = buf.ReadBool();
-            buf.Align4Bytes();
+            buf.ReadBytes(3);
             OverrideRestartPoint = buf.Read<RestartPoint>();
             FadeInAfteNextDeath = buf.ReadBool();
             FadeInAfteNextArrest = buf.ReadBool();
@@ -119,7 +119,7 @@ namespace GTASaveData.GTA3
             buf.Write(NumberOfWastedRestartPoints);
             buf.Write(NumberOfBustedRestartPoints);
             buf.Write(OverrideNextRestart);
-            buf.Align4Bytes();
+            buf.Write(new byte[3]);
             buf.Write(OverrideRestartPoint);
             buf.Write(FadeInAfteNextDeath);
             buf.Write(FadeInAfteNextArrest);

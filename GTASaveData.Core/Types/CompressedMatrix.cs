@@ -4,7 +4,7 @@ namespace GTASaveData.Types
 {
     public struct CompressedMatrix : ISerializable, IEquatable<CompressedMatrix>
     {
-        private const int Size = 20;
+        private const int Size = 24;
 
         public Vector3D Position;
         public byte RightX;
@@ -13,6 +13,7 @@ namespace GTASaveData.Types
         public byte ForwardX;
         public byte ForwardY;
         public byte ForwardZ;
+        public int Unknown;
 
         public Matrix Decompress()
         {
@@ -25,7 +26,7 @@ namespace GTASaveData.Types
             m.Forward.Z = ForwardZ / 127.0f;
             m.Up = Vector3D.Cross(m.Right, m.Forward);
 
-            return Matrix.Orthogonalize(m);
+            return m;
         }
 
         int ISerializable.ReadObjectData(StreamBuffer buf, DataFormat fmt)
@@ -37,7 +38,8 @@ namespace GTASaveData.Types
             ForwardX = buf.ReadByte();
             ForwardY = buf.ReadByte();
             ForwardZ = buf.ReadByte();
-            buf.Skip(2);
+            buf.ReadInt16();
+            Unknown = buf.ReadInt32();
 
             return Size;
         }
@@ -51,7 +53,8 @@ namespace GTASaveData.Types
             buf.Write(ForwardX);
             buf.Write(ForwardY);
             buf.Write(ForwardZ);
-            buf.Skip(2);
+            buf.Write((short) 0);
+            buf.Write(Unknown);
 
             return Size;
         }

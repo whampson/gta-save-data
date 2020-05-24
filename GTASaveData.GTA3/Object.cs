@@ -23,7 +23,7 @@ namespace GTASaveData.GTA3
         private byte m_collisionDamageEffect;
         private byte m_specialCollisionResponseCases;
         private uint m_endOfLifeTime;
-        private long m_entityFlags;        // TODO: enum
+        private EntityFlags m_entityFlags;
 
         public short ModelIndex
         {
@@ -127,7 +127,7 @@ namespace GTASaveData.GTA3
             set { m_endOfLifeTime = value; OnPropertyChanged(); }
         }
 
-        public long EntityFlags
+        public EntityFlags EntityFlags
         {
             get { return m_entityFlags; }
             set { m_entityFlags = value; OnPropertyChanged(); }
@@ -145,17 +145,9 @@ namespace GTASaveData.GTA3
 
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
-            Matrix = buf.Read<CompressedMatrix>().Decompress();
-            if (ps2japan || !ps2)
-            {
-                buf.Skip(4);
-            }
+            Matrix = buf.Read<CompressedMatrix>(fmt).Decompress();
             UprootLimit = buf.ReadFloat();
-            ObjectMatrix = buf.Read<CompressedMatrix>().Decompress();
-            if (ps2japan || !ps2)
-            {
-                buf.Skip(4);
-            }
+            ObjectMatrix = buf.Read<CompressedMatrix>(fmt).Decompress();
             CreatedBy = buf.ReadByte();
             IsPickup = buf.ReadBool();
             IsPickupInShop = buf.ReadBool();
@@ -168,15 +160,16 @@ namespace GTASaveData.GTA3
             CollisionDamageEffect = buf.ReadByte();
             SpecialCollisionResponseCases = buf.ReadByte();
             EndOfLifeTime = buf.ReadUInt32();
-            EntityFlags = buf.ReadUInt32();
+            long eFlags = buf.ReadUInt32();
             if (ios)
             {
-                EntityFlags |= ((long) buf.ReadUInt16()) << 32;
+                eFlags |= ((long) buf.ReadUInt16()) << 32;
             }
             else
             {
-                EntityFlags |= ((long) buf.ReadUInt32()) << 32;
+                eFlags |= ((long) buf.ReadUInt32()) << 32;
             }
+            EntityFlags = (EntityFlags) eFlags;
 
             Debug.Assert(buf.Offset == SizeOf<GameObject>(fmt));
         }
@@ -189,17 +182,9 @@ namespace GTASaveData.GTA3
 
             buf.Write(ModelIndex);
             buf.Write(Handle);
-            buf.Write(Matrix.Compress());
-            if (ps2japan || !ps2)
-            {
-                buf.Skip(4);
-            }
+            buf.Write(Matrix.Compress(), fmt);
             buf.Write(UprootLimit);
-            buf.Write(ObjectMatrix.Compress());
-            if (ps2japan || !ps2)
-            {
-                buf.Skip(4);
-            }
+            buf.Write(ObjectMatrix.Compress(), fmt);
             buf.Write(CreatedBy);
             buf.Write(IsPickup);
             buf.Write(IsPickupInShop);
@@ -212,14 +197,15 @@ namespace GTASaveData.GTA3
             buf.Write(CollisionDamageEffect);
             buf.Write(SpecialCollisionResponseCases);
             buf.Write(EndOfLifeTime);
-            buf.Write((uint) (EntityFlags & 0xFFFFFFFF));
+            long eFlags = (long) EntityFlags;
+            buf.Write((uint) (eFlags & 0xFFFFFFFF));
             if (ios)
             {
-                buf.Write((ushort) (EntityFlags >> 32));
+                buf.Write((ushort) (eFlags >> 32));
             }
             else
             {
-                buf.Write((uint) (EntityFlags >> 32));
+                buf.Write((uint) (eFlags >> 32));
             }
 
             Debug.Assert(buf.Offset == SizeOf<GameObject>(fmt));

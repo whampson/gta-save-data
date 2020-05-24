@@ -42,17 +42,17 @@ namespace GTASaveData.GTA3
             m_right = buf.Read<Vector3D>();
             m_flags = buf.ReadInt32();
             m_up = buf.Read<Vector3D>();
-            buf.Skip(4);
+            buf.ReadInt32();
             m_at = buf.Read<Vector3D>();
-            buf.Skip(4);
+            buf.ReadInt32();
             Position = buf.Read<Vector3D>();
-            buf.Skip(4);
+            buf.ReadInt32();
 
             if (!ps2jp)
             {
                 m_pAttachment = buf.ReadInt32();
                 m_hasAttachment = buf.ReadBool();
-                buf.Align4Bytes();
+                buf.ReadBytes(3);
             }
             if (ps2 && !ps2jp)
             {
@@ -77,17 +77,17 @@ namespace GTASaveData.GTA3
             buf.Write(m_right);
             buf.Write(m_flags);
             buf.Write(m_up);
-            buf.Skip(4);
+            buf.Write(0);
             buf.Write(m_at);
-            buf.Skip(4);
+            buf.Write(0);
             buf.Write(Position);
-            buf.Skip(4);
+            buf.Write(0);
 
             if (!ps2jp)
             {
                 buf.Write(m_pAttachment);
                 buf.Write(m_hasAttachment);
-                buf.Align4Bytes();
+                buf.Write(new byte[3]);
             }
             if (ps2 && !ps2jp)
             {

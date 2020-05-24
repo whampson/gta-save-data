@@ -26,7 +26,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.CollisionDamageEffect, f => f.Random.Byte())
                 .RuleFor(x => x.SpecialCollisionResponseCases, f => f.Random.Byte())
                 .RuleFor(x => x.EndOfLifeTime, f => f.Random.UInt())
-                .RuleFor(x => x.EntityFlags, f => (format.iOS) ? f.Random.Int() : f.Random.Long());
+                .RuleFor(x => x.EntityFlags, f => f.PickRandom<EntityFlags>());
 
             return model.Generate();
         }

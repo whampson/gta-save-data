@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3
         {
             Index = buf.ReadInt32();
             AudioId = buf.ReadInt16();
-            buf.Align4Bytes();
+            buf.ReadInt16();
             Position = buf.Read<Vector3D>();
             AudioEntity = buf.ReadInt32();
 
@@ -53,7 +53,7 @@ namespace GTASaveData.GTA3
         {
             buf.Write(Index);
             buf.Write(AudioId);
-            buf.Align4Bytes();
+            buf.Write((short) 0);
             buf.Write(Position);
             buf.Write(AudioEntity);
 

@@ -110,7 +110,7 @@ namespace GTASaveData.GTA3
             Scale = buf.ReadInt16();
             Display = (RadarBlipDisplay) buf.ReadInt16();
             Sprite = (RadarBlipSprite) buf.ReadInt16();
-            buf.Align4Bytes();
+            buf.ReadInt16();
 
             Debug.Assert(buf.Offset == SizeOf<RadarBlip>());
         }
@@ -129,7 +129,7 @@ namespace GTASaveData.GTA3
             buf.Write(Scale);
             buf.Write((short) Display);
             buf.Write((short) Sprite);
-            buf.Align4Bytes();
+            buf.Write((short) 0);
 
             Debug.Assert(buf.Offset == SizeOf<RadarBlip>());
         }

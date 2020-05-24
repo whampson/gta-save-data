@@ -9,10 +9,10 @@
     <Product>GTASaveData</Product>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
     <Description>A .NET library for manipulating Grand Theft Auto III save files.</Description>
-    <AssemblyVersion>0.1.0.801</AssemblyVersion>
-    <FileVersion>0.1.0.801</FileVersion>
+    <AssemblyVersion>0.1.0.833</AssemblyVersion>
+    <FileVersion>0.1.0.833</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.1.0-alpha-801</Version>
+    <Version>0.1.0-alpha-833</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
