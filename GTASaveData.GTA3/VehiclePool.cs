@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -32,26 +33,53 @@ namespace GTASaveData.GTA3
             int numCars = buf.ReadInt32();
             int numBoats = buf.ReadInt32();
 
-            Cars = buf.Read<Automobile>(numCars);
-            Boats = buf.Read<Boat>(numBoats);
+            Cars.Clear();
+            Boats.Clear();
+
+            for (int i = 0; i < numCars + numBoats; i++)
+            {
+                VehicleType type = (VehicleType) buf.ReadInt32();
+                short model = buf.ReadInt16();
+                int handle = buf.ReadInt32();
+                if (type == VehicleType.Car)
+                {
+                    Automobile a = new Automobile(model, handle);
+                    Serializer.Read(a, buf, fmt);
+                    Cars.Add(a);
+                }
+                else if (type == VehicleType.Boat)
+                {
+                    Boat b = new Boat(model, handle);
+                    Serializer.Read(b, buf, fmt);
+                    Boats.Add(b);
+                }
+            }
 
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
+            List<Vehicle> vehicles = Cars.Select(x => x as Vehicle).Concat(Boats.Select(x => x as Vehicle)).ToList();
+
             buf.Write(Cars.Count);
             buf.Write(Boats.Count);
-            buf.Write(Cars.ToArray());
-            buf.Write(Boats.ToArray());
+
+            foreach (Vehicle v in vehicles)
+            {
+                buf.Write((int) v.Type);
+                buf.Write(v.ModelIndex);
+                buf.Write(v.Handle);
+                buf.Write(v, fmt);
+            }
 
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
         protected override int GetSize(DataFormat fmt)
         {
-            return SizeOf<Automobile>(fmt) * Cars.Count
-                + SizeOf<Boat>(fmt) * Boats.Count
+            return (SizeOf<Automobile>(fmt) + 10) * Cars.Count
+                + (SizeOf<Boat>(fmt) + 10) * Boats.Count
                 + 2 * sizeof(int);
         }
 

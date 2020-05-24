@@ -14,6 +14,11 @@ namespace GTASaveData.GTA3
         }
 
         public Automobile()
+            : this(0, -1)
+        { }
+
+        public Automobile(short model, int handle)
+            : base(VehicleType.Car, model, handle)
         {
             Damage = new DamageManager();
         }
@@ -22,8 +27,7 @@ namespace GTASaveData.GTA3
         {
             base.ReadObjectData(buf, fmt);
             Damage = buf.Read<DamageManager>();
-            //buf.Skip(0x30A);    // The rest is useless
-            buf.Skip(GetSize(fmt) - buf.Offset);
+            buf.Skip(GetSize(fmt) - buf.Offset);    // The rest is useless
 
             Debug.Assert(buf.Offset == SizeOf<Automobile>(fmt));
         }
@@ -32,7 +36,6 @@ namespace GTASaveData.GTA3
         {
             base.WriteObjectData(buf, fmt);
             buf.Write(Damage);
-            //buf.Skip(0x30A);
             buf.Skip(GetSize(fmt) - buf.Offset);
 
             Debug.Assert(buf.Offset == SizeOf<Automobile>(fmt));
@@ -54,7 +57,7 @@ namespace GTASaveData.GTA3
             }
             if (fmt.PC || fmt.Xbox)
             {
-                return 0x5A8;   // PC/Xbox
+                return 0x5A8;
             }
 
             throw SizeNotDefined(fmt);

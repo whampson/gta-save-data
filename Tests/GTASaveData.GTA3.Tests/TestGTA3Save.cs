@@ -18,7 +18,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
                 //.RuleFor(x => x.PedPool, Generator.Generate<PedPool, TestPedPool>(format))
                 .RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData>(format))
-                //.RuleFor(x => x.VehiclePool, Generator.Generate<VehiclePool, TestVehiclePool>(format))
+                .RuleFor(x => x.VehiclePool, Generator.Generate<VehiclePool, TestVehiclePool>(format))
                 .RuleFor(x => x.ObjectPool, Generator.Generate<ObjectPool, TestObjectPool>(format))
                 .RuleFor(x => x.Paths, Generator.Generate<PathData, TestPathData>(format))
                 .RuleFor(x => x.Cranes, Generator.Generate<CraneData, TestCraneData>(format))

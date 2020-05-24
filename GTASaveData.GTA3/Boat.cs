@@ -5,9 +5,15 @@ namespace GTASaveData.GTA3
 {
     public class Boat : Vehicle, IEquatable<Boat>
     {
-        // This class sucks, nothing is editable
+        // This class sucks, nothing is editable :-(
+        // But I will keep it for completeness.
 
         public Boat()
+        : this(0, -1)
+        { }
+
+        public Boat(short model, int handle)
+            : base(VehicleType.Boat, model, handle)
         { }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)

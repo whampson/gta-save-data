@@ -24,7 +24,7 @@ namespace GTASaveData.GTA3
         private ScriptData m_scripts;
         private Dummy m_pedPool;  // PedPool
         private GarageData m_garages;
-        private Dummy m_vehiclePool;  // VehiclePool
+        private VehiclePool m_vehiclePool;
         private ObjectPool m_objectPool;
         private PathData m_paths;
         private CraneData m_cranes;
@@ -66,7 +66,7 @@ namespace GTASaveData.GTA3
             set { m_garages = value; OnPropertyChanged(); }
         }
 
-        public Dummy VehiclePool
+        public VehiclePool VehiclePool
         {
             get { return m_vehiclePool; }
             set { m_vehiclePool = value; OnPropertyChanged(); }
@@ -216,7 +216,7 @@ namespace GTASaveData.GTA3
             Scripts = new ScriptData();
             PedPool = new Dummy();
             Garages = new GarageData();
-            VehiclePool = new Dummy();
+            VehiclePool = new VehiclePool();
             ObjectPool = new ObjectPool();
             Paths = new PathData();
             Cranes = new CraneData();
@@ -259,7 +259,7 @@ namespace GTASaveData.GTA3
             Scripts = Load<ScriptData>();
             totalSize += ReadBlock(file); PedPool = LoadPreAlloc<Dummy>();
             totalSize += ReadBlock(file); Garages = Load<GarageData>();
-            totalSize += ReadBlock(file); VehiclePool = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); VehiclePool = Load<VehiclePool>();
             totalSize += ReadBlock(file); ObjectPool = Load<ObjectPool>();
             totalSize += ReadBlock(file); Paths = LoadPreAlloc<PathData>();
             totalSize += ReadBlock(file); Cranes = Load<CraneData>();

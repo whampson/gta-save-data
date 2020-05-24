@@ -6,38 +6,44 @@ namespace GTASaveData.GTA3
 {
     public class ObjectPool : SaveDataObject, IEquatable<ObjectPool>
     {
-        private Array<GameObject> m_objects;
+        private Array<GameObject> m_items;
 
-        public Array<GameObject> Objects
+        public Array<GameObject> Items
         {
-            get { return m_objects; }
-            set { m_objects = value; OnPropertyChanged(); }
+            get { return m_items; }
+            set { m_items = value; OnPropertyChanged(); }
+        }
+
+        public GameObject this[int i]
+        {
+            get { return Items[i]; }
+            set { Items[i] = value; OnPropertyChanged(); }
         }
 
         public ObjectPool()
         {
-            Objects = new Array<GameObject>();
+            Items = new Array<GameObject>();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             int numObjects = buf.ReadInt32();
-            Objects = buf.Read<GameObject>(numObjects);
+            Items = buf.Read<GameObject>(numObjects);
 
             Debug.Assert(buf.Offset == SizeOf(this));
         }
 
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            buf.Write(Objects.Count);
-            buf.Write(Objects.ToArray());
+            buf.Write(Items.Count);
+            buf.Write(Items.ToArray());
 
             Debug.Assert(buf.Offset == SizeOf(this));
         }
 
         protected override int GetSize(DataFormat fmt)
         {
-            return (SizeOf<GameObject>(fmt) * Objects.Count) + sizeof(int);
+            return (SizeOf<GameObject>(fmt) * Items.Count) + sizeof(int);
         }
 
         public override bool Equals(object obj)
@@ -52,7 +58,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return Objects.SequenceEqual(other.Objects);
+            return Items.SequenceEqual(other.Items);
         }
     }
 }

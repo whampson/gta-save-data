@@ -78,14 +78,14 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Content="Block:"
-                IsEnabled="{Binding CurrentSaveDataFile, Converter={StaticResource NullBooleanConverter}}"/>
+                IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
 
             <ComboBox Grid.Row="0" Grid.Column="1"
                 Style="{StaticResource ComboBoxStyle}"
                 ItemsSource="{Binding BlockNameForCurrentGame, Mode=OneWay}"
                 SelectedIndex="{Binding SelectedBlockIndex}"
                 SelectionChanged="BlockComboBox_SelectionChanged"
-                IsEnabled="{Binding CurrentSaveDataFile, Converter={StaticResource NullBooleanConverter}}"/>
+                IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
 
             <CheckBox Grid.Row="0" Grid.Column="2"
                 Margin="5,5,5,5"
@@ -122,9 +122,9 @@
                 <Separator Grid.Column="1"/>
 
                 <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Center">
-                    <TextBlock Text="{Binding CurrentFileFormat.Name}">
+                    <TextBlock Text="{Binding CurrentFileFormat.FormatName}">
                         <TextBlock.ToolTip>
-                            <ToolTip Content="{Binding CurrentFileFormat.Description}"/>
+                            <ToolTip Content="{Binding CurrentFileFormat.FormatDescription}"/>
                         </TextBlock.ToolTip>
                     </TextBlock>
                 </StatusBarItem>

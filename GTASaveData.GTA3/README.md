@@ -7,7 +7,7 @@
 - [x] Scripts
 - [ ] PedPool
 - [x] Garages
-- [ ] VehiclePool
+- [x] VehiclePool
 - [x] ObjectPool
 - [x] Paths
 - [x] Cranes
