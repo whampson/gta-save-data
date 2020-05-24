@@ -14,7 +14,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Matrix, f => TestMatrix.GenerateRandom(f))
                 .RuleFor(x => x.UprootLimit, f => f.Random.Float())
                 .RuleFor(x => x.ObjectMatrix, f => TestMatrix.GenerateRandom(f))
-                .RuleFor(x => x.CreatedBy, f => f.Random.Byte())
+                .RuleFor(x => x.CreatedBy, f => f.PickRandom<ObjectCreatedBy>())
                 .RuleFor(x => x.IsPickup, f => f.Random.Bool())
                 .RuleFor(x => x.IsPickupInShop, f => f.Random.Bool())
                 .RuleFor(x => x.IsPickupOutOfStock, f => f.Random.Bool())

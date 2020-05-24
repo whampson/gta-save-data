@@ -3,33 +3,12 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public enum VehicleType
-    {
-        Car,
-        Boat
-    }
-
-    public enum CarLock
-    {
-        None,
-        Unlocked,
-        Locked,
-        LockoutPlayerOnly,
-        LockedPlayerInside,
-        LockedInitially,
-        ForceShutDoors,
-        SkipShutDoors
-    }
-
-    public abstract class Vehicle : SaveDataObject, IEquatable<Vehicle>
+    public abstract class Vehicle : Entity, IEquatable<Vehicle>
     {
         private VehicleType m_type;
         private short m_modelIndex;
         private int m_handle;
         private Matrix m_matrix;
-        private EntityType m_entityType;
-        private EntityStatus m_entityStatus;
-        private EntityFlags m_entityFlags;
         private AutoPilot m_autoPilot;
         private byte m_color1;
         private byte m_color2;
@@ -42,9 +21,9 @@ namespace GTASaveData.GTA3
         private float m_steerAngle;
         private float m_gasPedal;
         private float m_brakePedal;
-        private byte m_vehicleCreatedBy;
+        private VehicleCreatedBy m_createdBy;
         private bool m_isLawEnforcer;
-        private bool m_isLocked;
+        private bool m_isLockedByScript;
         private bool m_isEngineOn;
         private bool m_isHandbrakeOn;
         private bool m_lightsOn;
@@ -78,24 +57,6 @@ namespace GTASaveData.GTA3
         {
             get { return m_matrix; }
             set { m_matrix = value; OnPropertyChanged(); }
-        }
-
-        public EntityType EntityType
-        {
-            get { return m_entityType; }
-            set { m_entityType = value; OnPropertyChanged(); }
-        }
-
-        public EntityStatus EntityStatus
-        {
-            get { return m_entityStatus; }
-            set { m_entityStatus = value; OnPropertyChanged(); }
-        }
-
-        public EntityFlags EntityFlags
-        {
-            get { return m_entityFlags; }
-            set { m_entityFlags = value; OnPropertyChanged(); }
         }
 
         public AutoPilot AutoPilot
@@ -170,10 +131,10 @@ namespace GTASaveData.GTA3
             set { m_brakePedal = value; OnPropertyChanged(); }
         }
 
-        public byte VehicleCreatedBy
+        public VehicleCreatedBy CreatedBy
         {
-            get { return m_vehicleCreatedBy; }
-            set { m_vehicleCreatedBy = value; OnPropertyChanged(); }
+            get { return m_createdBy; }
+            set { m_createdBy = value; OnPropertyChanged(); }
         }
 
         public bool IsLawEnforcer
@@ -182,10 +143,10 @@ namespace GTASaveData.GTA3
             set { m_isLawEnforcer = value; OnPropertyChanged(); }
         }
 
-        public bool IsLocked
+        public bool IsLockedByScript
         {
-            get { return m_isLocked; }
-            set { m_isLocked = value; OnPropertyChanged(); }
+            get { return m_isLockedByScript; }
+            set { m_isLockedByScript = value; OnPropertyChanged(); }
         }
 
         public bool IsEngineOn
@@ -248,13 +209,26 @@ namespace GTASaveData.GTA3
             set { m_doorLock = value; OnPropertyChanged(); }
         }
 
-
         public Vehicle(VehicleType type, short model, int handle)
         {
+            Matrix = Matrix.Identity;
             Type = type;
             ModelIndex = model;
             Handle = handle;
             AutoPilot = new AutoPilot();
+        }
+
+        public Vector3D GetPosition()
+        {
+            return Matrix.Position;
+        }
+
+        public void SetPosition(Vector3D pos)
+        {
+            Matrix m = Matrix.Identity;
+            m.Position = pos;
+
+            Matrix = m;
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
@@ -291,10 +265,10 @@ namespace GTASaveData.GTA3
             SteerAngle = buf.ReadFloat();
             GasPedal = buf.ReadFloat();
             BrakePedal = buf.ReadFloat();
-            VehicleCreatedBy = buf.ReadByte();
+            CreatedBy = (VehicleCreatedBy) buf.ReadByte();
             byte flags = buf.ReadByte();
             IsLawEnforcer = (flags & 0x01) != 0;
-            IsLocked = (flags & 0x08) != 0;
+            IsLockedByScript = (flags & 0x08) != 0;
             IsEngineOn = (flags & 0x10) != 0;
             IsHandbrakeOn = (flags & 0x20) != 0;
             LightsOn = (flags & 0x40) != 0;
@@ -324,10 +298,7 @@ namespace GTASaveData.GTA3
             buf.Skip(4);
             buf.Write(Matrix.Position);
             buf.Skip(16);
-            long eFlags = (long) EntityFlags;
-            eFlags |= ((long) EntityType) & 0x07;
-            eFlags |= (((long) EntityStatus) & 0x1F) << 3;
-            buf.Write(eFlags);
+            SaveEntityFlags(buf, fmt);
             buf.Skip(212);
             buf.Write(AutoPilot);
             buf.Write(Color1);
@@ -345,10 +316,10 @@ namespace GTASaveData.GTA3
             buf.Write(SteerAngle);
             buf.Write(GasPedal);
             buf.Write(BrakePedal);
-            buf.Write(VehicleCreatedBy);
+            buf.Write((byte) CreatedBy);
             byte flags = 0;
             if (IsLawEnforcer) flags |= 0x01;
-            if (IsLocked) flags |= 0x08;
+            if (IsLockedByScript) flags |= 0x08;
             if (IsEngineOn) flags |= 0x10;
             if (IsHandbrakeOn) flags |= 0x20;
             if (LightsOn) flags |= 0x40;
@@ -399,9 +370,9 @@ namespace GTASaveData.GTA3
                 && SteerAngle.Equals(other.SteerAngle)
                 && GasPedal.Equals(other.GasPedal)
                 && BrakePedal.Equals(other.BrakePedal)
-                && VehicleCreatedBy.Equals(other.VehicleCreatedBy)
+                && CreatedBy.Equals(other.CreatedBy)
                 && IsLawEnforcer.Equals(other.IsLawEnforcer)
-                && IsLocked.Equals(other.IsLocked)
+                && IsLockedByScript.Equals(other.IsLockedByScript)
                 && IsEngineOn.Equals(other.IsEngineOn)
                 && IsHandbrakeOn.Equals(other.IsHandbrakeOn)
                 && LightsOn.Equals(other.LightsOn)
@@ -413,5 +384,31 @@ namespace GTASaveData.GTA3
                 && BombTimer.Equals(other.BombTimer)
                 && DoorLock.Equals(other.DoorLock);
         }
+    }
+
+    public enum VehicleType
+    {
+        Car,
+        Boat
+    }
+
+    public enum VehicleCreatedBy
+    {
+        Random,
+        Mission,
+        Parked,
+        Permanent
+    }
+
+    public enum CarLock
+    {
+        None,
+        Unlocked,
+        Locked,
+        LockoutPlayerOnly,
+        LockedPlayerInside,
+        LockedInitially,
+        ForceShutDoors,
+        SkipShutDoors
     }
 }

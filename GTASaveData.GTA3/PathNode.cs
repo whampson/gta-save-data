@@ -1,8 +1,9 @@
 ﻿using System;
+using WpfEssentials;
 
 namespace GTASaveData.GTA3
 {
-    public class PathNode : GTAObject, IEquatable<PathNode>
+    public class PathNode : ObservableObject, IEquatable<PathNode>
     {
         private bool m_disabled;
         private bool m_betweenLevels;

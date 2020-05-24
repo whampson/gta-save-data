@@ -3,12 +3,12 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestInvisibleEntity : Base<InvisibleEntity>
+    public class TestInvisibleEntity : Base<InvisibleObject>
     {
-        public override InvisibleEntity GenerateTestObject(DataFormat format)
+        public override InvisibleObject GenerateTestObject(DataFormat format)
         {
-            Faker<InvisibleEntity> model = new Faker<InvisibleEntity>()
-                .RuleFor(x => x.Type, f => f.PickRandom<ObjectType>())
+            Faker<InvisibleObject> model = new Faker<InvisibleObject>()
+                .RuleFor(x => x.Type, f => f.PickRandom<PoolType>())
                 .RuleFor(x => x.Handle, f => f.Random.Int());
 
             return model.Generate();
@@ -17,8 +17,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void RandomDataSerialization()
         {
-            InvisibleEntity x0 = GenerateTestObject();
-            InvisibleEntity x1 = CreateSerializedCopy(x0, out byte[] data);
+            InvisibleObject x0 = GenerateTestObject();
+            InvisibleObject x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Type, x1.Type);
             Assert.Equal(x0.Handle, x1.Handle);

@@ -5,12 +5,12 @@ namespace GTASaveData.GTA3
 {
     public class BuildingSwap : SaveDataObject, IEquatable<BuildingSwap>
     {
-        private ObjectType m_type;
+        private PoolType m_type;
         private int m_handle;
         private int m_newModel;
         private int m_oldModel;
 
-        public ObjectType Type
+        public PoolType Type
         {
             get { return m_type; }
             set { m_type = value; OnPropertyChanged(); }
@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            Type = (ObjectType) buf.ReadInt32();
+            Type = (PoolType) buf.ReadInt32();
             Handle = buf.ReadInt32();
             NewModel = buf.ReadInt32();
             OldModel = buf.ReadInt32();

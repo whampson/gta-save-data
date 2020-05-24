@@ -1,9 +1,63 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GTASaveData.GTA3
 {
+    public abstract class Entity : SaveDataObject
+    {
+        private EntityType m_entityType;
+        private EntityStatus m_entityStatus;
+        private EntityFlags m_entityFlags;
+
+        public EntityType EntityType
+        {
+            get { return m_entityType; }
+            set { m_entityType = value; OnPropertyChanged(); }
+        }
+
+        public EntityStatus EntityStatus
+        {
+            get { return m_entityStatus; }
+            set { m_entityStatus = value; OnPropertyChanged(); }
+        }
+
+        public EntityFlags EntityFlags
+        {
+            get { return m_entityFlags; }
+            set { m_entityFlags = value; OnPropertyChanged(); }
+        }
+
+        public Entity()
+        {
+            EntityType = EntityType.None;
+            EntityStatus = EntityStatus.Abandoned;
+            EntityFlags = EntityFlags.IsVisible;
+        }
+
+        protected void LoadEntityFlags(StreamBuffer buf, DataFormat fmt)
+        {
+            long eFlags = buf.ReadInt32();
+            eFlags |= (fmt.iOS)
+                ? ((long) buf.ReadUInt16()) << 32
+                : ((long) buf.ReadUInt32()) << 32;
+
+            EntityFlags = (EntityFlags) (eFlags & ~0xFF);
+            EntityType = (EntityType) (eFlags & 0x07);
+            EntityStatus = (EntityStatus) ((eFlags & 0xF8) >> 3);
+        }
+
+        protected void SaveEntityFlags(StreamBuffer buf, DataFormat fmt)
+        {
+            long eFlags = (long) EntityFlags;
+            eFlags |= ((long) EntityType) & 0x07;
+            eFlags |= (((long) EntityStatus) & 0x1F) << 3;
+            buf.Write((uint) (eFlags & 0xFFFFFFFF));
+            if (fmt.iOS)
+                buf.Write((ushort) (eFlags >> 32));
+            else
+                buf.Write((uint) (eFlags >> 32));
+        }
+    }
+
     public enum EntityType : byte
     {
         None,
@@ -73,5 +127,14 @@ namespace GTASaveData.GTA3
 
         DistanceFade = (1L << 40),
         UnknownFlag = (1L << 41)
+    }
+
+    public enum PoolType
+    {
+        None,
+        Treadable,
+        Building,
+        Object,
+        Dummy
     }
 }

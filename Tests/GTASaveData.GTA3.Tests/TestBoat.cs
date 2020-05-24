@@ -28,9 +28,9 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.SteerAngle, f => f.Random.Float())
                 .RuleFor(x => x.GasPedal, f => f.Random.Float())
                 .RuleFor(x => x.BrakePedal, f => f.Random.Float())
-                .RuleFor(x => x.VehicleCreatedBy, f => f.Random.Byte())
+                .RuleFor(x => x.CreatedBy, f => f.PickRandom<VehicleCreatedBy>())
                 .RuleFor(x => x.IsLawEnforcer, f => f.Random.Bool())
-                .RuleFor(x => x.IsLocked, f => f.Random.Bool())
+                .RuleFor(x => x.IsLockedByScript, f => f.Random.Bool())
                 .RuleFor(x => x.IsEngineOn, f => f.Random.Bool())
                 .RuleFor(x => x.IsHandbrakeOn, f => f.Random.Bool())
                 .RuleFor(x => x.LightsOn, f => f.Random.Bool())
@@ -69,9 +69,9 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.SteerAngle, x1.SteerAngle);
             Assert.Equal(x0.GasPedal, x1.GasPedal);
             Assert.Equal(x0.BrakePedal, x1.BrakePedal);
-            Assert.Equal(x0.VehicleCreatedBy, x1.VehicleCreatedBy);
+            Assert.Equal(x0.CreatedBy, x1.CreatedBy);
             Assert.Equal(x0.IsLawEnforcer, x1.IsLawEnforcer);
-            Assert.Equal(x0.IsLocked, x1.IsLocked);
+            Assert.Equal(x0.IsLockedByScript, x1.IsLockedByScript);
             Assert.Equal(x0.IsEngineOn, x1.IsEngineOn);
             Assert.Equal(x0.IsHandbrakeOn, x1.IsHandbrakeOn);
             Assert.Equal(x0.LightsOn, x1.LightsOn);

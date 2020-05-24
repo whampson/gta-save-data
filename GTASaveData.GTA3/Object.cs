@@ -4,14 +4,14 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class GameObject : SaveDataObject, IEquatable<GameObject>
+    public class GameObject : Entity, IEquatable<GameObject>
     {
         private short m_modelIndex;
         private int m_handle;
         private Matrix m_matrix;
         private float m_uprootLimit;
         private Matrix m_objectMatrix;
-        private byte m_createdBy;   // TODO: enum
+        private ObjectCreatedBy m_createdBy;
         private bool m_isPickup;
         private bool m_isPickupInShop;
         private bool m_isPickupOutOfStock;
@@ -23,7 +23,6 @@ namespace GTASaveData.GTA3
         private byte m_collisionDamageEffect;
         private byte m_specialCollisionResponseCases;
         private uint m_endOfLifeTime;
-        private EntityFlags m_entityFlags;
 
         public short ModelIndex
         {
@@ -55,7 +54,7 @@ namespace GTASaveData.GTA3
             set { m_objectMatrix = value; OnPropertyChanged(); }
         }
 
-        public byte CreatedBy
+        public ObjectCreatedBy CreatedBy
         {
             get { return m_createdBy; }
             set { m_createdBy = value; OnPropertyChanged(); }
@@ -127,28 +126,21 @@ namespace GTASaveData.GTA3
             set { m_endOfLifeTime = value; OnPropertyChanged(); }
         }
 
-        public EntityFlags EntityFlags
-        {
-            get { return m_entityFlags; }
-            set { m_entityFlags = value; OnPropertyChanged(); }
-        }
-
-
         public GameObject()
-        { }
+        {
+            Matrix = Matrix.Identity;
+            ObjectMatrix = Matrix.Identity;
+            EntityType = EntityType.Object;
+        }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            bool ios = fmt.iOS;
-            bool ps2 = fmt.PS2;
-            bool ps2japan = GTA3Save.IsJapanesePS2(fmt);
-
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
             Matrix = buf.Read<CompressedMatrix>(fmt).Decompress();
             UprootLimit = buf.ReadFloat();
             ObjectMatrix = buf.Read<CompressedMatrix>(fmt).Decompress();
-            CreatedBy = buf.ReadByte();
+            CreatedBy = (ObjectCreatedBy) buf.ReadByte();
             IsPickup = buf.ReadBool();
             IsPickupInShop = buf.ReadBool();
             IsPickupOutOfStock = buf.ReadBool();
@@ -160,32 +152,19 @@ namespace GTASaveData.GTA3
             CollisionDamageEffect = buf.ReadByte();
             SpecialCollisionResponseCases = buf.ReadByte();
             EndOfLifeTime = buf.ReadUInt32();
-            long eFlags = buf.ReadUInt32();
-            if (ios)
-            {
-                eFlags |= ((long) buf.ReadUInt16()) << 32;
-            }
-            else
-            {
-                eFlags |= ((long) buf.ReadUInt32()) << 32;
-            }
-            EntityFlags = (EntityFlags) eFlags;
+            LoadEntityFlags(buf, fmt);
 
             Debug.Assert(buf.Offset == SizeOf<GameObject>(fmt));
         }
 
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            bool ios = fmt.iOS;
-            bool ps2 = fmt.PS2;
-            bool ps2japan = GTA3Save.IsJapanesePS2(fmt);
-
             buf.Write(ModelIndex);
             buf.Write(Handle);
             buf.Write(Matrix.Compress(), fmt);
             buf.Write(UprootLimit);
             buf.Write(ObjectMatrix.Compress(), fmt);
-            buf.Write(CreatedBy);
+            buf.Write((byte) CreatedBy);
             buf.Write(IsPickup);
             buf.Write(IsPickupInShop);
             buf.Write(IsPickupOutOfStock);
@@ -197,16 +176,7 @@ namespace GTASaveData.GTA3
             buf.Write(CollisionDamageEffect);
             buf.Write(SpecialCollisionResponseCases);
             buf.Write(EndOfLifeTime);
-            long eFlags = (long) EntityFlags;
-            buf.Write((uint) (eFlags & 0xFFFFFFFF));
-            if (ios)
-            {
-                buf.Write((ushort) (eFlags >> 32));
-            }
-            else
-            {
-                buf.Write((uint) (eFlags >> 32));
-            }
+            SaveEntityFlags(buf, fmt);
 
             Debug.Assert(buf.Offset == SizeOf<GameObject>(fmt));
         }
@@ -237,33 +207,35 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return ModelIndex.Equals(ModelIndex)
-                && Handle.Equals(Handle)
-                && Matrix.Equals(Matrix)
-                && UprootLimit.Equals(UprootLimit)
-                && ObjectMatrix.Equals(ObjectMatrix)
-                && CreatedBy.Equals(CreatedBy)
-                && IsPickup.Equals(IsPickup)
-                && IsPickupInShop.Equals(IsPickupInShop)
-                && IsPickupOutOfStock.Equals(IsPickupOutOfStock)
-                && IsGlassCracked.Equals(IsGlassCracked)
-                && IsGlassBroken.Equals(IsGlassBroken)
-                && HasBeenDamaged.Equals(HasBeenDamaged)
-                && UseCarColors.Equals(UseCarColors)
-                && CollisionDamageMultiplier.Equals(CollisionDamageMultiplier)
-                && CollisionDamageEffect.Equals(CollisionDamageEffect)
-                && SpecialCollisionResponseCases.Equals(SpecialCollisionResponseCases)
-                && EndOfLifeTime.Equals(EndOfLifeTime)
-                && EntityFlags.Equals(EntityFlags);
+            return ModelIndex.Equals(other.ModelIndex)
+                && Handle.Equals(other.Handle)
+                && Matrix.Equals(other.Matrix)
+                && UprootLimit.Equals(other.UprootLimit)
+                && ObjectMatrix.Equals(other.ObjectMatrix)
+                && CreatedBy.Equals(other.CreatedBy)
+                && IsPickup.Equals(other.IsPickup)
+                && IsPickupInShop.Equals(other.IsPickupInShop)
+                && IsPickupOutOfStock.Equals(other.IsPickupOutOfStock)
+                && IsGlassCracked.Equals(other.IsGlassCracked)
+                && IsGlassBroken.Equals(other.IsGlassBroken)
+                && HasBeenDamaged.Equals(other.HasBeenDamaged)
+                && UseCarColors.Equals(other.UseCarColors)
+                && CollisionDamageMultiplier.Equals(other.CollisionDamageMultiplier)
+                && CollisionDamageEffect.Equals(other.CollisionDamageEffect)
+                && SpecialCollisionResponseCases.Equals(other.SpecialCollisionResponseCases)
+                && EndOfLifeTime.Equals(other.EndOfLifeTime)
+                && EntityType.Equals(other.EntityType)
+                && EntityStatus.Equals(other.EntityStatus)
+                && EntityFlags.Equals(other.EntityFlags);
         }
     }
 
-    public enum ObjectType
+    public enum ObjectCreatedBy
     {
-        None,
-        Treadable,
-        Building,
-        Object,
-        Dummy
+        Unknown,
+        Game,
+        Mission,
+        Temp,
+        Cutscene
     }
 }

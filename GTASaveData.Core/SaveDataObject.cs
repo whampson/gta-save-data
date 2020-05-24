@@ -1,11 +1,12 @@
 ﻿using System;
+using WpfEssentials;
 
 namespace GTASaveData
 {
     /// <summary>
-    /// A <see cref="GTAObject"/> that can be stored in a save data file.
+    /// A GTA data structure that can be stored in a save file.
     /// </summary>
-    public abstract class SaveDataObject : GTAObject, ISerializable
+    public abstract class SaveDataObject : ObservableObject, ISerializable
     {
         int ISerializable.ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {

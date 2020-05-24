@@ -25,7 +25,7 @@ namespace GTASaveData.GTA3
         private Array<Collective> m_collectives;    // not used
         private int m_nextFreeCollectiveIndex;      // not used
         private Array<BuildingSwap> m_buildingSwapArray;
-        private Array<InvisibleEntity> m_invisibilitySettingArray;
+        private Array<InvisibleObject> m_invisibilitySettingArray;
         private bool m_usingAMultiScriptFile;
         private int m_mainScriptSize;
         private int m_largestMissionScriptSize;
@@ -74,7 +74,7 @@ namespace GTASaveData.GTA3
             set { m_buildingSwapArray = value; OnPropertyChanged(); }
         }
 
-        public Array<InvisibleEntity> InvisibilitySettings
+        public Array<InvisibleObject> InvisibilitySettings
         {
             get { return m_invisibilitySettingArray; }
             set { m_invisibilitySettingArray = value; OnPropertyChanged(); }
@@ -116,7 +116,7 @@ namespace GTASaveData.GTA3
             Contacts = new Array<Contact>();
             Collectives = new Array<Collective>();
             BuildingSwaps = new Array<BuildingSwap>();
-            InvisibilitySettings = new Array<InvisibleEntity>();
+            InvisibilitySettings = new Array<InvisibleObject>();
             ActiveScripts = new Array<RunningScript>();
         }
 
@@ -176,7 +176,7 @@ namespace GTASaveData.GTA3
             Collectives = buf.Read<Collective>(Limits.MaxNumCollectives);
             NextFreeCollectiveIndex = buf.ReadInt32();
             BuildingSwaps = buf.Read<BuildingSwap>(Limits.MaxNumBuildingSwaps);
-            InvisibilitySettings = buf.Read<InvisibleEntity>(Limits.MaxNumInvisibilitySettings);
+            InvisibilitySettings = buf.Read<InvisibleObject>(Limits.MaxNumInvisibilitySettings);
             UsingAMultiScriptFile = buf.ReadBool();
             buf.ReadByte();
             buf.ReadUInt16();

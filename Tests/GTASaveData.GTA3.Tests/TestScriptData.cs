@@ -21,7 +21,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Collectives, f => Generator.Array(ScriptData.Limits.MaxNumCollectives, g => Generator.Generate<Collective, TestCollective>()))
                 .RuleFor(x => x.NextFreeCollectiveIndex, f => f.Random.Int())
                 .RuleFor(x => x.BuildingSwaps, f => Generator.Array(ScriptData.Limits.MaxNumBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
-                .RuleFor(x => x.InvisibilitySettings, f => Generator.Array(ScriptData.Limits.MaxNumInvisibilitySettings, g => Generator.Generate<InvisibleEntity, TestInvisibleEntity>()))
+                .RuleFor(x => x.InvisibilitySettings, f => Generator.Array(ScriptData.Limits.MaxNumInvisibilitySettings, g => Generator.Generate<InvisibleObject, TestInvisibleEntity>()))
                 .RuleFor(x => x.UsingAMultiScriptFile, f => f.Random.Bool())
                 .RuleFor(x => x.MainScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.LargestMissionScriptSize, f => f.Random.Int())

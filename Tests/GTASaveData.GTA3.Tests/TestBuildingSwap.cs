@@ -8,7 +8,7 @@ namespace GTASaveData.GTA3.Tests
         public override BuildingSwap GenerateTestObject(DataFormat format)
         {
             Faker<BuildingSwap> model = new Faker<BuildingSwap>()
-                .RuleFor(x => x.Type, f => f.PickRandom<ObjectType>())
+                .RuleFor(x => x.Type, f => f.PickRandom<PoolType>())
                 .RuleFor(x => x.Handle, f => f.Random.Int())
                 .RuleFor(x => x.NewModel, f => f.Random.Int())
                 .RuleFor(x => x.OldModel, f => f.Random.Int());

@@ -2,12 +2,12 @@
 
 namespace GTASaveData.GTA3
 {
-    public class InvisibleEntity : SaveDataObject, IEquatable<InvisibleEntity>
+    public class InvisibleObject : SaveDataObject, IEquatable<InvisibleObject>
     {
-        private ObjectType m_type;
+        private PoolType m_type;
         private int m_handle;
 
-        public ObjectType Type
+        public PoolType Type
         {
             get { return m_type; }
             set { m_type = value; OnPropertyChanged(); }
@@ -21,7 +21,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            Type = (ObjectType) buf.ReadInt32();
+            Type = (PoolType) buf.ReadInt32();
             Handle = buf.ReadInt32();
         }
 
@@ -38,10 +38,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as InvisibleEntity);
+            return Equals(obj as InvisibleObject);
         }
 
-        public bool Equals(InvisibleEntity other)
+        public bool Equals(InvisibleObject other)
         {
             if (other == null)
             {
