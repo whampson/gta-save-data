@@ -14,7 +14,7 @@ namespace GTASaveData.GTA3
         }
 
         public Automobile()
-            : this(0, -1)
+            : this(0, 0)
         { }
 
         public Automobile(short model, int handle)
@@ -32,6 +32,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             base.ReadObjectData(buf, fmt);
+
             Damage = buf.Read<DamageManager>();
             buf.Skip(GetSize(fmt) - buf.Offset);    // The rest is useless
 
@@ -41,6 +42,7 @@ namespace GTASaveData.GTA3
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             base.WriteObjectData(buf, fmt);
+
             buf.Write(Damage);
             buf.Skip(GetSize(fmt) - buf.Offset);
 
@@ -81,7 +83,8 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return Damage.Equals(other.Damage);
+            return base.Equals(other)
+                && Damage.Equals(other.Damage);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3
         // But I will keep it for completeness.
 
         public Boat()
-        : this(0, -1)
+        : this(0, 0)
         { }
 
         public Boat(short model, int handle)
@@ -23,6 +23,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             base.ReadObjectData(buf, fmt);
+
             buf.Skip(GetSize(fmt) - buf.Offset);
 
             Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
@@ -31,6 +32,7 @@ namespace GTASaveData.GTA3
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             base.WriteObjectData(buf, fmt);
+
             buf.Skip(GetSize(fmt) - buf.Offset);
 
             Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
@@ -70,7 +72,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return true;    // lol
+            return base.Equals(other);
         }
     }
 }

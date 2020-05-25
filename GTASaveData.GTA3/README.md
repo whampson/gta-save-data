@@ -5,7 +5,7 @@
 ### Blocks
 - [x] SimpleVars
 - [x] Scripts
-- [ ] PedPool
+- [x] PedPool
 - [x] Garages
 - [x] VehiclePool
 - [x] ObjectPool

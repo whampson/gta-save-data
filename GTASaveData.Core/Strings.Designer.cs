@@ -22,7 +22,7 @@ namespace GTASaveData {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    public class Strings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace GTASaveData {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GTASaveData.Strings", typeof(Strings).Assembly);
@@ -51,7 +51,7 @@ namespace GTASaveData {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to The value must be non-negative..
         /// </summary>
-        internal static string Error_Argument_NoNegative {
+        public static string Error_Argument_NoNegative {
             get {
                 return ResourceManager.GetString("Error_Argument_NoNegative", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to The character cannot be a surrogate..
         /// </summary>
-        internal static string Error_Argument_NoSurrogateChars {
+        public static string Error_Argument_NoSurrogateChars {
             get {
                 return ResourceManager.GetString("Error_Argument_NoSurrogateChars", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to The index must be smaller than the length of the sequence..
         /// </summary>
-        internal static string Error_Argument_SequenceIndexOutOfRange {
+        public static string Error_Argument_SequenceIndexOutOfRange {
             get {
                 return ResourceManager.GetString("Error_Argument_SequenceIndexOutOfRange", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to The sequence length must be less than or equal to the length of the array..
         /// </summary>
-        internal static string Error_Argument_SequenceTooBig {
+        public static string Error_Argument_SequenceTooBig {
             get {
                 return ResourceManager.GetString("Error_Argument_SequenceTooBig", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to Maximum block size exeeded. (value = {0}, max = {1}).
         /// </summary>
-        internal static string Error_BlockSizeExceeded {
+        public static string Error_BlockSizeExceeded {
             get {
                 return ResourceManager.GetString("Error_BlockSizeExceeded", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to End of stream reached..
         /// </summary>
-        internal static string Error_EndOfStream {
+        public static string Error_EndOfStream {
             get {
                 return ResourceManager.GetString("Error_EndOfStream", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to Invalid padding type..
         /// </summary>
-        internal static string Error_InvalidPaddingType {
+        public static string Error_InvalidPaddingType {
             get {
                 return ResourceManager.GetString("Error_InvalidPaddingType", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to Unexpected end while parsing JSON..
         /// </summary>
-        internal static string Error_JsonBinaryUnexpectedEnd {
+        public static string Error_JsonBinaryUnexpectedEnd {
             get {
                 return ResourceManager.GetString("Error_JsonBinaryUnexpectedEnd", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to Unexpected token while parsing JSON binary: {0}..
         /// </summary>
-        internal static string Error_JsonBinaryUnexpectedToken {
+        public static string Error_JsonBinaryUnexpectedToken {
             get {
                 return ResourceManager.GetString("Error_JsonBinaryUnexpectedToken", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to The collection cannot be modified while being changed by another thread..
         /// </summary>
-        internal static string Error_NoCollectionReentrancy {
+        public static string Error_NoCollectionReentrancy {
             get {
                 return ResourceManager.GetString("Error_NoCollectionReentrancy", resourceCulture);
             }
@@ -153,16 +153,25 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to The buffer is not expandable..
         /// </summary>
-        internal static string Error_NotExpandable {
+        public static string Error_NotExpandable {
             get {
                 return ResourceManager.GetString("Error_NotExpandable", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The first item in the ped pool must be a PlayerPed..
+        /// </summary>
+        public static string Error_PlayerNotFound {
+            get {
+                return ResourceManager.GetString("Error_PlayerNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The type &apos;{0}&apos; does not support serialization..
         /// </summary>
-        internal static string Error_SerializationNotAllowed {
+        public static string Error_SerializationNotAllowed {
             get {
                 return ResourceManager.GetString("Error_SerializationNotAllowed", resourceCulture);
             }
@@ -171,7 +180,7 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to Size not defined for {0}..
         /// </summary>
-        internal static string Error_SizeNotDefined {
+        public static string Error_SizeNotDefined {
             get {
                 return ResourceManager.GetString("Error_SizeNotDefined", resourceCulture);
             }

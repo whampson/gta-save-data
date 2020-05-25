@@ -6,44 +6,44 @@ namespace GTASaveData.GTA3
 {
     public class ObjectPool : SaveDataObject, IEquatable<ObjectPool>
     {
-        private Array<GameObject> m_items;
+        private Array<GameObject> m_objects;
 
-        public Array<GameObject> Items
+        public Array<GameObject> Objects
         {
-            get { return m_items; }
-            set { m_items = value; OnPropertyChanged(); }
+            get { return m_objects; }
+            set { m_objects = value; OnPropertyChanged(); }
         }
 
         public GameObject this[int i]
         {
-            get { return Items[i]; }
-            set { Items[i] = value; OnPropertyChanged(); }
+            get { return Objects[i]; }
+            set { Objects[i] = value; OnPropertyChanged(); }
         }
 
         public ObjectPool()
         {
-            Items = new Array<GameObject>();
+            Objects = new Array<GameObject>();
         }
 
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             int numObjects = buf.ReadInt32();
-            Items = buf.Read<GameObject>(numObjects);
+            Objects = buf.Read<GameObject>(numObjects);
 
             Debug.Assert(buf.Offset == SizeOf(this));
         }
 
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
-            buf.Write(Items.Count);
-            buf.Write(Items.ToArray());
+            buf.Write(Objects.Count);
+            buf.Write(Objects.ToArray());
 
             Debug.Assert(buf.Offset == SizeOf(this));
         }
 
         protected override int GetSize(DataFormat fmt)
         {
-            return (SizeOf<GameObject>(fmt) * Items.Count) + sizeof(int);
+            return (SizeOf<GameObject>(fmt) * Objects.Count) + sizeof(int);
         }
 
         public override bool Equals(object obj)
@@ -58,7 +58,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return Items.SequenceEqual(other.Items);
+            return Objects.SequenceEqual(other.Objects);
         }
     }
 }

@@ -85,7 +85,7 @@ namespace GTASaveData.GTA3
 
         protected void LoadEntityFlags(StreamBuffer buf, DataFormat fmt)
         {
-            long eFlags = buf.ReadInt32();
+            long eFlags = buf.ReadUInt32();
             eFlags |= (fmt.iOS)
                 ? ((long) buf.ReadUInt16()) << 32
                 : ((long) buf.ReadUInt32()) << 32;

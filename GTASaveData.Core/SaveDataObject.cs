@@ -53,6 +53,7 @@ namespace GTASaveData
 
         protected static int SizeOf<T>() where T : new()
         {
+            // TODO: remove this so it's required to check against fmt
             return Serializer.SizeOf<T>();
         }
 
@@ -63,6 +64,7 @@ namespace GTASaveData
 
         protected static int SizeOf<T>(T obj)
         {
+            // TODO: remove
             return Serializer.SizeOf(obj);
         }
 

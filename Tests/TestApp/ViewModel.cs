@@ -131,38 +131,38 @@ namespace TestApp
         {
             GTA3Save x = CurrentSaveFile as GTA3Save;
 
-            Vector3D loc = new Vector3D(130, -622, 27);
+            Vector3D playerPos = x.PedPool.GetPlayerPed().Position;
+            Vector3D ped0Pos = playerPos;
+            Vector3D ped1Pos = playerPos;
+            Vector3D car0Pos = playerPos;
 
-            Automobile car1 = new Automobile(92, 1337);
-            car1.SetPosition(loc);
-            car1.SetHeading((float) Math.PI);
-            car1.CreatedBy = VehicleCreatedBy.Mission;
-            car1.EntityStatus = EntityStatus.Physics; // Need this to get autopilot going
-            car1.AutoPilot.Mission = CarMission.RamPlayerFar;
-            car1.AutoPilot.DrivingStyle = CarDrivingStyle.PloughThrough;
-            car1.AutoPilot.MaxTrafficSpeed = 70;
-            car1.AutoPilot.CruiseSpeed = 70;
+            PlayerPed ped0 = new PlayerPed
+            {
+                ModelName = "FRANKIE",
+                Position = ped0Pos,
+            };
 
-            Automobile car2 = new Automobile(car1) { Handle = 6969 };
-            Automobile car3 = new Automobile(car1) { Handle = 4200 };
-            Automobile car4 = new Automobile(car1) { Handle = 6480 };
-            Automobile car5 = new Automobile(car1) { Handle = 1598 };
+            ped1Pos.Y += 5;
+            PlayerPed ped1 = new PlayerPed(0, (2 << 8) + 1)
+            {
+                ModelName = "TONY",
+                Position = ped1Pos
+            };
 
-            loc.X += 10;
-            car2.SetPosition(loc);
-            loc.X += 10;
-            car3.SetPosition(loc);
-            loc.X += 10;
-            car4.SetPosition(loc);
-            loc.X += 10;
-            car5.SetPosition(loc);
+            x.PedPool.PlayerPeds.Clear();
+            x.PedPool.PlayerPeds.Add(ped0);
+            x.PedPool.PlayerPeds.Add(ped1);
 
-            x.VehiclePool.Cars.Add(car1);
-            x.VehiclePool.Cars.Add(car2);
-            x.VehiclePool.Cars.Add(car3);
-            x.VehiclePool.Cars.Add(car4);
-            x.VehiclePool.Cars.Add(car5);
+            Automobile car0 = new Automobile(92, 0);
+            car0Pos.X += 5;
+            car0.SetPosition(car0Pos);
+            car0.SetHeading((float) Math.PI);
+            car0.CreatedBy = VehicleCreatedBy.Mission;
+            car0.Color1 = 2;
+            car0.Color2 = 1;
 
+            x.VehiclePool.Cars.Clear();
+            x.VehiclePool.Cars.Add(car0);
         }
 
         public ViewModel()

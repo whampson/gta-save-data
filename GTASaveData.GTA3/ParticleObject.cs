@@ -150,6 +150,7 @@ namespace GTASaveData.GTA3
         protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
         {
             base.ReadObjectData(buf, fmt);
+            
             NextParticleObjectPointer = buf.ReadUInt32();
             PrevParticleObjectPointer = buf.ReadUInt32();
             ParticlePointer = buf.ReadUInt32();
@@ -179,6 +180,7 @@ namespace GTASaveData.GTA3
         protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
         {
             base.WriteObjectData(buf, fmt);
+
             buf.Write(NextParticleObjectPointer);
             buf.Write(PrevParticleObjectPointer);
             buf.Write(ParticlePointer);

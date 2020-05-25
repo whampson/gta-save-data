@@ -152,6 +152,9 @@
   <data name="Error_NotExpandable" xml:space="preserve">
     <value>The buffer is not expandable.</value>
   </data>
+  <data name="Error_PlayerNotFound" xml:space="preserve">
+    <value>The first item in the ped pool must be a PlayerPed.</value>
+  </data>
   <data name="Error_SerializationNotAllowed" xml:space="preserve">
     <value>The type '{0}' does not support serialization.</value>
     <comment>{0} = object type</comment>

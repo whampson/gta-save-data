@@ -78,9 +78,11 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(DataFormat fmt)
         {
-            return (SizeOf<Automobile>(fmt) + 10) * Cars.Count
-                + (SizeOf<Boat>(fmt) + 10) * Boats.Count
-                + 2 * sizeof(int);
+            int headerSize = 2 * sizeof(int) + sizeof(short);
+            int sizeOfCars = (SizeOf<Automobile>(fmt) + headerSize) * Cars.Count;
+            int sizeOfBoats = (SizeOf<Boat>(fmt) + headerSize) * Boats.Count;
+
+            return 2 * sizeof(int) + sizeOfCars + sizeOfBoats;
         }
 
         public override bool Equals(object obj)
