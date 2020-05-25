@@ -6,17 +6,17 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestCarGenerator : Base<CarGenerator>
     {
-        public override CarGenerator GenerateTestObject(DataFormat format)
+        public override CarGenerator GenerateTestObject(SaveDataFormat format)
         {
             Faker<CarGenerator> model = new Faker<CarGenerator>()
                 .RuleFor(x => x.Model, f => f.Random.Int())
                 .RuleFor(x => x.Position, f => Generator.Vector3D(f))
-                .RuleFor(x => x.Angle, f => f.Random.Float())
+                .RuleFor(x => x.Heading, f => f.Random.Float())
                 .RuleFor(x => x.Color1, f => f.Random.Short())
                 .RuleFor(x => x.Color2, f => f.Random.Short())
                 .RuleFor(x => x.ForceSpawn, f => f.Random.Bool())
-                .RuleFor(x => x.Alarm, f => f.Random.Byte())
-                .RuleFor(x => x.DoorLock, f => f.Random.Byte())
+                .RuleFor(x => x.AlarmChance, f => f.Random.Byte())
+                .RuleFor(x => x.LockedChance, f => f.Random.Byte())
                 .RuleFor(x => x.MinDelay, f => f.Random.UShort())
                 .RuleFor(x => x.MaxDelay, f => f.Random.UShort())
                 .RuleFor(x => x.Timer, f => f.Random.UInt())
@@ -38,12 +38,12 @@ namespace GTASaveData.GTA3.Tests
 
             Assert.Equal(x0.Model, x1.Model);
             Assert.Equal(x0.Position, x1.Position);
-            Assert.Equal(x0.Angle, x1.Angle);
+            Assert.Equal(x0.Heading, x1.Heading);
             Assert.Equal(x0.Color1, x1.Color1);
             Assert.Equal(x0.Color2, x1.Color2);
             Assert.Equal(x0.ForceSpawn, x1.ForceSpawn);
-            Assert.Equal(x0.Alarm, x1.Alarm);
-            Assert.Equal(x0.DoorLock, x1.DoorLock);
+            Assert.Equal(x0.AlarmChance, x1.AlarmChance);
+            Assert.Equal(x0.LockedChance, x1.LockedChance);
             Assert.Equal(x0.MinDelay, x1.MinDelay);
             Assert.Equal(x0.MaxDelay, x1.MaxDelay);
             Assert.Equal(x0.Timer, x1.Timer);

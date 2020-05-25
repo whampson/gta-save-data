@@ -7,7 +7,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPlayerPed : Base<PlayerPed>
     {
-        public override PlayerPed GenerateTestObject(DataFormat format)
+        public override PlayerPed GenerateTestObject(SaveDataFormat format)
         {
             Faker<PlayerPed> model = new Faker<PlayerPed>()
                 .RuleFor(x => x.Position, f => Generator.Vector3D(f))
@@ -24,7 +24,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(DataFormat format)
+        public void RandomDataSerialization(SaveDataFormat format)
         {
             PlayerPed x0 = GenerateTestObject(format);
             PlayerPed x1 = CreateSerializedCopy(x0, format, out byte[] data);

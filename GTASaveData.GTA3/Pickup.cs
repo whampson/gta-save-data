@@ -68,7 +68,7 @@ namespace GTASaveData.GTA3
             PickupIndex = 1;
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             Type = (PickupType) buf.ReadByte();
             HasBeenPickedUp = buf.ReadBool();
@@ -82,7 +82,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Write((byte) Type);
             buf.Write(HasBeenPickedUp);
@@ -96,7 +96,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             return 0x1C;
         }

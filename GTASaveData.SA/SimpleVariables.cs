@@ -387,7 +387,7 @@ namespace GTASaveData.SA
             CameraPosition = new Vector3D();
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             VersionId = buf.ReadUInt32();
             LastMissionPassedName = buf.ReadString(Limits.MaxNameLength);
@@ -456,7 +456,7 @@ namespace GTASaveData.SA
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Write(VersionId);
             buf.Write(LastMissionPassedName, Limits.MaxNameLength);
@@ -525,7 +525,7 @@ namespace GTASaveData.SA
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             if (fmt.PC)
             {

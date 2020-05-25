@@ -40,7 +40,7 @@ namespace GTASaveData.GTA3
             PickupsCollected = new Array<int>();
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             Pickups = buf.Read<Pickup>(Limits.MaxNumPickups);
             LastCollectedIndex = buf.ReadInt16();
@@ -50,7 +50,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PickupData>());
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Write(Pickups.ToArray(), Limits.MaxNumPickups);
             buf.Write(LastCollectedIndex);
@@ -60,7 +60,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PickupData>());
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             return 0x2514;
         }

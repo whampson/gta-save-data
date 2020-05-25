@@ -7,7 +7,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestScriptData : Base<ScriptData>
     {
-        public override ScriptData GenerateTestObject(DataFormat format)
+        public override ScriptData GenerateTestObject(SaveDataFormat format)
         {
             Faker faker = new Faker();
 
@@ -33,7 +33,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(DataFormat format)
+        public void RandomDataSerialization(SaveDataFormat format)
         {
             ScriptData x0 = GenerateTestObject(format);
             ScriptData x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -60,7 +60,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker f = new Faker();
             string path = TestData.GetTestDataPath(GameType.III, GTA3Save.FileFormats.PC, "CAT2");
-            using GTA3Save x = SaveFile.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
+            using GTA3Save x = GTASaveFile.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
 
             Assert.Equal(987.5, x.Scripts.GetGlobalAsFloat(804));
 

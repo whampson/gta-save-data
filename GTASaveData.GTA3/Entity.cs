@@ -83,7 +83,7 @@ namespace GTASaveData.GTA3
             Matrix = m;
         }
 
-        protected void LoadEntityFlags(StreamBuffer buf, DataFormat fmt)
+        protected void LoadEntityFlags(StreamBuffer buf, SaveDataFormat fmt)
         {
             long eFlags = buf.ReadUInt32();
             eFlags |= (fmt.iOS)
@@ -95,7 +95,7 @@ namespace GTASaveData.GTA3
             EntityStatus = (EntityStatus) ((eFlags & 0xF8) >> 3);
         }
 
-        protected void SaveEntityFlags(StreamBuffer buf, DataFormat fmt)
+        protected void SaveEntityFlags(StreamBuffer buf, SaveDataFormat fmt)
         {
             long eFlags = (long) EntityFlags;
             eFlags |= ((long) EntityType) & 0x07;

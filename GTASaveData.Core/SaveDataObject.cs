@@ -8,7 +8,7 @@ namespace GTASaveData
     /// </summary>
     public abstract class SaveDataObject : ObservableObject, ISerializable
     {
-        int ISerializable.ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        int ISerializable.ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             int oldMark, start, len;
 
@@ -16,7 +16,7 @@ namespace GTASaveData
             buf.MarkCurrentPosition();
             start = buf.Cursor;
 
-            ReadObjectData(buf, fmt);
+            ReadData(buf, fmt);
 
             len = buf.Cursor - start;
             buf.Mark = oldMark;
@@ -24,7 +24,7 @@ namespace GTASaveData
             return len;
         }
 
-        int ISerializable.WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        int ISerializable.WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             int oldMark, start, len;
 
@@ -32,7 +32,7 @@ namespace GTASaveData
             buf.MarkCurrentPosition();
             start = buf.Cursor;
 
-            WriteObjectData(buf, fmt);
+            WriteData(buf, fmt);
 
             len = buf.Cursor - start;
             buf.Mark = oldMark;
@@ -40,16 +40,16 @@ namespace GTASaveData
             return len;
         }
 
-        int ISerializable.GetSize(DataFormat fmt)
+        int ISerializable.GetSize(SaveDataFormat fmt)
         {
             return GetSize(fmt);
         }
 
-        protected abstract void ReadObjectData(StreamBuffer buf, DataFormat fmt);
+        protected abstract void ReadData(StreamBuffer buf, SaveDataFormat fmt);
 
-        protected abstract void WriteObjectData(StreamBuffer buf, DataFormat fmt);
+        protected abstract void WriteData(StreamBuffer buf, SaveDataFormat fmt);
 
-        protected abstract int GetSize(DataFormat fmt);
+        protected abstract int GetSize(SaveDataFormat fmt);
 
         protected static int SizeOf<T>() where T : new()
         {
@@ -57,7 +57,7 @@ namespace GTASaveData
             return Serializer.SizeOf<T>();
         }
 
-        protected static int SizeOf<T>(DataFormat fmt) where T : new()
+        protected static int SizeOf<T>(SaveDataFormat fmt) where T : new()
         {
             return Serializer.SizeOf<T>(fmt);
         }
@@ -68,12 +68,12 @@ namespace GTASaveData
             return Serializer.SizeOf(obj);
         }
 
-        protected static int SizeOf<T>(T obj, DataFormat fmt)
+        protected static int SizeOf<T>(T obj, SaveDataFormat fmt)
         {
             return Serializer.SizeOf(obj, fmt);
         }
 
-        protected NotSupportedException SizeNotDefined(DataFormat fmt)
+        protected NotSupportedException SizeNotDefined(SaveDataFormat fmt)
         {
             return new NotSupportedException(string.Format(Strings.Error_SizeNotDefined, fmt.FormatName));
         }

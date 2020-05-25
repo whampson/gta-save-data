@@ -10,13 +10,13 @@ namespace GTASaveData
     /// <summary>
     /// Represents a saved <i>Grand Theft Auto</i> game.
     /// </summary>
-    public abstract class SaveFile : SaveDataObject, ISaveFile
+    public abstract class GTASaveFile : SaveDataObject, IGTASaveFile
     {
         private static readonly byte[] DefaultPadding = new byte[1] { 0 };
 
         private PaddingType m_padding;
         private byte[] m_paddingBytes;
-        private DataFormat m_fileFormat;
+        private SaveDataFormat m_fileFormat;
 
         [JsonIgnore]
         public PaddingType Padding
@@ -33,7 +33,7 @@ namespace GTASaveData
         }
 
         [JsonIgnore]
-        public DataFormat FileFormat
+        public SaveDataFormat FileFormat
         {
             get { return m_fileFormat; }
             set { m_fileFormat = value; OnPropertyChanged(); }
@@ -43,22 +43,22 @@ namespace GTASaveData
         public abstract DateTime TimeLastSaved { get; set; }
         public abstract IReadOnlyList<SaveDataObject> Blocks { get; }
 
-        public SaveFile()
+        public GTASaveFile()
         {
             Padding = PaddingType.Default;
             PaddingBytes = DefaultPadding;
-            FileFormat = DataFormat.Default;
+            FileFormat = SaveDataFormat.Default;
         }
 
-        public static bool GetFileFormat<T>(string path, out DataFormat fmt) where T : SaveFile, new()
+        public static bool GetFileFormat<T>(string path, out SaveDataFormat fmt) where T : GTASaveFile, new()
         {
             byte[] data = File.ReadAllBytes(path);
             return new T().DetectFileFormat(data, out fmt);
         }
 
-        public static T Load<T>(string path) where T : SaveFile, new()
+        public static T Load<T>(string path) where T : GTASaveFile, new()
         {
-            bool valid = GetFileFormat<T>(path, out DataFormat fmt);
+            bool valid = GetFileFormat<T>(path, out SaveDataFormat fmt);
             if (!valid)
             {
                 return null;
@@ -67,7 +67,7 @@ namespace GTASaveData
             return Load<T>(path, fmt);
         }
 
-        public static T Load<T>(string path, DataFormat fmt) where T : SaveFile, new()
+        public static T Load<T>(string path, SaveDataFormat fmt) where T : GTASaveFile, new()
         {
             T obj = new T() { FileFormat = fmt };
             obj.Load(path);
@@ -140,15 +140,15 @@ namespace GTASaveData
 
         protected abstract void LoadAllData(StreamBuffer file);
         protected abstract void SaveAllData(StreamBuffer file);
-        protected abstract bool DetectFileFormat(byte[] data, out DataFormat fmt);
+        protected abstract bool DetectFileFormat(byte[] data, out SaveDataFormat fmt);
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             FileFormat = fmt;
             LoadAllData(buf);
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             FileFormat = fmt;
             SaveAllData(buf);

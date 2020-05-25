@@ -517,21 +517,21 @@ namespace GTASaveData.Core.Tests
             public TestObject()
             { }
 
-            protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+            protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
             {
                 Integer = buf.ReadInt32();
                 Boolean = buf.ReadBool();
                 Single = buf.ReadFloat();
             }
 
-            protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+            protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
             {
                 buf.Write(Integer);
                 buf.Write(Boolean);
                 buf.Write(Single);
             }
 
-            protected override int GetSize(DataFormat fmt)
+            protected override int GetSize(SaveDataFormat fmt)
             {
                 return sizeof(int) + sizeof(float) + sizeof(bool);
             }

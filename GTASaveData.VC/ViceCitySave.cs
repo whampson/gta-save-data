@@ -12,42 +12,39 @@ namespace GTASaveData.VC
     /// <summary>
     /// Represents a <i>Grand Theft Auto: Vice City</i> save file.
     /// </summary>
-    public class ViceCitySave : SaveFile, ISaveFile, IEquatable<ViceCitySave>, IDisposable
+    public class ViceCitySave : GTA3VCSave, IGTASaveFile, IEquatable<ViceCitySave>, IDisposable
     {
-        public const int SaveHeaderSize = 8;
         public const int SizeOfOneGameInBytes = 201729;
         public const int MaxBufferSize = 65536;
 
-        private readonly StreamBuffer m_workBuff;
-        private int m_bufferSize => (FileFormat.Mobile) ? 65536 : 55000;
-        private int m_checkSum;
-        private bool m_blockSizeChecks;
         private bool m_disposed;
 
-        private SimpleVariables m_simpleVars;   // SimpleVariables
-        private Dummy m_scripts;  // TheScripts
-        private Dummy m_pedPool;  // PedPool
-        private Dummy m_garages;  // Garages
-        private Dummy m_gameLogic;    // GameLogic
-        private Dummy m_vehiclePool;  // VehiclePool
-        private Dummy m_objectPool;   // ObjectPool
-        private Dummy m_paths;    // PathFind
-        private Dummy m_cranes;   // Cranes
-        private Dummy m_pickups;  // Pickups
-        private Dummy m_phoneInfo;    // PhoneInfo
-        private Dummy m_restartPoints;    // Restarts
-        private Dummy m_radarBlips;   // Radar
-        private Dummy m_zones;    // TheZones
-        private Dummy m_gangData; // Gangs
-        private Dummy m_carGenerators;    // TheCarGenerators
-        private Dummy m_particles;  // Particles
-        private Dummy m_audioScriptObjects;   // AudioScriptObjects
-        private Dummy m_scriptPaths;  // ScriptPaths
-        private Dummy m_playerInfo;   // PlayerInfo
-        private Dummy m_stats;    // Stats
-        private Dummy m_setPieces; // SetPieces
-        private Dummy m_streaming;    // Streaming
-        private Dummy m_pedTypeInfo;  // PedTypeInfo
+        protected override int BufferSize => (FileFormat.Mobile) ? 65536 : 55000;
+
+        private SimpleVariables m_simpleVars;
+        private Dummy m_scripts;
+        private Dummy m_pedPool;
+        private Dummy m_garages;
+        private Dummy m_gameLogic;
+        private Dummy m_vehiclePool;
+        private Dummy m_objectPool;
+        private Dummy m_paths;
+        private Dummy m_cranes;
+        private Dummy m_pickups;
+        private Dummy m_phoneInfo;
+        private Dummy m_restartPoints;
+        private Dummy m_radarBlips;
+        private Dummy m_zones;
+        private Dummy m_gangs;
+        private CarGeneratorData m_carGenerators;
+        private Dummy m_particleObjects;
+        private Dummy m_audioScriptObjects;
+        private Dummy m_scriptPaths;
+        private Dummy m_playerInfo;
+        private Dummy m_stats;
+        private Dummy m_setPieces;
+        private Dummy m_streaming;
+        private Dummy m_pedType;
 
         public SimpleVariables SimpleVars
         {
@@ -133,13 +130,13 @@ namespace GTASaveData.VC
             set { m_zones = value; OnPropertyChanged(); }
         }
 
-        public Dummy GangData
+        public Dummy Gangs
         {
-            get { return m_gangData; }
-            set { m_gangData = value; OnPropertyChanged(); }
+            get { return m_gangs; }
+            set { m_gangs = value; OnPropertyChanged(); }
         }
 
-        public Dummy CarGenerators
+        public CarGeneratorData CarGenerators
         {
             get { return m_carGenerators; }
             set { m_carGenerators = value; OnPropertyChanged(); }
@@ -147,8 +144,8 @@ namespace GTASaveData.VC
 
         public Dummy ParticleObjects
         {
-            get { return m_particles; }
-            set { m_particles = value; OnPropertyChanged(); }
+            get { return m_particleObjects; }
+            set { m_particleObjects = value; OnPropertyChanged(); }
         }
 
         public Dummy AudioScriptObjects
@@ -189,28 +186,21 @@ namespace GTASaveData.VC
 
         public Dummy PedTypeInfo
         {
-            get { return m_pedTypeInfo; }
-            set { m_pedTypeInfo = value; OnPropertyChanged(); }
-        }
-
-        [JsonIgnore]
-        public bool BlockSizeChecks
-        {
-            get { return m_blockSizeChecks; }
-            set { m_blockSizeChecks = value; OnPropertyChanged(); }
+            get { return m_pedType; }
+            set { m_pedType = value; OnPropertyChanged(); }
         }
 
         [JsonIgnore]
         public override string Name
         {
-            get { return SimpleVars.LastMissionPassedName; }
-            set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
+            get { return SimpleVars.SaveName; }
+            set { SimpleVars.SaveName = value; OnPropertyChanged(); }
         }
 
         [JsonIgnore]
         public override DateTime TimeLastSaved
         {
-            get { return SimpleVars.TimeLastSaved; }
+            get { return (DateTime) SimpleVars.TimeLastSaved; }
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
 
@@ -231,7 +221,7 @@ namespace GTASaveData.VC
             RestartPoints,
             RadarBlips,
             Zones,
-            GangData,
+            Gangs,
             CarGenerators,
             ParticleObjects,
             AudioScriptObjects,
@@ -243,10 +233,9 @@ namespace GTASaveData.VC
             PedTypeInfo
         };
 
-        public ViceCitySave()
+        public ViceCitySave() : base(MaxBufferSize)
         {
             m_disposed = false;
-            m_workBuff = new StreamBuffer(new byte[MaxBufferSize]);
 
             SimpleVars = new SimpleVariables();
             Scripts = new Dummy();
@@ -262,8 +251,8 @@ namespace GTASaveData.VC
             RestartPoints = new Dummy();
             RadarBlips = new Dummy();
             Zones = new Dummy();
-            GangData = new Dummy();
-            CarGenerators = new Dummy();
+            Gangs = new Dummy();
+            CarGenerators = new CarGeneratorData();
             ParticleObjects = new Dummy();
             AudioScriptObjects = new Dummy();
             ScriptPaths = new Dummy();
@@ -278,121 +267,16 @@ namespace GTASaveData.VC
         #endif
         }
 
-        #region Shared between GTA3/VC
-        public static int ReadSaveHeader(StreamBuffer buf, string tag)
+        protected override void LoadSimpleVars()
         {
-            string readTag = buf.ReadString(4);
-            int size = buf.ReadInt32();
-
-            Debug.Assert(readTag == tag, "Invalid block tag (expected: {0}, actual: {1})", tag, readTag);
-            return size;
+            SimpleVars = WorkBuff.Read<SimpleVariables>(FileFormat);
         }
 
-        public static void WriteSaveHeader(StreamBuffer buf, string tag, int size)
-        {
-            buf.Write(tag, 4, zeroTerminate: true);
-            buf.Write(size);
-        }
-
-        private Dummy LoadDummy()
-        {
-            int size = m_workBuff.ReadInt32();
-            var o = new Dummy(size);
-            int bytesRead = Serializer.Read(o, m_workBuff, FileFormat);
-
-            Debug.Assert(bytesRead == size);
-            return o;
-        }
-
-        private void LoadSimpleVars()
-        {
-            SimpleVars = m_workBuff.Read<SimpleVariables>(FileFormat);
-        }
-
-        private void SaveSimpleVars()
+        protected override void SaveSimpleVars()
         {
             SimpleVars.SaveSize = SizeOfOneGameInBytes;
-            m_workBuff.Write(SimpleVars, FileFormat);
+            WorkBuff.Write(SimpleVars, FileFormat);
         }
-
-        private T LoadData<T>() where T : SaveDataObject, new()
-        {
-            int size = m_workBuff.ReadInt32();
-            int bytesRead = Serializer.Read(m_workBuff, FileFormat, out T obj);
-
-            Debug.Assert(bytesRead == size);
-            return obj;
-        }
-
-        private void SaveData(SaveDataObject o)
-        {
-            int size, preSize, postData;
-
-            preSize = m_workBuff.Cursor;
-            m_workBuff.Skip(4);
-
-            size = Serializer.Write(m_workBuff, o, FileFormat);
-            postData = m_workBuff.Cursor;
-
-            m_workBuff.Seek(preSize);
-            m_workBuff.Write(size);
-            m_workBuff.Seek(postData);
-            m_workBuff.Align4Bytes();
-        }
-
-        private int ReadBlock(StreamBuffer file)
-        {
-            file.MarkCurrentPosition();
-            m_workBuff.Reset();
-
-            int size = file.ReadInt32();
-            if ((uint) size > m_bufferSize)
-            {
-                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, m_bufferSize);
-                if (BlockSizeChecks)
-                {
-                    throw BlockSizeExceededException((uint) size, m_bufferSize);
-                }
-            }
-
-            m_workBuff.Write(file.ReadBytes(size));
-
-            Debug.Assert(file.Offset == size + 4);
-            Debug.WriteLine("Read {0} bytes of block data.", size);
-
-            m_workBuff.Reset();
-            return size;
-        }
-
-        private int WriteBlock(StreamBuffer file)
-        {
-            file.MarkCurrentPosition();
-
-            byte[] data = m_workBuff.GetBytes();
-            int size = data.Length;
-            if ((uint) size > m_bufferSize)
-            {
-                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, m_bufferSize);
-                if (BlockSizeChecks)
-                {
-                    throw BlockSizeExceededException((uint) size, m_bufferSize);
-                }
-            }
-
-            file.Write(size);
-            file.Write(data);
-            file.Align4Bytes();
-
-            Debug.Assert(file.Offset == size + 4);
-            Debug.WriteLine("Wrote {0} bytes of block data.", size);
-
-            m_checkSum += BitConverter.GetBytes(size).Sum(x => x);
-            m_checkSum += data.Sum(x => x);
-
-            m_workBuff.Reset();
-            return size;
-        }
-        #endregion
 
         protected override void LoadAllData(StreamBuffer file)
         {
@@ -400,36 +284,37 @@ namespace GTASaveData.VC
 
             totalSize += ReadBlock(file);
             LoadSimpleVars();
-            Scripts = LoadDummy();
-            totalSize += ReadBlock(file); PedPool = LoadDummy();
-            totalSize += ReadBlock(file); Garages = LoadDummy();
-            totalSize += ReadBlock(file); GameLogic = LoadDummy();
-            totalSize += ReadBlock(file); VehiclePool = LoadDummy();
-            totalSize += ReadBlock(file); ObjectPool = LoadDummy();
-            totalSize += ReadBlock(file); Paths = LoadDummy();
-            totalSize += ReadBlock(file); Cranes = LoadDummy();
-            totalSize += ReadBlock(file); Pickups = LoadDummy();
-            totalSize += ReadBlock(file); PhoneInfo = LoadDummy();
-            totalSize += ReadBlock(file); RestartPoints = LoadDummy();
-            totalSize += ReadBlock(file); RadarBlips = LoadDummy();
-            totalSize += ReadBlock(file); Zones = LoadDummy();
-            totalSize += ReadBlock(file); GangData = LoadDummy();
-            totalSize += ReadBlock(file); CarGenerators = LoadDummy();
-            totalSize += ReadBlock(file); ParticleObjects = LoadDummy();
-            totalSize += ReadBlock(file); AudioScriptObjects = LoadDummy();
-            totalSize += ReadBlock(file); ScriptPaths = LoadDummy();
-            totalSize += ReadBlock(file); PlayerInfo = LoadDummy();
-            totalSize += ReadBlock(file); Stats = LoadDummy();
-            totalSize += ReadBlock(file); SetPieces = LoadDummy();
-            totalSize += ReadBlock(file); Streaming = LoadDummy();
-            totalSize += ReadBlock(file); PedTypeInfo = LoadDummy();
+            Scripts = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); PedPool = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Garages = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); GameLogic = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); VehiclePool = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); ObjectPool = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Paths = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Cranes = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Pickups = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); PhoneInfo = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); RestartPoints = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); RadarBlips = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Zones = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Gangs = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); CarGenerators = Load<CarGeneratorData>();
+            totalSize += ReadBlock(file); ParticleObjects = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); AudioScriptObjects = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); ScriptPaths = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); PlayerInfo = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Stats = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); SetPieces = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Streaming = LoadPreAlloc<Dummy>();
+            totalSize += ReadBlock(file); PedTypeInfo = LoadPreAlloc<Dummy>();
 
             while (file.Cursor < file.Length - 4)
             {
                 totalSize += ReadBlock(file);
             }
 
-            Debug.WriteLine("Save size: {0}", totalSize);
+            Debug.WriteLine("Load successful!");
+            Debug.WriteLine("Size of game data: {0} bytes", totalSize);
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
         }
 
@@ -438,60 +323,61 @@ namespace GTASaveData.VC
             int totalSize = 0;
             int size;
 
-            m_workBuff.Reset();
-            m_checkSum = 0;
+            WorkBuff.Reset();
+            CheckSum = 0;
 
             SaveSimpleVars();
-            SaveData(Scripts); totalSize += WriteBlock(file);
-            SaveData(PedPool); totalSize += WriteBlock(file);
-            SaveData(Garages); totalSize += WriteBlock(file);
-            SaveData(GameLogic); totalSize += WriteBlock(file);
-            SaveData(VehiclePool); totalSize += WriteBlock(file);
-            SaveData(ObjectPool); totalSize += WriteBlock(file);
-            SaveData(Paths); totalSize += WriteBlock(file);
-            SaveData(Cranes); totalSize += WriteBlock(file);
-            SaveData(Pickups); totalSize += WriteBlock(file);
-            SaveData(PhoneInfo); totalSize += WriteBlock(file);
-            SaveData(RestartPoints); totalSize += WriteBlock(file);
-            SaveData(RadarBlips); totalSize += WriteBlock(file);
-            SaveData(Zones); totalSize += WriteBlock(file);
-            SaveData(GangData); totalSize += WriteBlock(file);
-            SaveData(CarGenerators); totalSize += WriteBlock(file);
-            SaveData(ParticleObjects); totalSize += WriteBlock(file);
-            SaveData(AudioScriptObjects); totalSize += WriteBlock(file);
-            SaveData(ScriptPaths); totalSize += WriteBlock(file);
-            SaveData(PlayerInfo); totalSize += WriteBlock(file);
-            SaveData(Stats); totalSize += WriteBlock(file);
-            SaveData(SetPieces); totalSize += WriteBlock(file);
-            SaveData(Streaming); totalSize += WriteBlock(file);
-            SaveData(PedTypeInfo); totalSize += WriteBlock(file);
+            Save(Scripts); totalSize += WriteBlock(file);
+            Save(PedPool); totalSize += WriteBlock(file);
+            Save(Garages); totalSize += WriteBlock(file);
+            Save(GameLogic); totalSize += WriteBlock(file);
+            Save(VehiclePool); totalSize += WriteBlock(file);
+            Save(ObjectPool); totalSize += WriteBlock(file);
+            Save(Paths); totalSize += WriteBlock(file);
+            Save(Cranes); totalSize += WriteBlock(file);
+            Save(Pickups); totalSize += WriteBlock(file);
+            Save(PhoneInfo); totalSize += WriteBlock(file);
+            Save(RestartPoints); totalSize += WriteBlock(file);
+            Save(RadarBlips); totalSize += WriteBlock(file);
+            Save(Zones); totalSize += WriteBlock(file);
+            Save(Gangs); totalSize += WriteBlock(file);
+            Save(CarGenerators); totalSize += WriteBlock(file);
+            Save(ParticleObjects); totalSize += WriteBlock(file);
+            Save(AudioScriptObjects); totalSize += WriteBlock(file);
+            Save(ScriptPaths); totalSize += WriteBlock(file);
+            Save(PlayerInfo); totalSize += WriteBlock(file);
+            Save(Stats); totalSize += WriteBlock(file);
+            Save(SetPieces); totalSize += WriteBlock(file);
+            Save(Streaming); totalSize += WriteBlock(file);
+            Save(PedTypeInfo); totalSize += WriteBlock(file);
 
             for (int i = 0; i < 4; i++)
             {
                 size = StreamBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
-                if (size > m_bufferSize)
+                if (size > BufferSize)
                 {
-                    size = m_bufferSize;
+                    size = BufferSize;
                 }
                 if (size > 4)
                 {
                     if (Padding != PaddingType.Default)
                     {
-                        m_workBuff.Reset();
-                        m_workBuff.Write(GenerateSpecialPadding(size));
+                        WorkBuff.Reset();
+                        WorkBuff.Write(GenerateSpecialPadding(size));
                     }
-                    m_workBuff.Seek(size);
+                    WorkBuff.Seek(size);
                     totalSize += WriteBlock(file);
                 }
             }
 
-            file.Write(m_checkSum);
+            file.Write(CheckSum);
 
-            Debug.WriteLine("Save size: {0}", totalSize);
+            Debug.WriteLine("Save successful!");
+            Debug.WriteLine("Size of game data: {0} bytes", totalSize);
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
         }
 
-        protected override bool DetectFileFormat(byte[] data, out DataFormat fmt)
+        protected override bool DetectFileFormat(byte[] data, out SaveDataFormat fmt)
         {
             // TODO: Android, iOS, PS2, Xbox
 
@@ -520,8 +406,14 @@ namespace GTASaveData.VC
                 }
             }
 
-            fmt = DataFormat.Default;
+            fmt = SaveDataFormat.Default;
             return false;
+        }
+
+        protected override int GetSize(SaveDataFormat fmt)
+        {
+            // TODO
+            throw SizeNotDefined(fmt);
         }
 
         public override bool Equals(object obj)
@@ -550,7 +442,7 @@ namespace GTASaveData.VC
                 && RestartPoints.Equals(other.RestartPoints)
                 && RadarBlips.Equals(other.RadarBlips)
                 && Zones.Equals(other.Zones)
-                && GangData.Equals(other.GangData)
+                && Gangs.Equals(other.Gangs)
                 && CarGenerators.Equals(other.CarGenerators)
                 && ParticleObjects.Equals(other.ParticleObjects)
                 && AudioScriptObjects.Equals(other.AudioScriptObjects)
@@ -566,7 +458,7 @@ namespace GTASaveData.VC
         {
             if (!m_disposed)
             {
-                m_workBuff.Dispose();
+                WorkBuff.Dispose();
                 m_disposed = true;
             }
         }
@@ -578,41 +470,69 @@ namespace GTASaveData.VC
 
         public static class FileFormats
         {
-            public static readonly DataFormat Android = new DataFormat(
+            public static readonly SaveDataFormat Android = new SaveDataFormat(
                 "Android", "Android", "Android",
                 new GameConsole(ConsoleType.Android)
             );
 
-            public static readonly DataFormat iOS = new DataFormat(
+            public static readonly SaveDataFormat iOS = new SaveDataFormat(
                 "iOS", "iOS", "iOS",
                 new GameConsole(ConsoleType.iOS)
             );
 
-            public static readonly DataFormat PC_Retail = new DataFormat(
+            public static readonly SaveDataFormat PC_Retail = new SaveDataFormat(
                 "PC_Retail", "PC", "Windows (Retail Version), macOS",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.MacOS)
             );
 
-            public static readonly DataFormat PC_Steam = new DataFormat(
+            public static readonly SaveDataFormat PC_Steam = new SaveDataFormat(
                 "PC_Steam", "PC (Steam)", "Windows (Steam Version)",
                 new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam)
             );
 
-            public static readonly DataFormat PS2 = new DataFormat(
+            public static readonly SaveDataFormat PS2 = new SaveDataFormat(
                 "PS2", "PS2", "PlayStation 2",
                 new GameConsole(ConsoleType.PS2)
             );
 
-            public static readonly DataFormat Xbox = new DataFormat(
+            public static readonly SaveDataFormat Xbox = new SaveDataFormat(
                 "Xbox", "Xbox", "Xbox",
                 new GameConsole(ConsoleType.Xbox)
             );
 
-            public static DataFormat[] GetAll()
+            public static SaveDataFormat[] GetAll()
             {
-                return new DataFormat[] { Android, iOS, PC_Retail, PC_Steam, PS2, Xbox };
+                return new SaveDataFormat[] { Android, iOS, PC_Retail, PC_Steam, PS2, Xbox };
             }
         }
+    }
+
+    public enum DataBlock
+    {
+        SimpleVars,
+        Scripts,
+        PedPool,
+        Garages,
+        GameLogic,
+        VehiclePool,
+        ObjectPool,
+        Paths,
+        Cranes,
+        Pickups,
+        PhoneInfo,
+        RestartPoints,
+        RadarBlips,
+        Zones,
+        GangData,
+        CarGenerators,
+        ParticleObjects,
+        AudioScriptObjects,
+        ScriptPaths,
+        PlayerInfo,
+        Stats,
+        SetPieces,
+        Streaming,
+        PedTypeInfo
     }
 }

@@ -220,7 +220,7 @@ namespace GTASaveData.GTA3
         public Crane()
         { }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             Handle = buf.ReadUInt32();
             HookHandle = buf.ReadUInt32();
@@ -257,7 +257,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Crane>());
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Write(Handle);
             buf.Write(HookHandle);
@@ -294,7 +294,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Crane>());
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             return 0x80;
         }

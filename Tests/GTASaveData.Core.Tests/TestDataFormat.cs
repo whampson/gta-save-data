@@ -13,7 +13,7 @@ namespace GTASaveData.Core.Tests
         [InlineData(ConsoleType.Win32, ConsoleFlags.None, true)]
         public void SupportedWithFlags(ConsoleType type, ConsoleFlags flags, bool expectedResult)
         {
-            DataFormat fmt = new DataFormat(
+            SaveDataFormat fmt = new SaveDataFormat(
                 "Test", "Test", "Test Format",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe),
                 new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam),
@@ -31,8 +31,8 @@ namespace GTASaveData.Core.Tests
         [InlineData(ConsoleType.PS2, ConsoleFlags.Europe | ConsoleFlags.NorthAmerica, ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe, true)]
         public void Equality(ConsoleType typeA, ConsoleFlags flagsA, ConsoleType typeB, ConsoleFlags flagsB, bool expectedResult)
         {
-            DataFormat f1 = new DataFormat("F1", "Format 1", null, new GameConsole(typeA, flagsA));
-            DataFormat f2 = new DataFormat("F2", "Format 2", null, new GameConsole(typeB, flagsB));
+            SaveDataFormat f1 = new SaveDataFormat("F1", "Format 1", null, new GameConsole(typeA, flagsA));
+            SaveDataFormat f2 = new SaveDataFormat("F2", "Format 2", null, new GameConsole(typeB, flagsB));
 
             if (expectedResult)
             {

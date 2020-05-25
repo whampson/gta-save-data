@@ -19,19 +19,19 @@ namespace GTASaveData.GTA3
             set { m_baseBriefId = value; OnPropertyChanged(); }
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             OnAMissionFlag = buf.ReadInt32();
             BaseBriefId = buf.ReadInt32();
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Write(OnAMissionFlag);
             buf.Write(BaseBriefId);
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             return 8;
         }

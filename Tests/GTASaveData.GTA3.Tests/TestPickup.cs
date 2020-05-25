@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPickup : Base<Pickup>
     {
-        public override Pickup GenerateTestObject(DataFormat format)
+        public override Pickup GenerateTestObject(SaveDataFormat format)
         {
             Faker<Pickup> model = new Faker<Pickup>()
                 .RuleFor(x => x.Type, f => f.PickRandom<PickupType>())

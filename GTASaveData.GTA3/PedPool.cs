@@ -38,7 +38,7 @@ namespace GTASaveData.GTA3
             return PlayerPeds[0];
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             int numPeds = buf.ReadInt32();
 
@@ -60,7 +60,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Write(PlayerPeds.Count);
 
@@ -78,7 +78,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PedPool>(this, fmt));
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             int headerSize = 2 * sizeof(int) + sizeof(short);
             int footerSize = 2 * sizeof(int) + PlayerPed.Limits.MaxModelNameLength;

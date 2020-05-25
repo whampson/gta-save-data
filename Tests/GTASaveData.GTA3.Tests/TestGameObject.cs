@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestGameObject : Base<GameObject>
     {
-        public override GameObject GenerateTestObject(DataFormat format)
+        public override GameObject GenerateTestObject(SaveDataFormat format)
         {
             Faker<GameObject> model = new Faker<GameObject>()
                 .RuleFor(x => x.ModelIndex, f => f.Random.Short())

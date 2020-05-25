@@ -3,9 +3,9 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 
-namespace GTASaveData.GTA3
+namespace GTASaveData
 {
-    public abstract class GTA3VCSave : SaveFile
+    public abstract class GTA3VCSave : GTASaveFile
     {
         public const int SaveHeaderSize = 8;
 

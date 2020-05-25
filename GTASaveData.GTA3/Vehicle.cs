@@ -248,7 +248,7 @@ namespace GTASaveData.GTA3
             DoorLock = other.DoorLock;
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Skip(4);
             Matrix m = new Matrix();
@@ -304,7 +304,7 @@ namespace GTASaveData.GTA3
             buf.Skip(99);
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Skip(4);
             buf.Write(Matrix.Right);

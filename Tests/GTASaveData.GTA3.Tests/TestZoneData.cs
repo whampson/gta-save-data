@@ -7,7 +7,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestZoneData : Base<ZoneData>
     {
-        public override ZoneData GenerateTestObject(DataFormat format)
+        public override ZoneData GenerateTestObject(SaveDataFormat format)
         {
             Faker<ZoneData> model = new Faker<ZoneData>()
                 .RuleFor(x => x.CurrentZoneIndex, f => f.Random.Int())

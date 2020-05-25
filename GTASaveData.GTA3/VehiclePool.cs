@@ -28,7 +28,7 @@ namespace GTASaveData.GTA3
             Boats = new Array<Boat>();
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             int numCars = buf.ReadInt32();
             int numBoats = buf.ReadInt32();
@@ -58,7 +58,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             List<Vehicle> vehicles = Cars.Select(x => x as Vehicle).Concat(Boats.Select(x => x as Vehicle)).ToList();
 
@@ -76,7 +76,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             int headerSize = 2 * sizeof(int) + sizeof(short);
             int sizeOfCars = (SizeOf<Automobile>(fmt) + headerSize) * Cars.Count;

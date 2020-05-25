@@ -107,7 +107,7 @@ namespace GTASaveData.GTA3
             PlayerName = "";
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             Money = buf.ReadInt32();
             WastedBustedState = (WastedBustedState) buf.ReadByte();
@@ -128,7 +128,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PlayerInfo>());
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Write(Money);
             buf.Write((byte) WastedBustedState);
@@ -150,7 +150,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PlayerInfo>());
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             return 0x13C;
         }

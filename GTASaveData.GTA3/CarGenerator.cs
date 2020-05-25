@@ -13,8 +13,8 @@ namespace GTASaveData.GTA3
         private short m_color1;
         private short m_color2;
         private bool m_forceSpawn;
-        private byte m_alarm;
-        private byte m_doorLock;
+        private byte m_alarmChance;
+        private byte m_lockedChance;
         private ushort m_minDelay;
         private ushort m_maxDelay;
         private uint m_timer;
@@ -37,7 +37,7 @@ namespace GTASaveData.GTA3
             set { m_position = value; OnPropertyChanged(); }
         }
 
-        public float Angle
+        public float Heading
         {
             get { return m_angle; }
             set { m_angle = value; OnPropertyChanged(); }
@@ -61,16 +61,16 @@ namespace GTASaveData.GTA3
             set { m_forceSpawn = value; OnPropertyChanged(); }
         }
 
-        public byte Alarm
+        public byte AlarmChance
         {
-            get { return m_alarm; }
-            set { m_alarm = value; OnPropertyChanged(); }
+            get { return m_alarmChance; }
+            set { m_alarmChance = value; OnPropertyChanged(); }
         }
 
-        public byte DoorLock
+        public byte LockedChance
         {
-            get { return m_doorLock; }
-            set { m_doorLock = value; OnPropertyChanged(); }
+            get { return m_lockedChance; }
+            set { m_lockedChance = value; OnPropertyChanged(); }
         }
 
         public ushort MinDelay
@@ -127,12 +127,6 @@ namespace GTASaveData.GTA3
             set { m_size= value; OnPropertyChanged(); }
         }
 
-        bool ICarGenerator.Enabled
-        {
-            get { return UsesRemaining > 0; }
-            set { UsesRemaining = (short) ((value) ? 101 : 0); OnPropertyChanged(); }
-        }
-
         int ICarGenerator.Color1
         {
             get { return Color1; }
@@ -145,19 +139,37 @@ namespace GTASaveData.GTA3
             set { Color2 = (short) value; OnPropertyChanged(); }
         }
 
+        int ICarGenerator.AlarmChance
+        {
+            get { return AlarmChance; }
+            set { AlarmChance = (byte) value; OnPropertyChanged(); }
+        }
+
+        int ICarGenerator.LockedChance
+        {
+            get { return LockedChance; }
+            set { LockedChance = (byte) value; OnPropertyChanged(); }
+        }
+
+        bool ICarGenerator.Enabled
+        {
+            get { return UsesRemaining > 0; }
+            set { UsesRemaining = (short) ((value) ? 101 : 0); OnPropertyChanged(); }
+        }
+
         public CarGenerator()
         { }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             Model = buf.ReadInt32();
             Position = buf.Read<Vector3D>();
-            Angle = buf.ReadFloat();
+            Heading = buf.ReadFloat();
             Color1 = buf.ReadInt16();
             Color2 = buf.ReadInt16();
             ForceSpawn = buf.ReadBool();
-            Alarm = buf.ReadByte();
-            DoorLock = buf.ReadByte();
+            AlarmChance = buf.ReadByte();
+            LockedChance = buf.ReadByte();
             buf.ReadByte();
             MinDelay = buf.ReadUInt16();
             MaxDelay = buf.ReadUInt16();
@@ -173,16 +185,16 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Write(Model);
             buf.Write(Position);
-            buf.Write(Angle);
+            buf.Write(Heading);
             buf.Write(Color1);
             buf.Write(Color2);
             buf.Write(ForceSpawn);
-            buf.Write(Alarm);
-            buf.Write(DoorLock);
+            buf.Write(AlarmChance);
+            buf.Write(LockedChance);
             buf.Write((byte) 0);
             buf.Write(MinDelay);
             buf.Write(MaxDelay);
@@ -198,7 +210,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             return 0x48;
         }
@@ -217,12 +229,12 @@ namespace GTASaveData.GTA3
 
             return Model.Equals(other.Model)
                 && Position.Equals(other.Position)
-                && Angle.Equals(other.Angle)
+                && Heading.Equals(other.Heading)
                 && Color1.Equals(other.Color1)
                 && Color2.Equals(other.Color2)
                 && ForceSpawn.Equals(other.ForceSpawn)
-                && Alarm.Equals(other.Alarm)
-                && DoorLock.Equals(other.DoorLock)
+                && AlarmChance.Equals(other.AlarmChance)
+                && LockedChance.Equals(other.LockedChance)
                 && MinDelay.Equals(other.MinDelay)
                 && MaxDelay.Equals(other.MaxDelay)
                 && Timer.Equals(other.Timer)

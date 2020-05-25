@@ -29,9 +29,9 @@ namespace GTASaveData.GTA3
             Damage = new DamageManager(other.Damage);
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
-            base.ReadObjectData(buf, fmt);
+            base.ReadData(buf, fmt);
 
             Damage = buf.Read<DamageManager>();
             buf.Skip(GetSize(fmt) - buf.Offset);    // The rest is useless
@@ -39,9 +39,9 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Automobile>(fmt));
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
-            base.WriteObjectData(buf, fmt);
+            base.WriteData(buf, fmt);
 
             buf.Write(Damage);
             buf.Skip(GetSize(fmt) - buf.Offset);
@@ -49,7 +49,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Automobile>(fmt));
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             if (fmt.Mobile)
             {

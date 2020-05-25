@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestGangData : Base<GangData>
     {
-        public override GangData GenerateTestObject(DataFormat format)
+        public override GangData GenerateTestObject(SaveDataFormat format)
         {
             Faker<GangData> model = new Faker<GangData>()
                 .RuleFor(x => x.Gangs, f => Generator.Array(GangData.Limits.MaxNumGangs, g => Generator.Generate<Gang, TestGang>()));

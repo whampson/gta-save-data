@@ -34,7 +34,7 @@ namespace GTASaveData.Core.Tests
             }
         }
 
-        private class TestSave : SaveFile
+        private class TestSave : GTASaveFile
         {
             public override string Name
             {
@@ -65,12 +65,12 @@ namespace GTASaveData.Core.Tests
                 throw new NotImplementedException();
             }
 
-            protected override bool DetectFileFormat(byte[] data, out DataFormat fmt)
+            protected override bool DetectFileFormat(byte[] data, out SaveDataFormat fmt)
             {
                 throw new NotImplementedException();
             }
 
-            protected override int GetSize(DataFormat fmt)
+            protected override int GetSize(SaveDataFormat fmt)
             {
                 throw new NotImplementedException();
             }

@@ -1,7 +1,7 @@
 ﻿using GTASaveData;
 using GTASaveData.Extensions;
 using GTASaveData.GTA3;
-using GTASaveData.Types;
+using GTASaveData.VC;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +12,7 @@ using WpfEssentials.Win32;
 
 using IIIBlock = GTASaveData.GTA3.DataBlock;
 //using IVBlock = GTASaveData.GTA4.Block;
-//using VCBlock = GTASaveData.VC.Block;
+using VCBlock = GTASaveData.VC.DataBlock;
 //using SABlock = GTASaveData.SA.Block;
 
 namespace TestApp
@@ -23,21 +23,21 @@ namespace TestApp
         public EventHandler<FileDialogEventArgs> FileDialogRequested;
         public EventHandler<MessageBoxEventArgs> MessageBoxRequested;
 
-        private SaveFile m_currentSaveFile;
-        private GTASaveData.DataFormat m_currentFileFormat;
+        private GTASaveFile m_currentSaveFile;
+        private GTASaveData.SaveDataFormat m_currentFileFormat;
         private GameType m_selectedGame;
         private int m_selectedBlockIndex;
         private bool m_showEntireFileChecked;
         private string m_text;
         private string m_statusText;
 
-        public SaveFile CurrentSaveFile
+        public GTASaveFile CurrentSaveFile
         {
             get { return m_currentSaveFile; }
             set { m_currentSaveFile = value; OnPropertyChanged(); }
         }
 
-        public GTASaveData.DataFormat CurrentFileFormat
+        public GTASaveData.SaveDataFormat CurrentFileFormat
         {
             get { return m_currentFileFormat; }
             set { m_currentFileFormat = value; OnPropertyChanged(); }
@@ -129,40 +129,7 @@ namespace TestApp
 
         public void OnLoad()
         {
-            GTA3Save x = CurrentSaveFile as GTA3Save;
-
-            Vector3D playerPos = x.PedPool.GetPlayerPed().Position;
-            Vector3D ped0Pos = playerPos;
-            Vector3D ped1Pos = playerPos;
-            Vector3D car0Pos = playerPos;
-
-            PlayerPed ped0 = new PlayerPed
-            {
-                ModelName = "FRANKIE",
-                Position = ped0Pos,
-            };
-
-            ped1Pos.Y += 5;
-            PlayerPed ped1 = new PlayerPed(0, (2 << 8) + 1)
-            {
-                ModelName = "TONY",
-                Position = ped1Pos
-            };
-
-            x.PedPool.PlayerPeds.Clear();
-            x.PedPool.PlayerPeds.Add(ped0);
-            x.PedPool.PlayerPeds.Add(ped1);
-
-            Automobile car0 = new Automobile(92, 0);
-            car0Pos.X += 5;
-            car0.SetPosition(car0Pos);
-            car0.SetHeading((float) Math.PI);
-            car0.CreatedBy = VehicleCreatedBy.Mission;
-            car0.Color1 = 2;
-            car0.Color2 = 1;
-
-            x.VehiclePool.Cars.Clear();
-            x.VehiclePool.Cars.Add(car0);
+            // Do random stuff here :p
         }
 
         public ViewModel()
@@ -175,7 +142,7 @@ namespace TestApp
             switch (SelectedGame)
             {
                 case GameType.III: DoLoad<GTA3Save>(path); break;
-                //case GameType.VC: DoLoad<ViceCitySave>(path); break;
+                case GameType.VC: DoLoad<ViceCitySave>(path); break;
                 //case GameType.SA: DoLoad<SanAndreasSave>(path); break;
                 //case GameType.LCS: DoLoad<LibertyCityStoriesSave>(path); break;
                 //case GameType.VCS: DoLoad<ViceCityStoriesSave>(path); break;
@@ -194,19 +161,19 @@ namespace TestApp
             }
         }
 
-        private bool DoLoad<T>(string path) where T : SaveFile, new()
+        private bool DoLoad<T>(string path) where T : GTASaveFile, new()
         {
             
             try
             {
-                if (!SaveFile.GetFileFormat<T>(path, out GTASaveData.DataFormat fmt))
+                if (!GTASaveFile.GetFileFormat<T>(path, out GTASaveData.SaveDataFormat fmt))
                 {
                     RequestMessageBoxError(string.Format("Invalid save file! (Game: {0})", SelectedGame));
                     return false;
                 }
 
                 CleanupOldSaveData();
-                CurrentSaveFile = SaveFile.Load<T>(path, fmt);
+                CurrentSaveFile = GTASaveFile.Load<T>(path, fmt);
                 CurrentFileFormat = fmt;
 
                 return true;
@@ -229,10 +196,10 @@ namespace TestApp
             {
                 (CurrentSaveFile as GTA3Save).Dispose();
             }
-            //else if (CurrentSaveFile is ViceCitySave)
-            //{
-            //    (CurrentSaveFile as ViceCitySave).Dispose();
-            //}
+            else if (CurrentSaveFile is ViceCitySave)
+            {
+                (CurrentSaveFile as ViceCitySave).Dispose();
+            }
             //else if (CurrentSaveFile is SanAndreasSave)
             //{
             //    (CurrentSaveFile as SanAndreasSave).Dispose();
@@ -243,7 +210,7 @@ namespace TestApp
         {
             CleanupOldSaveData();
             CurrentSaveFile = null;
-            CurrentFileFormat = GTASaveData.DataFormat.Default;
+            CurrentFileFormat = GTASaveData.SaveDataFormat.Default;
             SelectedBlockIndex = -1;
 
             UpdateTextBox();
@@ -265,7 +232,7 @@ namespace TestApp
         public static Dictionary<GameType, string[]> BlockNames => new Dictionary<GameType, string[]>()
         {
             { GameType.III, Enum.GetNames(typeof(IIIBlock)) },
-            //{ GameType.VC, Enum.GetNames(typeof(VCBlock)) },
+            { GameType.VC, Enum.GetNames(typeof(VCBlock)) },
             //{ GameType.SA, Enum.GetNames(typeof(SABlock)) },
             //{ GameType.IV, Enum.GetNames(typeof(IVBlock)) },
         };

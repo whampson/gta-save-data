@@ -9,7 +9,7 @@ namespace GTASaveData.SA.Tests
 {
     public class TestSanAndreasSave : Base<SanAndreasSave>
     {
-        public override SanAndreasSave GenerateTestObject(DataFormat format)
+        public override SanAndreasSave GenerateTestObject(SaveDataFormat format)
         {
             Faker<SanAndreasSave> model = new Faker<SanAndreasSave>()
                 .RuleFor(x => x.FileFormat, format)
@@ -21,17 +21,17 @@ namespace GTASaveData.SA.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void FileFormatDetection(DataFormat expectedFormat, string filename)
+        public void FileFormatDetection(SaveDataFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.SA, expectedFormat, filename);
-            SaveFile.GetFileFormat<SanAndreasSave>(path, out DataFormat detectedFormat);
+            GTASaveFile.GetFileFormat<SanAndreasSave>(path, out SaveDataFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(DataFormat format)
+        public void RandomDataSerialization(SaveDataFormat format)
         {
             using SanAndreasSave x0 = GenerateTestObject(format);
             using SanAndreasSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -45,11 +45,11 @@ namespace GTASaveData.SA.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealDataSerialization(DataFormat format, string filename)
+        public void RealDataSerialization(SaveDataFormat format, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.SA, format, filename);
 
-            using SanAndreasSave x0 = SaveFile.Load<SanAndreasSave>(path, format);
+            using SanAndreasSave x0 = GTASaveFile.Load<SanAndreasSave>(path, format);
             using SanAndreasSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);

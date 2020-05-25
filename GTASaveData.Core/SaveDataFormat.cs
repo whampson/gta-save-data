@@ -5,9 +5,9 @@ using System.Linq;
 #pragma warning disable IDE1006 // Naming Styles
 namespace GTASaveData
 {
-    public struct DataFormat : IEquatable<DataFormat>
+    public struct SaveDataFormat : IEquatable<SaveDataFormat>
     {
-        public static readonly DataFormat Default = new DataFormat("Default", "", "");
+        public static readonly SaveDataFormat Default = new SaveDataFormat("Default", "", "");
 
         private readonly string m_id;
         private readonly string m_name;
@@ -30,7 +30,7 @@ namespace GTASaveData
         public bool Xbox => IsSupportedOn(ConsoleType.Xbox);
         public bool Xbox360 => IsSupportedOn(ConsoleType.Xbox360);
 
-        public DataFormat(string id, string name, string description, params GameConsole[] supportedConsoles)
+        public SaveDataFormat(string id, string name, string description, params GameConsole[] supportedConsoles)
         {
             m_id = id;
             m_name = name;
@@ -60,15 +60,15 @@ namespace GTASaveData
         }
         public override bool Equals(object obj)
         {
-            if (!(obj is DataFormat))
+            if (!(obj is SaveDataFormat))
             {
                 return false;
             }
 
-            return Equals((DataFormat) obj);
+            return Equals((SaveDataFormat) obj);
         }
 
-        public bool Equals(DataFormat other)
+        public bool Equals(SaveDataFormat other)
         {
             return SupportedConsoles.SequenceEqual(other.SupportedConsoles);
         }
@@ -78,12 +78,12 @@ namespace GTASaveData
             return FormatName;
         }
 
-        public static bool operator ==(DataFormat left, DataFormat right)
+        public static bool operator ==(SaveDataFormat left, SaveDataFormat right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(DataFormat left, DataFormat right)
+        public static bool operator !=(SaveDataFormat left, SaveDataFormat right)
         {
             return !left.Equals(right);
         }

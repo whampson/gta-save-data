@@ -11,7 +11,7 @@ namespace GTASaveData.GTA3
     /// <summary>
     /// Represents a <i>Grand Theft Auto III</i> save file.
     /// </summary>
-    public class GTA3Save : GTA3VCSave, IDisposable, ISaveFile, IEquatable<GTA3Save>
+    public class GTA3Save : GTA3VCSave, IDisposable, IGTASaveFile, IEquatable<GTA3Save>
     {
         public const int SizeOfOneGameInBytes = 201729;
         public const int MaxBufferSize = 55000;
@@ -343,7 +343,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
         }
 
-        protected override bool DetectFileFormat(byte[] data, out DataFormat fmt)
+        protected override bool DetectFileFormat(byte[] data, out SaveDataFormat fmt)
         {
             bool isMobile = false;
             bool isPcOrXbox = false;
@@ -354,11 +354,11 @@ namespace GTASaveData.GTA3
 
             if (fileId == -1 || scr == -1)
             {
-                fmt = DataFormat.Default;
+                fmt = SaveDataFormat.Default;
                 return false;
             }
 
-            int blk1Size;
+            int blk1Size;   // TODO: use another metric as block 1 can change sizes in rare circumstances
             using (StreamBuffer wb = new StreamBuffer(data))
             {
                 wb.Skip(wb.ReadInt32());
@@ -419,11 +419,11 @@ namespace GTASaveData.GTA3
                 }
             }
 
-            fmt = DataFormat.Default;
+            fmt = SaveDataFormat.Default;
             return false;
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             // TODO:
             throw SizeNotDefined(fmt);
@@ -475,54 +475,54 @@ namespace GTASaveData.GTA3
 
         public static class FileFormats
         {
-            public static readonly DataFormat Android = new DataFormat(
+            public static readonly SaveDataFormat Android = new SaveDataFormat(
                 "Android", "Android", "Android",
                 new GameConsole(ConsoleType.Android)
             );
 
-            public static readonly DataFormat iOS = new DataFormat(
+            public static readonly SaveDataFormat iOS = new SaveDataFormat(
                 "iOS", "iOS", "iOS",
                 new GameConsole(ConsoleType.iOS)
             );
 
-            public static readonly DataFormat PC = new DataFormat(
+            public static readonly SaveDataFormat PC = new SaveDataFormat(
                 "PC", "PC", "Windows, macOS",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.MacOS)
             );
 
-            public static readonly DataFormat PS2_AU = new DataFormat(
+            public static readonly SaveDataFormat PS2_AU = new SaveDataFormat(
                 "PS2_AU", "PS2 (Australia)", "PlayStation 2 (PAL Australia)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.Australia)
             );
 
-            public static readonly DataFormat PS2_JP = new DataFormat(
+            public static readonly SaveDataFormat PS2_JP = new SaveDataFormat(
                 "PS2_JP", "PS2 (Japan)", "PlayStation 2 (NTSC-J)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.Japan)
             );
 
-            public static readonly DataFormat PS2_NAEU = new DataFormat(
+            public static readonly SaveDataFormat PS2_NAEU = new SaveDataFormat(
                 "PS2_NAEU", "PS2", "PlayStation 2 (NTSC-U/C, PAL Europe)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe)
             );
 
-            public static readonly DataFormat Xbox = new DataFormat(
+            public static readonly SaveDataFormat Xbox = new SaveDataFormat(
                 "Xbox", "Xbox", "Xbox",
                 new GameConsole(ConsoleType.Xbox)
             );
 
-            public static DataFormat[] GetAll()
+            public static SaveDataFormat[] GetAll()
             {
-                return new DataFormat[] { Android, iOS, PC, PS2_AU, PS2_JP, PS2_NAEU, Xbox };
+                return new SaveDataFormat[] { Android, iOS, PC, PS2_AU, PS2_JP, PS2_NAEU, Xbox };
             }
         }
 
-        public static bool IsAusrtalianPS2(DataFormat fmt)
+        public static bool IsAusrtalianPS2(SaveDataFormat fmt)
         {
             return fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Australia);
         }
 
-        public static bool IsJapanesePS2(DataFormat fmt)
+        public static bool IsJapanesePS2(SaveDataFormat fmt)
         {
             return fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Japan);
         }

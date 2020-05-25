@@ -1,10 +1,12 @@
-﻿using System;
+﻿using GTASaveData.Types.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class CarGeneratorData : SaveDataObject, IEquatable<CarGeneratorData>
+    public class CarGeneratorData : SaveDataObject, ICarGeneratorBlock, IEquatable<CarGeneratorData>
     {
         public static class Limits
         {
@@ -50,14 +52,19 @@ namespace GTASaveData.GTA3
             set { m_carGeneratorArray = value; OnPropertyChanged(); }
         }
 
+        IEnumerable<ICarGenerator> ICarGeneratorBlock.CarGenerators
+        {
+            get { return m_carGeneratorArray; }
+        }
+
         public CarGeneratorData()
         {
             CarGenerators = new Array<CarGenerator>();
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
-            int size = GTA3Save.ReadSaveHeader(buf, "CGN");
+            int size = GTA3VCSave.ReadSaveHeader(buf, "CGN");
 
             int infoSize = buf.ReadInt32();
             Debug.Assert(infoSize == CarGeneratorDataSize);
@@ -71,12 +78,12 @@ namespace GTASaveData.GTA3
             CarGenerators = buf.Read<CarGenerator>(Limits.MaxNumCarGenerators);
 
             Debug.Assert(buf.Offset == SizeOf<CarGeneratorData>());
-            Debug.Assert(size == SizeOf<CarGeneratorData>() - GTA3Save.SaveHeaderSize);
+            Debug.Assert(size == SizeOf<CarGeneratorData>() - GTA3VCSave.SaveHeaderSize);
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
-            GTA3Save.WriteSaveHeader(buf, "CGN", SizeOf<CarGeneratorData>() - GTA3Save.SaveHeaderSize);
+            GTA3VCSave.WriteSaveHeader(buf, "CGN", SizeOf<CarGeneratorData>() - GTA3VCSave.SaveHeaderSize);
 
             buf.Write(CarGeneratorDataSize);
             buf.Write(NumberOfCarGenerators);
@@ -90,7 +97,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<CarGeneratorData>());
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             return 0x2D1C;
         }

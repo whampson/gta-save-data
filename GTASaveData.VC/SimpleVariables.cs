@@ -20,7 +20,7 @@ namespace GTASaveData.VC
         private string m_lastMissionPassedName;
         private SystemTime m_timeLastSaved;
         private int m_saveSize;
-        private LevelType m_currLevel;
+        private Level m_currLevel;
         private Vector3D m_cameraPosition;
         private int m_steamWin32Only;
         private int m_millisecondsPerGameMinute;
@@ -51,7 +51,7 @@ namespace GTASaveData.VC
         private float m_extraColourInter;
         private Array<int> m_radioStationPositionList;
 
-        public string LastMissionPassedName
+        public string SaveName
         {
             get { return m_lastMissionPassedName; }
             set { m_lastMissionPassedName = value; OnPropertyChanged(); }
@@ -69,7 +69,7 @@ namespace GTASaveData.VC
             set { m_saveSize = value; OnPropertyChanged(); }
         }
 
-        public LevelType CurrLevel
+        public Level CurrLevel
         {
             get { return m_currLevel; }
             set { m_currLevel = value; OnPropertyChanged(); }
@@ -251,18 +251,16 @@ namespace GTASaveData.VC
 
         public SimpleVariables()
         {
-            LastMissionPassedName = "";
-            TimeLastSaved = new SystemTime();
-            CameraPosition = new Vector3D();
+            SaveName = "";
             RadioStationPositionList = new Array<int>();
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
-            LastMissionPassedName = buf.ReadString(Limits.MaxNameLength, unicode: true);
+            SaveName = buf.ReadString(Limits.MaxNameLength, unicode: true);
             TimeLastSaved = buf.Read<SystemTime>();
             SaveSize = buf.ReadInt32();
-            CurrLevel = (LevelType) buf.ReadInt32();
+            CurrLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.Read<Vector3D>();
             if (IsSteamWin32(fmt)) SteamWin32Only = buf.ReadInt32();
             MillisecondsPerGameMinute = buf.ReadInt32();
@@ -304,14 +302,14 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
-            buf.Write(LastMissionPassedName, Limits.MaxNameLength, unicode: true);
+            buf.Write(SaveName, Limits.MaxNameLength, unicode: true);
             buf.Write(TimeLastSaved);
             buf.Write(SaveSize);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
-            if (IsSteamWin32(fmt)) buf.Write(SteamWin32Only);        // TODO: constant?
+            if (IsSteamWin32(fmt)) buf.Write(SteamWin32Only);
             buf.Write(MillisecondsPerGameMinute);
             buf.Write(LastClockTick);
             buf.Write(GameClockHours);
@@ -351,7 +349,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             if (fmt.PC)
             {
@@ -365,7 +363,7 @@ namespace GTASaveData.VC
             throw new NotSupportedException();
         }
 
-        public static bool IsSteamWin32(DataFormat fmt)
+        public static bool IsSteamWin32(SaveDataFormat fmt)
         {
             return fmt.IsSupportedOn(ConsoleType.Win32, ConsoleFlags.Steam);
         }
@@ -382,7 +380,7 @@ namespace GTASaveData.VC
                 return false;
             }
 
-            return LastMissionPassedName.Equals(other.LastMissionPassedName)
+            return SaveName.Equals(other.SaveName)
                 && TimeLastSaved.Equals(other.TimeLastSaved)
                 && SaveSize.Equals(other.SaveSize)
                 && CurrLevel.Equals(other.CurrLevel)
@@ -416,5 +414,59 @@ namespace GTASaveData.VC
                 && ExtraColourInterpolation.Equals(other.ExtraColourInterpolation)
                 && RadioStationPositionList.SequenceEqual(other.RadioStationPositionList);
         }
+    }
+
+    public enum Interior
+    {
+        None,
+        Hotel,
+        Mansion,
+        Bank,
+        Mall,
+        StripClub,
+        Lawyers,
+        CoffeeShop,
+        ConcertHall,
+        Studio,
+        RifleRange,
+        BikerBar,
+        PoliceStation,
+        Everywhere,
+        Dirt,
+        Blood,
+        OvalRing,
+        MalibuClub,
+        PrintWorks
+    }
+
+    public enum Level
+    {
+        None,
+        Beach,
+        Mainland,
+    }
+
+    // TODO: confirm
+    public enum Language
+    {
+        English,
+        French,
+        German,
+        Italian,
+        Spanish,
+        Japanese,
+        Korean
+    }
+
+    public enum WeatherType
+    {
+        None = -1,
+        Sunny,
+        Cloudy,
+        Rainy,
+        Foggy,
+        ExtraSunny,
+        Hurricane,
+        ExtraColours
     }
 }

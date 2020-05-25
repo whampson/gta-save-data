@@ -8,14 +8,14 @@ namespace GTASaveData.VC.Tests
 {
     public class TestSimpleVariables : Base<SimpleVariables>
     {
-        public override SimpleVariables GenerateTestObject(DataFormat format)
+        public override SimpleVariables GenerateTestObject(SaveDataFormat format)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.LastMissionPassedName, f => Generator.UnicodeString(f, SimpleVariables.Limits.MaxNameLength - 1))
-                .RuleFor(x => x.TimeLastSaved, f => Generator.Generate<SystemTime, TestSystemTime>())
+                .RuleFor(x => x.SaveName, f => Generator.UnicodeString(f, SimpleVariables.Limits.MaxNameLength - 1))
+                .RuleFor(x => x.TimeLastSaved, f => (SystemTime) Generator.Date(f))
                 .RuleFor(x => x.SaveSize, f => f.Random.Int())
-                .RuleFor(x => x.CurrLevel, f => f.PickRandom<LevelType>())
-                .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
+                .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
                 .RuleFor(x => x.SteamWin32Only, (SimpleVariables.IsSteamWin32(format)) ? SimpleVariables.SteamWin32OnlyValue : 0)
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
@@ -50,12 +50,12 @@ namespace GTASaveData.VC.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void Serialization(DataFormat format)
+        public void RandomDataSerialization(SaveDataFormat format)
         {
             SimpleVariables x0 = GenerateTestObject(format);
             SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
-            Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
+            Assert.Equal(x0.SaveName, x1.SaveName);
             Assert.Equal(x0.TimeLastSaved, x1.TimeLastSaved);
             Assert.Equal(x0.SaveSize, x1.SaveSize);
             Assert.Equal(x0.CurrLevel, x1.CurrLevel);
@@ -88,6 +88,7 @@ namespace GTASaveData.VC.Tests
             Assert.Equal(x0.ExtraColourOn, x1.ExtraColourOn);
             Assert.Equal(x0.ExtraColourInterpolation, x1.ExtraColourInterpolation);
             Assert.Equal(x0.RadioStationPositionList, x1.RadioStationPositionList);
+
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(format), data.Length);
         }

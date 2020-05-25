@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestObjectPool : Base<ObjectPool>
     {
-        public override ObjectPool GenerateTestObject(DataFormat format)
+        public override ObjectPool GenerateTestObject(SaveDataFormat format)
         {
             Faker<ObjectPool> model = new Faker<ObjectPool>()
                 .RuleFor(x => x.Objects,

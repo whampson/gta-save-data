@@ -7,7 +7,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestParticleObject : Base<ParticleObject>
     {
-        public override ParticleObject GenerateTestObject(DataFormat format)
+        public override ParticleObject GenerateTestObject(SaveDataFormat format)
         {
             Faker<ParticleObject> model = new Faker<ParticleObject>()
                 .RuleFor(x => x.Position, f => Generator.Vector3D(f))

@@ -5,7 +5,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPedType : Base<PedType>
     {
-        public override PedType GenerateTestObject(DataFormat format)
+        public override PedType GenerateTestObject(SaveDataFormat format)
         {
             Faker<PedType> model = new Faker<PedType>()
                 .RuleFor(x => x.Flag, f => f.PickRandom<PedTypeFlags>())

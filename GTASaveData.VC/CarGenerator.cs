@@ -5,12 +5,11 @@ using System.Diagnostics;
 
 namespace GTASaveData.VC
 {
-    [Size(0x2C)]
     public class CarGenerator : SaveDataObject, ICarGenerator, IEquatable<CarGenerator>
     {
         private int m_modelIndex;
         private Vector3D m_position;
-        private float m_angle;
+        private float m_heading;
         private short m_color1;
         private short m_color2;
         private bool m_forceSpawn;
@@ -35,10 +34,10 @@ namespace GTASaveData.VC
             set { m_position = value; OnPropertyChanged(); }
         }
 
-        public float Angle
+        public float Heading
         {
-            get { return m_angle; }
-            set { m_angle = value; OnPropertyChanged(); }
+            get { return m_heading; }
+            set { m_heading = value; OnPropertyChanged(); }
         }
 
         public short Color1
@@ -107,12 +106,6 @@ namespace GTASaveData.VC
             set { m_isBlocking = value; OnPropertyChanged(); }
         }
 
-        bool ICarGenerator.Enabled
-        {
-            get { return UsesRemaining > 0; }
-            set { UsesRemaining = (short) ((value) ? 101 : 0); OnPropertyChanged(); }
-        }
-
         int ICarGenerator.Color1
         {
             get { return Color1; }
@@ -125,16 +118,34 @@ namespace GTASaveData.VC
             set { Color2 = (short) value; OnPropertyChanged(); }
         }
 
+        int ICarGenerator.AlarmChance
+        {
+            get { return AlarmChance; }
+            set { AlarmChance = (byte) value; OnPropertyChanged(); }
+        }
+
+        int ICarGenerator.LockedChance
+        {
+            get { return LockedChance; }
+            set { LockedChance = (byte) value; OnPropertyChanged(); }
+        }
+
+        bool ICarGenerator.Enabled
+        {
+            get { return UsesRemaining > 0; }
+            set { UsesRemaining = (short) ((value) ? 101 : 0); OnPropertyChanged(); }
+        }
+
         public CarGenerator()
         {
             Position = new Vector3D();
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             Model = buf.ReadInt32();
             Position = buf.Read<Vector3D>();
-            Angle = buf.ReadFloat();
+            Heading = buf.ReadFloat();
             Color1 = buf.ReadInt16();
             Color2 = buf.ReadInt16();
             ForceSpawn = buf.ReadBool();
@@ -152,11 +163,11 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Write(Model);
             buf.Write(Position);
-            buf.Write(Angle);
+            buf.Write(Heading);
             buf.Write(Color1);
             buf.Write(Color2);
             buf.Write(ForceSpawn);
@@ -174,6 +185,11 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
         }
 
+        protected override int GetSize(SaveDataFormat fmt)
+        {
+            return 0x2C;
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as CarGenerator);
@@ -188,7 +204,7 @@ namespace GTASaveData.VC
 
             return Model.Equals(other.Model)
                 && Position.Equals(other.Position)
-                && Angle.Equals(other.Angle)
+                && Heading.Equals(other.Heading)
                 && Color1.Equals(other.Color1)
                 && Color2.Equals(other.Color2)
                 && ForceSpawn.Equals(other.ForceSpawn)

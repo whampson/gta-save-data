@@ -10,7 +10,7 @@ namespace GTASaveData.VC.Tests
 {
     public class TestViceCitySave : Base<ViceCitySave>
     {
-        public override ViceCitySave GenerateTestObject(DataFormat format)
+        public override ViceCitySave GenerateTestObject(SaveDataFormat format)
         {
             Faker<ViceCitySave> model = new Faker<ViceCitySave>()
                 .RuleFor(x => x.FileFormat, format)
@@ -28,7 +28,7 @@ namespace GTASaveData.VC.Tests
                 //.RuleFor(x => x.RadarBlips, Generator.Generate<RadarBlips, TestRadarBlips>(format))
                 //.RuleFor(x => x.Zones, Generator.Generate<Zones, TestZones>(format))
                 //.RuleFor(x => x.GangData, Generator.Generate<GangData, TestGangData>(format))
-                //.RuleFor(x => x.CarGenerators, Generator.Generate<TheCarGenerators, TestTheCarGenerators>(format))
+                .RuleFor(x => x.CarGenerators, Generator.Generate<CarGeneratorData, TestCarGeneratorData>(format))
                 //.RuleFor(x => x.ParticleObjects, Generator.Generate<Particles, TestParticles>(format))
                 //.RuleFor(x => x.AudioScriptObjects, Generator.Generate<AudioScriptObjects, TestAudioScriptObjects>(format))
                 //.RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))
@@ -42,17 +42,17 @@ namespace GTASaveData.VC.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void FileFormatDetection(DataFormat expectedFormat, string filename)
+        public void FileFormatDetection(SaveDataFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.VC, expectedFormat, filename);
-            SaveFile.GetFileFormat<ViceCitySave>(path, out DataFormat detectedFormat);
+            GTASaveFile.GetFileFormat<ViceCitySave>(path, out SaveDataFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(DataFormat format)
+        public void RandomDataSerialization(SaveDataFormat format)
         {
             using ViceCitySave x0 = GenerateTestObject(format);
             using ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -66,11 +66,11 @@ namespace GTASaveData.VC.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealDataSerialization(DataFormat format, string filename)
+        public void RealDataSerialization(SaveDataFormat format, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.VC, format, filename);
 
-            using ViceCitySave x0 = SaveFile.Load<ViceCitySave>(path, format);
+            using ViceCitySave x0 = GTASaveFile.Load<ViceCitySave>(path, format);
             using ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
@@ -121,7 +121,7 @@ namespace GTASaveData.VC.Tests
             Assert.Equal(x0.RestartPoints, x1.RestartPoints);
             Assert.Equal(x0.RadarBlips, x1.RadarBlips);
             Assert.Equal(x0.Zones, x1.Zones);
-            Assert.Equal(x0.GangData, x1.GangData);
+            Assert.Equal(x0.Gangs, x1.Gangs);
             Assert.Equal(x0.CarGenerators, x1.CarGenerators);
             Assert.Equal(x0.ParticleObjects, x1.ParticleObjects);
             Assert.Equal(x0.AudioScriptObjects, x1.AudioScriptObjects);

@@ -11,7 +11,7 @@ namespace GTASaveData.GTA4
     /// <summary>
     /// Represents a <i>Grand Theft Auto IV</i> save file.
     /// </summary>
-    public class GTA4Save : SaveFile, ISaveFile, IEquatable<GTA4Save>
+    public class GTA4Save : GTASaveFile, IGTASaveFile, IEquatable<GTA4Save>
     {
         public static class Limits
         {
@@ -491,7 +491,7 @@ namespace GTASaveData.GTA4
             throw new NotImplementedException();
         }
 
-        protected override bool DetectFileFormat(byte[] data, out DataFormat fmt)
+        protected override bool DetectFileFormat(byte[] data, out SaveDataFormat fmt)
         {
             using (StreamBuffer b = new StreamBuffer(data))
             {
@@ -523,7 +523,7 @@ namespace GTASaveData.GTA4
                 }
             }
 
-            fmt = DataFormat.Default;
+            fmt = SaveDataFormat.Default;
             return false;
         }
 
@@ -581,25 +581,25 @@ namespace GTASaveData.GTA4
 
         public static class FileFormats
         {
-            public static readonly DataFormat PC = new DataFormat(
+            public static readonly SaveDataFormat PC = new SaveDataFormat(
                 "PC", "PC", "Windows",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam)
             );
 
-            public static readonly DataFormat PS3 = new DataFormat(
+            public static readonly SaveDataFormat PS3 = new SaveDataFormat(
                 "PS3", "PS3", "PlayStation 3",
                 new GameConsole(ConsoleType.PS3)
             );
 
-            public static readonly DataFormat Xbox360 = new DataFormat(
+            public static readonly SaveDataFormat Xbox360 = new SaveDataFormat(
                 "Xbox360", "Xbox 360", "Xbox 360",
                 new GameConsole(ConsoleType.Xbox360)
             );
 
-            public static DataFormat[] GetAll()
+            public static SaveDataFormat[] GetAll()
             {
-                return new DataFormat[] { PC, PS3, Xbox360 };
+                return new SaveDataFormat[] { PC, PS3, Xbox360 };
             }
         }
     }

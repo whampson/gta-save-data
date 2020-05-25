@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPedTypeData : Base<PedTypeData>
     {
-        public override PedTypeData GenerateTestObject(DataFormat format)
+        public override PedTypeData GenerateTestObject(SaveDataFormat format)
         {
             Faker<PedTypeData> model = new Faker<PedTypeData>()
                 .RuleFor(x => x.PedTypes, f => Generator.Array(PedTypeData.Limits.NumberOfPedTypes, g => Generator.Generate<PedType, TestPedType>()));

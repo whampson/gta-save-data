@@ -21,7 +21,7 @@ namespace GTASaveData
         /// </exception>
         public static T Read<T>(byte[] buf)
         {
-            Read(buf, DataFormat.Default, out T obj);
+            Read(buf, SaveDataFormat.Default, out T obj);
             return obj;
         }
 
@@ -31,7 +31,7 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static T Read<T>(byte[] buf, DataFormat fmt)
+        public static T Read<T>(byte[] buf, SaveDataFormat fmt)
         {
             Read(buf, fmt, out T obj);
             return obj;
@@ -44,7 +44,7 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(byte[] buf, DataFormat fmt, out T obj)
+        public static int Read<T>(byte[] buf, SaveDataFormat fmt, out T obj)
         {
             using (StreamBuffer workBuf = new StreamBuffer(buf) { BigEndian = BigEndian })
             {
@@ -59,7 +59,7 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(StreamBuffer buf, DataFormat fmt, out T obj)
+        public static int Read<T>(StreamBuffer buf, SaveDataFormat fmt, out T obj)
         {
             return buf.GenericRead(fmt, out obj);
         }
@@ -71,7 +71,7 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(T obj, byte[] buf, DataFormat fmt) where T : ISerializable
+        public static int Read<T>(T obj, byte[] buf, SaveDataFormat fmt) where T : ISerializable
         {
             using (StreamBuffer workBuf = new StreamBuffer(buf) { BigEndian = BigEndian })
             {
@@ -86,9 +86,9 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(T obj, StreamBuffer buf, DataFormat fmt) where T : ISerializable
+        public static int Read<T>(T obj, StreamBuffer buf, SaveDataFormat fmt) where T : ISerializable
         {
-            return obj.ReadObjectData(buf, fmt);
+            return obj.ReadData(buf, fmt);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace GTASaveData
         /// </exception>
         public static byte[] Write<T>(T obj)
         {
-            Write(obj, DataFormat.Default, out byte[] data);
+            Write(obj, SaveDataFormat.Default, out byte[] data);
             return data;
         }
 
@@ -109,7 +109,7 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static byte[] Write<T>(T obj, DataFormat fmt)
+        public static byte[] Write<T>(T obj, SaveDataFormat fmt)
         {
             Write(obj, fmt, out byte[] data);
             return data;
@@ -122,7 +122,7 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Write<T>(T obj, DataFormat fmt, out byte[] data)
+        public static int Write<T>(T obj, SaveDataFormat fmt, out byte[] data)
         {
             using (StreamBuffer workBuf = new StreamBuffer() { BigEndian = BigEndian })
             {
@@ -139,9 +139,9 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Write<T>(StreamBuffer buf, T obj, DataFormat fmt) where T : ISerializable
+        public static int Write<T>(StreamBuffer buf, T obj, SaveDataFormat fmt) where T : ISerializable
         {
-            return obj.WriteObjectData(buf, fmt);
+            return obj.WriteData(buf, fmt);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace GTASaveData
         /// </exception>
         public static int SizeOf<T>() where T : new()
         {
-            return SizeOf(new T(), DataFormat.Default);
+            return SizeOf(new T(), SaveDataFormat.Default);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int SizeOf<T>(DataFormat fmt) where T : new()
+        public static int SizeOf<T>(SaveDataFormat fmt) where T : new()
         {
             return SizeOf(new T(), fmt);
         }
@@ -175,7 +175,7 @@ namespace GTASaveData
         /// </exception>
         public static int SizeOf<T>(T obj)
         {
-            return SizeOf(obj, DataFormat.Default);
+            return SizeOf(obj, SaveDataFormat.Default);
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int SizeOf<T>(T obj, DataFormat fmt)
+        public static int SizeOf<T>(T obj, SaveDataFormat fmt)
         {
             // Get size from GetSize() function if T is ISerializable
             if (typeof(T).Implements(typeof(ISerializable)))

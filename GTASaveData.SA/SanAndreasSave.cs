@@ -13,7 +13,7 @@ namespace GTASaveData.SA
     /// <summary>
     /// Represents a <i>Grand Theft Auto: San Andreas</i> save file.
     /// </summary>
-    public class SanAndreasSave : SaveFile, ISaveFile, IEquatable<SanAndreasSave>, IDisposable
+    public class SanAndreasSave : GTASaveFile, IGTASaveFile, IEquatable<SanAndreasSave>, IDisposable
     {
         public const int SizeOfOneGameInBytes = 202752;
         private const int MaxBufferSize = 65000;
@@ -621,7 +621,7 @@ namespace GTASaveData.SA
             Debug.Assert(m_file.Cursor == SizeOfOneGameInBytes);
         }
 
-        protected override bool DetectFileFormat(byte[] data, out DataFormat fmt)
+        protected override bool DetectFileFormat(byte[] data, out SaveDataFormat fmt)
         {
             // TODO
             fmt = FileFormats.PC;
@@ -683,13 +683,13 @@ namespace GTASaveData.SA
         public static class FileFormats
         {
             // TODO: 1.05 and 1.06 different?
-            public static readonly DataFormat Mobile = new DataFormat(
+            public static readonly SaveDataFormat Mobile = new SaveDataFormat(
                 "Mobile", "Mobile", "Android, iOS",
                 new GameConsole(ConsoleType.Android),
                 new GameConsole(ConsoleType.iOS)
             );
 
-            public static readonly DataFormat PC = new DataFormat(
+            public static readonly SaveDataFormat PC = new SaveDataFormat(
                 "PC", "PC", "Windows, macOS",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.MacOS),
@@ -697,19 +697,19 @@ namespace GTASaveData.SA
                 new GameConsole(ConsoleType.MacOS, ConsoleFlags.Steam)
             );
 
-            public static readonly DataFormat PS2 = new DataFormat(
+            public static readonly SaveDataFormat PS2 = new SaveDataFormat(
                 "PS2", "PS2", "PlayStation 2",
                 new GameConsole(ConsoleType.PS2)
             );
 
-            public static readonly DataFormat Xbox = new DataFormat(
+            public static readonly SaveDataFormat Xbox = new SaveDataFormat(
                 "Xbox", "Xbox", "Xbox",
                 new GameConsole(ConsoleType.Xbox)
             );
 
-            public static DataFormat[] GetAll()
+            public static SaveDataFormat[] GetAll()
             {
-                return new DataFormat[] { Mobile, PC, PS2, Xbox };
+                return new SaveDataFormat[] { Mobile, PC, PS2, Xbox };
             }
         }
     }

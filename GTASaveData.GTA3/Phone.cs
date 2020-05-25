@@ -60,7 +60,7 @@ namespace GTASaveData.GTA3
             Messages = new Array<uint>();
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             Position = buf.Read<Vector3D>();
             Messages = buf.Read<uint>(Limits.MaxNumMessages);
@@ -73,7 +73,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Phone>());
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Write(Position);
             buf.Write(Messages.ToArray(), Limits.MaxNumMessages);
@@ -86,7 +86,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Phone>());
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             return 0x34;
         }

@@ -8,7 +8,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestZone : Base<Zone>
     {
-        public override Zone GenerateTestObject(DataFormat format)
+        public override Zone GenerateTestObject(SaveDataFormat format)
         {
             Faker<Zone> model = new Faker<Zone>()
                 .RuleFor(x => x.Name, f => Generator.Words(f, Zone.Limits.MaxNameLength - 1))

@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestGTA3Save : Base<GTA3Save>
     {
-        public override GTA3Save GenerateTestObject(DataFormat format)
+        public override GTA3Save GenerateTestObject(SaveDataFormat format)
         {
             Faker<GTA3Save> model = new Faker<GTA3Save>()
                 .RuleFor(x => x.FileFormat, format)
@@ -41,17 +41,17 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void FileFormatDetection(DataFormat expectedFormat, string filename)
+        public void FileFormatDetection(SaveDataFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.III, expectedFormat, filename);
-            SaveFile.GetFileFormat<GTA3Save>(path, out DataFormat detectedFormat);
+            GTASaveFile.GetFileFormat<GTA3Save>(path, out SaveDataFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(DataFormat format)
+        public void RandomDataSerialization(SaveDataFormat format)
         {
             using GTA3Save x0 = GenerateTestObject(format);
             using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -65,11 +65,11 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealDataSerialization(DataFormat format, string filename)
+        public void RealDataSerialization(SaveDataFormat format, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.III, format, filename);
 
-            using GTA3Save x0 = SaveFile.Load<GTA3Save>(path, format);
+            using GTA3Save x0 = GTASaveFile.Load<GTA3Save>(path, format);
             using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);

@@ -23,21 +23,21 @@ namespace GTASaveData.GTA3
             ModelFlags = new Array<StreamingFlags>();
         }
 
-        protected override void ReadObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
         {
             ModelFlags = buf.Read<StreamingFlags>(Limits.NumberOfModels);
 
             Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }
 
-        protected override void WriteObjectData(StreamBuffer buf, DataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
         {
             buf.Write(ModelFlags.ToArray(), Limits.NumberOfModels);
 
             Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }
 
-        protected override int GetSize(DataFormat fmt)
+        protected override int GetSize(SaveDataFormat fmt)
         {
             return 200;
         }

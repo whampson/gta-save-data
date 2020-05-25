@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPathData : Base<PathData>
     {
-        public override PathData GenerateTestObject(DataFormat format)
+        public override PathData GenerateTestObject(SaveDataFormat format)
         {
             int nodeCount = 8 * (new Faker().Random.Int(1, 1000) / 8);       // must be multiple of 8
             Faker<PathNode> nodeModel = new Faker<PathNode>()
