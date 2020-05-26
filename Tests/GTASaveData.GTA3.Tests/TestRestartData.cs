@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestRestartData : Base<RestartData>
     {
-        public override RestartData GenerateTestObject(SaveDataFormat format)
+        public override RestartData GenerateTestObject(FileFormat format)
         {
             Faker<RestartData> model = new Faker<RestartData>()
                 .RuleFor(x => x.WastedRestartPoints, Generator.Array(RestartData.Limits.MaxNumWastedRestarts, g => Generator.Generate<RestartPoint, TestRestartPoint>()))

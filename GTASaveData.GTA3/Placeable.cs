@@ -28,9 +28,9 @@ namespace GTASaveData.GTA3
             m_unknown0 = new int[0];
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            bool ps2 = fmt.PS2;
+            bool ps2 = fmt.IsPS2;
             bool ps2jp = GTA3Save.IsJapanesePS2(fmt);
 
             if (!ps2)
@@ -63,9 +63,9 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Placeable>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            bool ps2 = fmt.PS2;
+            bool ps2 = fmt.IsPS2;
             bool ps2jp = GTA3Save.IsJapanesePS2(fmt);
 
             if (!ps2)
@@ -98,13 +98,13 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Placeable>(fmt));
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             if (GTA3Save.IsJapanesePS2(fmt))
             {
                 return 0x40;
             }
-            if (fmt.PS2)
+            if (fmt.IsPS2)
             {
                 return 0x60;
             }

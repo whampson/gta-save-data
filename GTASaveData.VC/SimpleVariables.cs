@@ -255,7 +255,7 @@ namespace GTASaveData.VC
             RadioStationPositionList = new Array<int>();
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             SaveName = buf.ReadString(Limits.MaxNameLength, unicode: true);
             TimeLastSaved = buf.Read<SystemTime>();
@@ -302,7 +302,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(SaveName, Limits.MaxNameLength, unicode: true);
             buf.Write(TimeLastSaved);
@@ -349,9 +349,9 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.PC)
+            if (fmt.IsPC)
             {
                 if (IsSteamWin32(fmt))
                 {
@@ -363,7 +363,7 @@ namespace GTASaveData.VC
             throw new NotSupportedException();
         }
 
-        public static bool IsSteamWin32(SaveDataFormat fmt)
+        public static bool IsSteamWin32(FileFormat fmt)
         {
             return fmt.IsSupportedOn(ConsoleType.Win32, ConsoleFlags.Steam);
         }

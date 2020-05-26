@@ -40,7 +40,7 @@ namespace GTASaveData.GTA3
             OldModel = -1;
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Type = (PoolType) buf.ReadInt32();
             Handle = buf.ReadInt32();
@@ -50,7 +50,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<BuildingSwap>());
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write((int) Type);
             buf.Write(Handle);
@@ -60,7 +60,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<BuildingSwap>());
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             return 16;
         }

@@ -23,7 +23,7 @@ namespace GTASaveData.GTA3
             Gangs = new Array<Gang>();
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "GNG");
 
@@ -33,7 +33,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOf<GangData>() - GTA3Save.SaveHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             GTA3Save.WriteSaveHeader(buf, "GNG", SizeOf<GangData>() - GTA3Save.SaveHeaderSize);
             buf.Write(Gangs.ToArray(), Limits.MaxNumGangs);
@@ -41,7 +41,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<GangData>());
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             return 0x98;
         }

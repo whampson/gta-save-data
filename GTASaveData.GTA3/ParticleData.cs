@@ -19,7 +19,7 @@ namespace GTASaveData.GTA3
             ParticleObjects = new Array<ParticleObject>();
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int numObjects = buf.ReadInt32();
             ParticleObjects = buf.Read<ParticleObject>(numObjects, fmt);
@@ -28,7 +28,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             int numObjects = ParticleObjects.Count;
             buf.Write(numObjects);
@@ -38,7 +38,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             return (SizeOf<ParticleObject>(fmt) * (ParticleObjects.Count + 1)) + sizeof(int);
         }

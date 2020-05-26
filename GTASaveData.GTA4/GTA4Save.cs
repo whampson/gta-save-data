@@ -380,7 +380,7 @@ namespace GTASaveData.GTA4
             ScriptSpace = m_file.ReadInt32();
 
             string sig = m_file.ReadString(4);
-            if (FileFormat.Win32)
+            if (FileFormat.IsWin32)
             {
                 Name = m_file.ReadString(Limits.MaxNameLength, unicode: true);
             }
@@ -394,7 +394,7 @@ namespace GTASaveData.GTA4
             string sig = m_file.ReadString(4);
             Debug.Assert(sig == "END", "Invalid 'END' signature!");
 
-            if (FileFormat.Win32)
+            if (FileFormat.IsWin32)
             {
                 int size = m_file.Length - m_file.Cursor;
                 GfwlData = new Dummy(m_file.ReadBytes(size));
@@ -435,11 +435,11 @@ namespace GTASaveData.GTA4
         protected override void LoadAllData(StreamBuffer file)
         {
             m_file = file;
-            m_file.BigEndian = (FileFormat.Xbox360 || FileFormat.PS3);
+            m_file.BigEndian = (FileFormat.IsXbox360 || FileFormat.IsPS3);
 
             LoadFileHeader();
 
-            int blockCount = (FileFormat.PS3) ? 33 : 32;
+            int blockCount = (FileFormat.IsPS3) ? 33 : 32;
             int index = 0;
 
             while (index < blockCount)
@@ -491,7 +491,7 @@ namespace GTASaveData.GTA4
             throw new NotImplementedException();
         }
 
-        protected override bool DetectFileFormat(byte[] data, out SaveDataFormat fmt)
+        protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
         {
             using (StreamBuffer b = new StreamBuffer(data))
             {
@@ -523,7 +523,7 @@ namespace GTASaveData.GTA4
                 }
             }
 
-            fmt = SaveDataFormat.Default;
+            fmt = FileFormat.Default;
             return false;
         }
 
@@ -581,25 +581,25 @@ namespace GTASaveData.GTA4
 
         public static class FileFormats
         {
-            public static readonly SaveDataFormat PC = new SaveDataFormat(
+            public static readonly FileFormat PC = new FileFormat(
                 "PC", "PC", "Windows",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam)
             );
 
-            public static readonly SaveDataFormat PS3 = new SaveDataFormat(
+            public static readonly FileFormat PS3 = new FileFormat(
                 "PS3", "PS3", "PlayStation 3",
                 new GameConsole(ConsoleType.PS3)
             );
 
-            public static readonly SaveDataFormat Xbox360 = new SaveDataFormat(
+            public static readonly FileFormat Xbox360 = new FileFormat(
                 "Xbox360", "Xbox 360", "Xbox 360",
                 new GameConsole(ConsoleType.Xbox360)
             );
 
-            public static SaveDataFormat[] GetAll()
+            public static FileFormat[] GetAll()
             {
-                return new SaveDataFormat[] { PC, PS3, Xbox360 };
+                return new FileFormat[] { PC, PS3, Xbox360 };
             }
         }
     }

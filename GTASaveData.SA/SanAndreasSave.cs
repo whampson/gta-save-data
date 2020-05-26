@@ -23,7 +23,7 @@ namespace GTASaveData.SA
         private const string BlockTagName = "BLOCK";
 
         private readonly StreamBuffer m_workBuffer;
-        private int m_bufferSize => (FileFormat.Mobile) ? 65000 : 51200;
+        private int m_bufferSize => (FileFormat.IsMobile) ? 65000 : 51200;
         private int m_checkSum;
         private bool m_disposed;
 
@@ -466,11 +466,11 @@ namespace GTASaveData.SA
 
                 // Padding after final block has no clear beginning marker,
                 // need to know exact size of last block
-                if (numCounted == 27 && !FileFormat.Mobile)
+                if (numCounted == 27 && !FileFormat.IsMobile)
                 {
                     size = 0x8C;    // TODO: use SizeOf<C3dMarkers>()
                 }
-                else if (numCounted == 28 && FileFormat.Mobile)
+                else if (numCounted == 28 && FileFormat.IsMobile)
                 {
                     size = 0x160;   // TODO: use SizeOf<PostEffects>();
                 }
@@ -483,7 +483,7 @@ namespace GTASaveData.SA
                 numCounted++;
             }
 
-            numBlocks = (FileFormat.Mobile) ? BlockCountMobile : BlockCount;
+            numBlocks = (FileFormat.IsMobile) ? BlockCountMobile : BlockCount;
             Debug.Assert(numCounted >= numBlocks);
 
             // Init pointer at end so loader thinks buffer is full and refills it
@@ -542,7 +542,7 @@ namespace GTASaveData.SA
             m_checkSum = 0;
             m_workBuffer.Seek(0);
 
-            count = (FileFormat.Mobile) ? BlockCountMobile : BlockCount;
+            count = (FileFormat.IsMobile) ? BlockCountMobile : BlockCount;
             for (index = 0; index < count; index++)
             {
                 size = 0;
@@ -621,7 +621,7 @@ namespace GTASaveData.SA
             Debug.Assert(m_file.Cursor == SizeOfOneGameInBytes);
         }
 
-        protected override bool DetectFileFormat(byte[] data, out SaveDataFormat fmt)
+        protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
         {
             // TODO
             fmt = FileFormats.PC;
@@ -683,13 +683,13 @@ namespace GTASaveData.SA
         public static class FileFormats
         {
             // TODO: 1.05 and 1.06 different?
-            public static readonly SaveDataFormat Mobile = new SaveDataFormat(
+            public static readonly FileFormat Mobile = new FileFormat(
                 "Mobile", "Mobile", "Android, iOS",
                 new GameConsole(ConsoleType.Android),
                 new GameConsole(ConsoleType.iOS)
             );
 
-            public static readonly SaveDataFormat PC = new SaveDataFormat(
+            public static readonly FileFormat PC = new FileFormat(
                 "PC", "PC", "Windows, macOS",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.MacOS),
@@ -697,19 +697,19 @@ namespace GTASaveData.SA
                 new GameConsole(ConsoleType.MacOS, ConsoleFlags.Steam)
             );
 
-            public static readonly SaveDataFormat PS2 = new SaveDataFormat(
+            public static readonly FileFormat PS2 = new FileFormat(
                 "PS2", "PS2", "PlayStation 2",
                 new GameConsole(ConsoleType.PS2)
             );
 
-            public static readonly SaveDataFormat Xbox = new SaveDataFormat(
+            public static readonly FileFormat Xbox = new FileFormat(
                 "Xbox", "Xbox", "Xbox",
                 new GameConsole(ConsoleType.Xbox)
             );
 
-            public static SaveDataFormat[] GetAll()
+            public static FileFormat[] GetAll()
             {
-                return new SaveDataFormat[] { Mobile, PC, PS2, Xbox };
+                return new FileFormat[] { Mobile, PC, PS2, Xbox };
             }
         }
     }

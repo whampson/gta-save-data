@@ -7,7 +7,7 @@ namespace GTASaveData.Types.Interfaces
     {
         string Name { get; set; }
         DateTime TimeLastSaved { get; set; }
-        SaveDataFormat FileFormat { get; set; }
+        FileFormat FileFormat { get; set; }
         IReadOnlyList<SaveDataObject> Blocks { get; }
     }
 }

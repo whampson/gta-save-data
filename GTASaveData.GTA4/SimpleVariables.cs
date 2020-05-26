@@ -307,7 +307,7 @@ namespace GTASaveData.GTA4
             CameraPosition = new Vector3D();
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             ClosestSafehouseIndex = buf.ReadInt32();
             FadeInAfterLoad = buf.ReadBool();
@@ -359,7 +359,7 @@ namespace GTASaveData.GTA4
             Debug.Assert(buf.Offset == SizeOf<SimpleVariables>());
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(ClosestSafehouseIndex);
             buf.Write(FadeInAfterLoad);

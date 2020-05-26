@@ -36,7 +36,7 @@ namespace GTASaveData.Types
             Year = dateTime.Year;
         }
 
-        int ISerializable.ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        int ISerializable.ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Second = buf.ReadInt32();
             Minute = buf.ReadInt32();
@@ -48,7 +48,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        int ISerializable.WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Second);
             buf.Write(Minute);
@@ -60,7 +60,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.GetSize(SaveDataFormat fmt)
+        int ISerializable.GetSize(FileFormat fmt)
         {
             return Size;
         }

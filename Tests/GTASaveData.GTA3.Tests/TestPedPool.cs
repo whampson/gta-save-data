@@ -4,11 +4,11 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestPedPool : Base<PedPool>
+    public class TestPedPool : Base<PlayerPedPool>
     {
-        public override PedPool GenerateTestObject(SaveDataFormat format)
+        public override PlayerPedPool GenerateTestObject(FileFormat format)
         {
-            Faker<PedPool> model = new Faker<PedPool>()
+            Faker<PlayerPedPool> model = new Faker<PlayerPedPool>()
                 .RuleFor(x => x.PlayerPeds, f => Generator.Array(f.Random.Int(1, 25), g => Generator.Generate<PlayerPed, TestPlayerPed>(format)));
 
             return model.Generate();
@@ -16,10 +16,10 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(SaveDataFormat format)
+        public void RandomDataSerialization(FileFormat format)
         {
-            PedPool x0 = GenerateTestObject(format);
-            PedPool x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            PlayerPedPool x0 = GenerateTestObject(format);
+            PlayerPedPool x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.PlayerPeds, x1.PlayerPeds);
 

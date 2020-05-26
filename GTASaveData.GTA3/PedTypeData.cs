@@ -58,7 +58,7 @@ namespace GTASaveData.GTA3
             return m_pedTypes[(int) type].Threats.HasFlag(threat);
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "PTP");
 
@@ -68,7 +68,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOf<PedTypeData>() - GTA3Save.SaveHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             GTA3Save.WriteSaveHeader(buf, "PTP", SizeOf<PedTypeData>() - GTA3Save.SaveHeaderSize);
 
@@ -77,7 +77,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PedTypeData>());
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             return 0x2E8;
         }

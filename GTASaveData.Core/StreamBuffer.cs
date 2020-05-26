@@ -110,7 +110,7 @@ namespace GTASaveData
         /// <see cref="string"/>,
         /// <see cref="ISerializable"/>.
         /// </exception>
-        internal int GenericRead<T>(SaveDataFormat format,
+        internal int GenericRead<T>(FileFormat format,
             out T obj,
             int length = 0,
             bool unicode = false)
@@ -139,7 +139,7 @@ namespace GTASaveData
             else if (t == typeof(string)) o = (length == 0) ? ReadString(unicode) : ReadString(length, unicode);
             else if (t.Implements(typeof(ISerializable)))
             {
-                var p = new Type[] { typeof(SaveDataFormat) };
+                var p = new Type[] { typeof(FileFormat) };
                 var m = GetType().GetMethod(nameof(Read), p).MakeGenericMethod(t);
                 o = m.Invoke(this, new object[] { format });
             }
@@ -397,7 +397,7 @@ namespace GTASaveData
         public T Read<T>() where T : ISerializable, new()
         {
             T obj = new T();
-            obj.ReadData(this, SaveDataFormat.Default);
+            obj.ReadData(this, FileFormat.Default);
 
             return obj;
         }
@@ -408,7 +408,7 @@ namespace GTASaveData
         /// <typeparam name="T">The type of <see cref="ISerializable"/> to read.</typeparam>
         /// <param name="format">The data format.</param>
         /// <returns>An <see cref="ISerializable"/> object.</returns>
-        public T Read<T>(SaveDataFormat format) where T : ISerializable, new()
+        public T Read<T>(FileFormat format) where T : ISerializable, new()
         {
             T obj = new T();
             obj.ReadData(this, format);
@@ -432,7 +432,7 @@ namespace GTASaveData
             int itemLength = 0,
             bool unicode = false)
         {
-            return Read<T>(count, SaveDataFormat.Default, itemLength, unicode);
+            return Read<T>(count, FileFormat.Default, itemLength, unicode);
         }
 
         /// <summary>
@@ -449,7 +449,7 @@ namespace GTASaveData
         /// </param>
         /// <param name="unicode">A value indicating whether to read UTF-16 characters.</param>
         /// <returns>An array of type <typeparamref name="T"/>.</returns>
-        public T[] Read<T>(int count, SaveDataFormat format,
+        public T[] Read<T>(int count, FileFormat format,
             int itemLength = 0,
             bool unicode = false)
         {
@@ -499,7 +499,7 @@ namespace GTASaveData
         /// <see cref="string"/>,
         /// <see cref="ISerializable"/>.
         /// </exception>
-        internal int GenericWrite<T>(T value, SaveDataFormat format,
+        internal int GenericWrite<T>(T value, FileFormat format,
             int length = 0,
             bool unicode = false)
         {
@@ -731,10 +731,10 @@ namespace GTASaveData
 
         public int Write<T>(T value) where T : ISerializable
         {
-            return Write(value, SaveDataFormat.Default);
+            return Write(value, FileFormat.Default);
         }
 
-        public int Write<T>(T value, SaveDataFormat format) where T : ISerializable
+        public int Write<T>(T value, FileFormat format) where T : ISerializable
         {
             if (value == null) throw new ArgumentNullException("The value cannot be null.", nameof(value));
             return value.WriteData(this, format);
@@ -746,11 +746,11 @@ namespace GTASaveData
             bool unicode = false)
             where T : new()
         {
-            return Write(items, SaveDataFormat.Default, count, itemLength, unicode);
+            return Write(items, FileFormat.Default, count, itemLength, unicode);
         }
 
         public int Write<T>(T[] items,
-            SaveDataFormat format,
+            FileFormat format,
             int? count = null,
             int itemLength = 0, // Note: only applies to "bool" and "string types
             bool unicode = false)

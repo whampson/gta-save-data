@@ -20,7 +20,7 @@ namespace GTASaveData.GTA3
             : base(other)
         { }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             base.ReadData(buf, fmt);
 
@@ -29,7 +29,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             base.WriteData(buf, fmt);
 
@@ -38,9 +38,9 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.Mobile)
+            if (fmt.IsMobile)
             {
                 return 0x488;
             }
@@ -48,11 +48,11 @@ namespace GTASaveData.GTA3
             {
                 return 0x478;
             }
-            if (fmt.PS2)
+            if (fmt.IsPS2)
             {
                 return 0x498;
             }
-            if (fmt.PC || fmt.Xbox)
+            if (fmt.IsPC || fmt.IsXbox)
             {
                 return 0x484;
             }

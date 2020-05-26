@@ -10,27 +10,27 @@
     {
         /// <summary>
         /// Deserializes the object by readong its data from the specified <see cref="StreamBuffer"/>
-        /// using the specified <see cref="SaveDataFormat"/> to control how data is read.
+        /// using the specified <see cref="FileFormat"/> to control how data is read.
         /// </summary>
         /// <param name="buf">The buffer to read from.</param>
         /// <param name="fmt">The data format.</param>
         /// <returns>The number of bytes read.</returns>
-        int ReadData(StreamBuffer buf, SaveDataFormat fmt);
+        int ReadData(StreamBuffer buf, FileFormat fmt);
 
         /// <summary>
         /// Serializes the object by writing its data to the specified <see cref="StreamBuffer"/>
-        /// using the specified <see cref="SaveDataFormat"/> to control how data is written.
+        /// using the specified <see cref="FileFormat"/> to control how data is written.
         /// </summary>
         /// <param name="buf">The buffer to write to.</param>
         /// <param name="fmt">The data format.</param>
         /// <returns>The number of bytes written.</returns>
-        int WriteData(StreamBuffer buf, SaveDataFormat fmt);
+        int WriteData(StreamBuffer buf, FileFormat fmt);
 
         /// <summary>
         /// Gets the size in bytes of the serialized data.
         /// </summary>
         /// <param name="fmt">The data format.</param>
         /// <returns>The size of the serialized object in bytes.</returns>
-        int GetSize(SaveDataFormat fmt);
+        int GetSize(FileFormat fmt);
     }
 }

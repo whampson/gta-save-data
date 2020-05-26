@@ -29,7 +29,7 @@ namespace GTASaveData.Types
             return m;
         }
 
-        int ISerializable.ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        int ISerializable.ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Position = buf.Read<Vector3D>();
             RightX = buf.ReadByte();
@@ -44,7 +44,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        int ISerializable.WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Position);
             buf.Write(RightX);
@@ -59,7 +59,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.GetSize(SaveDataFormat fmt)
+        int ISerializable.GetSize(FileFormat fmt)
         {
             return Size;
         }

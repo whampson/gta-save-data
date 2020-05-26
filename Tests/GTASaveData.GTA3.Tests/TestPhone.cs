@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPhone : Base<Phone>
     {
-        public override Phone GenerateTestObject(SaveDataFormat format)
+        public override Phone GenerateTestObject(FileFormat format)
         {
             Faker<Phone> model = new Faker<Phone>()
                 .RuleFor(x => x.Position, f => Generator.Vector3D(f))

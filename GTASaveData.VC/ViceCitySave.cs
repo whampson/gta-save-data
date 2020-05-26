@@ -19,7 +19,7 @@ namespace GTASaveData.VC
 
         private bool m_disposed;
 
-        protected override int BufferSize => (FileFormat.Mobile) ? 65536 : 55000;
+        protected override int BufferSize => (FileFormat.IsMobile) ? 65536 : 55000;
 
         private SimpleVariables m_simpleVars;
         private Dummy m_scripts;
@@ -377,7 +377,7 @@ namespace GTASaveData.VC
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
         }
 
-        protected override bool DetectFileFormat(byte[] data, out SaveDataFormat fmt)
+        protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
         {
             // TODO: Android, iOS, PS2, Xbox
 
@@ -406,11 +406,11 @@ namespace GTASaveData.VC
                 }
             }
 
-            fmt = SaveDataFormat.Default;
+            fmt = FileFormat.Default;
             return false;
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             // TODO
             throw SizeNotDefined(fmt);
@@ -470,40 +470,40 @@ namespace GTASaveData.VC
 
         public static class FileFormats
         {
-            public static readonly SaveDataFormat Android = new SaveDataFormat(
+            public static readonly FileFormat Android = new FileFormat(
                 "Android", "Android", "Android",
                 new GameConsole(ConsoleType.Android)
             );
 
-            public static readonly SaveDataFormat iOS = new SaveDataFormat(
+            public static readonly FileFormat iOS = new FileFormat(
                 "iOS", "iOS", "iOS",
                 new GameConsole(ConsoleType.iOS)
             );
 
-            public static readonly SaveDataFormat PC_Retail = new SaveDataFormat(
+            public static readonly FileFormat PC_Retail = new FileFormat(
                 "PC_Retail", "PC", "Windows (Retail Version), macOS",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.MacOS)
             );
 
-            public static readonly SaveDataFormat PC_Steam = new SaveDataFormat(
+            public static readonly FileFormat PC_Steam = new FileFormat(
                 "PC_Steam", "PC (Steam)", "Windows (Steam Version)",
                 new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam)
             );
 
-            public static readonly SaveDataFormat PS2 = new SaveDataFormat(
+            public static readonly FileFormat PS2 = new FileFormat(
                 "PS2", "PS2", "PlayStation 2",
                 new GameConsole(ConsoleType.PS2)
             );
 
-            public static readonly SaveDataFormat Xbox = new SaveDataFormat(
+            public static readonly FileFormat Xbox = new FileFormat(
                 "Xbox", "Xbox", "Xbox",
                 new GameConsole(ConsoleType.Xbox)
             );
 
-            public static SaveDataFormat[] GetAll()
+            public static FileFormat[] GetAll()
             {
-                return new SaveDataFormat[] { Android, iOS, PC_Retail, PC_Steam, PS2, Xbox };
+                return new FileFormat[] { Android, iOS, PC_Retail, PC_Steam, PS2, Xbox };
             }
         }
     }

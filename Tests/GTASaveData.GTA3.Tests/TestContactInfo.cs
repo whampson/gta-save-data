@@ -5,7 +5,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestContact : Base<Contact>
     {
-        public override Contact GenerateTestObject(SaveDataFormat format)
+        public override Contact GenerateTestObject(FileFormat format)
         {
             Faker<Contact> model = new Faker<Contact>()
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())

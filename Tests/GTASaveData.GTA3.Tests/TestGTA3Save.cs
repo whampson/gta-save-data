@@ -10,13 +10,13 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestGTA3Save : Base<GTA3Save>
     {
-        public override GTA3Save GenerateTestObject(SaveDataFormat format)
+        public override GTA3Save GenerateTestObject(FileFormat format)
         {
             Faker<GTA3Save> model = new Faker<GTA3Save>()
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 .RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
-                .RuleFor(x => x.PedPool, Generator.Generate<PedPool, TestPedPool>(format))
+                .RuleFor(x => x.PlayerPedPool, Generator.Generate<PlayerPedPool, TestPedPool>(format))
                 .RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData>(format))
                 .RuleFor(x => x.VehiclePool, Generator.Generate<VehiclePool, TestVehiclePool>(format))
                 .RuleFor(x => x.ObjectPool, Generator.Generate<ObjectPool, TestObjectPool>(format))
@@ -41,17 +41,17 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void FileFormatDetection(SaveDataFormat expectedFormat, string filename)
+        public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.III, expectedFormat, filename);
-            GTASaveFile.GetFileFormat<GTA3Save>(path, out SaveDataFormat detectedFormat);
+            GTASaveFile.GetFileFormat<GTA3Save>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(SaveDataFormat format)
+        public void RandomDataSerialization(FileFormat format)
         {
             using GTA3Save x0 = GenerateTestObject(format);
             using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -65,7 +65,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealDataSerialization(SaveDataFormat format, string filename)
+        public void RealDataSerialization(FileFormat format, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.III, format, filename);
 
@@ -106,7 +106,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);
-            Assert.Equal(x0.PedPool, x1.PedPool);
+            Assert.Equal(x0.PlayerPedPool, x1.PlayerPedPool);
             Assert.Equal(x0.Garages, x1.Garages);
             Assert.Equal(x0.VehiclePool, x1.VehiclePool);
             Assert.Equal(x0.ObjectPool, x1.ObjectPool);

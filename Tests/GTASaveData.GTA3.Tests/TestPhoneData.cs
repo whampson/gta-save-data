@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPhoneData : Base<PhoneData>
     {
-        public override PhoneData GenerateTestObject(SaveDataFormat format)
+        public override PhoneData GenerateTestObject(FileFormat format)
         {
             Faker<PhoneData> model = new Faker<PhoneData>()
                 .RuleFor(x => x.NumPhones, f => f.Random.Int())

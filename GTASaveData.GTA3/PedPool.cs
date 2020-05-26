@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class PedPool : SaveDataObject, IEquatable<PedPool>
+    public class PlayerPedPool : SaveDataObject, IEquatable<PlayerPedPool>
     {
         // Yes, you can have multiple player peds
         // You get some weird behavior though...
@@ -23,7 +23,12 @@ namespace GTASaveData.GTA3
             set { PlayerPeds[i] = value; OnPropertyChanged(); }
         }
 
-        public PedPool()
+        public int NumPlayerPeds
+        {
+            get { return PlayerPeds.Count; }
+        }
+
+        public PlayerPedPool()
         {
             PlayerPeds = new Array<PlayerPed>();
         }
@@ -38,7 +43,7 @@ namespace GTASaveData.GTA3
             return PlayerPeds[0];
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int numPeds = buf.ReadInt32();
 
@@ -60,7 +65,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(PlayerPeds.Count);
 
@@ -75,10 +80,10 @@ namespace GTASaveData.GTA3
                 buf.Write(p.ModelName, PlayerPed.Limits.MaxModelNameLength);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<PedPool>(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerPedPool>(this, fmt));
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             int headerSize = 2 * sizeof(int) + sizeof(short);
             int footerSize = 2 * sizeof(int) + PlayerPed.Limits.MaxModelNameLength;
@@ -96,10 +101,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as PedPool);
+            return Equals(obj as PlayerPedPool);
         }
 
-        public bool Equals(PedPool other)
+        public bool Equals(PlayerPedPool other)
         {
             if (other == null)
             {

@@ -80,7 +80,7 @@ namespace GTASaveData.GTA3
         public StoredCar()
         { }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Model = buf.ReadInt32();
             Position = buf.Read<Vector3D>();
@@ -97,7 +97,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Model);
             buf.Write(Position);
@@ -114,7 +114,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             return 0x28;
         }

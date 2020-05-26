@@ -11,35 +11,35 @@ namespace TestFramework
 
         public int GetSizeOfTestObject(T obj)
         {
-            return Serializer.SizeOf(obj, SaveDataFormat.Default);
+            return Serializer.SizeOf(obj, FileFormat.Default);
         }
 
-        public int GetSizeOfTestObject(SaveDataFormat format)
+        public int GetSizeOfTestObject(FileFormat format)
         {
             return Serializer.SizeOf<T>(format);
         }
 
-        public int GetSizeOfTestObject(T obj, SaveDataFormat format)
+        public int GetSizeOfTestObject(T obj, FileFormat format)
         {
             return Serializer.SizeOf(obj, format);
         }
 
         public T CreateSerializedCopy(T obj)
         {
-            return CreateSerializedCopy(obj, SaveDataFormat.Default, out byte[] _);
+            return CreateSerializedCopy(obj, FileFormat.Default, out byte[] _);
         }
 
         public T CreateSerializedCopy(T obj, out byte[] bytes)
         {
-            return CreateSerializedCopy(obj, SaveDataFormat.Default, out bytes);
+            return CreateSerializedCopy(obj, FileFormat.Default, out bytes);
         }
 
-        public T CreateSerializedCopy(T obj, SaveDataFormat format)
+        public T CreateSerializedCopy(T obj, FileFormat format)
         {
             return CreateSerializedCopy(obj, format, out byte[] _);
         }
 
-        public T CreateSerializedCopy(T obj, SaveDataFormat format, out byte[] bytes)
+        public T CreateSerializedCopy(T obj, FileFormat format, out byte[] bytes)
         {
             bytes = Serializer.Write(obj, format);
             return Serializer.Read<T>(bytes, format);
@@ -51,9 +51,9 @@ namespace TestFramework
     {
         public T GenerateTestObject()
         {
-            return GenerateTestObject(SaveDataFormat.Default);
+            return GenerateTestObject(FileFormat.Default);
         }
 
-        public abstract T GenerateTestObject(SaveDataFormat format);
+        public abstract T GenerateTestObject(FileFormat format);
     }
 }

@@ -9,6 +9,7 @@
     xmlns:eext="clr-namespace:WpfEssentials.Win32.Extensions;assembly=WpfEssentials.Win32"
     mc:Ignorable="d"
     Title="MainWindow"
+    Loaded="Window_Loaded"
     Height="550" Width="800">
 
     <Window.DataContext>
@@ -58,6 +59,11 @@
                 <MenuItem Header="E_xit"
                     InputGestureText="Alt+F4"
                     Command="{Binding FileExitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Options">
+                <MenuItem Header="File _Type" x:Name="m_fileTypeList">
+                    <!-- Items added programmatically -->
+                </MenuItem>
             </MenuItem>
         </Menu>
 
@@ -122,9 +128,9 @@
                 <Separator Grid.Column="1"/>
 
                 <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Center">
-                    <TextBlock Text="{Binding CurrentFileFormat.FormatName}">
+                    <TextBlock Text="{Binding CurrentFileFormat.Name}">
                         <TextBlock.ToolTip>
-                            <ToolTip Content="{Binding CurrentFileFormat.FormatDescription}"/>
+                            <ToolTip Content="{Binding CurrentFileFormat.Description}"/>
                         </TextBlock.ToolTip>
                     </TextBlock>
                 </StatusBarItem>

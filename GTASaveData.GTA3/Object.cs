@@ -146,7 +146,7 @@ namespace GTASaveData.GTA3
             EndOfLifeTime = other.EndOfLifeTime;
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
@@ -170,7 +170,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<GameObject>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(ModelIndex);
             buf.Write(Handle);
@@ -194,13 +194,13 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<GameObject>(fmt));
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.PS2)        // non-Japanese
+            if (fmt.IsPS2)        // non-Japanese
             {
                 return 0x4C;
             }
-            if (fmt.iOS)
+            if (fmt.IsiOS)
             {
                 return 0x52;
             }

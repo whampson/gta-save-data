@@ -18,11 +18,11 @@ namespace GTASaveData.GTA3
 
         private bool m_disposed;
 
-        protected override int BufferSize => (FileFormat.PS2) ? 50000 : 55000;
+        protected override int BufferSize => (FileFormat.IsPS2) ? 50000 : 55000;
 
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
-        private PedPool m_pedPool;
+        private PlayerPedPool m_pedPool;
         private GarageData m_garages;
         private VehiclePool m_vehiclePool;
         private ObjectPool m_objectPool;
@@ -54,7 +54,7 @@ namespace GTASaveData.GTA3
             set { m_scripts = value; OnPropertyChanged(); }
         }
 
-        public PedPool PedPool
+        public PlayerPedPool PlayerPedPool
         {
             get { return m_pedPool; }
             set { m_pedPool = value; OnPropertyChanged(); }
@@ -187,7 +187,7 @@ namespace GTASaveData.GTA3
         {
             SimpleVars,
             Scripts,
-            PedPool,
+            PlayerPedPool,
             Garages,
             VehiclePool,
             ObjectPool,
@@ -214,7 +214,7 @@ namespace GTASaveData.GTA3
 
             SimpleVars = new SimpleVariables();
             Scripts = new ScriptData();
-            PedPool = new PedPool();
+            PlayerPedPool = new PlayerPedPool();
             Garages = new GarageData();
             VehiclePool = new VehiclePool();
             ObjectPool = new ObjectPool();
@@ -257,7 +257,7 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file);
             LoadSimpleVars();                
             Scripts = Load<ScriptData>();
-            totalSize += ReadBlock(file); PedPool = Load<PedPool>();
+            totalSize += ReadBlock(file); PlayerPedPool = Load<PlayerPedPool>();
             totalSize += ReadBlock(file); Garages = Load<GarageData>();
             totalSize += ReadBlock(file); VehiclePool = Load<VehiclePool>();
             totalSize += ReadBlock(file); ObjectPool = Load<ObjectPool>();
@@ -297,7 +297,7 @@ namespace GTASaveData.GTA3
 
             SaveSimpleVars();
             Save(Scripts); totalSize += WriteBlock(file);
-            Save(PedPool); totalSize += WriteBlock(file);
+            Save(PlayerPedPool); totalSize += WriteBlock(file);
             Save(Garages); totalSize += WriteBlock(file);
             Save(VehiclePool); totalSize += WriteBlock(file);
             Save(ObjectPool); totalSize += WriteBlock(file);
@@ -343,7 +343,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
         }
 
-        protected override bool DetectFileFormat(byte[] data, out SaveDataFormat fmt)
+        protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
         {
             bool isMobile = false;
             bool isPcOrXbox = false;
@@ -354,7 +354,7 @@ namespace GTASaveData.GTA3
 
             if (fileId == -1 || scr == -1)
             {
-                fmt = SaveDataFormat.Default;
+                fmt = FileFormat.Default;
                 return false;
             }
 
@@ -419,11 +419,11 @@ namespace GTASaveData.GTA3
                 }
             }
 
-            fmt = SaveDataFormat.Default;
+            fmt = FileFormat.Default;
             return false;
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             // TODO:
             throw SizeNotDefined(fmt);
@@ -443,7 +443,7 @@ namespace GTASaveData.GTA3
 
             return SimpleVars.Equals(other.SimpleVars)
                 && Scripts.Equals(other.Scripts)
-                && PedPool.Equals(other.PedPool)
+                && PlayerPedPool.Equals(other.PlayerPedPool)
                 && Garages.Equals(other.Garages)
                 && VehiclePool.Equals(other.VehiclePool)
                 && ObjectPool.Equals(other.ObjectPool)
@@ -475,54 +475,54 @@ namespace GTASaveData.GTA3
 
         public static class FileFormats
         {
-            public static readonly SaveDataFormat Android = new SaveDataFormat(
+            public static readonly FileFormat Android = new FileFormat(
                 "Android", "Android", "Android",
                 new GameConsole(ConsoleType.Android)
             );
 
-            public static readonly SaveDataFormat iOS = new SaveDataFormat(
+            public static readonly FileFormat iOS = new FileFormat(
                 "iOS", "iOS", "iOS",
                 new GameConsole(ConsoleType.iOS)
             );
 
-            public static readonly SaveDataFormat PC = new SaveDataFormat(
+            public static readonly FileFormat PC = new FileFormat(
                 "PC", "PC", "Windows, macOS",
                 new GameConsole(ConsoleType.Win32),
                 new GameConsole(ConsoleType.MacOS)
             );
 
-            public static readonly SaveDataFormat PS2_AU = new SaveDataFormat(
+            public static readonly FileFormat PS2_AU = new FileFormat(
                 "PS2_AU", "PS2 (Australia)", "PlayStation 2 (PAL Australia)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.Australia)
             );
 
-            public static readonly SaveDataFormat PS2_JP = new SaveDataFormat(
+            public static readonly FileFormat PS2_JP = new FileFormat(
                 "PS2_JP", "PS2 (Japan)", "PlayStation 2 (NTSC-J)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.Japan)
             );
 
-            public static readonly SaveDataFormat PS2_NAEU = new SaveDataFormat(
+            public static readonly FileFormat PS2_NAEU = new FileFormat(
                 "PS2_NAEU", "PS2", "PlayStation 2 (NTSC-U/C, PAL Europe)",
                 new GameConsole(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe)
             );
 
-            public static readonly SaveDataFormat Xbox = new SaveDataFormat(
+            public static readonly FileFormat Xbox = new FileFormat(
                 "Xbox", "Xbox", "Xbox",
                 new GameConsole(ConsoleType.Xbox)
             );
 
-            public static SaveDataFormat[] GetAll()
+            public static FileFormat[] GetAll()
             {
-                return new SaveDataFormat[] { Android, iOS, PC, PS2_AU, PS2_JP, PS2_NAEU, Xbox };
+                return new FileFormat[] { Android, iOS, PC, PS2_AU, PS2_JP, PS2_NAEU, Xbox };
             }
         }
 
-        public static bool IsAusrtalianPS2(SaveDataFormat fmt)
+        public static bool IsAusrtalianPS2(FileFormat fmt)
         {
             return fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Australia);
         }
 
-        public static bool IsJapanesePS2(SaveDataFormat fmt)
+        public static bool IsJapanesePS2(FileFormat fmt)
         {
             return fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Japan);
         }

@@ -65,12 +65,12 @@ namespace GTASaveData.Core.Tests
                 throw new NotImplementedException();
             }
 
-            protected override bool DetectFileFormat(byte[] data, out SaveDataFormat fmt)
+            protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
             {
                 throw new NotImplementedException();
             }
 
-            protected override int GetSize(SaveDataFormat fmt)
+            protected override int GetSize(FileFormat fmt)
             {
                 throw new NotImplementedException();
             }

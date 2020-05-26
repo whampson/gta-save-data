@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestAutoPilot : Base<AutoPilot>
     {
-        public override AutoPilot GenerateTestObject(SaveDataFormat format)
+        public override AutoPilot GenerateTestObject(FileFormat format)
         {
             Faker<AutoPilot> model = new Faker<AutoPilot>()
                 .RuleFor(x => x.CurrRouteNode, f => f.Random.Int())

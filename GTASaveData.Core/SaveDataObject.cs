@@ -8,7 +8,7 @@ namespace GTASaveData
     /// </summary>
     public abstract class SaveDataObject : ObservableObject, ISerializable
     {
-        int ISerializable.ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        int ISerializable.ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int oldMark, start, len;
 
@@ -24,7 +24,7 @@ namespace GTASaveData
             return len;
         }
 
-        int ISerializable.WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        int ISerializable.WriteData(StreamBuffer buf, FileFormat fmt)
         {
             int oldMark, start, len;
 
@@ -40,16 +40,16 @@ namespace GTASaveData
             return len;
         }
 
-        int ISerializable.GetSize(SaveDataFormat fmt)
+        int ISerializable.GetSize(FileFormat fmt)
         {
             return GetSize(fmt);
         }
 
-        protected abstract void ReadData(StreamBuffer buf, SaveDataFormat fmt);
+        protected abstract void ReadData(StreamBuffer buf, FileFormat fmt);
 
-        protected abstract void WriteData(StreamBuffer buf, SaveDataFormat fmt);
+        protected abstract void WriteData(StreamBuffer buf, FileFormat fmt);
 
-        protected abstract int GetSize(SaveDataFormat fmt);
+        protected abstract int GetSize(FileFormat fmt);
 
         protected static int SizeOf<T>() where T : new()
         {
@@ -57,7 +57,7 @@ namespace GTASaveData
             return Serializer.SizeOf<T>();
         }
 
-        protected static int SizeOf<T>(SaveDataFormat fmt) where T : new()
+        protected static int SizeOf<T>(FileFormat fmt) where T : new()
         {
             return Serializer.SizeOf<T>(fmt);
         }
@@ -68,14 +68,14 @@ namespace GTASaveData
             return Serializer.SizeOf(obj);
         }
 
-        protected static int SizeOf<T>(T obj, SaveDataFormat fmt)
+        protected static int SizeOf<T>(T obj, FileFormat fmt)
         {
             return Serializer.SizeOf(obj, fmt);
         }
 
-        protected NotSupportedException SizeNotDefined(SaveDataFormat fmt)
+        protected NotSupportedException SizeNotDefined(FileFormat fmt)
         {
-            return new NotSupportedException(string.Format(Strings.Error_SizeNotDefined, fmt.FormatName));
+            return new NotSupportedException(string.Format(Strings.Error_SizeNotDefined, fmt.Name));
         }
     }
 }

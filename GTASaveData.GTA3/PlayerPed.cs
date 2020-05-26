@@ -149,7 +149,7 @@ namespace GTASaveData.GTA3
             ModelName = other.ModelName;
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Skip(52);
             Position = buf.Read<Vector3D>();
@@ -171,7 +171,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Skip(52);
             buf.Write(Position);
@@ -193,9 +193,9 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.PC)
+            if (fmt.IsPC)
             {
                 return 0x5F0;
             }

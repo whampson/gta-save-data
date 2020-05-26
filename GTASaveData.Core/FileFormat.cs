@@ -2,35 +2,34 @@
 using System.Collections.Generic;
 using System.Linq;
 
-#pragma warning disable IDE1006 // Naming Styles
 namespace GTASaveData
 {
-    public struct SaveDataFormat : IEquatable<SaveDataFormat>
+    public struct FileFormat : IEquatable<FileFormat>
     {
-        public static readonly SaveDataFormat Default = new SaveDataFormat("Default", "", "");
+        public static readonly FileFormat Default = new FileFormat("", "", "");
 
         private readonly string m_id;
         private readonly string m_name;
         private readonly string m_description;
         private readonly IEnumerable<GameConsole> m_supportedConsoles;
 
-        public string FormatId => m_id ?? "";
-        public string FormatName => m_name ?? "";
-        public string FormatDescription => m_description ?? "";
+        public string Id => m_id ?? "";
+        public string Name => m_name ?? "";
+        public string Description => m_description ?? "";
         public IEnumerable<GameConsole> SupportedConsoles => m_supportedConsoles ?? new List<GameConsole>();
-        public bool Android => IsSupportedOn(ConsoleType.Android);
-        public bool iOS => IsSupportedOn(ConsoleType.iOS);
-        public bool MacOS => IsSupportedOn(ConsoleType.MacOS);
-        public bool Mobile => Android || iOS;
-        public bool PC => MacOS || Win32;
-        public bool PS2 => IsSupportedOn(ConsoleType.PS2);
-        public bool PS3 => IsSupportedOn(ConsoleType.PS3);
-        public bool PSP => IsSupportedOn(ConsoleType.PSP);
-        public bool Win32 => IsSupportedOn(ConsoleType.Win32);
-        public bool Xbox => IsSupportedOn(ConsoleType.Xbox);
-        public bool Xbox360 => IsSupportedOn(ConsoleType.Xbox360);
+        public bool IsAndroid => IsSupportedOn(ConsoleType.Android);
+        public bool IsiOS => IsSupportedOn(ConsoleType.iOS);
+        public bool IsMacOS => IsSupportedOn(ConsoleType.MacOS);
+        public bool IsMobile => IsAndroid || IsiOS;
+        public bool IsPC => IsMacOS || IsWin32;
+        public bool IsPS2 => IsSupportedOn(ConsoleType.PS2);
+        public bool IsPS3 => IsSupportedOn(ConsoleType.PS3);
+        public bool IsPSP => IsSupportedOn(ConsoleType.PSP);
+        public bool IsWin32 => IsSupportedOn(ConsoleType.Win32);
+        public bool IsXbox => IsSupportedOn(ConsoleType.Xbox);
+        public bool IsXbox360 => IsSupportedOn(ConsoleType.Xbox360);
 
-        public SaveDataFormat(string id, string name, string description, params GameConsole[] supportedConsoles)
+        public FileFormat(string id, string name, string description, params GameConsole[] supportedConsoles)
         {
             m_id = id;
             m_name = name;
@@ -60,33 +59,32 @@ namespace GTASaveData
         }
         public override bool Equals(object obj)
         {
-            if (!(obj is SaveDataFormat))
+            if (!(obj is FileFormat))
             {
                 return false;
             }
 
-            return Equals((SaveDataFormat) obj);
+            return Equals((FileFormat) obj);
         }
 
-        public bool Equals(SaveDataFormat other)
+        public bool Equals(FileFormat other)
         {
             return SupportedConsoles.SequenceEqual(other.SupportedConsoles);
         }
 
         public override string ToString()
         {
-            return FormatName;
+            return Name;
         }
 
-        public static bool operator ==(SaveDataFormat left, SaveDataFormat right)
+        public static bool operator ==(FileFormat left, FileFormat right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(SaveDataFormat left, SaveDataFormat right)
+        public static bool operator !=(FileFormat left, FileFormat right)
         {
             return !left.Equals(right);
         }
     }
 }
-#pragma warning restore IDE1006 // Naming Styles

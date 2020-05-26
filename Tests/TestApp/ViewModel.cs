@@ -5,6 +5,7 @@ using GTASaveData.VC;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using WpfEssentials;
@@ -22,12 +23,14 @@ namespace TestApp
         #region Events, Variables, and Properties
         public EventHandler<FileDialogEventArgs> FileDialogRequested;
         public EventHandler<MessageBoxEventArgs> MessageBoxRequested;
+        public EventHandler<FileTypeListEventArgs> PopulateFileTypeList;
 
         private GTASaveFile m_currentSaveFile;
-        private GTASaveData.SaveDataFormat m_currentFileFormat;
+        private FileFormat m_currentFileFormat;
         private GameType m_selectedGame;
         private int m_selectedBlockIndex;
-        private bool m_showEntireFileChecked;
+        private bool m_autoDetectFileType;
+        private bool m_showEntireFile;
         private string m_text;
         private string m_statusText;
 
@@ -37,7 +40,7 @@ namespace TestApp
             set { m_currentSaveFile = value; OnPropertyChanged(); }
         }
 
-        public GTASaveData.SaveDataFormat CurrentFileFormat
+        public FileFormat CurrentFileFormat
         {
             get { return m_currentFileFormat; }
             set { m_currentFileFormat = value; OnPropertyChanged(); }
@@ -46,7 +49,7 @@ namespace TestApp
         public GameType SelectedGame
         {
             get { return m_selectedGame; }
-            set { m_selectedGame = value; OnPropertyChanged(); }
+            set { m_selectedGame = value; OnPopulateFileTypeList(); OnPropertyChanged(); }
         }
 
         public int SelectedBlockIndex
@@ -55,10 +58,16 @@ namespace TestApp
             set { m_selectedBlockIndex = value; OnPropertyChanged(); }
         }
 
-        public bool ShowEntireFileChecked
+        public bool AutoDetectFileType
         {
-            get { return m_showEntireFileChecked; }
-            set { m_showEntireFileChecked = value; UpdateTextBox(); OnPropertyChanged(); }
+            get { return m_autoDetectFileType; }
+            set { m_autoDetectFileType = value; OnPropertyChanged(); }
+        }
+
+        public bool ShowEntireFile
+        {
+            get { return m_showEntireFile; }
+            set { m_showEntireFile = value; UpdateTextBox(); OnPropertyChanged(); }
         }
 
         public string Text
@@ -76,6 +85,17 @@ namespace TestApp
         public string[] BlockNameForCurrentGame
         {
             get { return BlockNames[SelectedGame]; }
+        }
+
+        public ViewModel()
+        {
+            SelectedBlockIndex = -1;
+        }
+
+        public void Initialize()
+        {
+            OnPopulateFileTypeList();
+            AutoDetectFileType = true;
         }
         #endregion
 
@@ -127,14 +147,22 @@ namespace TestApp
         }
         #endregion
 
-        public void OnLoad()
+        public void OnLoadingFile()
         {
             // Do random stuff here :p
-        }
 
-        public ViewModel()
-        {
-            m_selectedBlockIndex = -1;
+            if (CurrentSaveFile is GTA3Save)
+            {
+                // Fix save with multiple player peds
+                GTA3Save save = CurrentSaveFile as GTA3Save;
+                PlayerPedPool peds = save.PlayerPedPool;
+                if (save.PlayerPedPool.NumPlayerPeds > 1)
+                {
+                    PlayerPed theOneTruePlayer = peds[0];
+                    peds.PlayerPeds.Clear();
+                    peds.PlayerPeds.Add(theOneTruePlayer);
+                }
+            }
         }
 
         public void LoadSaveData(string path)
@@ -156,26 +184,28 @@ namespace TestApp
                 UpdateTextBox();
                 StatusText = "Loaded " + path + ".";
 
-                OnLoad();
+                OnLoadingFile();
                 OnPropertyChanged(nameof(BlockNameForCurrentGame));
             }
         }
 
         private bool DoLoad<T>(string path) where T : GTASaveFile, new()
         {
-            
             try
             {
-                if (!GTASaveFile.GetFileFormat<T>(path, out GTASaveData.SaveDataFormat fmt))
+                if (AutoDetectFileType)
                 {
-                    RequestMessageBoxError(string.Format("Invalid save file! (Game: {0})", SelectedGame));
-                    return false;
+                    bool detected = GTASaveFile.GetFileFormat<T>(path, out FileFormat fmt);
+                    if (!detected)
+                    {
+                        RequestMessageBoxError(string.Format("Unable to detect file type!"));
+                        return false;
+                    }
+                    CurrentFileFormat = fmt;
                 }
-
+                
                 CleanupOldSaveData();
-                CurrentSaveFile = GTASaveFile.Load<T>(path, fmt);
-                CurrentFileFormat = fmt;
-
+                CurrentSaveFile = GTASaveFile.Load<T>(path, CurrentFileFormat);
                 return true;
             }
             catch (IOException e)
@@ -206,11 +236,26 @@ namespace TestApp
             //}
         }
 
+        private IEnumerable<FileFormat> GetFileTypes()
+        {
+            switch (SelectedGame)
+            {
+                case GameType.III: return GTA3Save.FileFormats.GetAll();
+                case GameType.VC: return ViceCitySave.FileFormats.GetAll();
+                //case GameType.SA: return SanAndreasSave.FileFormats.GetAll();
+            }
+
+            throw new NotSupportedException("Selected game not supported!");
+        }
+
         public void CloseSaveData()
         {
             CleanupOldSaveData();
             CurrentSaveFile = null;
-            CurrentFileFormat = GTASaveData.SaveDataFormat.Default;
+            if (AutoDetectFileType)
+            {
+                CurrentFileFormat = FileFormat.Default;
+            }
             SelectedBlockIndex = -1;
 
             UpdateTextBox();
@@ -229,15 +274,6 @@ namespace TestApp
             StatusText = "File saved.";
         }
 
-        public static Dictionary<GameType, string[]> BlockNames => new Dictionary<GameType, string[]>()
-        {
-            { GameType.III, Enum.GetNames(typeof(IIIBlock)) },
-            { GameType.VC, Enum.GetNames(typeof(VCBlock)) },
-            //{ GameType.SA, Enum.GetNames(typeof(SABlock)) },
-            //{ GameType.IV, Enum.GetNames(typeof(IVBlock)) },
-        };
-
-        #region UI Controls
         public void UpdateTextBox()
         {
             if (CurrentSaveFile == null || SelectedBlockIndex < 0)
@@ -246,7 +282,7 @@ namespace TestApp
                 return;
             }
 
-            if (!ShowEntireFileChecked)
+            if (!ShowEntireFile)
             {
                 IReadOnlyList<SaveDataObject> blocks = CurrentSaveFile.Blocks;
                 Text = blocks[SelectedBlockIndex].ToJsonString();
@@ -257,6 +293,28 @@ namespace TestApp
             }
         }
 
+        public void SetFileTypeByName(string fileTypeName)
+        {
+            if (fileTypeName == null)
+            {
+                AutoDetectFileType = true;
+            }
+            else
+            {
+                AutoDetectFileType = false;
+                CurrentFileFormat = GetFileTypes().FirstOrDefault(x => x.Name == fileTypeName);
+            }
+        }
+
+        public static Dictionary<GameType, string[]> BlockNames => new Dictionary<GameType, string[]>()
+        {
+            { GameType.III, Enum.GetNames(typeof(IIIBlock)) },
+            { GameType.VC, Enum.GetNames(typeof(VCBlock)) },
+            //{ GameType.SA, Enum.GetNames(typeof(SABlock)) },
+            //{ GameType.IV, Enum.GetNames(typeof(IVBlock)) },
+        };
+
+        #region View Operations
         private void RequestFileDialog(FileDialogType type)
         {
             FileDialogRequested?.Invoke(this, new FileDialogEventArgs(type, FileDialogRequested_Callback));
@@ -284,6 +342,11 @@ namespace TestApp
         {
             MessageBoxRequested?.Invoke(this, new MessageBoxEventArgs(
                 text, "Error", icon: MessageBoxImage.Error));
+        }
+
+        private void OnPopulateFileTypeList()
+        {
+            PopulateFileTypeList?.Invoke(this, new FileTypeListEventArgs(GetFileTypes()));
         }
         #endregion
     }

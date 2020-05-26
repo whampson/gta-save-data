@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestVehiclePool : Base<VehiclePool>
     {
-        public override VehiclePool GenerateTestObject(SaveDataFormat format)
+        public override VehiclePool GenerateTestObject(FileFormat format)
         {
             Faker<VehiclePool> model = new Faker<VehiclePool>()
                 .RuleFor(x => x.Cars, f => Generator.Array(f.Random.Int(1, 15), g => Generator.Generate<Automobile, TestAutomobile>()))
@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(SaveDataFormat format)
+        public void RandomDataSerialization(FileFormat format)
         {
             VehiclePool x0 = GenerateTestObject(format);
             VehiclePool x1 = CreateSerializedCopy(x0, format, out byte[] data);

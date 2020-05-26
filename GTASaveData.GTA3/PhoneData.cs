@@ -39,7 +39,7 @@ namespace GTASaveData.GTA3
             Phones = new Array<Phone>();
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             NumPhones = buf.ReadInt32();
             NumActivePhones = buf.ReadInt32();
@@ -48,7 +48,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PhoneData>());
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(NumPhones);
             buf.Write(NumActivePhones);
@@ -57,7 +57,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PhoneData>());
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             return 0xA30;
         }

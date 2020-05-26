@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestRadarData : Base<RadarData>
     {
-        public override RadarData GenerateTestObject(SaveDataFormat format)
+        public override RadarData GenerateTestObject(FileFormat format)
         {
             Faker<RadarData> model = new Faker<RadarData>()
                 .RuleFor(x => x.RadarBlips,

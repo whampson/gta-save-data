@@ -10,16 +10,16 @@ namespace GTASaveData
         [Description("Vice City")]
         VC,
 
-        [Description("San Andreas")]
-        SA,
+        //[Description("San Andreas")]
+        //SA,
 
-        [Description("Liberty City Stories")]
-        LCS,
+        //[Description("Liberty City Stories")]
+        //LCS,
 
-        [Description("Vice City Stories")]
-        VCS,
+        //[Description("Vice City Stories")]
+        //VCS,
 
-        [Description("GTA IV")]
-        IV
+        //[Description("GTA IV")]
+        //IV
     }
 }

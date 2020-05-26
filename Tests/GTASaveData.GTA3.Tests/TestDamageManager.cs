@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestDamageManager : Base<DamageManager>
     {
-        public override DamageManager GenerateTestObject(SaveDataFormat format)
+        public override DamageManager GenerateTestObject(FileFormat format)
         {
             Faker<DamageManager> model = new Faker<DamageManager>()
                 .RuleFor(x => x.WheelDamageEffect, f => f.Random.Float())

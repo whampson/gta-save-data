@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestStats : Base<Stats>
     {
-        public override Stats GenerateTestObject(SaveDataFormat format)
+        public override Stats GenerateTestObject(FileFormat format)
         {
             Faker<Stats> model = new Faker<Stats>()
                 .RuleFor(x => x.PeopleKilledByPlayer, f => f.Random.Int())

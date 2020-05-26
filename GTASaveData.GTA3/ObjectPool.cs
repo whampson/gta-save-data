@@ -25,7 +25,7 @@ namespace GTASaveData.GTA3
             Objects = new Array<GameObject>();
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int numObjects = buf.ReadInt32();
             Objects = buf.Read<GameObject>(numObjects);
@@ -33,7 +33,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf(this));
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Objects.Count);
             buf.Write(Objects.ToArray());
@@ -41,7 +41,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf(this));
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             return (SizeOf<GameObject>(fmt) * Objects.Count) + sizeof(int);
         }

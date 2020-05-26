@@ -52,6 +52,12 @@ namespace GTASaveData.GTA3
             set { m_carGeneratorArray = value; OnPropertyChanged(); }
         }
 
+        public CarGenerator this[int i]
+        {
+            get { return CarGenerators[i]; }
+            set { CarGenerators[i] = value; OnPropertyChanged(); }
+        }
+
         IEnumerable<ICarGenerator> ICarGeneratorBlock.CarGenerators
         {
             get { return m_carGeneratorArray; }
@@ -62,7 +68,7 @@ namespace GTASaveData.GTA3
             CarGenerators = new Array<CarGenerator>();
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int size = GTA3VCSave.ReadSaveHeader(buf, "CGN");
 
@@ -81,7 +87,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOf<CarGeneratorData>() - GTA3VCSave.SaveHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             GTA3VCSave.WriteSaveHeader(buf, "CGN", SizeOf<CarGeneratorData>() - GTA3VCSave.SaveHeaderSize);
 
@@ -97,7 +103,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<CarGeneratorData>());
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             return 0x2D1C;
         }

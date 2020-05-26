@@ -90,7 +90,7 @@ namespace GTASaveData.GTA3
             OverrideRestartPoint = new RestartPoint();
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int size = GTA3Save.ReadSaveHeader(buf, "RST");
 
@@ -110,7 +110,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOf<RestartData>() - GTA3Save.SaveHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             GTA3Save.WriteSaveHeader(buf, "RST", SizeOf<RestartData>() - GTA3Save.SaveHeaderSize);
 
@@ -129,7 +129,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<RestartData>());
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             return 0x124;
         }

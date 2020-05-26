@@ -52,14 +52,14 @@ namespace GTASaveData.GTA3
         public Weapon()
         { }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Type = (WeaponType) buf.ReadInt32();
             State = (WeaponState) buf.ReadInt32();
             AmmoInClip = buf.ReadUInt32();
             AmmoTotal = buf.ReadUInt32();
             Timer = buf.ReadUInt32();
-            if (!fmt.PS2)
+            if (!fmt.IsPS2)
             {
                 Unknown = buf.ReadBool();
                 buf.ReadBytes(3);
@@ -68,14 +68,14 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Weapon>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write((uint) Type);
             buf.Write((uint) State);
             buf.Write(AmmoInClip);
             buf.Write(AmmoTotal);
             buf.Write(Timer);
-            if (!fmt.PS2)
+            if (!fmt.IsPS2)
             {
                 buf.Write(Unknown);
                 buf.Write(new byte[3]);
@@ -84,9 +84,9 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Weapon>(fmt));
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.PS2)
+            if (fmt.IsPS2)
             {
                 return 20;
             }

@@ -147,7 +147,7 @@ namespace GTASaveData.GTA3
             Color = (rgb << 8) | a;
         }
 
-        protected override void ReadData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             base.ReadData(buf, fmt);
             
@@ -169,7 +169,7 @@ namespace GTASaveData.GTA3
             DestroyWhenFar = buf.ReadBool();
             CreationChance = buf.ReadSByte();
             buf.Align4Bytes();
-            if (fmt.PS2)
+            if (fmt.IsPS2)
             {
                 m_unknown = buf.ReadInt32();
             }
@@ -177,7 +177,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<ParticleObject>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, SaveDataFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             base.WriteData(buf, fmt);
 
@@ -199,7 +199,7 @@ namespace GTASaveData.GTA3
             buf.Write(DestroyWhenFar);
             buf.Write(CreationChance);
             buf.Align4Bytes();
-            if (fmt.PS2)
+            if (fmt.IsPS2)
             {
                 buf.Write(m_unknown);
             }
@@ -207,13 +207,13 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<ParticleObject>(fmt));
         }
 
-        protected override int GetSize(SaveDataFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             if (GTA3Save.IsJapanesePS2(fmt))
             {
                 return 0x80;
             }
-            if (fmt.PS2)
+            if (fmt.IsPS2)
             {
                 return 0xA0;
             }
