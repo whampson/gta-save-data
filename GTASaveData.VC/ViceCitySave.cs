@@ -5,14 +5,13 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace GTASaveData.VC
 {
     /// <summary>
-    /// Represents a <i>Grand Theft Auto: Vice City</i> save file.
+    /// Represents a <i>Grand Theft Auto: Vice City</i> savedata file.
     /// </summary>
-    public class ViceCitySave : GTA3VCSave, IGTASaveFile, IEquatable<ViceCitySave>, IDisposable
+    public class ViceCitySave : GTA3VCSave, ISaveData, IDisposable, IEquatable<ViceCitySave>
     {
         public const int SizeOfOneGameInBytes = 201729;
         public const int MaxBufferSize = 65536;
@@ -204,8 +203,13 @@ namespace GTASaveData.VC
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
 
-        [JsonIgnore]
-        public override IReadOnlyList<SaveDataObject> Blocks => new List<SaveDataObject>()
+        ICarGeneratorData ISaveData.CarGenerators
+        {
+            get { return CarGenerators; }
+            set { CarGenerators = (CarGeneratorData) value; OnPropertyChanged(); }
+        }
+
+        IReadOnlyList<SaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
             Scripts,
@@ -461,11 +465,6 @@ namespace GTASaveData.VC
                 WorkBuff.Dispose();
                 m_disposed = true;
             }
-        }
-
-        private SerializationException BlockSizeExceededException(uint value, int max)
-        {
-            return new SerializationException(Strings.Error_Serialization_BlockSizeExceeded, value, max);
         }
 
         public static class FileFormats

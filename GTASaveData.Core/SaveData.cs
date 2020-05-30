@@ -10,7 +10,7 @@ namespace GTASaveData
     /// <summary>
     /// Represents a saved <i>Grand Theft Auto</i> game.
     /// </summary>
-    public abstract class GTASaveFile : SaveDataObject, IGTASaveFile
+    public abstract class SaveData : SaveDataObject
     {
         private static readonly byte[] DefaultPadding = new byte[1] { 0 };
 
@@ -41,22 +41,22 @@ namespace GTASaveData
 
         public abstract string Name { get; set; }
         public abstract DateTime TimeLastSaved { get; set; }
-        public abstract IReadOnlyList<SaveDataObject> Blocks { get; }
+        //public abstract IReadOnlyList<SaveDataObject> Blocks { get; }
 
-        public GTASaveFile()
+        public SaveData()
         {
             Padding = PaddingType.Default;
             PaddingBytes = DefaultPadding;
             FileFormat = FileFormat.Default;
         }
 
-        public static bool GetFileFormat<T>(string path, out FileFormat fmt) where T : GTASaveFile, new()
+        public static bool GetFileFormat<T>(string path, out FileFormat fmt) where T : SaveData, new()
         {
             byte[] data = File.ReadAllBytes(path);
             return new T().DetectFileFormat(data, out fmt);
         }
 
-        public static T Load<T>(string path) where T : GTASaveFile, new()
+        public static T Load<T>(string path) where T : SaveData, new()
         {
             bool valid = GetFileFormat<T>(path, out FileFormat fmt);
             if (!valid)
@@ -67,7 +67,7 @@ namespace GTASaveData
             return Load<T>(path, fmt);
         }
 
-        public static T Load<T>(string path, FileFormat fmt) where T : GTASaveFile, new()
+        public static T Load<T>(string path, FileFormat fmt) where T : SaveData, new()
         {
             T obj = new T() { FileFormat = fmt };
             obj.Load(path);

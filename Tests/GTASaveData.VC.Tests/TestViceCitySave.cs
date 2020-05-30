@@ -45,7 +45,7 @@ namespace GTASaveData.VC.Tests
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.VC, expectedFormat, filename);
-            GTASaveFile.GetFileFormat<ViceCitySave>(path, out FileFormat detectedFormat);
+            SaveData.GetFileFormat<ViceCitySave>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -70,7 +70,7 @@ namespace GTASaveData.VC.Tests
         {
             string path = TestData.GetTestDataPath(GameType.VC, format, filename);
 
-            using ViceCitySave x0 = GTASaveFile.Load<ViceCitySave>(path, format);
+            using ViceCitySave x0 = SaveData.Load<ViceCitySave>(path, format);
             using ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);

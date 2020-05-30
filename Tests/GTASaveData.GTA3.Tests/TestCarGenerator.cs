@@ -21,7 +21,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.MaxDelay, f => f.Random.UShort())
                 .RuleFor(x => x.Timer, f => f.Random.UInt())
                 .RuleFor(x => x.Handle, f => f.Random.Int())
-                .RuleFor(x => x.UsesRemaining, f => f.Random.Short())
+                .RuleFor(x => x.Enabled, f => f.Random.Bool())
                 .RuleFor(x => x.IsBlocking, f => f.Random.Bool())
                 .RuleFor(x => x.CollisionBoundingMin, f => Generator.Vector3D(f))
                 .RuleFor(x => x.CollisionBoundingMax, f => Generator.Vector3D(f))
@@ -48,7 +48,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.MaxDelay, x1.MaxDelay);
             Assert.Equal(x0.Timer, x1.Timer);
             Assert.Equal(x0.Handle, x1.Handle);
-            Assert.Equal(x0.UsesRemaining, x1.UsesRemaining);
+            Assert.Equal(x0.Enabled, x1.Enabled);
             Assert.Equal(x0.IsBlocking, x1.IsBlocking);
             Assert.Equal(x0.CollisionBoundingMin, x1.CollisionBoundingMin);
             Assert.Equal(x0.CollisionBoundingMax, x1.CollisionBoundingMax);

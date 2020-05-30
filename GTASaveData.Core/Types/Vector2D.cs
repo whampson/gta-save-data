@@ -155,7 +155,7 @@ namespace GTASaveData.Types
 
         public override string ToString()
         {
-            return string.Format("<{0:0.###},{1:0.###}>", X, Y);
+            return string.Format("{0:0.###},{1:0.###}", X, Y);
         }
     }
 }

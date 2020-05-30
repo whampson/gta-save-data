@@ -9,9 +9,9 @@ using System.Diagnostics;
 namespace GTASaveData.GTA3
 {
     /// <summary>
-    /// Represents a <i>Grand Theft Auto III</i> save file.
+    /// Represents a <i>Grand Theft Auto III</i> savedata file.
     /// </summary>
-    public class GTA3Save : GTA3VCSave, IDisposable, IGTASaveFile, IEquatable<GTA3Save>
+    public class GTA3Save : GTA3VCSave, ISaveData, IDisposable, IEquatable<GTA3Save>
     {
         public const int SizeOfOneGameInBytes = 201729;
         public const int MaxBufferSize = 55000;
@@ -182,8 +182,13 @@ namespace GTASaveData.GTA3
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
 
-        [JsonIgnore]
-        public override IReadOnlyList<SaveDataObject> Blocks => new List<SaveDataObject>()
+        ICarGeneratorData ISaveData.CarGenerators
+        {
+            get { return CarGenerators; }
+            set { CarGenerators = (CarGeneratorData) value; OnPropertyChanged(); }
+        }
+
+        IReadOnlyList<SaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
             Scripts,

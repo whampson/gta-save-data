@@ -1,6 +1,7 @@
 ﻿using GTASaveData;
 using GTASaveData.Extensions;
 using GTASaveData.GTA3;
+using GTASaveData.Types.Interfaces;
 using GTASaveData.VC;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace TestApp
         public EventHandler<MessageBoxEventArgs> MessageBoxRequested;
         public EventHandler<FileTypeListEventArgs> PopulateFileTypeList;
 
-        private GTASaveFile m_currentSaveFile;
+        private GTASaveData.SaveData m_currentSaveFile;
         private FileFormat m_currentFileFormat;
         private GameType m_selectedGame;
         private int m_selectedBlockIndex;
@@ -34,7 +35,7 @@ namespace TestApp
         private string m_text;
         private string m_statusText;
 
-        public GTASaveFile CurrentSaveFile
+        public GTASaveData.SaveData CurrentSaveFile
         {
             get { return m_currentSaveFile; }
             set { m_currentSaveFile = value; OnPropertyChanged(); }
@@ -189,13 +190,13 @@ namespace TestApp
             }
         }
 
-        private bool DoLoad<T>(string path) where T : GTASaveFile, new()
+        private bool DoLoad<T>(string path) where T : GTASaveData.SaveData, new()
         {
             try
             {
                 if (AutoDetectFileType)
                 {
-                    bool detected = GTASaveFile.GetFileFormat<T>(path, out FileFormat fmt);
+                    bool detected = GTASaveData.SaveData.GetFileFormat<T>(path, out FileFormat fmt);
                     if (!detected)
                     {
                         RequestMessageBoxError(string.Format("Unable to detect file type!"));
@@ -205,7 +206,7 @@ namespace TestApp
                 }
                 
                 CleanupOldSaveData();
-                CurrentSaveFile = GTASaveFile.Load<T>(path, CurrentFileFormat);
+                CurrentSaveFile = GTASaveData.SaveData.Load<T>(path, CurrentFileFormat);
                 return true;
             }
             catch (IOException e)
@@ -284,7 +285,7 @@ namespace TestApp
 
             if (!ShowEntireFile)
             {
-                IReadOnlyList<SaveDataObject> blocks = CurrentSaveFile.Blocks;
+                IReadOnlyList<SaveDataObject> blocks = (CurrentSaveFile as ISaveData).Blocks;
                 Text = blocks[SelectedBlockIndex].ToJsonString();
             }
             else

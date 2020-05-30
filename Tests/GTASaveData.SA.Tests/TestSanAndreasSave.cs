@@ -24,7 +24,7 @@ namespace GTASaveData.SA.Tests
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.SA, expectedFormat, filename);
-            GTASaveFile.GetFileFormat<SanAndreasSave>(path, out FileFormat detectedFormat);
+            SaveData.GetFileFormat<SanAndreasSave>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -49,7 +49,7 @@ namespace GTASaveData.SA.Tests
         {
             string path = TestData.GetTestDataPath(GameType.SA, format, filename);
 
-            using SanAndreasSave x0 = GTASaveFile.Load<SanAndreasSave>(path, format);
+            using SanAndreasSave x0 = SaveData.Load<SanAndreasSave>(path, format);
             using SanAndreasSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);

@@ -11,7 +11,7 @@ namespace GTASaveData.GTA4
     /// <summary>
     /// Represents a <i>Grand Theft Auto IV</i> save file.
     /// </summary>
-    public class GTA4Save : GTASaveFile, IGTASaveFile, IEquatable<GTA4Save>
+    public class GTA4Save : SaveData, ISaveData, IEquatable<GTA4Save>
     {
         public static class Limits
         {

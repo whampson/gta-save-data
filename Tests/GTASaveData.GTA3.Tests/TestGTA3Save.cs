@@ -44,7 +44,7 @@ namespace GTASaveData.GTA3.Tests
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(GameType.III, expectedFormat, filename);
-            GTASaveFile.GetFileFormat<GTA3Save>(path, out FileFormat detectedFormat);
+            SaveData.GetFileFormat<GTA3Save>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -69,7 +69,7 @@ namespace GTASaveData.GTA3.Tests
         {
             string path = TestData.GetTestDataPath(GameType.III, format, filename);
 
-            using GTA3Save x0 = GTASaveFile.Load<GTA3Save>(path, format);
+            using GTA3Save x0 = SaveData.Load<GTA3Save>(path, format);
             using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);

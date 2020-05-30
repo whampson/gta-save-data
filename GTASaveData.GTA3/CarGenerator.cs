@@ -19,7 +19,7 @@ namespace GTASaveData.GTA3
         private ushort m_maxDelay;
         private uint m_timer;
         private int m_handle;
-        private short m_usesRemaining;
+        private bool m_enabled;
         private bool m_isBlocking;
         private Vector3D m_vecInf;
         private Vector3D m_vecSup;
@@ -97,10 +97,10 @@ namespace GTASaveData.GTA3
             set { m_handle = value; OnPropertyChanged(); }
         }
 
-        public short UsesRemaining
+        public bool Enabled
         {
-            get { return m_usesRemaining; }
-            set { m_usesRemaining = value; OnPropertyChanged(); }
+            get { return m_enabled; }
+            set { m_enabled = value; OnPropertyChanged(); }
         }
 
         public bool IsBlocking
@@ -151,12 +151,6 @@ namespace GTASaveData.GTA3
             set { LockedChance = (byte) value; OnPropertyChanged(); }
         }
 
-        bool ICarGenerator.Enabled
-        {
-            get { return UsesRemaining > 0; }
-            set { UsesRemaining = (short) ((value) ? 101 : 0); OnPropertyChanged(); }
-        }
-
         public CarGenerator()
         { }
 
@@ -175,7 +169,7 @@ namespace GTASaveData.GTA3
             MaxDelay = buf.ReadUInt16();
             Timer = buf.ReadUInt32();
             Handle = buf.ReadInt32();
-            UsesRemaining = buf.ReadInt16();
+            Enabled = buf.ReadBool(2);
             IsBlocking = buf.ReadBool();
             buf.ReadByte();
             CollisionBoundingMin = buf.Read<Vector3D>();
@@ -200,7 +194,7 @@ namespace GTASaveData.GTA3
             buf.Write(MaxDelay);
             buf.Write(Timer);
             buf.Write(Handle);
-            buf.Write(UsesRemaining);
+            buf.Write((short) (Enabled ? -1 : 0));
             buf.Write(IsBlocking);
             buf.Write((byte) 0);
             buf.Write(CollisionBoundingMin);
@@ -239,7 +233,7 @@ namespace GTASaveData.GTA3
                 && MaxDelay.Equals(other.MaxDelay)
                 && Timer.Equals(other.Timer)
                 && Handle.Equals(other.Handle)
-                && UsesRemaining.Equals(other.UsesRemaining)
+                && Enabled.Equals(other.Enabled)
                 && IsBlocking.Equals(other.IsBlocking)
                 && CollisionBoundingMin.Equals(other.CollisionBoundingMin)
                 && CollisionBoundingMax.Equals(other.CollisionBoundingMax)

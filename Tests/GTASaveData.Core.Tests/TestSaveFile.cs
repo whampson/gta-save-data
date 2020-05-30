@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Types.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -34,7 +35,7 @@ namespace GTASaveData.Core.Tests
             }
         }
 
-        private class TestSave : GTASaveFile
+        private class TestSave : SaveData
         {
             public override string Name
             {
@@ -47,8 +48,6 @@ namespace GTASaveData.Core.Tests
                 get => throw new NotImplementedException();
                 set => throw new NotImplementedException();
             }
-
-            public override IReadOnlyList<SaveDataObject> Blocks => throw new NotImplementedException();
 
             public byte[] GetPaddingBytes(int length)
             {

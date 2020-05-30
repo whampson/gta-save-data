@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class CarGeneratorData : SaveDataObject, ICarGeneratorBlock, IEquatable<CarGeneratorData>
+    public class CarGeneratorData : SaveDataObject, ICarGeneratorData, IEquatable<CarGeneratorData>
     {
         public static class Limits
         {
@@ -28,7 +28,7 @@ namespace GTASaveData.GTA3
             set { m_numberOfCarGenerators = value; OnPropertyChanged(); }
         }
 
-        public int CurrentActiveCount
+        public int NumberOfEnabledCarGenerators
         {
             get { return m_currentActiveCount; }
             set { m_currentActiveCount = value; OnPropertyChanged(); }
@@ -58,9 +58,15 @@ namespace GTASaveData.GTA3
             set { CarGenerators[i] = value; OnPropertyChanged(); }
         }
 
-        IEnumerable<ICarGenerator> ICarGeneratorBlock.CarGenerators
+        IEnumerable<ICarGenerator> ICarGeneratorData.CarGenerators
         {
             get { return m_carGeneratorArray; }
+        }
+
+        ICarGenerator ICarGeneratorData.this[int index]
+        {
+            get { return CarGenerators[index]; }
+            set { CarGenerators[index] = (CarGenerator) value; OnPropertyChanged(); }
         }
 
         public CarGeneratorData()
@@ -75,7 +81,7 @@ namespace GTASaveData.GTA3
             int infoSize = buf.ReadInt32();
             Debug.Assert(infoSize == CarGeneratorDataSize);
             NumberOfCarGenerators = buf.ReadInt32();
-            CurrentActiveCount = buf.ReadInt32();
+            NumberOfEnabledCarGenerators = buf.ReadInt32();
             ProcessCounter = buf.ReadByte();
             GenerateEvenIfPlayerIsCloseCounter = buf.ReadByte();
             buf.ReadInt16();
@@ -93,7 +99,7 @@ namespace GTASaveData.GTA3
 
             buf.Write(CarGeneratorDataSize);
             buf.Write(NumberOfCarGenerators);
-            buf.Write(CurrentActiveCount);
+            buf.Write(NumberOfEnabledCarGenerators);
             buf.Write(ProcessCounter);
             buf.Write(GenerateEvenIfPlayerIsCloseCounter);
             buf.Write((short) 0);
@@ -121,7 +127,7 @@ namespace GTASaveData.GTA3
             }
 
             return NumberOfCarGenerators.Equals(other.NumberOfCarGenerators)
-                && CurrentActiveCount.Equals(other.CurrentActiveCount)
+                && NumberOfEnabledCarGenerators.Equals(other.NumberOfEnabledCarGenerators)
                 && ProcessCounter.Equals(other.ProcessCounter)
                 && GenerateEvenIfPlayerIsCloseCounter.Equals(other.GenerateEvenIfPlayerIsCloseCounter)
                 && CarGenerators.SequenceEqual(other.CarGenerators);

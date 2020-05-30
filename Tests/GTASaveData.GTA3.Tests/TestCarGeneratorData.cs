@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<CarGeneratorData> model = new Faker<CarGeneratorData>()
                 .RuleFor(x => x.NumberOfCarGenerators, f => f.Random.Int())
-                .RuleFor(x => x.CurrentActiveCount, f => f.Random.Int())
+                .RuleFor(x => x.NumberOfEnabledCarGenerators, f => f.Random.Int())
                 .RuleFor(x => x.ProcessCounter, f => f.Random.Byte())
                 .RuleFor(x => x.GenerateEvenIfPlayerIsCloseCounter, f => f.Random.Byte())
                 .RuleFor(x => x.CarGenerators, f => Generator.Array(CarGeneratorData.Limits.MaxNumCarGenerators, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
@@ -25,7 +25,7 @@ namespace GTASaveData.GTA3.Tests
             CarGeneratorData x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.NumberOfCarGenerators, x1.NumberOfCarGenerators);
-            Assert.Equal(x0.CurrentActiveCount, x1.CurrentActiveCount);
+            Assert.Equal(x0.NumberOfEnabledCarGenerators, x1.NumberOfEnabledCarGenerators);
             Assert.Equal(x0.ProcessCounter, x1.ProcessCounter);
             Assert.Equal(x0.GenerateEvenIfPlayerIsCloseCounter, x1.GenerateEvenIfPlayerIsCloseCounter);
             Assert.Equal(x0.CarGenerators, x1.CarGenerators);

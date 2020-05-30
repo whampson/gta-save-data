@@ -18,8 +18,8 @@ namespace GTASaveData.VC
         private ushort m_minDelay;
         private ushort m_maxDelay;
         private uint m_timer;
-        private int m_vehicleHandle;
-        private short m_usesRemaining;
+        private int m_handle;
+        private bool m_enabled;
         private bool m_isBlocking;
 
         public int Model
@@ -88,16 +88,16 @@ namespace GTASaveData.VC
             set { m_timer = value; OnPropertyChanged(); }
         }
 
-        public int VehicleHandle
+        public int Handle
         {
-            get { return m_vehicleHandle; }
-            set { m_vehicleHandle = value; OnPropertyChanged(); }
+            get { return m_handle; }
+            set { m_handle = value; OnPropertyChanged(); }
         }
 
-        public short UsesRemaining
+        public bool Enabled
         {
-            get { return m_usesRemaining; }
-            set { m_usesRemaining = value; OnPropertyChanged(); }
+            get { return m_enabled; }
+            set { m_enabled = value; OnPropertyChanged(); }
         }
 
         public bool IsBlocking
@@ -130,16 +130,8 @@ namespace GTASaveData.VC
             set { LockedChance = (byte) value; OnPropertyChanged(); }
         }
 
-        bool ICarGenerator.Enabled
-        {
-            get { return UsesRemaining > 0; }
-            set { UsesRemaining = (short) ((value) ? 101 : 0); OnPropertyChanged(); }
-        }
-
         public CarGenerator()
-        {
-            Position = new Vector3D();
-        }
+        { }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
@@ -155,8 +147,8 @@ namespace GTASaveData.VC
             MinDelay = buf.ReadUInt16();
             MaxDelay = buf.ReadUInt16();
             Timer = buf.ReadUInt32();
-            VehicleHandle = buf.ReadInt32();
-            UsesRemaining = buf.ReadInt16();
+            Handle = buf.ReadInt32();
+            Enabled = buf.ReadBool(2);
             IsBlocking = buf.ReadBool();
             buf.ReadByte();
 
@@ -177,8 +169,8 @@ namespace GTASaveData.VC
             buf.Write(MinDelay);
             buf.Write(MaxDelay);
             buf.Write(Timer);
-            buf.Write(VehicleHandle);
-            buf.Write(UsesRemaining);
+            buf.Write(Handle);
+            buf.Write((short) (Enabled ? -1 : 0));
             buf.Write(IsBlocking);
             buf.Write((byte) 0);
 
@@ -213,8 +205,8 @@ namespace GTASaveData.VC
                 && MinDelay.Equals(other.MinDelay)
                 && MaxDelay.Equals(other.MaxDelay)
                 && Timer.Equals(other.Timer)
-                && VehicleHandle.Equals(other.VehicleHandle)
-                && UsesRemaining.Equals(other.UsesRemaining)
+                && Handle.Equals(other.Handle)
+                && Enabled.Equals(other.Enabled)
                 && IsBlocking.Equals(other.IsBlocking);
         }
     }

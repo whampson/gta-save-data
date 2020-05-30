@@ -20,8 +20,8 @@ namespace GTASaveData.VC.Tests
                 .RuleFor(x => x.MinDelay, f => f.Random.UShort())
                 .RuleFor(x => x.MaxDelay, f => f.Random.UShort())
                 .RuleFor(x => x.Timer, f => f.Random.UInt())
-                .RuleFor(x => x.VehicleHandle, f => f.Random.Int())
-                .RuleFor(x => x.UsesRemaining, f => f.Random.Short())
+                .RuleFor(x => x.Handle, f => f.Random.Int())
+                .RuleFor(x => x.Enabled, f => f.Random.Bool())
                 .RuleFor(x => x.IsBlocking, f => f.Random.Bool());
 
             return model.Generate();
@@ -44,9 +44,10 @@ namespace GTASaveData.VC.Tests
             Assert.Equal(x0.MinDelay, x1.MinDelay);
             Assert.Equal(x0.MaxDelay, x1.MaxDelay);
             Assert.Equal(x0.Timer, x1.Timer);
-            Assert.Equal(x0.VehicleHandle, x1.VehicleHandle);
-            Assert.Equal(x0.UsesRemaining, x1.UsesRemaining);
+            Assert.Equal(x0.Handle, x1.Handle);
+            Assert.Equal(x0.Enabled, x1.Enabled);
             Assert.Equal(x0.IsBlocking, x1.IsBlocking);
+
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(), data.Length);
         }

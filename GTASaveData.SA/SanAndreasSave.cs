@@ -13,7 +13,7 @@ namespace GTASaveData.SA
     /// <summary>
     /// Represents a <i>Grand Theft Auto: San Andreas</i> save file.
     /// </summary>
-    public class SanAndreasSave : GTASaveFile, IGTASaveFile, IEquatable<SanAndreasSave>, IDisposable
+    public class SanAndreasSave : SaveData, ISaveData, IEquatable<SanAndreasSave>, IDisposable
     {
         public const int SizeOfOneGameInBytes = 202752;
         private const int MaxBufferSize = 65000;

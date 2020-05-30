@@ -60,7 +60,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker f = new Faker();
             string path = TestData.GetTestDataPath(GameType.III, GTA3Save.FileFormats.PC, "CAT2");
-            using GTA3Save x = GTASaveFile.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
+            using GTA3Save x = SaveData.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
 
             Assert.Equal(987.5, x.Scripts.GetGlobalAsFloat(804));
 

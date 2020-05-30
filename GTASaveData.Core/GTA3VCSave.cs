@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace GTASaveData
 {
-    public abstract class GTA3VCSave : GTASaveFile
+    public abstract class GTA3VCSave : SaveData
     {
         public const int SaveHeaderSize = 8;
 
