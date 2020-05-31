@@ -55,7 +55,7 @@ namespace GTASaveData.GTA3
             {
                 return 0x5AC;
             }
-            if (GTA3Save.IsJapanesePS2(fmt))
+            if (fmt.IsPS2 && fmt.IsJapanese)
             {
                 return 0x59C;
             }

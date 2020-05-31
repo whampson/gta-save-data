@@ -343,60 +343,62 @@ namespace GTASaveData.GTA3
             bool isMobile = false;
             bool isPcOrXbox = false;
 
-            int fileId = data.FindFirst(BitConverter.GetBytes(0x31401));
-            int fileIdJP = data.FindFirst(BitConverter.GetBytes(0x31400));
-            int scr = data.FindFirst("SCR\0".GetAsciiBytes());
+            int saveSizeOffset = data.FindFirst(BitConverter.GetBytes(0x31401));
+            int saveSizeOffsetJP = data.FindFirst(BitConverter.GetBytes(0x31400));
+            int scrOffset = data.FindFirst("SCR\0".GetAsciiBytes());
 
-            if (fileId == -1 || scr == -1)
+            if (saveSizeOffset < 0 || scrOffset < 0)
             {
+                // Invalid
                 fmt = FileFormat.Default;
                 return false;
             }
 
-            int blk1Size;
-            //int numPlayerPeds;
-            using (StreamBuffer wb = new StreamBuffer(data))
+            int sizeOfPlayerPed;
+            using (StreamBuffer s = new StreamBuffer(data))
             {
-                wb.Skip(wb.ReadInt32());
-                blk1Size = wb.ReadInt32();
-                wb.ReadInt32();
+                int block0Size = s.ReadInt32();
+                s.Skip(block0Size + 4);
+                int sizeOfPedPool = s.ReadInt32() - 4;
+                int numPlayerPeds = s.ReadInt32();
+                sizeOfPlayerPed = sizeOfPedPool / numPlayerPeds;
             }
 
-            if (scr == 0xB0 && fileId == 0x04)
+            if (scrOffset == 0xB0 && saveSizeOffset == 0x04)
             {
                 fmt = FileFormats.PS2_AU;
                 return true;
             }
-            else if (scr == 0xB8)
+            else if (scrOffset == 0xB8)
             {
-                if (fileIdJP == 0x04)
+                if (saveSizeOffsetJP == 0x04)
                 {
                     fmt = FileFormats.PS2_JP;
                     return true;
                 }
-                else if (fileId == 0x04)
+                else if (saveSizeOffset == 0x04)
                 {
                     fmt = FileFormats.PS2;
                     return true;
                 }
-                else if (fileId == 0x34)
+                else if (saveSizeOffset == 0x34)
                 {
                     isMobile = true;
                 }
             }
-            else if (scr == 0xC4 && fileId == 0x44)
+            else if (scrOffset == 0xC4 && saveSizeOffset == 0x44)
             {
                 isPcOrXbox = true;
             }
 
             if (isMobile)
             {
-                if (blk1Size == 0x648)
+                if (sizeOfPlayerPed == 0x63E)
                 {
                     fmt = FileFormats.iOS;
                     return true;
                 }
-                else if (blk1Size == 0x64C)
+                else if (sizeOfPlayerPed == 0x642)
                 {
                     fmt = FileFormats.Android;
                     return true;
@@ -404,18 +406,19 @@ namespace GTASaveData.GTA3
             }
             else if (isPcOrXbox)
             {
-                if (blk1Size == 0x624)
+                if (sizeOfPlayerPed == 0x61A)
                 {
                     fmt = FileFormats.PC;
                     return true;
                 }
-                else if (blk1Size == 0x628)
+                else if (sizeOfPlayerPed == 0x61E)
                 {
                     fmt = FileFormats.Xbox;
                     return true;
                 }
             }
 
+            // Invalid
             fmt = FileFormat.Default;
             return false;
         }

@@ -31,7 +31,7 @@ namespace GTASaveData.GTA3
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             bool ps2 = fmt.IsPS2;
-            bool ps2jp = GTA3Save.IsJapanesePS2(fmt);
+            bool ps2jp = fmt.IsPS2 && fmt.IsJapanese;
 
             if (!ps2)
             {
@@ -66,7 +66,7 @@ namespace GTASaveData.GTA3
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             bool ps2 = fmt.IsPS2;
-            bool ps2jp = GTA3Save.IsJapanesePS2(fmt);
+            bool ps2jp = fmt.IsPS2 && fmt.IsJapanese;
 
             if (!ps2)
             {
@@ -100,7 +100,7 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (GTA3Save.IsJapanesePS2(fmt))
+            if (fmt.IsPS2 && fmt.IsJapanese)
             {
                 return 0x40;
             }
