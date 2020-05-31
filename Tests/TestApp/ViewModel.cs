@@ -171,7 +171,7 @@ namespace TestApp
             switch (SelectedGame)
             {
                 case Game.GTA3: DoLoad<GTA3Save>(path); break;
-                case Game.VC: DoLoad<ViceCitySave>(path); break;
+                case Game.VC: DoLoad<VCSave>(path); break;
                 //case GameType.SA: DoLoad<SanAndreasSave>(path); break;
                 //case GameType.LCS: DoLoad<LibertyCityStoriesSave>(path); break;
                 //case GameType.VCS: DoLoad<ViceCityStoriesSave>(path); break;
@@ -227,9 +227,9 @@ namespace TestApp
             {
                 (CurrentSaveFile as GTA3Save).Dispose();
             }
-            else if (CurrentSaveFile is ViceCitySave)
+            else if (CurrentSaveFile is VCSave)
             {
-                (CurrentSaveFile as ViceCitySave).Dispose();
+                (CurrentSaveFile as VCSave).Dispose();
             }
             //else if (CurrentSaveFile is SanAndreasSave)
             //{
@@ -242,7 +242,7 @@ namespace TestApp
             switch (SelectedGame)
             {
                 case Game.GTA3: return GTA3Save.FileFormats.GetAll();
-                case Game.VC: return ViceCitySave.FileFormats.GetAll();
+                case Game.VC: return VCSave.FileFormats.GetAll();
                 //case GameType.SA: return SanAndreasSave.FileFormats.GetAll();
             }
 
@@ -285,8 +285,8 @@ namespace TestApp
 
             if (!ShowEntireFile)
             {
-                IReadOnlyList<SaveDataObject> blocks = (CurrentSaveFile as ISaveData).Blocks;
-                Text = blocks[SelectedBlockIndex].ToJsonString();
+                IReadOnlyList<ISaveDataObject> blocks = (CurrentSaveFile as ISaveData).Blocks;
+                Text = (blocks[SelectedBlockIndex] as SaveDataObject).ToJsonString();
             }
             else
             {

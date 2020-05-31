@@ -84,7 +84,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.DoorLock, x1.DoorLock);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(format), data.Length);
+            Assert.Equal(GetSizeOfTestType(format), data.Length);
         }
     }
 }

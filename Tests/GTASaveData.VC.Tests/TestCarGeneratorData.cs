@@ -13,7 +13,7 @@ namespace GTASaveData.VC.Tests
                 .RuleFor(x => x.NumberOfEnabledCarGenerators, f => f.Random.Int())
                 .RuleFor(x => x.ProcessCounter, f => f.Random.Byte())
                 .RuleFor(x => x.GenerateEvenIfPlayerIsCloseCounter, f => f.Random.Byte())
-                .RuleFor(x => x.CarGenerators, f => Generator.Array(CarGeneratorData.Limits.MaxNumCarGenerators, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
+                .RuleFor(x => x.CarGenerators, f => Generator.Array(CarGeneratorData.MaxNumCarGenerators, g => Generator.Generate<CarGenerator, TestCarGenerator>()));
 
             return model.Generate();
         }
@@ -31,7 +31,7 @@ namespace GTASaveData.VC.Tests
             Assert.Equal(x0.CarGenerators, x1.CarGenerators);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
     }
 }

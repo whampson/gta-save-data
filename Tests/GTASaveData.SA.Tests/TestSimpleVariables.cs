@@ -127,7 +127,7 @@ namespace GTASaveData.SA.Tests
             Assert.Equal(x0.AllTaxisHaveNitro, x1.AllTaxisHaveNitro);
             Assert.Equal(x0.ProstiutesPayYou, x1.ProstiutesPayYou);
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(format), data.Length);
+            Assert.Equal(GetSizeOfTestType(format), data.Length);
         }
     }
 }

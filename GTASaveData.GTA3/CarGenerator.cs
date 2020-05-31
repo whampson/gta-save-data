@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3
     {
         private int m_modelIndex;
         private Vector3D m_position;
-        private float m_angle;
+        private float m_heading;
         private short m_color1;
         private short m_color2;
         private bool m_forceSpawn;
@@ -39,8 +39,8 @@ namespace GTASaveData.GTA3
 
         public float Heading
         {
-            get { return m_angle; }
-            set { m_angle = value; OnPropertyChanged(); }
+            get { return m_heading; }
+            set { m_heading = value; OnPropertyChanged(); }
         }
 
         public short Color1
@@ -176,7 +176,7 @@ namespace GTASaveData.GTA3
             CollisionBoundingMax = buf.Read<Vector3D>();
             CollisionSize = buf.ReadFloat();
 
-            Debug.Assert(buf.Offset == SizeOfType<CarGenerator>());
+            Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -201,7 +201,7 @@ namespace GTASaveData.GTA3
             buf.Write(CollisionBoundingMax);
             buf.Write(CollisionSize);
 
-            Debug.Assert(buf.Offset == SizeOfType<CarGenerator>());
+            Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

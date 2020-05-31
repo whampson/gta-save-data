@@ -153,11 +153,6 @@ namespace GTASaveData
             return obj;
         }
 
-        public static T LoadJson<T>(string json) where T : SaveData, new()
-        {
-            return JsonConvert.DeserializeObject<T>(json);
-        }
-
         public override string ToString()
         {
             var now = TimeStamp.ToString("yyyy-MM-dd HH:mm:ss");

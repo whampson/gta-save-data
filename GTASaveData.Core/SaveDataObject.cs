@@ -1,18 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using WpfEssentials;
 
 namespace GTASaveData
 {
+    /// <summary>
+    /// Represents a data structure found in a savedata file.
+    /// </summary>
     public abstract class SaveDataObject : ObservableObject, ISaveDataObject
     {
-        protected virtual void OnReading() { }
-        protected virtual void OnRead() { }
-        protected virtual void OnWriting() { }
-        protected virtual void OnWrite() { }
-        protected abstract void ReadData(StreamBuffer buf, FileFormat fmt);
-        protected abstract void WriteData(StreamBuffer buf, FileFormat fmt);
-        protected abstract int GetSize(FileFormat fmt);
-
         int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int oldMark, start, len;
@@ -54,22 +50,45 @@ namespace GTASaveData
             return GetSize(fmt);
         }
 
-        public static int SizeOfType<T>() where T : new()
+        public static T FromJsonString<T>(string json) where T : SaveDataObject
+        {
+            return JsonConvert.DeserializeObject<T>(json);
+        }
+
+        public string ToJsonString()
+        {
+            return ToJsonString(Formatting.Indented);
+        }
+
+        public string ToJsonString(Formatting formatting)
+        {
+            return JsonConvert.SerializeObject(this, formatting);
+        }
+
+        protected virtual void OnReading() { }
+        protected virtual void OnRead() { }
+        protected virtual void OnWriting() { }
+        protected virtual void OnWrite() { }
+        protected abstract void ReadData(StreamBuffer buf, FileFormat fmt);
+        protected abstract void WriteData(StreamBuffer buf, FileFormat fmt);
+        protected abstract int GetSize(FileFormat fmt);
+
+        protected static int SizeOfType<T>() where T : new()
         {
             return Serializer.SizeOfType<T>();
         }
 
-        public static int SizeOfType<T>(FileFormat fmt) where T : new()
+        protected static int SizeOfType<T>(FileFormat fmt) where T : new()
         {
             return Serializer.SizeOfType<T>(fmt);
         }
 
-        public static int SizeOfObject<T>(T obj)
+        protected static int SizeOfObject<T>(T obj)
         {
             return Serializer.SizeOfObject(obj);
         }
 
-        public static int SizeOfObject<T>(T obj, FileFormat fmt)
+        protected static int SizeOfObject<T>(T obj, FileFormat fmt)
         {
             return Serializer.SizeOfObject(obj, fmt);
         }

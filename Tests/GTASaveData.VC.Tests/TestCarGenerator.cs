@@ -49,7 +49,7 @@ namespace GTASaveData.VC.Tests
             Assert.Equal(x0.IsBlocking, x1.IsBlocking);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
     }
 }

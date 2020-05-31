@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3.Tests
         public override SimpleVariables GenerateTestObject(FileFormat format)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.SaveName, f => Generator.Words(f, SimpleVariables.Limits.MaxNameLength - 1))
+                .RuleFor(x => x.LastMissionPassedName, f => Generator.Words(f, SimpleVariables.Limits.MaxNameLength - 1))
                 .RuleFor(x => x.TimeLastSaved, f => Generator.Date(f))
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
@@ -46,8 +46,8 @@ namespace GTASaveData.GTA3.Tests
             SimpleVariables x0 = GenerateTestObject(format);
             SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
-            Assert.Equal(x0.SaveName, x1.SaveName);
-            Assert.Equal(x0.TimeLastSaved, x1.TimeLastSaved);
+            Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
+            Assert.Equal(x0.TimeStamp, x1.TimeStamp);
             Assert.Equal(x0.CurrLevel, x1.CurrLevel);
             Assert.Equal(x0.CameraPosition, x1.CameraPosition);
             Assert.Equal(x0.MillisecondsPerGameMinute, x1.MillisecondsPerGameMinute);
@@ -73,7 +73,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.CameraPedZoomIndicator, x1.CameraPedZoomIndicator);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(format), data.Length);
+            Assert.Equal(GetSizeOfTestType(format), data.Length);
         }
     }
 }

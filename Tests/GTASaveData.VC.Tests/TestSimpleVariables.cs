@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -11,12 +9,11 @@ namespace GTASaveData.VC.Tests
         public override SimpleVariables GenerateTestObject(FileFormat format)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.SaveName, f => Generator.UnicodeString(f, SimpleVariables.Limits.MaxNameLength - 1))
-                .RuleFor(x => x.TimeLastSaved, f => (SystemTime) Generator.Date(f))
-                .RuleFor(x => x.SaveSize, f => f.Random.Int())
+                .RuleFor(x => x.LastMissionPassedName, f => Generator.UnicodeString(f, SimpleVariables.MaxMissionPassedNameLength - 1))
+                .RuleFor(x => x.TimeStamp, f => Generator.Date(f))
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
-                .RuleFor(x => x.SteamWin32Only, (SimpleVariables.IsSteamWin32(format)) ? SimpleVariables.SteamWin32OnlyValue : 0)
+                .RuleFor(x => x.SteamId, (format.IsPC && format.IsSteam) ? VCSave.SteamId : 0)
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
                 .RuleFor(x => x.GameClockHours, f => f.Random.Byte())
@@ -43,7 +40,7 @@ namespace GTASaveData.VC.Tests
                 .RuleFor(x => x.ExtraColour, f => f.Random.Int())
                 .RuleFor(x => x.ExtraColourOn, f => f.Random.Bool())
                 .RuleFor(x => x.ExtraColourInterpolation, f => f.Random.Float())
-                .RuleFor(x => x.RadioStationPositionList, f => Generator.Array(SimpleVariables.Limits.RadioStationListCount, g => f.Random.Int()));
+                .RuleFor(x => x.RadioStationPositionList, f => Generator.Array(SimpleVariables.RadioStationListCount, g => f.Random.Int()));
 
             return model.Generate();
         }
@@ -55,12 +52,11 @@ namespace GTASaveData.VC.Tests
             SimpleVariables x0 = GenerateTestObject(format);
             SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
-            Assert.Equal(x0.SaveName, x1.SaveName);
-            Assert.Equal(x0.TimeLastSaved, x1.TimeLastSaved);
-            Assert.Equal(x0.SaveSize, x1.SaveSize);
+            Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
+            Assert.Equal(x0.TimeStamp, x1.TimeStamp);
             Assert.Equal(x0.CurrLevel, x1.CurrLevel);
             Assert.Equal(x0.CameraPosition, x1.CameraPosition);
-            Assert.Equal(x0.SteamWin32Only, x1.SteamWin32Only);
+            Assert.Equal(x0.SteamId, x1.SteamId);
             Assert.Equal(x0.MillisecondsPerGameMinute, x1.MillisecondsPerGameMinute);
             Assert.Equal(x0.LastClockTick, x1.LastClockTick);
             Assert.Equal(x0.GameClockHours, x1.GameClockHours);
@@ -90,7 +86,7 @@ namespace GTASaveData.VC.Tests
             Assert.Equal(x0.RadioStationPositionList, x1.RadioStationPositionList);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
     }
 }

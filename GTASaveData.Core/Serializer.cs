@@ -13,7 +13,17 @@ namespace GTASaveData
         /// </summary>
         public static bool BigEndian { get; set; }
 
+        /// <summary>
+        /// Gets or sets the padding mode to use when a <see cref="StreamBuffer"/>
+        /// instance is not provided.
+        /// </summary>
         public static PaddingType PaddingType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the pattern used for padding when a <see cref="StreamBuffer"/>
+        /// instance is not provided and the <see cref="PaddingType"/> is set to
+        /// <see cref="PaddingType.Pattern"/>.
+        /// </summary>
         public static byte[] PaddingBytes { get; set; }
 
         /// <summary>

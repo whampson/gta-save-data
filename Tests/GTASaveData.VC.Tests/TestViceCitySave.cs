@@ -8,11 +8,11 @@ using System.IO;
 
 namespace GTASaveData.VC.Tests
 {
-    public class TestViceCitySave : Base<ViceCitySave>
+    public class TestViceCitySave : Base<VCSave>
     {
-        public override ViceCitySave GenerateTestObject(FileFormat format)
+        public override VCSave GenerateTestObject(FileFormat format)
         {
-            Faker<ViceCitySave> model = new Faker<ViceCitySave>()
+            Faker<VCSave> model = new Faker<VCSave>()
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 //.RuleFor(x => x.Scripts, Generator.Generate<TheScripts, TestTheScripts>(format))
@@ -45,7 +45,7 @@ namespace GTASaveData.VC.Tests
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.VC, expectedFormat, filename);
-            SaveData.GetFileFormat<ViceCitySave>(path, out FileFormat detectedFormat);
+            SaveData.GetFileFormat<VCSave>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -54,8 +54,8 @@ namespace GTASaveData.VC.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileFormat format)
         {
-            using ViceCitySave x0 = GenerateTestObject(format);
-            using ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using VCSave x0 = GenerateTestObject(format);
+            using VCSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -70,8 +70,8 @@ namespace GTASaveData.VC.Tests
         {
             string path = TestData.GetTestDataPath(Game.VC, format, filename);
 
-            using ViceCitySave x0 = SaveData.Load<ViceCitySave>(path, format);
-            using ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using VCSave x0 = SaveData.Load<VCSave>(path, format);
+            using VCSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -83,33 +83,28 @@ namespace GTASaveData.VC.Tests
         [Fact]
         public void BlockSizeExceeded()
         {
-            string path = TestData.GetTestDataPath(Game.VC, ViceCitySave.FileFormats.PC_Retail, "COK_2");
+            string path = TestData.GetTestDataPath(Game.VC, VCSave.FileFormats.PC, "COK_2");
             byte[] data = File.ReadAllBytes(path);
-
-            using ViceCitySave x = new ViceCitySave()
-            {
-                FileFormat = ViceCitySave.FileFormats.PC_Retail,
-                BlockSizeChecks = true
-            };
 
             // Fudge the block size
             data[0] = 0xBE;
             data[1] = 0xBA;
             data[2] = 0xFE;
             data[3] = 0xCA;
-            Assert.Throws<SerializationException>(() => x.Load(data));
+            Assert.Throws<SerializationException>(() => SaveData.Load<VCSave>(data, VCSave.FileFormats.PC));
 
             // TODO: uncomment when Scripts done
             // Make the script space huge
+            //VCSave x = SaveData.Load<VCSave>(path, VCSave.FileFormats.PC);
             //x.Scripts.ScriptSpace = GTAObject.CreateArray<byte>(100000);
             //Assert.Throws<SerializationException>(() => x.Save(out byte[] _));
         }
 
-        private void AssertSavesAreEqual(ViceCitySave x0, ViceCitySave x1)
+        private void AssertSavesAreEqual(VCSave x0, VCSave x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);
-            Assert.Equal(x0.PedPool, x1.PedPool);
+            Assert.Equal(x0.PlayerPeds, x1.PlayerPeds);
             Assert.Equal(x0.Garages, x1.Garages);
             Assert.Equal(x0.GameLogic, x1.GameLogic);
             Assert.Equal(x0.VehiclePool, x1.VehiclePool);
@@ -144,17 +139,17 @@ namespace GTASaveData.VC.Tests
             //new object[] { ViceCitySave.FileFormats.iOS, "FIN_1" },
             //new object[] { ViceCitySave.FileFormats.iOS, "FIN_1 SpecialVehicles1" },
             //new object[] { ViceCitySave.FileFormats.iOS, "FIN_1 SpecialVehicles1" },
-            new object[] { ViceCitySave.FileFormats.PC_Retail, "COK_2" },
-            new object[] { ViceCitySave.FileFormats.PC_Retail, "CREAM" },
-            new object[] { ViceCitySave.FileFormats.PC_Retail, "FIN_1" },
-            new object[] { ViceCitySave.FileFormats.PC_Retail, "ITBEG" },
-            new object[] { ViceCitySave.FileFormats.PC_Retail, "ITBEG Japan" },
-            new object[] { ViceCitySave.FileFormats.PC_Retail, "ITBEG StarterSave" },
-            new object[] { ViceCitySave.FileFormats.PC_Retail, "JOB_5" },
-            new object[] { ViceCitySave.FileFormats.PC_Retail, "TEX_3" },
-            new object[] { ViceCitySave.FileFormats.PC_Steam, "BUD_3" },
-            new object[] { ViceCitySave.FileFormats.PC_Steam, "COK_3" },
-            new object[] { ViceCitySave.FileFormats.PC_Steam, "FIN_1" },
+            new object[] { VCSave.FileFormats.PC, "COK_2" },
+            new object[] { VCSave.FileFormats.PC, "CREAM" },
+            new object[] { VCSave.FileFormats.PC, "FIN_1" },
+            new object[] { VCSave.FileFormats.PC, "ITBEG" },
+            new object[] { VCSave.FileFormats.PC, "ITBEG Japan" },
+            new object[] { VCSave.FileFormats.PC, "ITBEG StarterSave" },
+            new object[] { VCSave.FileFormats.PC, "JOB_5" },
+            new object[] { VCSave.FileFormats.PC, "TEX_3" },
+            new object[] { VCSave.FileFormats.PC_Steam, "BUD_3" },
+            new object[] { VCSave.FileFormats.PC_Steam, "COK_3" },
+            new object[] { VCSave.FileFormats.PC_Steam, "FIN_1" },
             //new object[] { ViceCitySave.FileFormats.PS2, "CREAM" },
             //new object[] { ViceCitySave.FileFormats.PS2, "FIN_1 1" },
             //new object[] { ViceCitySave.FileFormats.PS2, "FIN_1 2" },

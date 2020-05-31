@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -16,6 +17,7 @@ namespace GTASaveData
         protected int BufferSize { get; set; }
         protected StreamBuffer WorkBuff { get; private set; }
         protected int CheckSum { get; set; }
+        protected abstract Dictionary<FileFormat, int> BufferSizes { get; }
 
         protected GTA3VCSave()
         {

@@ -873,12 +873,15 @@ namespace GTASaveData
         /// character so as to not exceed <paramref name="length"/>.
         /// </param>
         /// <returns>The number of bytes written.</returns>
+        /// <exception cref="ArgumentNullException"/>
         /// <exception cref="EndOfStreamException"/>
         public int Write(string value,
             int? length = null,
             bool unicode = false,
             bool zeroTerminate = true)
-        {  
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
             Encoding encoding = (unicode)
                 ? Encoding.Unicode
                 : Encoding.ASCII;
@@ -976,10 +979,29 @@ namespace GTASaveData
             return Write(items, FileFormat.Default, count, itemLength, unicode);
         }
 
+        /// <summary>
+        /// Writes an array of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The array element type.</typeparam>
+        /// <param name="items">The elements to write.</param>
+        /// <param name="format">The data format.</param>
+        /// <param name="count">The number of elements to write. If this value is null, the entire array will be written.</param>
+        /// <param name="itemLength">
+        /// The number of bytes/characters to write per element if <typeparamref name="T"/> is
+        /// <see cref="byte"/>[], <see cref="bool"/>, or <see cref="string"/>.
+        /// </param>
+        /// <param name="unicode">
+        /// A value indicating whether to read 16-bit characters if
+        /// <typeparamref name="T"/> is a <see cref="char"/> or <see cref="string"/>.
+        /// </param>
+        /// <returns>The number of bytes written.</returns>
+        /// <exception cref="ArgumentNullException"/>
+        /// <exception cref="ArgumentOutOfRangeException"/>
+        /// <exception cref="EndOfStreamException"/>
         public int Write<T>(T[] items,
             FileFormat format,
             int? count = null,
-            int itemLength = 0, // Note: only applies to "bool" and "string" types
+            int itemLength = 0,
             bool unicode = false)
             where T : new()
         {
@@ -997,6 +1019,63 @@ namespace GTASaveData
             }
 
             return bytesWritten;
+        }
+
+        /// <summary>
+        /// Writes an array of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The array element type.</typeparam>
+        /// <param name="items">The elements to write.</param>
+        /// <param name="count">The number of elements to write. If this value is null, the entire array will be written.</param>
+        /// <param name="itemLength">
+        /// The number of bytes/characters to write per element if <typeparamref name="T"/> is
+        /// <see cref="byte"/>[], <see cref="bool"/>, or <see cref="string"/>.
+        /// </param>
+        /// <param name="unicode">
+        /// A value indicating whether to read 16-bit characters if
+        /// <typeparamref name="T"/> is a <see cref="char"/> or <see cref="string"/>.
+        /// </param>
+        /// <returns>The number of bytes written.</returns>
+        /// <exception cref="ArgumentNullException"/>
+        /// <exception cref="ArgumentOutOfRangeException"/>
+        /// <exception cref="EndOfStreamException"/>
+        public int Write<T>(Array<T> items,
+            int? count = null,
+            int itemLength = 0,
+            bool unicode = false)
+            where T : new()
+        {
+            return Write(items, FileFormat.Default, count, itemLength, unicode);
+        }
+
+        /// <summary>
+        /// Writes an array of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The array element type.</typeparam>
+        /// <param name="items">The elements to write.</param>
+        /// <param name="format">The data format.</param>
+        /// <param name="count">The number of elements to write. If this value is null, the entire array will be written.</param>
+        /// <param name="itemLength">
+        /// The number of bytes/characters to write per element if <typeparamref name="T"/> is
+        /// <see cref="byte"/>[], <see cref="bool"/>, or <see cref="string"/>.
+        /// </param>
+        /// <param name="unicode">
+        /// A value indicating whether to read 16-bit characters if
+        /// <typeparamref name="T"/> is a <see cref="char"/> or <see cref="string"/>.
+        /// </param>
+        /// <returns>The number of bytes written.</returns>
+        /// <exception cref="ArgumentNullException"/>
+        /// <exception cref="ArgumentOutOfRangeException"/>
+        /// <exception cref="EndOfStreamException"/>
+        public int Write<T>(Array<T> items,
+            FileFormat format,
+            int? count = null,
+            int itemLength = 0,
+            bool unicode = false)
+            where T : new()
+        {
+            if (items == null) throw new ArgumentNullException(nameof(items));
+            return Write(items.ToArray(), format, count, itemLength, unicode);
         }
         #endregion
 

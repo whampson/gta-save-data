@@ -1,7 +1,6 @@
 ﻿using GTASaveData.Extensions;
 using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,16 +8,21 @@ using System.Diagnostics;
 namespace GTASaveData.VC
 {
     /// <summary>
-    /// Represents a <i>Grand Theft Auto: Vice City</i> savedata file.
+    /// Represents a saved <i>Grand Theft Auto: Vice City</i> game.
     /// </summary>
-    public class ViceCitySave : GTA3VCSave, ISaveData, IDisposable, IEquatable<ViceCitySave>
+    public class VCSave : GTA3VCSave, ISaveData, IEquatable<VCSave>
     {
-        public const int SizeOfOneGameInBytes = 201729;
-        public const int MaxBufferSize = 65536;
+        public const int SizeOfGameInBytes = 201728;
+        public const int MaxNumPaddingBlocks = 4;
+        public const int SteamId = 0x3DF5C2FD;      // constant?
 
-        private bool m_disposed;
-
-        protected override int BufferSize => (FileFormat.IsMobile) ? 65536 : 55000;
+        protected override Dictionary<FileFormat, int> BufferSizes => new Dictionary<FileFormat, int>()
+        {
+            { FileFormats.PC, 55000 },
+            { FileFormats.PC_Steam, 55000 },
+            { FileFormats.Android, 0x10000 },
+            { FileFormats.iOS, 0x10000 },
+        };
 
         private SimpleVariables m_simpleVars;
         private Dummy m_scripts;
@@ -57,7 +61,7 @@ namespace GTASaveData.VC
             set { m_scripts = value; OnPropertyChanged(); }
         }
 
-        public Dummy PedPool
+        public Dummy PlayerPeds
         {
             get { return m_pedPool; }
             set { m_pedPool = value; OnPropertyChanged(); }
@@ -189,31 +193,30 @@ namespace GTASaveData.VC
             set { m_pedType = value; OnPropertyChanged(); }
         }
 
-        [JsonIgnore]
         public override string Name
         {
-            get { return SimpleVars.SaveName; }
-            set { SimpleVars.SaveName = value; OnPropertyChanged(); }
+            get { return SimpleVars.LastMissionPassedName; }
+            set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
         }
 
-        [JsonIgnore]
         public override DateTime TimeStamp
         {
-            get { return (DateTime) SimpleVars.TimeLastSaved; }
-            set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
+            get { return (DateTime) SimpleVars.TimeStamp; }
+            set { SimpleVars.TimeStamp = new SystemTime(value); OnPropertyChanged(); }
         }
 
+        bool ISaveData.HasCarGenerators => true;
         ICarGeneratorData ISaveData.CarGenerators
         {
             get { return CarGenerators; }
             set { CarGenerators = (CarGeneratorData) value; OnPropertyChanged(); }
         }
 
-        IReadOnlyList<SaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
+        IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
             Scripts,
-            PedPool,
+            PlayerPeds,
             Garages,
             GameLogic,
             VehiclePool,
@@ -237,13 +240,11 @@ namespace GTASaveData.VC
             PedTypeInfo
         };
 
-        public ViceCitySave() : base(MaxBufferSize)
+        public VCSave()
         {
-            m_disposed = false;
-
             SimpleVars = new SimpleVariables();
             Scripts = new Dummy();
-            PedPool = new Dummy();
+            PlayerPeds = new Dummy();
             Garages = new Dummy();
             GameLogic = new Dummy();
             VehiclePool = new Dummy();
@@ -265,21 +266,22 @@ namespace GTASaveData.VC
             SetPieces = new Dummy();
             Streaming = new Dummy();
             PedTypeInfo = new Dummy();
-
-        #if !DEBUG
-            BlockSizeChecks = true;
-        #endif
         }
 
-        protected override void LoadSimpleVars()
+        protected override void OnReading()
         {
-            SimpleVars = WorkBuff.Read<SimpleVariables>(FileFormat);
+            base.OnReading();
+
+            BufferSize = BufferSizes[FileFormat];
+            CreateWorkBuff();
         }
 
-        protected override void SaveSimpleVars()
+        protected override void OnWriting()
         {
-            SimpleVars.SaveSize = SizeOfOneGameInBytes;
-            WorkBuff.Write(SimpleVars, FileFormat);
+            base.OnWriting();
+
+            BufferSize = BufferSizes[FileFormat];
+            CreateWorkBuff();
         }
 
         protected override void LoadAllData(StreamBuffer file)
@@ -287,9 +289,9 @@ namespace GTASaveData.VC
             int totalSize = 0;
 
             totalSize += ReadBlock(file);
-            LoadSimpleVars();
+            SimpleVars = WorkBuff.Read<SimpleVariables>(FileFormat);
             Scripts = LoadTypePreAlloc<Dummy>();
-            totalSize += ReadBlock(file); PedPool = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); PlayerPeds = LoadTypePreAlloc<Dummy>();
             totalSize += ReadBlock(file); Garages = LoadTypePreAlloc<Dummy>();
             totalSize += ReadBlock(file); GameLogic = LoadTypePreAlloc<Dummy>();
             totalSize += ReadBlock(file); VehiclePool = LoadTypePreAlloc<Dummy>();
@@ -312,14 +314,14 @@ namespace GTASaveData.VC
             totalSize += ReadBlock(file); Streaming = LoadTypePreAlloc<Dummy>();
             totalSize += ReadBlock(file); PedTypeInfo = LoadTypePreAlloc<Dummy>();
 
+            // Skip over padding
             while (file.Position < file.Length - 4)
             {
                 totalSize += ReadBlock(file);
             }
 
             Debug.WriteLine("Load successful!");
-            Debug.WriteLine("Size of game data: {0} bytes", totalSize);
-            Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
+            Debug.Assert(totalSize == SizeOfGameInBytes);
         }
 
         protected override void SaveAllData(StreamBuffer file)
@@ -330,9 +332,9 @@ namespace GTASaveData.VC
             WorkBuff.Reset();
             CheckSum = 0;
 
-            SaveSimpleVars();
+            WorkBuff.Write(SimpleVars, FileFormat);
             SaveObject(Scripts); totalSize += WriteBlock(file);
-            SaveObject(PedPool); totalSize += WriteBlock(file);
+            SaveObject(PlayerPeds); totalSize += WriteBlock(file);
             SaveObject(Garages); totalSize += WriteBlock(file);
             SaveObject(GameLogic); totalSize += WriteBlock(file);
             SaveObject(VehiclePool); totalSize += WriteBlock(file);
@@ -355,21 +357,17 @@ namespace GTASaveData.VC
             SaveObject(Streaming); totalSize += WriteBlock(file);
             SaveObject(PedTypeInfo); totalSize += WriteBlock(file);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < MaxNumPaddingBlocks; i++)
             {
-                size = StreamBuffer.Align4(SizeOfOneGameInBytes - totalSize - 4);
+                size = StreamBuffer.Align4((SizeOfGameInBytes - 3) - totalSize);
                 if (size > BufferSize)
                 {
                     size = BufferSize;
                 }
                 if (size > 4)
                 {
-                    if (PaddingType != PaddingType.Zero)
-                    {
-                        WorkBuff.Reset();
-                        WorkBuff.Write(GeneratePadding(size));
-                    }
-                    WorkBuff.Seek(size);
+                    WorkBuff.Reset();
+                    WorkBuff.Pad(size);
                     totalSize += WriteBlock(file);
                 }
             }
@@ -377,8 +375,7 @@ namespace GTASaveData.VC
             file.Write(CheckSum);
 
             Debug.WriteLine("Save successful!");
-            Debug.WriteLine("Size of game data: {0} bytes", totalSize);
-            Debug.Assert(totalSize == (SizeOfOneGameInBytes & 0xFFFFFFFE));
+            Debug.Assert(totalSize == SizeOfGameInBytes);
         }
 
         protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
@@ -400,7 +397,7 @@ namespace GTASaveData.VC
             {
                 if (scr == 0xEC)
                 {
-                    fmt = FileFormats.PC_Retail;
+                    fmt = FileFormats.PC;
                     return true;
                 }
                 else if (scr == 0xF0)
@@ -422,10 +419,10 @@ namespace GTASaveData.VC
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as ViceCitySave);
+            return Equals(obj as VCSave);
         }
 
-        public bool Equals(ViceCitySave other)
+        public bool Equals(VCSave other)
         {
             if (other == null)
             {
@@ -434,7 +431,7 @@ namespace GTASaveData.VC
 
             return SimpleVars.Equals(other.SimpleVars)
                 && Scripts.Equals(other.Scripts)
-                && PedPool.Equals(other.PedPool)
+                && PlayerPeds.Equals(other.PlayerPeds)
                 && Garages.Equals(other.Garages)
                 && GameLogic.Equals(other.GameLogic)
                 && VehiclePool.Equals(other.VehiclePool)
@@ -458,51 +455,41 @@ namespace GTASaveData.VC
                 && PedTypeInfo.Equals(other.PedTypeInfo);
         }
 
-        public void Dispose()
-        {
-            if (!m_disposed)
-            {
-                WorkBuff.Dispose();
-                m_disposed = true;
-            }
-        }
-
         public static class FileFormats
         {
             public static readonly FileFormat Android = new FileFormat(
-                "Android", "Android", "Android",
-                new GameConsole(GameConsoleType.Android)
+                "Android", GameConsole.Android
             );
 
             public static readonly FileFormat iOS = new FileFormat(
-                "iOS", "iOS", "iOS",
-                new GameConsole(GameConsoleType.iOS)
+                "iOS", GameConsole.iOS
             );
 
-            public static readonly FileFormat PC_Retail = new FileFormat(
-                "PC_Retail", "PC", "Windows (Retail Version), macOS",
-                new GameConsole(GameConsoleType.Win32),
-                new GameConsole(GameConsoleType.MacOS)
+            public static readonly FileFormat PC = new FileFormat(
+                "PC", "PC", "Windows (Retail Version), Mac OS",
+                GameConsole.Win32,
+                GameConsole.MacOS
             );
 
             public static readonly FileFormat PC_Steam = new FileFormat(
                 "PC_Steam", "PC (Steam)", "Windows (Steam Version)",
-                new GameConsole(GameConsoleType.Win32, ConsoleFlags.Steam)
+                FileFormatFlags.Steam,
+                GameConsole.Win32
             );
 
             public static readonly FileFormat PS2 = new FileFormat(
                 "PS2", "PS2", "PlayStation 2",
-                new GameConsole(GameConsoleType.PS2)
+                GameConsole.PS2
             );
 
             public static readonly FileFormat Xbox = new FileFormat(
-                "Xbox", "Xbox", "Xbox",
-                new GameConsole(GameConsoleType.Xbox)
+                "Xbox",
+                GameConsole.Xbox
             );
 
             public static FileFormat[] GetAll()
             {
-                return new FileFormat[] { Android, iOS, PC_Retail, PC_Steam, PS2, Xbox };
+                return new FileFormat[] { Android, iOS, PC, PC_Steam, PS2, Xbox };
             }
         }
     }

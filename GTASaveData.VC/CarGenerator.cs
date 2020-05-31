@@ -152,7 +152,7 @@ namespace GTASaveData.VC
             IsBlocking = buf.ReadBool();
             buf.ReadByte();
 
-            Debug.Assert(buf.Offset == SizeOfType<CarGenerator>());
+            Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -174,7 +174,7 @@ namespace GTASaveData.VC
             buf.Write(IsBlocking);
             buf.Write((byte) 0);
 
-            Debug.Assert(buf.Offset == SizeOfType<CarGenerator>());
+            Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

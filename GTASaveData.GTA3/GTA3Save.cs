@@ -13,9 +13,13 @@ namespace GTASaveData.GTA3
     public class GTA3Save : GTA3VCSave, ISaveData, IEquatable<GTA3Save>
     {
         public const int SizeOfGameInBytes = 201728;
-        public const int BufferSizePC = 55000;
-        public const int BufferSizePS2 = 50000;
         public const int MaxNumPaddingBlocks = 4;
+
+        protected override Dictionary<FileFormat, int> BufferSizes => new Dictionary<FileFormat, int>()
+        {
+            { FileFormats.PC, 55000 },
+            { FileFormats.PS2, 50000 },
+        };
 
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
@@ -167,14 +171,14 @@ namespace GTASaveData.GTA3
 
         public override string Name
         {
-            get { return SimpleVars.SaveName; }
-            set { SimpleVars.SaveName = value; OnPropertyChanged(); }
+            get { return SimpleVars.LastMissionPassedName; }
+            set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
         }
 
         public override DateTime TimeStamp
         {
-            get { return (DateTime) SimpleVars.TimeLastSaved; }
-            set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
+            get { return (DateTime) SimpleVars.TimeStamp; }
+            set { SimpleVars.TimeStamp = new SystemTime(value); OnPropertyChanged(); }
         }
 
         bool ISaveData.HasCarGenerators => true;
@@ -237,16 +241,16 @@ namespace GTASaveData.GTA3
         protected override void OnReading()
         {
             base.OnReading();
-            
-            BufferSize = (FileFormat.IsPS2) ? BufferSizePS2 : BufferSizePC;
+
+            BufferSize = BufferSizes[FileFormat];
             CreateWorkBuff();
         }
 
         protected override void OnWriting()
         {
             base.OnWriting();
-            
-            BufferSize = (FileFormat.IsPS2) ? BufferSizePS2 : BufferSizePC;
+
+            BufferSize = BufferSizes[FileFormat];
             CreateWorkBuff();
         }
 
@@ -475,7 +479,7 @@ namespace GTASaveData.GTA3
             );
 
             public static readonly FileFormat PC = new FileFormat(
-                "PC", "PC", "Windows, macOS",
+                "PC", "PC", "Windows, MacOS",
                 GameConsole.Win32,
                 GameConsole.MacOS
             );

@@ -2,6 +2,9 @@
 
 namespace GTASaveData
 {
+    /// <summary>
+    /// Supported GTA games.
+    /// </summary>
     public enum Game
     {
         [Description("GTA III")]

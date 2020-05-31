@@ -32,7 +32,7 @@ namespace GTASaveData.Core.Tests.Types
             Assert.Equal(x0.ForwardY, x1.ForwardY);
             Assert.Equal(x0.ForwardZ, x1.ForwardZ);
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
     }
 }

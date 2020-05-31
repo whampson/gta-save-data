@@ -8,10 +8,7 @@ namespace GTASaveData.GTA3
 {
     public class CarGeneratorData : SaveDataObject, ICarGeneratorData, IEquatable<CarGeneratorData>
     {
-        public static class Limits
-        {
-            public const int MaxNumCarGenerators = 160;
-        }
+        public const int MaxNumCarGenerators = 160;
 
         private const int CarGeneratorDataSize = 12;
         private const int CarGeneratorArraySize = 0x2D00;
@@ -87,7 +84,7 @@ namespace GTASaveData.GTA3
             buf.ReadInt16();
             int carGensSize = buf.ReadInt32();
             Debug.Assert(carGensSize == CarGeneratorArraySize);
-            CarGenerators = buf.Read<CarGenerator>(Limits.MaxNumCarGenerators);
+            CarGenerators = buf.Read<CarGenerator>(MaxNumCarGenerators);
 
             Debug.Assert(buf.Offset == SizeOfType<CarGeneratorData>());
             Debug.Assert(size == SizeOfType<CarGeneratorData>() - GTA3VCSave.BlockHeaderSize);
@@ -104,7 +101,7 @@ namespace GTASaveData.GTA3
             buf.Write(GenerateEvenIfPlayerIsCloseCounter);
             buf.Write((short) 0);
             buf.Write(CarGeneratorArraySize);
-            buf.Write(CarGenerators.ToArray(), Limits.MaxNumCarGenerators);
+            buf.Write(CarGenerators.ToArray(), MaxNumCarGenerators);
 
             Debug.Assert(buf.Offset == SizeOfType<CarGeneratorData>());
         }

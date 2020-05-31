@@ -7,13 +7,10 @@ namespace GTASaveData.GTA3
 {
     public class SimpleVariables : SaveDataObject, IEquatable<SimpleVariables>
     {
-        public static class Limits
-        {
-            public const int MaxNameLength = 24;
-        }
+        public const int MaxMissionPassedNameLength = 24;
 
         private string m_lastMissionPassedName;
-        private SystemTime m_timeLastSaved;
+        private SystemTime m_timeStamp;
         private Level m_currLevel;
         private Vector3D m_cameraPosition;
         private int m_millisecondsPerGameMinute;
@@ -38,16 +35,16 @@ namespace GTASaveData.GTA3
         private float m_cameraCarZoomIndicator;
         private float m_cameraPedZoomIndicator;
 
-        public string SaveName
+        public string LastMissionPassedName
         {
             get { return m_lastMissionPassedName; }
             set { m_lastMissionPassedName = value; OnPropertyChanged(); }
         }
 
-        public SystemTime TimeLastSaved
+        public SystemTime TimeStamp
         {
-            get { return m_timeLastSaved; }
-            set { m_timeLastSaved = value; OnPropertyChanged(); }
+            get { return m_timeStamp; }
+            set { m_timeStamp = value; OnPropertyChanged(); }
         }
 
         public Level CurrLevel
@@ -194,13 +191,13 @@ namespace GTASaveData.GTA3
 
         public SimpleVariables()
         {
-            SaveName = "";
+            LastMissionPassedName = "";
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            SaveName = buf.ReadString(Limits.MaxNameLength, unicode: true);
-            TimeLastSaved = buf.Read<SystemTime>();
+            LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
+            TimeStamp = buf.Read<SystemTime>();
             buf.ReadInt32();
             CurrLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.Read<Vector3D>();
@@ -237,8 +234,8 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            buf.Write(SaveName, Limits.MaxNameLength, unicode: true);
-            buf.Write(TimeLastSaved);
+            buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
+            buf.Write(TimeStamp);
             buf.Write(GTA3Save.SizeOfGameInBytes + 1);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
@@ -295,8 +292,8 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return SaveName.Equals(other.SaveName)
-                && TimeLastSaved.Equals(other.TimeLastSaved)
+            return LastMissionPassedName.Equals(other.LastMissionPassedName)
+                && TimeStamp.Equals(other.TimeStamp)
                 && CurrLevel.Equals(other.CurrLevel)
                 && CameraPosition.Equals(other.CameraPosition)
                 && MillisecondsPerGameMinute.Equals(other.MillisecondsPerGameMinute)
@@ -331,7 +328,6 @@ namespace GTASaveData.GTA3
         Italian,
         Spanish,
         Japanese,
-        Korean
     }
 
     public enum Level
