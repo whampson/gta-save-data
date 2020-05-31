@@ -28,7 +28,7 @@ namespace TestApp
 
         private GTASaveData.SaveData m_currentSaveFile;
         private FileFormat m_currentFileFormat;
-        private GameType m_selectedGame;
+        private Game m_selectedGame;
         private int m_selectedBlockIndex;
         private bool m_autoDetectFileType;
         private bool m_showEntireFile;
@@ -47,7 +47,7 @@ namespace TestApp
             set { m_currentFileFormat = value; OnPropertyChanged(); }
         }
 
-        public GameType SelectedGame
+        public Game SelectedGame
         {
             get { return m_selectedGame; }
             set { m_selectedGame = value; OnPopulateFileTypeList(); OnPropertyChanged(); }
@@ -170,8 +170,8 @@ namespace TestApp
         {
             switch (SelectedGame)
             {
-                case GameType.GTA3: DoLoad<GTA3Save>(path); break;
-                case GameType.VC: DoLoad<ViceCitySave>(path); break;
+                case Game.GTA3: DoLoad<GTA3Save>(path); break;
+                case Game.VC: DoLoad<ViceCitySave>(path); break;
                 //case GameType.SA: DoLoad<SanAndreasSave>(path); break;
                 //case GameType.LCS: DoLoad<LibertyCityStoriesSave>(path); break;
                 //case GameType.VCS: DoLoad<ViceCityStoriesSave>(path); break;
@@ -241,8 +241,8 @@ namespace TestApp
         {
             switch (SelectedGame)
             {
-                case GameType.GTA3: return GTA3Save.FileFormats.GetAll();
-                case GameType.VC: return ViceCitySave.FileFormats.GetAll();
+                case Game.GTA3: return GTA3Save.FileFormats.GetAll();
+                case Game.VC: return ViceCitySave.FileFormats.GetAll();
                 //case GameType.SA: return SanAndreasSave.FileFormats.GetAll();
             }
 
@@ -307,10 +307,10 @@ namespace TestApp
             }
         }
 
-        public static Dictionary<GameType, string[]> BlockNames => new Dictionary<GameType, string[]>()
+        public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
         {
-            { GameType.GTA3, Enum.GetNames(typeof(IIIBlock)) },
-            { GameType.VC, Enum.GetNames(typeof(VCBlock)) },
+            { Game.GTA3, Enum.GetNames(typeof(IIIBlock)) },
+            { Game.VC, Enum.GetNames(typeof(VCBlock)) },
             //{ GameType.SA, Enum.GetNames(typeof(SABlock)) },
             //{ GameType.IV, Enum.GetNames(typeof(IVBlock)) },
         };

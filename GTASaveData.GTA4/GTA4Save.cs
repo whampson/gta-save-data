@@ -583,18 +583,18 @@ namespace GTASaveData.GTA4
         {
             public static readonly FileFormat PC = new FileFormat(
                 "PC", "PC", "Windows",
-                new GameConsole(ConsoleType.Win32),
-                new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam)
+                new GameConsole(GameConsoleType.Win32),
+                new GameConsole(GameConsoleType.Win32, ConsoleFlags.Steam)
             );
 
             public static readonly FileFormat PS3 = new FileFormat(
                 "PS3", "PS3", "PlayStation 3",
-                new GameConsole(ConsoleType.PS3)
+                new GameConsole(GameConsoleType.PS3)
             );
 
             public static readonly FileFormat Xbox360 = new FileFormat(
                 "Xbox360", "Xbox 360", "Xbox 360",
-                new GameConsole(ConsoleType.Xbox360)
+                new GameConsole(GameConsoleType.Xbox360)
             );
 
             public static FileFormat[] GetAll()

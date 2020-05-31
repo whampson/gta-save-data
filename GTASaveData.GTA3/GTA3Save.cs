@@ -353,11 +353,13 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            int blk1Size;   // TODO: use another metric as block 1 can change sizes in rare circumstances
+            int blk1Size;
+            //int numPlayerPeds;
             using (StreamBuffer wb = new StreamBuffer(data))
             {
                 wb.Skip(wb.ReadInt32());
                 blk1Size = wb.ReadInt32();
+                wb.ReadInt32();
             }
 
             if (scr == 0xB0 && fileId == 0x04)
@@ -374,7 +376,7 @@ namespace GTASaveData.GTA3
                 }
                 else if (fileId == 0x04)
                 {
-                    fmt = FileFormats.PS2_NAEU;
+                    fmt = FileFormats.PS2;
                     return true;
                 }
                 else if (fileId == 0x34)
@@ -462,55 +464,45 @@ namespace GTASaveData.GTA3
         public static class FileFormats
         {
             public static readonly FileFormat Android = new FileFormat(
-                "Android", "Android", "Android",
-                new GameConsole(ConsoleType.Android)
+                "Android", GameConsole.Android
             );
 
             public static readonly FileFormat iOS = new FileFormat(
-                "iOS", "iOS", "iOS",
-                new GameConsole(ConsoleType.iOS)
+                "iOS", GameConsole.iOS
             );
 
             public static readonly FileFormat PC = new FileFormat(
                 "PC", "PC", "Windows, macOS",
-                new GameConsole(ConsoleType.Win32),
-                new GameConsole(ConsoleType.MacOS)
+                GameConsole.Win32,
+                GameConsole.MacOS
+            );
+
+            public static readonly FileFormat PS2 = new FileFormat(
+                "PS2", "PS2", "PlayStation 2 (North America/Europe)",
+                GameConsole.PS2
             );
 
             public static readonly FileFormat PS2_AU = new FileFormat(
-                "PS2_AU", "PS2 (Australia)", "PlayStation 2 (PAL Australia)",
-                new GameConsole(ConsoleType.PS2, ConsoleFlags.Australia)
+                "PS2_AU", "PS2 (Australia)", "PlayStation 2 (Australia)",
+                FileFormatFlags.Australian,
+                GameConsole.PS2
             );
 
             public static readonly FileFormat PS2_JP = new FileFormat(
-                "PS2_JP", "PS2 (Japan)", "PlayStation 2 (NTSC-J)",
-                new GameConsole(ConsoleType.PS2, ConsoleFlags.Japan)
-            );
-
-            public static readonly FileFormat PS2_NAEU = new FileFormat(
-                "PS2_NAEU", "PS2", "PlayStation 2 (NTSC-U/C, PAL Europe)",
-                new GameConsole(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe)
+                "PS2_JP", "PS2 (Japan)", "PlayStation 2 (Japan)",
+                FileFormatFlags.Japanese,
+                GameConsole.PS2
             );
 
             public static readonly FileFormat Xbox = new FileFormat(
-                "Xbox", "Xbox", "Xbox",
-                new GameConsole(ConsoleType.Xbox)
+                "Xbox",
+                GameConsole.Xbox
             );
 
             public static FileFormat[] GetAll()
             {
-                return new FileFormat[] { Android, iOS, PC, PS2_AU, PS2_JP, PS2_NAEU, Xbox };
+                return new FileFormat[] { Android, iOS, PC, PS2, PS2_AU, PS2_JP, Xbox };
             }
-        }
-
-        public static bool IsAusrtalianPS2(FileFormat fmt)
-        {
-            return fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Australia);
-        }
-
-        public static bool IsJapanesePS2(FileFormat fmt)
-        {
-            return fmt.IsSupportedOn(ConsoleType.PS2, ConsoleFlags.Japan);
         }
     }
 

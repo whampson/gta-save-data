@@ -9,10 +9,10 @@
     <Product>GTASaveData</Product>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
     <Description>A .NET library for manipulating Grand Theft Auto: Vice City save files.</Description>
-    <AssemblyVersion>0.1.0.313</AssemblyVersion>
-    <FileVersion>0.1.0.313</FileVersion>
+    <AssemblyVersion>0.1.0.314</AssemblyVersion>
+    <FileVersion>0.1.0.314</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.1.1-alpha-04</Version>
+    <Version>0.1.1-alpha-05</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 

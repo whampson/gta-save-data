@@ -81,7 +81,7 @@ namespace TestApp
         {
             if (sender is MenuItem mi)
             {
-                if (mi.DataContext is GameType game)
+                if (mi.DataContext is Game game)
                 {
                     ViewModel.SelectedGame = game;
                 }

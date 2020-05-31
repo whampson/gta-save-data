@@ -43,7 +43,7 @@ namespace GTASaveData.GTA3.Tests
         [MemberData(nameof(TestFiles))]
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
-            string path = TestData.GetTestDataPath(GameType.GTA3, expectedFormat, filename);
+            string path = TestData.GetTestDataPath(Game.GTA3, expectedFormat, filename);
             SaveData.GetFileFormat<GTA3Save>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
@@ -67,7 +67,7 @@ namespace GTASaveData.GTA3.Tests
         [MemberData(nameof(TestFiles))]
         public void RealDataSerialization(FileFormat format, string filename)
         {
-            string path = TestData.GetTestDataPath(GameType.GTA3, format, filename);
+            string path = TestData.GetTestDataPath(Game.GTA3, format, filename);
 
             using GTA3Save x0 = SaveData.Load<GTA3Save>(path, format);
             using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -82,7 +82,7 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void BlockBounds()
         {
-            string path = TestData.GetTestDataPath(GameType.GTA3, GTA3Save.FileFormats.PC, "CAT2");
+            string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileFormats.PC, "CAT2");
             byte[] data = File.ReadAllBytes(path);
 
             // Fudge the block size

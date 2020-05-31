@@ -685,26 +685,26 @@ namespace GTASaveData.SA
             // TODO: 1.05 and 1.06 different?
             public static readonly FileFormat Mobile = new FileFormat(
                 "Mobile", "Mobile", "Android, iOS",
-                new GameConsole(ConsoleType.Android),
-                new GameConsole(ConsoleType.iOS)
+                new GameConsole(GameConsoleType.Android),
+                new GameConsole(GameConsoleType.iOS)
             );
 
             public static readonly FileFormat PC = new FileFormat(
                 "PC", "PC", "Windows, macOS",
-                new GameConsole(ConsoleType.Win32),
-                new GameConsole(ConsoleType.MacOS),
-                new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam),
-                new GameConsole(ConsoleType.MacOS, ConsoleFlags.Steam)
+                new GameConsole(GameConsoleType.Win32),
+                new GameConsole(GameConsoleType.MacOS),
+                new GameConsole(GameConsoleType.Win32, ConsoleFlags.Steam),
+                new GameConsole(GameConsoleType.MacOS, ConsoleFlags.Steam)
             );
 
             public static readonly FileFormat PS2 = new FileFormat(
                 "PS2", "PS2", "PlayStation 2",
-                new GameConsole(ConsoleType.PS2)
+                new GameConsole(GameConsoleType.PS2)
             );
 
             public static readonly FileFormat Xbox = new FileFormat(
                 "Xbox", "Xbox", "Xbox",
-                new GameConsole(ConsoleType.Xbox)
+                new GameConsole(GameConsoleType.Xbox)
             );
 
             public static FileFormat[] GetAll()

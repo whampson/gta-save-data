@@ -44,7 +44,7 @@ namespace GTASaveData.VC.Tests
         [MemberData(nameof(TestFiles))]
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
-            string path = TestData.GetTestDataPath(GameType.VC, expectedFormat, filename);
+            string path = TestData.GetTestDataPath(Game.VC, expectedFormat, filename);
             SaveData.GetFileFormat<ViceCitySave>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
@@ -68,7 +68,7 @@ namespace GTASaveData.VC.Tests
         [MemberData(nameof(TestFiles))]
         public void RealDataSerialization(FileFormat format, string filename)
         {
-            string path = TestData.GetTestDataPath(GameType.VC, format, filename);
+            string path = TestData.GetTestDataPath(Game.VC, format, filename);
 
             using ViceCitySave x0 = SaveData.Load<ViceCitySave>(path, format);
             using ViceCitySave x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -83,7 +83,7 @@ namespace GTASaveData.VC.Tests
         [Fact]
         public void BlockSizeExceeded()
         {
-            string path = TestData.GetTestDataPath(GameType.VC, ViceCitySave.FileFormats.PC_Retail, "COK_2");
+            string path = TestData.GetTestDataPath(Game.VC, ViceCitySave.FileFormats.PC_Retail, "COK_2");
             byte[] data = File.ReadAllBytes(path);
 
             using ViceCitySave x = new ViceCitySave()

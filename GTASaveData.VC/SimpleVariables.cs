@@ -365,7 +365,7 @@ namespace GTASaveData.VC
 
         public static bool IsSteamWin32(FileFormat fmt)
         {
-            return fmt.IsSupportedOn(ConsoleType.Win32, ConsoleFlags.Steam);
+            return fmt.IsSupportedOn(GameConsoleType.Win32, ConsoleFlags.Steam);
         }
 
         public override bool Equals(object obj)

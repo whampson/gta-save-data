@@ -471,33 +471,33 @@ namespace GTASaveData.VC
         {
             public static readonly FileFormat Android = new FileFormat(
                 "Android", "Android", "Android",
-                new GameConsole(ConsoleType.Android)
+                new GameConsole(GameConsoleType.Android)
             );
 
             public static readonly FileFormat iOS = new FileFormat(
                 "iOS", "iOS", "iOS",
-                new GameConsole(ConsoleType.iOS)
+                new GameConsole(GameConsoleType.iOS)
             );
 
             public static readonly FileFormat PC_Retail = new FileFormat(
                 "PC_Retail", "PC", "Windows (Retail Version), macOS",
-                new GameConsole(ConsoleType.Win32),
-                new GameConsole(ConsoleType.MacOS)
+                new GameConsole(GameConsoleType.Win32),
+                new GameConsole(GameConsoleType.MacOS)
             );
 
             public static readonly FileFormat PC_Steam = new FileFormat(
                 "PC_Steam", "PC (Steam)", "Windows (Steam Version)",
-                new GameConsole(ConsoleType.Win32, ConsoleFlags.Steam)
+                new GameConsole(GameConsoleType.Win32, ConsoleFlags.Steam)
             );
 
             public static readonly FileFormat PS2 = new FileFormat(
                 "PS2", "PS2", "PlayStation 2",
-                new GameConsole(ConsoleType.PS2)
+                new GameConsole(GameConsoleType.PS2)
             );
 
             public static readonly FileFormat Xbox = new FileFormat(
                 "Xbox", "Xbox", "Xbox",
-                new GameConsole(ConsoleType.Xbox)
+                new GameConsole(GameConsoleType.Xbox)
             );
 
             public static FileFormat[] GetAll()

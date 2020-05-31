@@ -4,6 +4,10 @@ using System.Linq;
 
 namespace GTASaveData
 {
+    /// <summary>
+    /// Represents a GTA savedata file format using a <see cref="GameConsole"/>
+    /// and <see cref="FileFormatFlags"/> combination.
+    /// </summary>
     public struct FileFormat : IEquatable<FileFormat>
     {
         public static readonly FileFormat Default = new FileFormat("", "", "");
@@ -11,29 +15,51 @@ namespace GTASaveData
         private readonly string m_id;
         private readonly string m_name;
         private readonly string m_description;
+        private readonly FileFormatFlags m_flags;
         private readonly IEnumerable<GameConsole> m_supportedConsoles;
 
         public string Id => m_id ?? "";
         public string Name => m_name ?? "";
         public string Description => m_description ?? "";
+        public FileFormatFlags Flags => m_flags;
         public IEnumerable<GameConsole> SupportedConsoles => m_supportedConsoles ?? new List<GameConsole>();
-        public bool IsAndroid => IsSupportedOn(ConsoleType.Android);
-        public bool IsiOS => IsSupportedOn(ConsoleType.iOS);
-        public bool IsMacOS => IsSupportedOn(ConsoleType.MacOS);
-        public bool IsMobile => IsAndroid || IsiOS;
-        public bool IsPC => IsMacOS || IsWin32;
-        public bool IsPS2 => IsSupportedOn(ConsoleType.PS2);
-        public bool IsPS3 => IsSupportedOn(ConsoleType.PS3);
-        public bool IsPSP => IsSupportedOn(ConsoleType.PSP);
-        public bool IsWin32 => IsSupportedOn(ConsoleType.Win32);
-        public bool IsXbox => IsSupportedOn(ConsoleType.Xbox);
-        public bool IsXbox360 => IsSupportedOn(ConsoleType.Xbox360);
 
-        public FileFormat(string id, string name, string description, params GameConsole[] supportedConsoles)
+        public bool IsAndroid => IsSupportedOn(GameConsole.Android);
+        public bool IsiOS => IsSupportedOn(GameConsole.iOS);
+        public bool IsMobile => IsAndroid || IsiOS;
+        public bool IsPS2 => IsSupportedOn(GameConsole.PS2);
+        public bool IsPS3 => IsSupportedOn(GameConsole.PS3);
+        public bool IsPSP => IsSupportedOn(GameConsole.PSP);
+        public bool IsXbox => IsSupportedOn(GameConsole.Xbox);
+        public bool IsXbox360 => IsSupportedOn(GameConsole.Xbox360);
+        public bool IsWin32 => IsSupportedOn(GameConsole.Win32);
+        public bool IsMacOS => IsSupportedOn(GameConsole.MacOS);
+        public bool IsPC => IsMacOS || IsWin32;
+
+        public bool IsSteam => HasFlag(FileFormatFlags.Steam);
+        public bool IsAustralian => HasFlag(FileFormatFlags.Australian);
+        public bool IsJapanese => HasFlag(FileFormatFlags.Japanese);
+
+        public FileFormat(string name, GameConsole console)
+            : this(name, name, name, FileFormatFlags.None, console)
+        { }
+
+        public FileFormat(string name, FileFormatFlags flags, GameConsole console)
+            : this(name, name, name, flags, console)
+        { }
+
+        public FileFormat(string id, string name, string description,
+            params GameConsole[] supportedConsoles)
+            : this(id, name, description, FileFormatFlags.None, supportedConsoles)
+        { }
+
+        public FileFormat(string id, string name, string description, FileFormatFlags flags,
+            params GameConsole[] supportedConsoles)
         {
             m_id = id;
             m_name = name;
             m_description = description;
+            m_flags = flags;
             m_supportedConsoles = new List<GameConsole>(supportedConsoles);
         }
 
@@ -42,9 +68,9 @@ namespace GTASaveData
             return SupportedConsoles.Contains(c);
         }
 
-        public bool IsSupportedOn(ConsoleType c, ConsoleFlags flags = ConsoleFlags.None)
+        public bool HasFlag(FileFormatFlags f)
         {
-            return SupportedConsoles.Any(x => x.Type == c && x.Flags.HasFlag(flags));
+            return Flags.HasFlag(f);
         }
 
         public override int GetHashCode()
@@ -54,6 +80,7 @@ namespace GTASaveData
             {
                 hash += 23 * c.GetHashCode();
             }
+            hash += 23 * Flags.GetHashCode();
 
             return hash;
         }
@@ -69,7 +96,9 @@ namespace GTASaveData
 
         public bool Equals(FileFormat other)
         {
-            return SupportedConsoles.SequenceEqual(other.SupportedConsoles);
+            // Deliberately ignoring Id/Name/Description
+            return SupportedConsoles.SequenceEqual(other.SupportedConsoles)
+                && Flags.Equals(other.Flags);
         }
 
         public override string ToString()
@@ -86,5 +115,34 @@ namespace GTASaveData
         {
             return !left.Equals(right);
         }
+    }
+
+    /// <summary>
+    /// Flags representing variations on file formats for a given console.
+    /// </summary>
+    [Flags]
+    public enum FileFormatFlags
+    {
+        None = 0,
+        Steam = 1 << 0,
+        Japanese = 1 << 1,
+        Australian = 1 << 2
+    }
+
+    /// <summary>
+    /// Game consoles that support GTA games.
+    /// </summary>
+    public enum GameConsole
+    {
+        None,
+        Android,
+        iOS,
+        PS2,
+        PS3,
+        PSP,
+        Xbox,
+        Xbox360,
+        Win32,      // I know, I know, PCs aren't consoles...
+        MacOS,
     }
 }
