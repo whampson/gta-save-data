@@ -46,7 +46,7 @@ namespace GTASaveData.GTA3
             Position = buf.Read<Vector3D>();
             AudioEntity = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOf<AudioScriptObject>());
+            Debug.Assert(buf.Offset == SizeOfType<AudioScriptObject>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -57,7 +57,7 @@ namespace GTASaveData.GTA3
             buf.Write(Position);
             buf.Write(AudioEntity);
 
-            Debug.Assert(buf.Offset == SizeOf<AudioScriptObject>());
+            Debug.Assert(buf.Offset == SizeOfType<AudioScriptObject>());
         }
 
         protected override int GetSize(FileFormat fmt)

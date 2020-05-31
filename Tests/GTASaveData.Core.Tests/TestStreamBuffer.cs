@@ -24,16 +24,16 @@ namespace GTASaveData.Core.Tests
             using (StreamBuffer wb = new StreamBuffer())
             {
                 wb.Write(b0);
-                wb.Align4Bytes();
+                wb.Align4();
                 wb.Write(i0);
                 wb.Write(f0);
-                data = wb.GetAllBytes();
+                data = wb.GetBufferBytes();
             }
 
             using (StreamBuffer wb = new StreamBuffer(data))
             {
                 b1 = wb.ReadBool();
-                wb.Align4Bytes();
+                wb.Align4();
                 i1 = wb.ReadInt32();
                 f1 = wb.ReadFloat();
             }
@@ -42,6 +42,44 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(i0, i1);
             Assert.Equal(f0, f1);
             Assert.Equal(12, data.Length);
+        }
+
+        [Theory]
+        [InlineData(PaddingType.Zero, null)]
+        [InlineData(PaddingType.Random, null)]
+        [InlineData(PaddingType.Pattern, new byte[] { 0 })]
+        [InlineData(PaddingType.Pattern, new byte[] { 0xCA, 0xFE, 0xBA, 0xBE })]
+        public void Padding(PaddingType mode, byte[] seq)
+        {
+            byte[] data;
+            using (StreamBuffer wb = new StreamBuffer() { PaddingType = mode, PaddingBytes = seq })
+            {
+                wb.Pad(100);
+                data = wb.GetBufferBytes();
+                Assert.True(data.Length > 0);
+            }
+
+            switch (mode)
+            {
+                case PaddingType.Zero:
+                {
+                    Assert.Equal(0, data.Sum(x => x));
+                    break;
+                }
+                case PaddingType.Random:
+                {
+                    Assert.NotEqual(0, data.Sum(x => x));
+                    break;
+                }
+                case PaddingType.Pattern:
+                {
+                    for (int i = 0; i < data.Length; i++)
+                    {
+                        Assert.Equal(seq[i % seq.Length], data[i]);
+                    }
+                    break;
+                }
+            }
         }
 
         [Theory]
@@ -80,7 +118,7 @@ namespace GTASaveData.Core.Tests
             using (StreamBuffer wb = new StreamBuffer())
             {
                 wb.Write(x0, numBytes);
-                data = wb.GetAllBytes();
+                data = wb.GetBufferBytes();
             }
 
             using (StreamBuffer wb = new StreamBuffer(data))
@@ -168,7 +206,7 @@ namespace GTASaveData.Core.Tests
             using (StreamBuffer wb = new StreamBuffer())
             {
                 wb.Write(x0, true);
-                data = wb.GetAllBytes();
+                data = wb.GetBufferBytes();
             }
 
             using (StreamBuffer wb = new StreamBuffer(data))
@@ -319,15 +357,7 @@ namespace GTASaveData.Core.Tests
             TestObject x1 = Serializer.Read<TestObject>(data);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(Serializer.SizeOf<TestObject>(), data.Length);
-        }
-
-        [Fact]
-        public void NonSerializableObject()
-        {
-            TestObject2 x = new TestObject2();
-
-            Assert.Throws<SerializationException>(() => Serializer.Write(x));
+            Assert.Equal(Serializer.SizeOfType<TestObject>(), data.Length);
         }
 
         [Fact]
@@ -470,7 +500,7 @@ namespace GTASaveData.Core.Tests
 
             Assert.Equal(count, x1.Length);
             Assert.Equal(x0, x1);
-            Assert.Equal(Serializer.SizeOf<TestObject>() * count, data.Length);
+            Assert.Equal(Serializer.SizeOfType<TestObject>() * count, data.Length);
         }
 
         [Theory]
@@ -488,7 +518,7 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(initialCount, x0.Length);
             Assert.Equal(expectedCount, x1.Length);
             Assert.Equal(x0.Take(Math.Min(bufferCount, initialCount)), x1.Take(Math.Min(bufferCount, initialCount)));
-            Assert.Equal(Serializer.SizeOf<TestObject>() * bufferCount, data.Length);
+            Assert.Equal(Serializer.SizeOfType<TestObject>() * bufferCount, data.Length);
         }
 
         [Fact]
@@ -505,6 +535,45 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(count, x1.Length);
             Assert.Equal(x0, x1);
             Assert.Equal(numBytes * count, data.Length);
+        }
+
+        [Fact]
+        public void ArrayWithNullItem()
+        {
+            Faker f = new Faker();
+            int count = f.Random.Int(1, 10);
+
+            TestObject[] x0 = Generator.Array(count, g => TestObject.Generate());
+            x0[count - 1] = null;
+            Assert.Throws<ArgumentNullException>(() => ArrayToBytes(x0));
+        }
+
+        [Fact]
+        public void NullObject()
+        {
+            TestObject x = null;
+            Assert.Throws<ArgumentNullException>(() => Serializer.Write(x));
+        }
+
+        [Fact]
+        public void NullString()
+        {
+            string x = null;
+            Assert.Throws<ArgumentNullException>(() => Serializer.Write(x));
+        }
+
+        [Fact]
+        public void NullArray()
+        {
+            TestObject[] x = null;
+            Assert.Throws<ArgumentNullException>(() => Serializer.Write(x));
+        }
+
+        [Fact]
+        public void NonSerializableObject()
+        {
+            TestObject2 x = new TestObject2();
+            Assert.Throws<NotSupportedException>(() => Serializer.Write(x));
         }
 
         #region Test Objects
@@ -586,7 +655,7 @@ namespace GTASaveData.Core.Tests
             using (StreamBuffer wb = new StreamBuffer())
             {
                 wb.Write(x, length, unicode, zeroTerminate);
-                return wb.GetAllBytes();
+                return wb.GetBufferBytes();
             }
         }
 
@@ -607,7 +676,7 @@ namespace GTASaveData.Core.Tests
             using (StreamBuffer wb = new StreamBuffer())
             {
                 wb.Write(items, count, itemLength, unicode);
-                return wb.GetAllBytes();
+                return wb.GetBufferBytes();
             }
         }
 

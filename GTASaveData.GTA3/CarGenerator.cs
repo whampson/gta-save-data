@@ -176,7 +176,7 @@ namespace GTASaveData.GTA3
             CollisionBoundingMax = buf.Read<Vector3D>();
             CollisionSize = buf.ReadFloat();
 
-            Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
+            Debug.Assert(buf.Offset == SizeOfType<CarGenerator>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -201,7 +201,7 @@ namespace GTASaveData.GTA3
             buf.Write(CollisionBoundingMax);
             buf.Write(CollisionSize);
 
-            Debug.Assert(buf.Offset == SizeOf<CarGenerator>());
+            Debug.Assert(buf.Offset == SizeOfType<CarGenerator>());
         }
 
         protected override int GetSize(FileFormat fmt)

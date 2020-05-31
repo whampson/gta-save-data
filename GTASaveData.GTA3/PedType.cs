@@ -76,7 +76,7 @@ namespace GTASaveData.GTA3
             Threats = (PedTypeFlags) buf.ReadInt32();
             Avoid = (PedTypeFlags) buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOf<PedType>());
+            Debug.Assert(buf.Offset == SizeOfType<PedType>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -90,7 +90,7 @@ namespace GTASaveData.GTA3
             buf.Write((int) Threats);
             buf.Write((int) Avoid);
 
-            Debug.Assert(buf.Offset == SizeOf<PedType>());
+            Debug.Assert(buf.Offset == SizeOfType<PedType>());
         }
 
         protected override int GetSize(FileFormat fmt)

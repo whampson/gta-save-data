@@ -252,9 +252,9 @@ namespace GTASaveData.GTA3
             IsMilitaryCrane = buf.ReadBool();
             WasMilitaryCrane = buf.ReadBool();
             IsTop = buf.ReadBool();
-            buf.Align4Bytes();
+            buf.Align4();
 
-            Debug.Assert(buf.Offset == SizeOf<Crane>());
+            Debug.Assert(buf.Offset == SizeOfType<Crane>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -289,9 +289,9 @@ namespace GTASaveData.GTA3
             buf.Write(IsMilitaryCrane);
             buf.Write(WasMilitaryCrane);
             buf.Write(IsTop);
-            buf.Align4Bytes();
+            buf.Align4();
 
-            Debug.Assert(buf.Offset == SizeOf<Crane>());
+            Debug.Assert(buf.Offset == SizeOfType<Crane>());
         }
 
         protected override int GetSize(FileFormat fmt)

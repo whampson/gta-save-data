@@ -67,7 +67,7 @@ namespace GTASaveData.GTA4
             set { m_lastMissionPassedName = value; OnPropertyChanged(); }
         }
 
-        public override DateTime TimeLastSaved
+        public override DateTime TimeStamp
         {
             get { return m_timeLastSaved; }
             set { m_timeLastSaved = value; OnPropertyChanged(); }
@@ -396,7 +396,7 @@ namespace GTASaveData.GTA4
 
             if (FileFormat.IsWin32)
             {
-                int size = m_file.Length - m_file.Cursor;
+                int size = m_file.Length - m_file.Position;
                 GfwlData = new Dummy(m_file.ReadBytes(size));
             }
         }
@@ -407,7 +407,7 @@ namespace GTASaveData.GTA4
             int size = m_file.ReadInt32();
             Debug.Assert(sig == "BLOCK", "Invalid 'BLOCK' signature!");
 
-            m_file.MarkCurrentPosition();
+            m_file.Mark();
             T obj = m_file.Read<T>();
             Debug.Assert(m_file.Offset == size - 9);
 
@@ -425,7 +425,7 @@ namespace GTASaveData.GTA4
             int size = m_file.ReadInt32();
             Debug.Assert(sig == "BLOCK", "Invalid 'BLOCK' signature!");
             
-            m_file.MarkCurrentPosition();
+            m_file.Mark();
             byte[] data = m_file.ReadBytes(size - 9);
             Debug.Assert(m_file.Offset == size - 9);
             

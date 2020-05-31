@@ -31,7 +31,7 @@ namespace GTASaveData.GTA3
             Position = buf.Read<Vector3D>();
             Angle = buf.ReadFloat();
 
-            Debug.Assert(buf.Offset == SizeOf<RestartPoint>());
+            Debug.Assert(buf.Offset == SizeOfType<RestartPoint>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -39,7 +39,7 @@ namespace GTASaveData.GTA3
             buf.Write(Position);
             buf.Write(Angle);
 
-            Debug.Assert(buf.Offset == SizeOf<RestartPoint>());
+            Debug.Assert(buf.Offset == SizeOfType<RestartPoint>());
         }
 
         protected override int GetSize(FileFormat fmt)

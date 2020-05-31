@@ -197,7 +197,7 @@ namespace GTASaveData.VC
         }
 
         [JsonIgnore]
-        public override DateTime TimeLastSaved
+        public override DateTime TimeStamp
         {
             get { return (DateTime) SimpleVars.TimeLastSaved; }
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
@@ -288,31 +288,31 @@ namespace GTASaveData.VC
 
             totalSize += ReadBlock(file);
             LoadSimpleVars();
-            Scripts = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); PedPool = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); Garages = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); GameLogic = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); VehiclePool = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); ObjectPool = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); Paths = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); Cranes = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); Pickups = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); PhoneInfo = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); RestartPoints = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); RadarBlips = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); Zones = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); Gangs = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); CarGenerators = Load<CarGeneratorData>();
-            totalSize += ReadBlock(file); ParticleObjects = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); AudioScriptObjects = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); ScriptPaths = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); PlayerInfo = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); Stats = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); SetPieces = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); Streaming = LoadPreAlloc<Dummy>();
-            totalSize += ReadBlock(file); PedTypeInfo = LoadPreAlloc<Dummy>();
+            Scripts = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); PedPool = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Garages = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); GameLogic = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); VehiclePool = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); ObjectPool = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Paths = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Cranes = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Pickups = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); PhoneInfo = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); RestartPoints = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); RadarBlips = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Zones = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Gangs = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); CarGenerators = LoadType<CarGeneratorData>();
+            totalSize += ReadBlock(file); ParticleObjects = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); AudioScriptObjects = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); ScriptPaths = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); PlayerInfo = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Stats = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); SetPieces = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); Streaming = LoadTypePreAlloc<Dummy>();
+            totalSize += ReadBlock(file); PedTypeInfo = LoadTypePreAlloc<Dummy>();
 
-            while (file.Cursor < file.Length - 4)
+            while (file.Position < file.Length - 4)
             {
                 totalSize += ReadBlock(file);
             }
@@ -331,43 +331,43 @@ namespace GTASaveData.VC
             CheckSum = 0;
 
             SaveSimpleVars();
-            Save(Scripts); totalSize += WriteBlock(file);
-            Save(PedPool); totalSize += WriteBlock(file);
-            Save(Garages); totalSize += WriteBlock(file);
-            Save(GameLogic); totalSize += WriteBlock(file);
-            Save(VehiclePool); totalSize += WriteBlock(file);
-            Save(ObjectPool); totalSize += WriteBlock(file);
-            Save(Paths); totalSize += WriteBlock(file);
-            Save(Cranes); totalSize += WriteBlock(file);
-            Save(Pickups); totalSize += WriteBlock(file);
-            Save(PhoneInfo); totalSize += WriteBlock(file);
-            Save(RestartPoints); totalSize += WriteBlock(file);
-            Save(RadarBlips); totalSize += WriteBlock(file);
-            Save(Zones); totalSize += WriteBlock(file);
-            Save(Gangs); totalSize += WriteBlock(file);
-            Save(CarGenerators); totalSize += WriteBlock(file);
-            Save(ParticleObjects); totalSize += WriteBlock(file);
-            Save(AudioScriptObjects); totalSize += WriteBlock(file);
-            Save(ScriptPaths); totalSize += WriteBlock(file);
-            Save(PlayerInfo); totalSize += WriteBlock(file);
-            Save(Stats); totalSize += WriteBlock(file);
-            Save(SetPieces); totalSize += WriteBlock(file);
-            Save(Streaming); totalSize += WriteBlock(file);
-            Save(PedTypeInfo); totalSize += WriteBlock(file);
+            SaveObject(Scripts); totalSize += WriteBlock(file);
+            SaveObject(PedPool); totalSize += WriteBlock(file);
+            SaveObject(Garages); totalSize += WriteBlock(file);
+            SaveObject(GameLogic); totalSize += WriteBlock(file);
+            SaveObject(VehiclePool); totalSize += WriteBlock(file);
+            SaveObject(ObjectPool); totalSize += WriteBlock(file);
+            SaveObject(Paths); totalSize += WriteBlock(file);
+            SaveObject(Cranes); totalSize += WriteBlock(file);
+            SaveObject(Pickups); totalSize += WriteBlock(file);
+            SaveObject(PhoneInfo); totalSize += WriteBlock(file);
+            SaveObject(RestartPoints); totalSize += WriteBlock(file);
+            SaveObject(RadarBlips); totalSize += WriteBlock(file);
+            SaveObject(Zones); totalSize += WriteBlock(file);
+            SaveObject(Gangs); totalSize += WriteBlock(file);
+            SaveObject(CarGenerators); totalSize += WriteBlock(file);
+            SaveObject(ParticleObjects); totalSize += WriteBlock(file);
+            SaveObject(AudioScriptObjects); totalSize += WriteBlock(file);
+            SaveObject(ScriptPaths); totalSize += WriteBlock(file);
+            SaveObject(PlayerInfo); totalSize += WriteBlock(file);
+            SaveObject(Stats); totalSize += WriteBlock(file);
+            SaveObject(SetPieces); totalSize += WriteBlock(file);
+            SaveObject(Streaming); totalSize += WriteBlock(file);
+            SaveObject(PedTypeInfo); totalSize += WriteBlock(file);
 
             for (int i = 0; i < 4; i++)
             {
-                size = StreamBuffer.Align4Bytes(SizeOfOneGameInBytes - totalSize - 4);
+                size = StreamBuffer.Align4(SizeOfOneGameInBytes - totalSize - 4);
                 if (size > BufferSize)
                 {
                     size = BufferSize;
                 }
                 if (size > 4)
                 {
-                    if (Padding != PaddingType.Default)
+                    if (PaddingType != PaddingType.Zero)
                     {
                         WorkBuff.Reset();
-                        WorkBuff.Write(GenerateSpecialPadding(size));
+                        WorkBuff.Write(GeneratePadding(size));
                     }
                     WorkBuff.Seek(size);
                     totalSize += WriteBlock(file);

@@ -47,7 +47,7 @@ namespace GTASaveData.GTA3
             buf.ReadInt16();
             PickupsCollected = buf.Read<int>(Limits.MaxNumCollectedPickups);
 
-            Debug.Assert(buf.Offset == SizeOf<PickupData>());
+            Debug.Assert(buf.Offset == SizeOfType<PickupData>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -57,7 +57,7 @@ namespace GTASaveData.GTA3
             buf.Write((short) 0);
             buf.Write(PickupsCollected.ToArray(), Limits.MaxNumCollectedPickups);
 
-            Debug.Assert(buf.Offset == SizeOf<PickupData>());
+            Debug.Assert(buf.Offset == SizeOfType<PickupData>());
         }
 
         protected override int GetSize(FileFormat fmt)

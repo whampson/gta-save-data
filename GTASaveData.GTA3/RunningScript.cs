@@ -159,21 +159,21 @@ namespace GTASaveData.GTA3
             IP = buf.ReadUInt32();
             Stack = buf.Read<int>(GetMaxStackDepth(fmt));
             StackPointer = buf.ReadUInt16();
-            buf.Align4Bytes();
+            buf.Align4();
             LocalVariables = buf.Read<int>(Limits.NumLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
             ConditionResult = buf.ReadBool();
             IsMissionScript = buf.ReadBool();
             ClearMessages = buf.ReadBool();
-            buf.Align4Bytes();
+            buf.Align4();
             WakeTime = buf.ReadUInt32();
             AndOrState = buf.ReadUInt16();
             NotFlag = buf.ReadBool();
             WastedBustedCheckEnabled = buf.ReadBool();
             WastedBustedCheckResult = buf.ReadBool();
             MissionFlag = buf.ReadBool();
-            buf.Align4Bytes();
+            buf.Align4();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
@@ -186,21 +186,21 @@ namespace GTASaveData.GTA3
             buf.Write(IP);
             buf.Write(Stack.ToArray(), GetMaxStackDepth(fmt));
             buf.Write(StackPointer);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(LocalVariables.ToArray(), Limits.NumLocalVariables);
             buf.Write(TimerA);
             buf.Write(TimerB);
             buf.Write(ConditionResult);
             buf.Write(IsMissionScript);
             buf.Write(ClearMessages);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(WakeTime);
             buf.Write(AndOrState);
             buf.Write(NotFlag);
             buf.Write(WastedBustedCheckEnabled);
             buf.Write(WastedBustedCheckResult);
             buf.Write(MissionFlag);
-            buf.Align4Bytes();
+            buf.Align4();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }

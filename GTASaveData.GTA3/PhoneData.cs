@@ -45,7 +45,7 @@ namespace GTASaveData.GTA3
             NumActivePhones = buf.ReadInt32();
             Phones = buf.Read<Phone>(Limits.MaxNumPhones);
 
-            Debug.Assert(buf.Offset == SizeOf<PhoneData>());
+            Debug.Assert(buf.Offset == SizeOfType<PhoneData>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -54,7 +54,7 @@ namespace GTASaveData.GTA3
             buf.Write(NumActivePhones);
             buf.Write(Phones.ToArray(), Limits.MaxNumPhones);
 
-            Debug.Assert(buf.Offset == SizeOf<PhoneData>());
+            Debug.Assert(buf.Offset == SizeOfType<PhoneData>());
         }
 
         protected override int GetSize(FileFormat fmt)

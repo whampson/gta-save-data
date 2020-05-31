@@ -392,7 +392,7 @@ namespace GTASaveData.SA
             VersionId = buf.ReadUInt32();
             LastMissionPassedName = buf.ReadString(Limits.MaxNameLength);
             MissionPackGame = buf.ReadByte();
-            buf.Align4Bytes();
+            buf.Align4();
             CurrLevel = (LevelType) buf.ReadInt32();
             CameraPosition = buf.Read<Vector3D>();
             MillisecondsPerGameMinute = buf.ReadInt32();
@@ -409,7 +409,7 @@ namespace GTASaveData.SA
             ClockHasBeenStored = buf.ReadBool();
             CurrPadMode = buf.ReadInt16();
             HasPlayerCheated = buf.ReadBool();
-            buf.Align4Bytes();
+            buf.Align4();
             TimeInMilliseconds = buf.ReadUInt32();
             TimeScale = buf.ReadFloat();
             TimeStep = buf.ReadFloat();
@@ -418,7 +418,7 @@ namespace GTASaveData.SA
             OldWeatherType = (WeatherType) buf.ReadInt16();
             NewWeatherType = (WeatherType) buf.ReadInt16();
             ForcedWeatherType = (WeatherType) buf.ReadInt16();
-            buf.Align4Bytes();
+            buf.Align4();
             WeatherInterpolation = buf.ReadFloat();
             WeatherTypeInList = buf.ReadInt32();
             Rain = buf.ReadFloat();
@@ -426,32 +426,32 @@ namespace GTASaveData.SA
             CameraPedZoomIndicator = buf.ReadInt32();
             CurrArea = buf.ReadInt32();
             InvertLook4Pad = buf.ReadBool();
-            buf.Align4Bytes();
+            buf.Align4();
             ExtraColour = buf.ReadInt32();
             ExtraColourOn = buf.ReadBool();
-            buf.Align4Bytes();
+            buf.Align4();
             ExtraColourInterpolation = buf.ReadFloat();
             ExtraColourWeatherType = (WeatherType) buf.ReadInt32();
             WaterConfiguration = buf.ReadInt32();
             LARiots = buf.ReadBool();
             LARiotsNoPoliceCars = buf.ReadBool();
-            buf.Align4Bytes();
+            buf.Align4();
             MaximumWantedLevel = buf.ReadInt32();
             MaximumChaosLevel = buf.ReadInt32();
             GermanGame = buf.ReadBool();
             FrenchGame = buf.ReadBool();
             NastyGame = buf.ReadBool();
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Skip(0x2C);
             CinematicCamMessagesLeftToDisplay = buf.ReadByte();
             buf.Skip(1);    // Android: BlurOn
             TimeLastSaved = buf.Read<SystemTime>();
-            buf.Align4Bytes();
+            buf.Align4();
             TargetMarkerHandle = buf.ReadInt32();
             HasDisplayedPlayerQuitEnterCarHelpText = buf.ReadBool();
             AllTaxisHaveNitro = buf.ReadBool();
             ProstiutesPayYou = buf.ReadBool();
-            buf.Align4Bytes();
+            buf.Align4();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
@@ -461,7 +461,7 @@ namespace GTASaveData.SA
             buf.Write(VersionId);
             buf.Write(LastMissionPassedName, Limits.MaxNameLength);
             buf.Write(MissionPackGame);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
             buf.Write(MillisecondsPerGameMinute);
@@ -478,7 +478,7 @@ namespace GTASaveData.SA
             buf.Write(ClockHasBeenStored);
             buf.Write(CurrPadMode);
             buf.Write(HasPlayerCheated);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(TimeInMilliseconds);
             buf.Write(TimeScale);
             buf.Write(TimeStep);
@@ -487,7 +487,7 @@ namespace GTASaveData.SA
             buf.Write((short) OldWeatherType);
             buf.Write((short) NewWeatherType);
             buf.Write((short) ForcedWeatherType);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(WeatherInterpolation);
             buf.Write(WeatherTypeInList);
             buf.Write(Rain);
@@ -495,32 +495,32 @@ namespace GTASaveData.SA
             buf.Write(CameraPedZoomIndicator);
             buf.Write(CurrArea);
             buf.Write(InvertLook4Pad);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(ExtraColour);
             buf.Write(ExtraColourOn);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(ExtraColourInterpolation);
             buf.Write((int) ExtraColourWeatherType);
             buf.Write(WaterConfiguration);
             buf.Write(LARiots);
             buf.Write(LARiotsNoPoliceCars);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(MaximumWantedLevel);
             buf.Write(MaximumChaosLevel);
             buf.Write(GermanGame);
             buf.Write(FrenchGame);
             buf.Write(NastyGame);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Skip(0x2C);
             buf.Write(CinematicCamMessagesLeftToDisplay);
             buf.Skip(1);  // Android: BlurOn
             buf.Write(TimeLastSaved);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(TargetMarkerHandle);
             buf.Write(HasDisplayedPlayerQuitEnterCarHelpText);
             buf.Write(AllTaxisHaveNitro);
             buf.Write(ProstiutesPayYou);
-            buf.Align4Bytes();
+            buf.Align4();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }

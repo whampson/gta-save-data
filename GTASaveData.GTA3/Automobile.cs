@@ -36,7 +36,7 @@ namespace GTASaveData.GTA3
             Damage = buf.Read<DamageManager>();
             buf.Skip(GetSize(fmt) - buf.Offset);    // The rest is useless
 
-            Debug.Assert(buf.Offset == SizeOf<Automobile>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<Automobile>(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -46,7 +46,7 @@ namespace GTASaveData.GTA3
             buf.Write(Damage);
             buf.Skip(GetSize(fmt) - buf.Offset);
 
-            Debug.Assert(buf.Offset == SizeOf<Automobile>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<Automobile>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

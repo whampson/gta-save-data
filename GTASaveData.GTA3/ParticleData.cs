@@ -23,9 +23,9 @@ namespace GTASaveData.GTA3
         {
             int numObjects = buf.ReadInt32();
             ParticleObjects = buf.Read<ParticleObject>(numObjects, fmt);
-            buf.Skip(SizeOf<ParticleObject>(fmt));
+            buf.Skip(SizeOfType<ParticleObject>(fmt));
 
-            Debug.Assert(buf.Offset == SizeOf(this, fmt));
+            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -33,14 +33,14 @@ namespace GTASaveData.GTA3
             int numObjects = ParticleObjects.Count;
             buf.Write(numObjects);
             buf.Write(ParticleObjects.ToArray(), fmt, numObjects);
-            buf.Skip(SizeOf<ParticleObject>(fmt));  // game writes extra ParticleObject for some reason
+            buf.Skip(SizeOfType<ParticleObject>(fmt));  // game writes extra ParticleObject for some reason
 
-            Debug.Assert(buf.Offset == SizeOf(this, fmt));
+            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            return (SizeOf<ParticleObject>(fmt) * (ParticleObjects.Count + 1)) + sizeof(int);
+            return (SizeOfType<ParticleObject>(fmt) * (ParticleObjects.Count + 1)) + sizeof(int);
         }
 
         public override bool Equals(object obj)

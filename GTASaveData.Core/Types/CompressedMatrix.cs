@@ -2,7 +2,10 @@
 
 namespace GTASaveData.Types
 {
-    public struct CompressedMatrix : ISerializable, IEquatable<CompressedMatrix>
+    /// <summary>
+    /// A compressed form of the <see cref="Matrix"/> data structure.
+    /// </summary>
+    public struct CompressedMatrix : ISaveDataObject, IEquatable<CompressedMatrix>
     {
         private const int Size = 24;
 
@@ -29,7 +32,7 @@ namespace GTASaveData.Types
             return m;
         }
 
-        int ISerializable.ReadData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Position = buf.Read<Vector3D>();
             RightX = buf.ReadByte();
@@ -44,7 +47,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.WriteData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Position);
             buf.Write(RightX);
@@ -59,7 +62,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.GetSize(FileFormat fmt)
+        int ISaveDataObject.GetSize(FileFormat fmt)
         {
             return Size;
         }

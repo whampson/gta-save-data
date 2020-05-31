@@ -159,7 +159,7 @@ namespace GTASaveData.GTA3
             ParticleType = (ParticleType) buf.ReadInt32();
             NumEffectCycles = buf.ReadByte();
             SkipFrames = buf.ReadByte();
-            buf.Align4Bytes();
+            buf.Align4();
             FrameCounter = buf.ReadUInt16();
             State = (ParticleObjectState) buf.ReadInt16();
             Target = buf.Read<Vector3D>();
@@ -168,13 +168,13 @@ namespace GTASaveData.GTA3
             Color = buf.ReadUInt32();
             DestroyWhenFar = buf.ReadBool();
             CreationChance = buf.ReadSByte();
-            buf.Align4Bytes();
+            buf.Align4();
             if (fmt.IsPS2)
             {
                 m_unknown = buf.ReadInt32();
             }
 
-            Debug.Assert(buf.Offset == SizeOf<ParticleObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<ParticleObject>(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -189,7 +189,7 @@ namespace GTASaveData.GTA3
             buf.Write((int) ParticleType);
             buf.Write(NumEffectCycles);
             buf.Write(SkipFrames);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(FrameCounter);
             buf.Write((short) State);
             buf.Write(Target);
@@ -198,13 +198,13 @@ namespace GTASaveData.GTA3
             buf.Write(Color);
             buf.Write(DestroyWhenFar);
             buf.Write(CreationChance);
-            buf.Align4Bytes();
+            buf.Align4();
             if (fmt.IsPS2)
             {
                 buf.Write(m_unknown);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<ParticleObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<ParticleObject>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

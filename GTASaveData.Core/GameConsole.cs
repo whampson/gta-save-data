@@ -2,6 +2,9 @@
 
 namespace GTASaveData
 {
+    /// <summary>
+    /// Represents a videogame console.
+    /// </summary>
     public struct GameConsole : IEquatable<GameConsole>
     {
         public ConsoleType Type { get; }
@@ -44,7 +47,7 @@ namespace GTASaveData
 
         public override string ToString()
         {
-            return string.Format("GameConsole: {{ Type = {0}, Flags = {1} }}", Type, Flags);
+            return $"{GetType().Name}: {{ Type = {Type}, Flags = {Flags} }}";
         }
 
         public static bool operator ==(GameConsole left, GameConsole right)
@@ -56,5 +59,37 @@ namespace GTASaveData
         {
             return !left.Equals(right);
         }
+    }
+
+    /// <summary>
+    /// Game consoles that support GTA games.
+    /// </summary>
+    public enum ConsoleType
+    {
+        None,
+        Android,
+        iOS,
+        PS2,
+        PS3,
+        PSP,
+        Xbox,
+        Xbox360,
+        Win32,      // I know, I know, PCs aren't consoles...
+        MacOS,
+    }
+
+    /// <summary>
+    /// Various flags that can distinguish different versions of
+    /// the same game system.
+    /// </summary>
+    [Flags]
+    public enum ConsoleFlags
+    {
+        None = 0,
+        NorthAmerica = (1 << 0),
+        Europe = (1 << 1),
+        Japan = (1 << 2),
+        Australia = (1 << 3),
+        Steam = (1 << 4),
     }
 }

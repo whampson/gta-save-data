@@ -89,13 +89,13 @@ namespace GTASaveData.GTA3
             Debug.Assert(carGensSize == CarGeneratorArraySize);
             CarGenerators = buf.Read<CarGenerator>(Limits.MaxNumCarGenerators);
 
-            Debug.Assert(buf.Offset == SizeOf<CarGeneratorData>());
-            Debug.Assert(size == SizeOf<CarGeneratorData>() - GTA3VCSave.SaveHeaderSize);
+            Debug.Assert(buf.Offset == SizeOfType<CarGeneratorData>());
+            Debug.Assert(size == SizeOfType<CarGeneratorData>() - GTA3VCSave.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3VCSave.WriteSaveHeader(buf, "CGN", SizeOf<CarGeneratorData>() - GTA3VCSave.SaveHeaderSize);
+            GTA3VCSave.WriteSaveHeader(buf, "CGN", SizeOfType<CarGeneratorData>() - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(CarGeneratorDataSize);
             buf.Write(NumberOfCarGenerators);
@@ -106,7 +106,7 @@ namespace GTASaveData.GTA3
             buf.Write(CarGeneratorArraySize);
             buf.Write(CarGenerators.ToArray(), Limits.MaxNumCarGenerators);
 
-            Debug.Assert(buf.Offset == SizeOf<CarGeneratorData>());
+            Debug.Assert(buf.Offset == SizeOfType<CarGeneratorData>());
         }
 
         protected override int GetSize(FileFormat fmt)

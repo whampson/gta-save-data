@@ -14,7 +14,6 @@ namespace GTASaveData.GTA3
 
         private string m_lastMissionPassedName;
         private SystemTime m_timeLastSaved;
-        private int m_saveSize;
         private Level m_currLevel;
         private Vector3D m_cameraPosition;
         private int m_millisecondsPerGameMinute;
@@ -49,12 +48,6 @@ namespace GTASaveData.GTA3
         {
             get { return m_timeLastSaved; }
             set { m_timeLastSaved = value; OnPropertyChanged(); }
-        }
-
-        public int SaveSize
-        {
-            get { return m_saveSize; }
-            set { m_saveSize = value; OnPropertyChanged(); }
         }
 
         public Level CurrLevel
@@ -208,17 +201,17 @@ namespace GTASaveData.GTA3
         {
             SaveName = buf.ReadString(Limits.MaxNameLength, unicode: true);
             TimeLastSaved = buf.Read<SystemTime>();
-            SaveSize = buf.ReadInt32();
+            buf.ReadInt32();
             CurrLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.Read<Vector3D>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockHours = (byte) buf.ReadInt32();
-            buf.Align4Bytes();
+            buf.Align4();
             GameClockMinutes = (byte) buf.ReadInt32();
-            buf.Align4Bytes();
+            buf.Align4();
             CurrPadMode = buf.ReadInt16();
-            buf.Align4Bytes();
+            buf.Align4();
             TimeInMilliseconds = buf.ReadUInt32();
             TimeScale = buf.ReadFloat();
             TimeStep = buf.ReadFloat();
@@ -228,11 +221,11 @@ namespace GTASaveData.GTA3
             FramesPerUpdate = buf.ReadFloat();
             TimeScale2 = buf.ReadFloat();
             OldWeatherType = (WeatherType) buf.ReadInt16();
-            buf.Align4Bytes();
+            buf.Align4();
             NewWeatherType = (WeatherType) buf.ReadInt16();
-            buf.Align4Bytes();
+            buf.Align4();
             ForcedWeatherType = (WeatherType) buf.ReadInt16();
-            buf.Align4Bytes();
+            buf.Align4();
             WeatherInterpolation = buf.ReadFloat();
             CompileDateAndTime = buf.Read<Date>();
             WeatherTypeInList = buf.ReadInt32();
@@ -246,17 +239,17 @@ namespace GTASaveData.GTA3
         {
             buf.Write(SaveName, Limits.MaxNameLength, unicode: true);
             buf.Write(TimeLastSaved);
-            buf.Write(SaveSize);
+            buf.Write(GTA3Save.SizeOfGameInBytes + 1);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
             buf.Write(MillisecondsPerGameMinute);
             buf.Write(LastClockTick);
             buf.Write(GameClockHours);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(GameClockMinutes);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(CurrPadMode);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(TimeInMilliseconds);
             buf.Write(TimeScale);
             buf.Write(TimeStep);
@@ -266,11 +259,11 @@ namespace GTASaveData.GTA3
             buf.Write(FramesPerUpdate);
             buf.Write(TimeScale2);
             buf.Write((short) OldWeatherType);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write((short) NewWeatherType);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write((short) ForcedWeatherType);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(WeatherInterpolation);
             buf.Write(CompileDateAndTime);
             buf.Write(WeatherTypeInList);
@@ -304,7 +297,6 @@ namespace GTASaveData.GTA3
 
             return SaveName.Equals(other.SaveName)
                 && TimeLastSaved.Equals(other.TimeLastSaved)
-                && SaveSize.Equals(other.SaveSize)
                 && CurrLevel.Equals(other.CurrLevel)
                 && CameraPosition.Equals(other.CameraPosition)
                 && MillisecondsPerGameMinute.Equals(other.MillisecondsPerGameMinute)

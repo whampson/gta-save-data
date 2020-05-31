@@ -79,7 +79,7 @@ namespace GTASaveData.GTA3
             PickupIndex = buf.ReadInt16();
             Position = buf.Read<Vector3D>();
 
-            Debug.Assert(buf.Offset == SizeOf<Pickup>());
+            Debug.Assert(buf.Offset == SizeOfType<Pickup>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -93,7 +93,7 @@ namespace GTASaveData.GTA3
             buf.Write(PickupIndex);
             buf.Write(Position);
 
-            Debug.Assert(buf.Offset == SizeOf<Pickup>());
+            Debug.Assert(buf.Offset == SizeOfType<Pickup>());
         }
 
         protected override int GetSize(FileFormat fmt)

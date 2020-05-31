@@ -68,9 +68,9 @@ namespace GTASaveData.GTA3
             Handle = buf.ReadInt32();
             State = (PhoneState) buf.ReadUInt32();
             VisibleToCam = buf.ReadBool();
-            buf.Align4Bytes();
+            buf.Align4();
 
-            Debug.Assert(buf.Offset == SizeOf<Phone>());
+            Debug.Assert(buf.Offset == SizeOfType<Phone>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -81,9 +81,9 @@ namespace GTASaveData.GTA3
             buf.Write(Handle);
             buf.Write((int) State);
             buf.Write(VisibleToCam);
-            buf.Align4Bytes();
+            buf.Align4();
 
-            Debug.Assert(buf.Offset == SizeOf<Phone>());
+            Debug.Assert(buf.Offset == SizeOfType<Phone>());
         }
 
         protected override int GetSize(FileFormat fmt)

@@ -156,8 +156,8 @@ namespace TestApp
             {
                 // Fix save with multiple player peds
                 GTA3Save save = CurrentSaveFile as GTA3Save;
-                PlayerPedPool peds = save.PlayerPedPool;
-                if (save.PlayerPedPool.NumPlayerPeds > 1)
+                PlayerPedPool peds = save.PlayerPeds;
+                if (save.PlayerPeds.NumPlayerPeds > 1)
                 {
                     PlayerPed theOneTruePlayer = peds[0];
                     peds.PlayerPeds.Clear();
@@ -170,7 +170,7 @@ namespace TestApp
         {
             switch (SelectedGame)
             {
-                case GameType.III: DoLoad<GTA3Save>(path); break;
+                case GameType.GTA3: DoLoad<GTA3Save>(path); break;
                 case GameType.VC: DoLoad<ViceCitySave>(path); break;
                 //case GameType.SA: DoLoad<SanAndreasSave>(path); break;
                 //case GameType.LCS: DoLoad<LibertyCityStoriesSave>(path); break;
@@ -241,7 +241,7 @@ namespace TestApp
         {
             switch (SelectedGame)
             {
-                case GameType.III: return GTA3Save.FileFormats.GetAll();
+                case GameType.GTA3: return GTA3Save.FileFormats.GetAll();
                 case GameType.VC: return ViceCitySave.FileFormats.GetAll();
                 //case GameType.SA: return SanAndreasSave.FileFormats.GetAll();
             }
@@ -309,7 +309,7 @@ namespace TestApp
 
         public static Dictionary<GameType, string[]> BlockNames => new Dictionary<GameType, string[]>()
         {
-            { GameType.III, Enum.GetNames(typeof(IIIBlock)) },
+            { GameType.GTA3, Enum.GetNames(typeof(IIIBlock)) },
             { GameType.VC, Enum.GetNames(typeof(VCBlock)) },
             //{ GameType.SA, Enum.GetNames(typeof(SABlock)) },
             //{ GameType.IV, Enum.GetNames(typeof(IVBlock)) },

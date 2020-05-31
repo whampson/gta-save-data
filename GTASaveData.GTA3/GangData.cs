@@ -29,16 +29,16 @@ namespace GTASaveData.GTA3
 
             Gangs = buf.Read<Gang>(Limits.MaxNumGangs);
 
-            Debug.Assert(buf.Offset == SizeOf<GangData>());
-            Debug.Assert(size == SizeOf<GangData>() - GTA3Save.SaveHeaderSize);
+            Debug.Assert(buf.Offset == SizeOfType<GangData>());
+            Debug.Assert(size == SizeOfType<GangData>() - GTA3Save.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3Save.WriteSaveHeader(buf, "GNG", SizeOf<GangData>() - GTA3Save.SaveHeaderSize);
+            GTA3Save.WriteSaveHeader(buf, "GNG", SizeOfType<GangData>() - GTA3Save.BlockHeaderSize);
             buf.Write(Gangs.ToArray(), Limits.MaxNumGangs);
 
-            Debug.Assert(buf.Offset == SizeOf<GangData>());
+            Debug.Assert(buf.Offset == SizeOfType<GangData>());
         }
 
         protected override int GetSize(FileFormat fmt)

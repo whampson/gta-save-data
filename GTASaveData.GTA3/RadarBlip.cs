@@ -112,7 +112,7 @@ namespace GTASaveData.GTA3
             Sprite = (RadarBlipSprite) buf.ReadInt16();
             buf.ReadInt16();
 
-            Debug.Assert(buf.Offset == SizeOf<RadarBlip>());
+            Debug.Assert(buf.Offset == SizeOfType<RadarBlip>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -131,7 +131,7 @@ namespace GTASaveData.GTA3
             buf.Write((short) Sprite);
             buf.Write((short) 0);
 
-            Debug.Assert(buf.Offset == SizeOf<RadarBlip>());
+            Debug.Assert(buf.Offset == SizeOfType<RadarBlip>());
         }
 
         protected override int GetSize(FileFormat fmt)

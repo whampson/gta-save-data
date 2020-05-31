@@ -6,22 +6,22 @@ namespace TestFramework
     {
         public int GetSizeOfTestObject()
         {
-            return Serializer.SizeOf<T>();
+            return Serializer.SizeOfType<T>();
         }
 
         public int GetSizeOfTestObject(T obj)
         {
-            return Serializer.SizeOf(obj, FileFormat.Default);
+            return Serializer.SizeOfObject(obj, FileFormat.Default);
         }
 
         public int GetSizeOfTestObject(FileFormat format)
         {
-            return Serializer.SizeOf<T>(format);
+            return Serializer.SizeOfType<T>(format);
         }
 
         public int GetSizeOfTestObject(T obj, FileFormat format)
         {
-            return Serializer.SizeOf(obj, format);
+            return Serializer.SizeOfObject(obj, format);
         }
 
         public T CreateSerializedCopy(T obj)

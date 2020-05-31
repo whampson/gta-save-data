@@ -442,7 +442,7 @@ namespace GTASaveData.GTA3
             TotalLegitimateKills = buf.ReadInt32();
             LastMissionPassedName = buf.ReadString(Limits.MaxLastMissionPassedNameLength);
 
-            Debug.Assert(buf.Offset == SizeOf<Stats>());
+            Debug.Assert(buf.Offset == SizeOfType<Stats>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -500,7 +500,7 @@ namespace GTASaveData.GTA3
             buf.Write(TotalLegitimateKills);
             buf.Write(LastMissionPassedName, Limits.MaxLastMissionPassedNameLength);
 
-            Debug.Assert(buf.Offset == SizeOf<Stats>());
+            Debug.Assert(buf.Offset == SizeOfType<Stats>());
         }
 
         protected override int GetSize(FileFormat fmt)

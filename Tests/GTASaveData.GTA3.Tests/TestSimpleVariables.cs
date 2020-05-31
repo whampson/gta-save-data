@@ -12,7 +12,6 @@ namespace GTASaveData.GTA3.Tests
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
                 .RuleFor(x => x.SaveName, f => Generator.Words(f, SimpleVariables.Limits.MaxNameLength - 1))
                 .RuleFor(x => x.TimeLastSaved, f => Generator.Date(f))
-                .RuleFor(x => x.SaveSize, f => f.Random.Int())
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
@@ -49,7 +48,6 @@ namespace GTASaveData.GTA3.Tests
 
             Assert.Equal(x0.SaveName, x1.SaveName);
             Assert.Equal(x0.TimeLastSaved, x1.TimeLastSaved);
-            Assert.Equal(x0.SaveSize, x1.SaveSize);
             Assert.Equal(x0.CurrLevel, x1.CurrLevel);
             Assert.Equal(x0.CameraPosition, x1.CameraPosition);
             Assert.Equal(x0.MillisecondsPerGameMinute, x1.MillisecondsPerGameMinute);

@@ -125,7 +125,7 @@ namespace GTASaveData.GTA3
 
             buf.Skip(215);
 
-            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>());
+            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -147,7 +147,7 @@ namespace GTASaveData.GTA3
             // Game writes some garbage here due to incorrect size calculation
             buf.Skip(215);
 
-            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>());
+            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>());
         }
 
         protected override int GetSize(FileFormat fmt)

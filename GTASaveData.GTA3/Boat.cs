@@ -26,7 +26,7 @@ namespace GTASaveData.GTA3
 
             buf.Skip(GetSize(fmt) - buf.Offset);
 
-            Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<Boat>(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -35,7 +35,7 @@ namespace GTASaveData.GTA3
 
             buf.Skip(GetSize(fmt) - buf.Offset);
 
-            Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<Boat>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

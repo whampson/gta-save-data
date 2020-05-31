@@ -3,7 +3,7 @@
 namespace GTASaveData.Types
 {
     /// <summary>
-    /// A 3D view matrix.
+    /// Represents a 3D view matrix.
     /// </summary>
     /// <remarks>Code largely taken from GTA.</remarks>
     public struct Matrix : IEquatable<Matrix>       // TODO: Serializable?
@@ -145,16 +145,6 @@ namespace GTASaveData.Types
             return m;
         }
 
-        public static bool operator ==(Matrix m1, Matrix m2)
-        {
-            return m1.Equals(m2);
-        }
-
-        public static bool operator !=(Matrix m1, Matrix m2)
-        {
-            return !m1.Equals(m2);
-        }
-
         public override int GetHashCode()
         {
             int hash = 17;
@@ -183,5 +173,16 @@ namespace GTASaveData.Types
                 && Up.Equals(other.Up)
                 && Position.Equals(other.Position);
         }
+
+        public static bool operator ==(Matrix m1, Matrix m2)
+        {
+            return m1.Equals(m2);
+        }
+
+        public static bool operator !=(Matrix m1, Matrix m2)
+        {
+            return !m1.Equals(m2);
+        }
+
     }
 }

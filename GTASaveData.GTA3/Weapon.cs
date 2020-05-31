@@ -65,7 +65,7 @@ namespace GTASaveData.GTA3
                 buf.ReadBytes(3);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<Weapon>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<Weapon>(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -81,7 +81,7 @@ namespace GTASaveData.GTA3
                 buf.Write(new byte[3]);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<Weapon>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<Weapon>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

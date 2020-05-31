@@ -167,7 +167,7 @@ namespace GTASaveData.GTA3
             EndOfLifeTime = buf.ReadUInt32();
             LoadEntityFlags(buf, fmt);
 
-            Debug.Assert(buf.Offset == SizeOf<GameObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<GameObject>(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -191,7 +191,7 @@ namespace GTASaveData.GTA3
             buf.Write(EndOfLifeTime);
             SaveEntityFlags(buf, fmt);
 
-            Debug.Assert(buf.Offset == SizeOf<GameObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<GameObject>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

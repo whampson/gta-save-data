@@ -240,7 +240,7 @@ namespace GTASaveData.SA
         }
 
         [JsonIgnore]
-        public override DateTime TimeLastSaved
+        public override DateTime TimeStamp
         {
             get { return SimpleVars.TimeLastSaved; }
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
@@ -370,9 +370,9 @@ namespace GTASaveData.SA
             int index = 0;
 
             data = new byte[count];
-            if (m_workBuffer.Cursor + count > m_bufferSize)
+            if (m_workBuffer.Position + count > m_bufferSize)
             {
-                int len = m_bufferSize - m_workBuffer.Cursor;
+                int len = m_bufferSize - m_workBuffer.Position;
                 total += LoadDataFromWorkBuffer(len, out byte[] tmp);
                 Array.Copy(tmp, 0, data, 0, len);
                 LoadWorkBuffer();
@@ -395,9 +395,9 @@ namespace GTASaveData.SA
             int total = 0;
             int index = 0;
 
-            if (m_workBuffer.Cursor + count > m_bufferSize)
+            if (m_workBuffer.Position + count > m_bufferSize)
             {
-                int len = m_bufferSize - m_workBuffer.Cursor;
+                int len = m_bufferSize - m_workBuffer.Position;
                 total += SaveDataToWorkBuffer(data, len);
                 SaveWorkBuffer(false);
                 count -= len;
@@ -413,12 +413,12 @@ namespace GTASaveData.SA
             int count;
 
             count = m_bufferSize;
-            if (m_file.Cursor + count > m_file.Length)
+            if (m_file.Position + count > m_file.Length)
             {
-                count = m_file.Length - m_file.Cursor;
+                count = m_file.Length - m_file.Position;
             }
 
-            if (count != 0 && count == StreamBuffer.Align4Bytes(count))
+            if (count != 0 && count == StreamBuffer.Align4(count))
             {
                 m_workBuffer.Reset();
                 m_workBuffer.Write(m_file.ReadBytes(count));
@@ -431,7 +431,7 @@ namespace GTASaveData.SA
             m_checkSum += m_workBuffer.GetBytes().Sum(x => x);
             if (writeCheckSum)
             {
-                if (m_workBuffer.Cursor > m_bufferSize - 4)
+                if (m_workBuffer.Position > m_bufferSize - 4)
                 {
                     SaveWorkBuffer(false);
                 }
@@ -451,7 +451,7 @@ namespace GTASaveData.SA
             int mark;
 
             m_file = file;
-            fileData = file.GetAllBytes();
+            fileData = file.GetBufferBytes();
             blockSizes = new List<int>();
             
             offset = fileData.FindFirst(BlockTagName.GetAsciiBytes(), 0);
@@ -602,11 +602,11 @@ namespace GTASaveData.SA
             //}
 
             // PC
-            size = m_workBuffer.Cursor + file.Cursor;
+            size = m_workBuffer.Position + file.Position;
             while (size < SizeOfOneGameInBytes - 4)
             {
-                int remaining = SizeOfOneGameInBytes - file.Cursor - m_workBuffer.Cursor - 4;
-                if (m_workBuffer.Cursor + remaining < m_bufferSize)
+                int remaining = SizeOfOneGameInBytes - file.Position - m_workBuffer.Position - 4;
+                if (m_workBuffer.Position + remaining < m_bufferSize)
                 {
                     m_workBuffer.Skip(remaining);
                     break;
@@ -614,11 +614,11 @@ namespace GTASaveData.SA
 
                 m_workBuffer.Seek(m_bufferSize);
                 SaveWorkBuffer(false);
-                size = m_workBuffer.Cursor + file.Cursor;
+                size = m_workBuffer.Position + file.Position;
             }
             SaveWorkBuffer(true);
 
-            Debug.Assert(m_file.Cursor == SizeOfOneGameInBytes);
+            Debug.Assert(m_file.Position == SizeOfOneGameInBytes);
         }
 
         protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)

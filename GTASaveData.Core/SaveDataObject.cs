@@ -3,79 +3,80 @@ using WpfEssentials;
 
 namespace GTASaveData
 {
-    /// <summary>
-    /// A GTA data structure that can be stored in a save file.
-    /// </summary>
-    public abstract class SaveDataObject : ObservableObject, ISerializable
+    public abstract class SaveDataObject : ObservableObject, ISaveDataObject
     {
-        int ISerializable.ReadData(StreamBuffer buf, FileFormat fmt)
+        protected virtual void OnReading() { }
+        protected virtual void OnRead() { }
+        protected virtual void OnWriting() { }
+        protected virtual void OnWrite() { }
+        protected abstract void ReadData(StreamBuffer buf, FileFormat fmt);
+        protected abstract void WriteData(StreamBuffer buf, FileFormat fmt);
+        protected abstract int GetSize(FileFormat fmt);
+
+        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int oldMark, start, len;
 
-            oldMark = buf.Mark;
-            buf.MarkCurrentPosition();
-            start = buf.Cursor;
+            oldMark = buf.MarkedPosition;
+            buf.Mark();
+            start = buf.Position;
 
+            OnReading();
             ReadData(buf, fmt);
+            OnRead();
 
-            len = buf.Cursor - start;
-            buf.Mark = oldMark;
+            len = buf.Position - start;
+            buf.MarkedPosition = oldMark;
 
             return len;
         }
 
-        int ISerializable.WriteData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
         {
             int oldMark, start, len;
 
-            oldMark = buf.Mark;
-            buf.MarkCurrentPosition();
-            start = buf.Cursor;
+            oldMark = buf.MarkedPosition;
+            buf.Mark();
+            start = buf.Position;
 
+            OnWriting();
             WriteData(buf, fmt);
+            OnWrite();
 
-            len = buf.Cursor - start;
-            buf.Mark = oldMark;
+            len = buf.Position - start;
+            buf.MarkedPosition = oldMark;
 
             return len;
         }
 
-        int ISerializable.GetSize(FileFormat fmt)
+        int ISaveDataObject.GetSize(FileFormat fmt)
         {
             return GetSize(fmt);
         }
 
-        protected abstract void ReadData(StreamBuffer buf, FileFormat fmt);
-
-        protected abstract void WriteData(StreamBuffer buf, FileFormat fmt);
-
-        protected abstract int GetSize(FileFormat fmt);
-
-        protected static int SizeOf<T>() where T : new()
+        public static int SizeOfType<T>() where T : new()
         {
-            // TODO: remove this so it's required to check against fmt
-            return Serializer.SizeOf<T>();
+            return Serializer.SizeOfType<T>();
         }
 
-        protected static int SizeOf<T>(FileFormat fmt) where T : new()
+        public static int SizeOfType<T>(FileFormat fmt) where T : new()
         {
-            return Serializer.SizeOf<T>(fmt);
+            return Serializer.SizeOfType<T>(fmt);
         }
 
-        protected static int SizeOf<T>(T obj)
+        public static int SizeOfObject<T>(T obj)
         {
-            // TODO: remove
-            return Serializer.SizeOf(obj);
+            return Serializer.SizeOfObject(obj);
         }
 
-        protected static int SizeOf<T>(T obj, FileFormat fmt)
+        public static int SizeOfObject<T>(T obj, FileFormat fmt)
         {
-            return Serializer.SizeOf(obj, fmt);
+            return Serializer.SizeOfObject(obj, fmt);
         }
 
-        protected NotSupportedException SizeNotDefined(FileFormat fmt)
+        protected InvalidOperationException SizeNotDefined(FileFormat fmt)
         {
-            return new NotSupportedException(string.Format(Strings.Error_SizeNotDefined, fmt.Name));
+            return new InvalidOperationException(string.Format(Strings.Error_InvalidOperation_SizeNotDefined, fmt.Name));
         }
     }
 }

@@ -185,7 +185,7 @@ namespace GTASaveData.GTA4
             Unknown4Ch = buf.ReadInt32();
             Unknown50h = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOf<Pickup>());
+            Debug.Assert(buf.Offset == SizeOfType<Pickup>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -212,7 +212,7 @@ namespace GTASaveData.GTA4
             buf.Write(Unknown4Ch);
             buf.Write(Unknown50h);
 
-            Debug.Assert(buf.Offset == SizeOf<Pickup>());
+            Debug.Assert(buf.Offset == SizeOfType<Pickup>());
         }
 
         public override bool Equals(object obj)

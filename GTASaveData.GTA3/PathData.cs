@@ -32,7 +32,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = SizeOf(this);
+            int size = SizeOfObject(this);
             byte[] data = buf.ReadBytes(size);
             int n = size / 2;
 
@@ -51,7 +51,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = SizeOf(this);
+            int size = SizeOfObject(this);
             byte[] data = new byte[size];
             int n = size / 2;
 

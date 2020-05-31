@@ -61,33 +61,6 @@ namespace GTASaveData {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The value must be non-negative..
-        /// </summary>
-        public static string Error_Argument_NoNegative {
-            get {
-                return ResourceManager.GetString("Error_Argument_NoNegative", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The character cannot be a surrogate..
-        /// </summary>
-        public static string Error_Argument_NoSurrogateChars {
-            get {
-                return ResourceManager.GetString("Error_Argument_NoSurrogateChars", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The index must be smaller than the length of the sequence..
-        /// </summary>
-        public static string Error_Argument_SequenceIndexOutOfRange {
-            get {
-                return ResourceManager.GetString("Error_Argument_SequenceIndexOutOfRange", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The sequence length must be less than or equal to the length of the array..
         /// </summary>
         public static string Error_Argument_SequenceTooBig {
@@ -97,11 +70,11 @@ namespace GTASaveData {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Maximum block size exeeded. (value = {0}, max = {1}).
+        ///   Looks up a localized string similar to The index is out of range..
         /// </summary>
-        public static string Error_BlockSizeExceeded {
+        public static string Error_ArgumentOutOfRange_IndexOutOfRange {
             get {
-                return ResourceManager.GetString("Error_BlockSizeExceeded", resourceCulture);
+                return ResourceManager.GetString("Error_ArgumentOutOfRange_IndexOutOfRange", resourceCulture);
             }
         }
         
@@ -115,47 +88,38 @@ namespace GTASaveData {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid padding type..
-        /// </summary>
-        public static string Error_InvalidPaddingType {
-            get {
-                return ResourceManager.GetString("Error_InvalidPaddingType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unexpected end while parsing JSON..
-        /// </summary>
-        public static string Error_JsonBinaryUnexpectedEnd {
-            get {
-                return ResourceManager.GetString("Error_JsonBinaryUnexpectedEnd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unexpected token while parsing JSON binary: {0}..
-        /// </summary>
-        public static string Error_JsonBinaryUnexpectedToken {
-            get {
-                return ResourceManager.GetString("Error_JsonBinaryUnexpectedToken", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The collection cannot be modified while being changed by another thread..
         /// </summary>
-        public static string Error_NoCollectionReentrancy {
+        public static string Error_InvalidOperation_NoCollectionReentrancy {
             get {
-                return ResourceManager.GetString("Error_NoCollectionReentrancy", resourceCulture);
+                return ResourceManager.GetString("Error_InvalidOperation_NoCollectionReentrancy", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The buffer is not expandable..
+        ///   Looks up a localized string similar to Size not defined for type &apos;{0}&apos;..
         /// </summary>
-        public static string Error_NotExpandable {
+        public static string Error_InvalidOperation_SizeNotDefined {
             get {
-                return ResourceManager.GetString("Error_NotExpandable", resourceCulture);
+                return ResourceManager.GetString("Error_InvalidOperation_SizeNotDefined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected end of stream reached while parsing JSON..
+        /// </summary>
+        public static string Error_JsonSerialization_EndOfStream {
+            get {
+                return ResourceManager.GetString("Error_JsonSerialization_EndOfStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected token while parsing JSON: {0}.
+        /// </summary>
+        public static string Error_JsonSerialization_UnexpectedToken {
+            get {
+                return ResourceManager.GetString("Error_JsonSerialization_UnexpectedToken", resourceCulture);
             }
         }
         
@@ -169,20 +133,29 @@ namespace GTASaveData {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bad block size: {0}.
+        /// </summary>
+        public static string Error_Serialization_BadBlockSize {
+            get {
+                return ResourceManager.GetString("Error_Serialization_BadBlockSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; cannot be pre-allocated..
+        /// </summary>
+        public static string Error_Serialization_NoPreAlloc {
+            get {
+                return ResourceManager.GetString("Error_Serialization_NoPreAlloc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The type &apos;{0}&apos; does not support serialization..
         /// </summary>
         public static string Error_SerializationNotAllowed {
             get {
                 return ResourceManager.GetString("Error_SerializationNotAllowed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Size not defined for {0}..
-        /// </summary>
-        public static string Error_SizeNotDefined {
-            get {
-                return ResourceManager.GetString("Error_SizeNotDefined", resourceCulture);
             }
         }
     }

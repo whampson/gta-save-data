@@ -28,16 +28,16 @@ namespace GTASaveData.GTA3
             int size = GTA3Save.ReadSaveHeader(buf, "RDR");
             RadarBlips = buf.Read<RadarBlip>(Limits.MaxNumRadarBlips);
 
-            Debug.Assert(buf.Offset == size + GTA3Save.SaveHeaderSize);
-            Debug.Assert(size == SizeOf<RadarData>() - GTA3Save.SaveHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<RadarData>() - GTA3Save.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3Save.WriteSaveHeader(buf, "RDR", SizeOf<RadarData>() - GTA3Save.SaveHeaderSize);
+            GTA3Save.WriteSaveHeader(buf, "RDR", SizeOfType<RadarData>() - GTA3Save.BlockHeaderSize);
             buf.Write(RadarBlips.ToArray(), Limits.MaxNumRadarBlips);
 
-            Debug.Assert(buf.Offset == SizeOf<RadarData>());
+            Debug.Assert(buf.Offset == SizeOfType<RadarData>());
         }
 
         protected override int GetSize(FileFormat fmt)

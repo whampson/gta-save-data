@@ -120,13 +120,13 @@ namespace GTASaveData.GTA3
             NumberOfMapZones = buf.ReadInt16();
             NumberOfAudioZones = buf.ReadInt16();
 
-            Debug.Assert(buf.Offset == size + GTA3Save.SaveHeaderSize);
-            Debug.Assert(size == SizeOf<ZoneData>() - GTA3Save.SaveHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<ZoneData>() - GTA3Save.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3Save.WriteSaveHeader(buf, "ZNS", SizeOf<ZoneData>() - GTA3Save.SaveHeaderSize);
+            GTA3Save.WriteSaveHeader(buf, "ZNS", SizeOfType<ZoneData>() - GTA3Save.BlockHeaderSize);
 
             buf.Write(CurrentZoneIndex);
             buf.Write((int) CurrentLevel);
@@ -141,7 +141,7 @@ namespace GTASaveData.GTA3
             buf.Write(NumberOfMapZones);
             buf.Write(NumberOfAudioZones);
 
-            Debug.Assert(buf.Offset == SizeOf<ZoneData>());
+            Debug.Assert(buf.Offset == SizeOfType<ZoneData>());
         }
 
         protected override int GetSize(FileFormat fmt)

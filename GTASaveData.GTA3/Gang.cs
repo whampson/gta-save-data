@@ -44,22 +44,22 @@ namespace GTASaveData.GTA3
         {
             VehicleModel = buf.ReadInt32();
             PedModelOverride = buf.ReadSByte();
-            buf.Align4Bytes();
+            buf.Align4();
             Weapon1 = (WeaponType) buf.ReadInt32();
             Weapon2 = (WeaponType) buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOf<Gang>());
+            Debug.Assert(buf.Offset == SizeOfType<Gang>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(VehicleModel);
             buf.Write(PedModelOverride);
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write((int) Weapon1);
             buf.Write((int) Weapon2);
 
-            Debug.Assert(buf.Offset == SizeOf<Gang>());
+            Debug.Assert(buf.Offset == SizeOfType<Gang>());
         }
 
         protected override int GetSize(FileFormat fmt)

@@ -3,9 +3,9 @@
 namespace GTASaveData.Types
 {
     /// <summary>
-    /// Represents a date and time as stored in a GTA save file.
+    /// Represents a date and time.
     /// </summary>
-    public struct Date : ISerializable, IEquatable<Date>
+    public struct Date : ISaveDataObject, IEquatable<Date>
     {
         private const int Size = 24;
 
@@ -36,7 +36,7 @@ namespace GTASaveData.Types
             Year = dateTime.Year;
         }
 
-        int ISerializable.ReadData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Second = buf.ReadInt32();
             Minute = buf.ReadInt32();
@@ -48,7 +48,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.WriteData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Second);
             buf.Write(Minute);
@@ -60,7 +60,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.GetSize(FileFormat fmt)
+        int ISaveDataObject.GetSize(FileFormat fmt)
         {
             return Size;
         }

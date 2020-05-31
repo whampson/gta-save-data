@@ -62,7 +62,7 @@ namespace GTASaveData.GTA3
                 PlayerPeds.Add(p);
             }
 
-            Debug.Assert(buf.Offset == SizeOf(this, fmt));
+            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -80,7 +80,7 @@ namespace GTASaveData.GTA3
                 buf.Write(p.ModelName, PlayerPed.Limits.MaxModelNameLength);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<PlayerPedPool>(this, fmt));
+            Debug.Assert(buf.Offset == SizeOfObject<PlayerPedPool>(this, fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
@@ -92,7 +92,7 @@ namespace GTASaveData.GTA3
             foreach (PlayerPed p in PlayerPeds)
             {
                 size += headerSize;
-                size += SizeOf(p, fmt);
+                size += SizeOfObject(p, fmt);
                 size += footerSize;
             }
 

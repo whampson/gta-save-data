@@ -101,7 +101,7 @@ namespace GTASaveData.GTA3
             ParentZoneIndex = buf.ReadInt32();
             NextZoneIndex = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOf<Zone>());
+            Debug.Assert(buf.Offset == SizeOfType<Zone>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -117,7 +117,7 @@ namespace GTASaveData.GTA3
             buf.Write(ParentZoneIndex);
             buf.Write(NextZoneIndex);
 
-            Debug.Assert(buf.Offset == SizeOf<Zone>());
+            Debug.Assert(buf.Offset == SizeOfType<Zone>());
         }
 
         protected override int GetSize(FileFormat fmt)

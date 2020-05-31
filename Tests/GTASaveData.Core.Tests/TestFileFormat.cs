@@ -2,7 +2,7 @@
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestDataFormat
+    public class TestFileFormat
     {
         [Theory]
         [InlineData(ConsoleType.PS2, ConsoleFlags.NorthAmerica | ConsoleFlags.Europe, true)]

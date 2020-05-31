@@ -3,9 +3,9 @@
 namespace GTASaveData.Types
 {
     /// <summary>
-    /// A .NET version of the Win32 <c>SYSTEMTIME</c> structure, which is stored in some GTA save files.
+    /// A .NET version of the Win32 <c>SYSTEMTIME</c> structure.
     /// </summary>
-    public struct SystemTime : ISerializable, IEquatable<SystemTime>
+    public struct SystemTime : ISaveDataObject, IEquatable<SystemTime>
     {
         private const int Size = 16;
 
@@ -18,7 +18,8 @@ namespace GTASaveData.Types
         public short Second;
         public short Millisecond;
 
-        public SystemTime(short year, short month, short dayOfWeek, short day, short hour, short minute, short second, short millisecond)
+        public SystemTime(short year, short month, short dayOfWeek, short day,
+            short hour, short minute, short second, short millisecond)
         {
             Millisecond = millisecond;
             Second = second;
@@ -42,7 +43,7 @@ namespace GTASaveData.Types
             Millisecond = (short) dateTime.Millisecond;
         }
 
-        int ISerializable.ReadData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Year = buf.ReadInt16();
             Month = buf.ReadInt16();
@@ -56,7 +57,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.WriteData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Year);
             buf.Write(Month);
@@ -70,7 +71,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.GetSize(FileFormat fmt)
+        int ISaveDataObject.GetSize(FileFormat fmt)
         {
             return Size;
         }

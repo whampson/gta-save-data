@@ -60,7 +60,7 @@ namespace GTASaveData.GTA3
                 m_unknown0 = buf.Read<int>(6);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<Placeable>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<Placeable>(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -95,7 +95,7 @@ namespace GTASaveData.GTA3
                 buf.Write(m_unknown0);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<Placeable>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<Placeable>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

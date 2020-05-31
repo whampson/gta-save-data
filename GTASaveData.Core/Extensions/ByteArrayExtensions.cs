@@ -13,26 +13,12 @@ namespace GTASaveData.Extensions
         /// <returns>The index of the first occurrence of the sequence, or -1 if not found.</returns>
         public static int FindFirst(this byte[] arr, byte[] seq, int start = 0)
         {
-            if (arr.Length < seq.Length)
-            {
-                throw new ArgumentException(Strings.Error_Argument_SequenceTooBig, nameof(seq));
-            }
-
-            if (seq == null)
-            {
-                throw new ArgumentNullException(nameof(seq));
-            }
-
-            if (start < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(start), Strings.Error_Argument_NoNegative);
-            }
+            if (arr.Length < seq.Length) throw new ArgumentException(Strings.Error_Argument_SequenceTooBig, nameof(seq));
+            if (seq == null) throw new ArgumentNullException(nameof(seq));
+            if (start < 0) throw new ArgumentOutOfRangeException(nameof(start));
 
             int searchLen = arr.Length - seq.Length + 1;
-            if (start >= searchLen)
-            {
-                throw new ArgumentOutOfRangeException(nameof(start), Strings.Error_Argument_SequenceIndexOutOfRange);
-            }
+            if (start >= searchLen) throw new ArgumentOutOfRangeException(nameof(start), Strings.Error_ArgumentOutOfRange_IndexOutOfRange);
 
             if (arr.Length == 0 || seq.Length == 0)
             {

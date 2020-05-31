@@ -87,7 +87,7 @@ namespace GTASaveData.GTA3
             GangPedDensity = buf.Read<short>(Limits.GangDensityCapacity);
             PedGroup = buf.ReadInt16();
 
-            Debug.Assert(buf.Offset == SizeOf<ZoneInfo>());
+            Debug.Assert(buf.Offset == SizeOfType<ZoneInfo>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -101,7 +101,7 @@ namespace GTASaveData.GTA3
             buf.Write(GangPedDensity.ToArray(), Limits.GangDensityCapacity);
             buf.Write(PedGroup);
 
-            Debug.Assert(buf.Offset == SizeOf<ZoneInfo>());
+            Debug.Assert(buf.Offset == SizeOfType<ZoneInfo>());
         }
 
         protected override int GetSize(FileFormat fmt)

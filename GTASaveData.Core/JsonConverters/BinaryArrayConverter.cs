@@ -2,18 +2,17 @@
 using System;
 using System.Collections.Generic;
 
-namespace GTASaveData.Converters
+namespace GTASaveData.JsonConverters
 {
     /// <summary>
-    /// Converts an <see cref="Array{T}"/> (where the generic type argument is <see cref="byte"/>)
-    /// to a base64 string if the array is sufficiently large.
+    /// Converts a <see cref="byte"/> <see cref="Array{T}"/> to a base64 string if the array is sufficiently large.
     /// </summary>
     public class ByteArrayConverter : JsonConverter<Array<byte>>
     {
         public const int DefaultThreshold = 32;
 
         /// <summary>
-        /// The maximum array length at which bytes will be encoded as a JSON array.
+        /// The maximum array length at which bytes will be encoded as a regular JSON array.
         /// After the threshold is surpassed, the byte array will be encoded as a base64 string.
         /// </summary>
         public static int Threshold { get; set; }
@@ -36,7 +35,7 @@ namespace GTASaveData.Converters
             }
             else
             {
-                throw new JsonSerializationException(string.Format(Strings.Error_JsonBinaryUnexpectedToken, reader.TokenType));
+                throw UnexpectedToken(reader.TokenType);
             }
 
             return data;
@@ -56,11 +55,11 @@ namespace GTASaveData.Converters
                     case JsonToken.EndArray:
                         return byteList.ToArray();
                     default:
-                        throw new JsonSerializationException(string.Format(Strings.Error_JsonBinaryUnexpectedToken, reader.TokenType));
+                        throw UnexpectedToken(reader.TokenType);
                 }
             }
 
-            throw new JsonSerializationException(Strings.Error_JsonBinaryUnexpectedEnd);
+            throw EndOfStream();
         }
 
         public override void WriteJson(JsonWriter writer, Array<byte> value, JsonSerializer serializer)
@@ -82,6 +81,16 @@ namespace GTASaveData.Converters
                     writer.WriteValue(value.ToArray());
                 }
             }
+        }
+
+        private JsonSerializationException EndOfStream()
+        {
+            return new JsonSerializationException(Strings.Error_JsonSerialization_EndOfStream);
+        }
+
+        private JsonSerializationException UnexpectedToken(JsonToken t)
+        {
+            return new JsonSerializationException(string.Format(Strings.Error_JsonSerialization_UnexpectedToken, t));
         }
     }
 }

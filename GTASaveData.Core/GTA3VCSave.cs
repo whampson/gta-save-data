@@ -1,30 +1,25 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData
 {
-    public abstract class GTA3VCSave : SaveData
+    /// <summary>
+    /// Commonalities between GTA3 and VC saves.
+    /// </summary>
+    public abstract class GTA3VCSave : SaveData, IDisposable
     {
-        public const int SaveHeaderSize = 8;
+        public const int BlockHeaderSize = 8;
 
-        private bool m_blockSizeChecks;
-        
-        [JsonIgnore]
-        public bool BlockSizeChecks
-        {
-            get { return m_blockSizeChecks; }
-            set { m_blockSizeChecks = value; OnPropertyChanged(); }
-        }
+        private bool m_disposed;
 
-        protected StreamBuffer WorkBuff { get; }
+        protected int BufferSize { get; set; }
+        protected StreamBuffer WorkBuff { get; private set; }
         protected int CheckSum { get; set; }
-        protected abstract int BufferSize { get; }
 
-        protected GTA3VCSave(int maxBufferSize)
+        protected GTA3VCSave()
         {
-            WorkBuff = new StreamBuffer(new byte[maxBufferSize]);
+            WorkBuff = new StreamBuffer();
         }
 
         public static int ReadSaveHeader(StreamBuffer buf, string tag)
@@ -32,7 +27,7 @@ namespace GTASaveData
             string readTag = buf.ReadString(4);
             int size = buf.ReadInt32();
 
-            Debug.Assert(readTag == tag, "Invalid block tag (expected: {0}, actual: {1})", tag, readTag);
+            Debug.Assert(readTag == tag, $"Invalid block tag (expected: {tag}, actual: {readTag})");
             return size;
         }
 
@@ -42,76 +37,85 @@ namespace GTASaveData
             buf.Write(size);
         }
 
-        protected abstract void LoadSimpleVars();
-        protected abstract void SaveSimpleVars();
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                WorkBuff.Dispose();
+                m_disposed = true;
+            }
+        }
 
-        protected T Load<T>() where T : SaveDataObject, new()
+        protected void CreateWorkBuff()
+        {
+            WorkBuff = (BufferSize > 0)
+                ? new StreamBuffer(BufferSize)
+                : new StreamBuffer();
+        }
+
+        protected T LoadType<T>() where T : SaveDataObject, new()
         {
             T obj = new T();
-            Load(obj);
+            LoadObject(obj);
 
             return obj;
         }
-        protected int Load<T>(T obj) where T : SaveDataObject
-        {
-            int size = WorkBuff.ReadInt32();
-            int bytesRead = Serializer.Read(obj, WorkBuff, FileFormat);
 
-            Debug.WriteLine("{0}: {1} bytes read", typeof(T).Name, bytesRead);
-            Debug.Assert(bytesRead <= StreamBuffer.Align4Bytes(size));
-
-            return bytesRead;
-        }
-
-        protected T LoadPreAlloc<T>() where T : SaveDataObject
+        protected T LoadTypePreAlloc<T>() where T : SaveDataObject
         {
             int size = WorkBuff.ReadInt32();
             if (!(Activator.CreateInstance(typeof(T), size) is T obj))
             {
-                throw new SerializationException("Object cannot be pre-allocated.");
+                throw new SerializationException(Strings.Error_Serialization_NoPreAlloc, typeof(T));
             }
-            Debug.WriteLine("{0}: {1} bytes pre-allocated", typeof(T).Name, size);
+            Debug.WriteLine($"{typeof(T).Name}: {size} bytes pre-allocated");
 
             int bytesRead = Serializer.Read(obj, WorkBuff, FileFormat);
-            Debug.WriteLine("{0}: {1} bytes read", typeof(T).Name, bytesRead);
-            Debug.Assert(bytesRead <= StreamBuffer.Align4Bytes(size));
+            Debug.WriteLine($"{typeof(T).Name}: {bytesRead} bytes read");
+            Debug.Assert(bytesRead <= StreamBuffer.Align4(size));
 
             return obj;
         }
 
-        protected void Save(SaveDataObject o)
+        protected int LoadObject<T>(T obj) where T : SaveDataObject
+        {
+            int size = WorkBuff.ReadInt32();
+            int bytesRead = Serializer.Read(obj, WorkBuff, FileFormat);
+
+            Debug.WriteLine($"{typeof(T).Name}: {bytesRead} bytes read");
+            Debug.Assert(bytesRead <= StreamBuffer.Align4(size));
+
+            return bytesRead;
+        }
+
+        protected void SaveObject(SaveDataObject o)
         {
             int size, preSize, postData;
 
-            preSize = WorkBuff.Cursor;
+            preSize = WorkBuff.Position;
             WorkBuff.Skip(4);
 
             size = Serializer.Write(WorkBuff, o, FileFormat);
-            postData = WorkBuff.Cursor;
+            postData = WorkBuff.Position;
 
             WorkBuff.Seek(preSize);
             WorkBuff.Write(size);
             WorkBuff.Seek(postData);
-            WorkBuff.Align4Bytes();
+            WorkBuff.Align4();
 
-            Debug.WriteLine("{0}: {1} bytes written", o.GetType().Name, size);
+            Debug.WriteLine($"{o.GetType().Name}: {size} bytes written");
         }
 
         protected int ReadBlock(StreamBuffer file)
         {
-            file.MarkCurrentPosition();
+            file.Mark();
             WorkBuff.Reset();
 
             int size = file.ReadInt32();
-            if ((uint) size > BufferSize)
+            if (size < 0)
             {
-                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
-                if (BlockSizeChecks)
-                {
-                    throw BlockSizeExceeded((uint) size, BufferSize);
-                }
+                throw new SerializationException(Strings.Error_Serialization_BadBlockSize, size);
             }
-
             WorkBuff.Write(file.ReadBytes(size));
             Debug.Assert(file.Offset == size + 4);
 
@@ -121,22 +125,14 @@ namespace GTASaveData
 
         protected int WriteBlock(StreamBuffer file)
         {
-            file.MarkCurrentPosition();
+            file.Mark();
 
             byte[] data = WorkBuff.GetBytes();
             int size = data.Length;
-            if ((uint) size > BufferSize)
-            {
-                Debug.WriteLine("Maximum block size exceeded! (value = {0}, max = {1})", (uint) size, BufferSize);
-                if (BlockSizeChecks)
-                {
-                    throw BlockSizeExceeded((uint) size, BufferSize);
-                }
-            }
 
             file.Write(size);
             file.Write(data);
-            file.Align4Bytes();
+            file.Align4();
 
             Debug.Assert(file.Offset == size + 4);
 
@@ -145,11 +141,6 @@ namespace GTASaveData
 
             WorkBuff.Reset();
             return size;
-        }
-
-        protected SerializationException BlockSizeExceeded(uint value, int max)
-        {
-            return new SerializationException(Strings.Error_BlockSizeExceeded, value, max);
         }
     }
 }

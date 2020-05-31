@@ -16,10 +16,10 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 .RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
-                .RuleFor(x => x.PlayerPedPool, Generator.Generate<PlayerPedPool, TestPedPool>(format))
+                .RuleFor(x => x.PlayerPeds, Generator.Generate<PlayerPedPool, TestPedPool>(format))
                 .RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData>(format))
-                .RuleFor(x => x.VehiclePool, Generator.Generate<VehiclePool, TestVehiclePool>(format))
-                .RuleFor(x => x.ObjectPool, Generator.Generate<ObjectPool, TestObjectPool>(format))
+                .RuleFor(x => x.Vehicles, Generator.Generate<VehiclePool, TestVehiclePool>(format))
+                .RuleFor(x => x.Objects, Generator.Generate<ObjectPool, TestObjectPool>(format))
                 .RuleFor(x => x.Paths, Generator.Generate<PathData, TestPathData>(format))
                 .RuleFor(x => x.Cranes, Generator.Generate<CraneData, TestCraneData>(format))
                 .RuleFor(x => x.Pickups, Generator.Generate<PickupData, TestPickupData>(format))
@@ -43,7 +43,7 @@ namespace GTASaveData.GTA3.Tests
         [MemberData(nameof(TestFiles))]
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
-            string path = TestData.GetTestDataPath(GameType.III, expectedFormat, filename);
+            string path = TestData.GetTestDataPath(GameType.GTA3, expectedFormat, filename);
             SaveData.GetFileFormat<GTA3Save>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
@@ -67,7 +67,7 @@ namespace GTASaveData.GTA3.Tests
         [MemberData(nameof(TestFiles))]
         public void RealDataSerialization(FileFormat format, string filename)
         {
-            string path = TestData.GetTestDataPath(GameType.III, format, filename);
+            string path = TestData.GetTestDataPath(GameType.GTA3, format, filename);
 
             using GTA3Save x0 = SaveData.Load<GTA3Save>(path, format);
             using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -80,36 +80,32 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
-        public void BlockSizeExceeded()
+        public void BlockBounds()
         {
-            string path = TestData.GetTestDataPath(GameType.III, GTA3Save.FileFormats.PC, "CAT2");
+            string path = TestData.GetTestDataPath(GameType.GTA3, GTA3Save.FileFormats.PC, "CAT2");
             byte[] data = File.ReadAllBytes(path);
 
-            using GTA3Save x = new GTA3Save()
-            {
-                FileFormat = GTA3Save.FileFormats.PC,
-                BlockSizeChecks = true
-            };
             // Fudge the block size
             data[0] = 0xBE;
             data[1] = 0xBA;
             data[2] = 0xFE;
             data[3] = 0xCA;
-            Assert.Throws<SerializationException>(() => x.Load(data));
+            Assert.Throws<SerializationException>(() => SaveData.Load<GTA3Save>(data, GTA3Save.FileFormats.PC));
 
             // Make the script space huge
+            GTA3Save x = SaveData.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
             x.Scripts.ScriptSpace = ArrayHelper.CreateArray<byte>(100000);
-            Assert.Throws<SerializationException>(() => x.Save(out byte[] _));
+            Assert.Throws<EndOfStreamException>(() => x.Save(out byte[] _));
         }
 
         private void AssertSavesAreEqual(GTA3Save x0, GTA3Save x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);
-            Assert.Equal(x0.PlayerPedPool, x1.PlayerPedPool);
+            Assert.Equal(x0.PlayerPeds, x1.PlayerPeds);
             Assert.Equal(x0.Garages, x1.Garages);
-            Assert.Equal(x0.VehiclePool, x1.VehiclePool);
-            Assert.Equal(x0.ObjectPool, x1.ObjectPool);
+            Assert.Equal(x0.Vehicles, x1.Vehicles);
+            Assert.Equal(x0.Objects, x1.Objects);
             Assert.Equal(x0.Paths, x1.Paths);
             Assert.Equal(x0.Cranes, x1.Cranes);
             Assert.Equal(x0.Pickups, x1.Pickups);

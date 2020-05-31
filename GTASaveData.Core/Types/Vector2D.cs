@@ -5,7 +5,7 @@ namespace GTASaveData.Types
     /// <summary>
     /// A 2-dimensional vector.
     /// </summary>
-    public struct Vector2D : ISerializable, IEquatable<Vector2D>
+    public struct Vector2D : ISaveDataObject, IEquatable<Vector2D>
     {
         private const int Size = 8;
 
@@ -107,7 +107,7 @@ namespace GTASaveData.Types
             return !v1.Equals(v2);
         }
 
-        int ISerializable.ReadData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
         {
             X = buf.ReadFloat();
             Y = buf.ReadFloat();
@@ -115,7 +115,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.WriteData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(X);
             buf.Write(Y);
@@ -123,7 +123,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISerializable.GetSize(FileFormat fmt)
+        int ISaveDataObject.GetSize(FileFormat fmt)
         {
             return Size;
         }
@@ -155,7 +155,7 @@ namespace GTASaveData.Types
 
         public override string ToString()
         {
-            return string.Format("{0:0.###},{1:0.###}", X, Y);
+            return $"{X:0.###},{Y:0.###}";
         }
     }
 }

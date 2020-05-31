@@ -29,7 +29,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.PathNodes, x1.PathNodes);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(Serializer.SizeOf(x0), data.Length);
+            Assert.Equal(Serializer.SizeOfObject(x0), data.Length);
         }
     }
 }

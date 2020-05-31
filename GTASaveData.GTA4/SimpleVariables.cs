@@ -356,7 +356,7 @@ namespace GTASaveData.GTA4
             UnknownA8h = buf.ReadInt32();
             UnknownACh = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOf<SimpleVariables>());
+            Debug.Assert(buf.Offset == SizeOfType<SimpleVariables>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -404,7 +404,7 @@ namespace GTASaveData.GTA4
             buf.Write(UnknownA8h);
             buf.Write(UnknownACh);
 
-            Debug.Assert(buf.Offset == SizeOf<SimpleVariables>());
+            Debug.Assert(buf.Offset == SizeOfType<SimpleVariables>());
         }
 
         public override bool Equals(object obj)

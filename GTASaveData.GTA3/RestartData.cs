@@ -106,13 +106,13 @@ namespace GTASaveData.GTA3
             OverrideHospitalLevel = (Level) buf.ReadByte();
             OverridePoliceStationLevel = (Level) buf.ReadByte();
 
-            Debug.Assert(buf.Offset == size + GTA3Save.SaveHeaderSize);
-            Debug.Assert(size == SizeOf<RestartData>() - GTA3Save.SaveHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<RestartData>() - GTA3Save.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3Save.WriteSaveHeader(buf, "RST", SizeOf<RestartData>() - GTA3Save.SaveHeaderSize);
+            GTA3Save.WriteSaveHeader(buf, "RST", SizeOfType<RestartData>() - GTA3Save.BlockHeaderSize);
 
             buf.Write(WastedRestartPoints.ToArray(), Limits.MaxNumWastedRestarts);
             buf.Write(BustedRestartPoints.ToArray(), Limits.MaxNumBustedRestarts);
@@ -126,7 +126,7 @@ namespace GTASaveData.GTA3
             buf.Write((byte) OverrideHospitalLevel);
             buf.Write((byte) OverridePoliceStationLevel);
 
-            Debug.Assert(buf.Offset == SizeOf<RestartData>());
+            Debug.Assert(buf.Offset == SizeOfType<RestartData>());
         }
 
         protected override int GetSize(FileFormat fmt)

@@ -168,7 +168,7 @@ namespace GTASaveData.GTA3
             TargetableObjects = buf.Read<int>(Limits.NumTargetableObjects);
             buf.Skip(116);
 
-            Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<PlayerPed>(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -190,7 +190,7 @@ namespace GTASaveData.GTA3
             buf.Write(TargetableObjects.ToArray(), Limits.NumTargetableObjects);
             buf.Skip(116);
 
-            Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<PlayerPed>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

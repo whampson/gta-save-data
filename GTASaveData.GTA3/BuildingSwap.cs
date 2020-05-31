@@ -47,7 +47,7 @@ namespace GTASaveData.GTA3
             NewModel = buf.ReadInt32();
             OldModel = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOf<BuildingSwap>());
+            Debug.Assert(buf.Offset == SizeOfType<BuildingSwap>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -57,7 +57,7 @@ namespace GTASaveData.GTA3
             buf.Write(NewModel);
             buf.Write(OldModel);
 
-            Debug.Assert(buf.Offset == SizeOf<BuildingSwap>());
+            Debug.Assert(buf.Offset == SizeOfType<BuildingSwap>());
         }
 
         protected override int GetSize(FileFormat fmt)

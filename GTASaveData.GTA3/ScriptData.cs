@@ -1,4 +1,4 @@
-﻿using GTASaveData.Converters;
+﻿using GTASaveData.JsonConverters;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
@@ -168,7 +168,7 @@ namespace GTASaveData.GTA3
 
             int varSpace = buf.ReadInt32();
             ScriptSpace = buf.Read<byte>(varSpace);
-            buf.Align4Bytes();
+            buf.Align4();
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
             OnAMissionFlag = buf.ReadInt32();
@@ -187,18 +187,18 @@ namespace GTASaveData.GTA3
             int runningScripts = buf.ReadInt32();
             ActiveScripts = buf.Read<RunningScript>(runningScripts, fmt);
 
-            Debug.Assert(buf.Offset == size + GTA3Save.SaveHeaderSize);
-            Debug.Assert(size == SizeOf(this, fmt) - GTA3Save.SaveHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
+            Debug.Assert(size == SizeOfObject(this, fmt) - GTA3Save.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = SizeOf(this, fmt);
-            GTA3Save.WriteSaveHeader(buf, "SCR", size - GTA3Save.SaveHeaderSize);
+            int size = SizeOfObject(this, fmt);
+            GTA3Save.WriteSaveHeader(buf, "SCR", size - GTA3Save.BlockHeaderSize);
 
             buf.Write(ScriptSpace.Count);
             buf.Write(ScriptSpace.ToArray());
-            buf.Align4Bytes();
+            buf.Align4();
             buf.Write(ScriptDataSize);
             buf.Write(OnAMissionFlag);
             buf.Write(Contacts.ToArray(), Limits.MaxNumContacts);
@@ -221,10 +221,10 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(FileFormat fmt)
         {
-            return SizeOf<RunningScript>(fmt) * ActiveScripts.Count
-                + StreamBuffer.Align4Bytes(ScriptSpace.Count)
+            return SizeOfType<RunningScript>(fmt) * ActiveScripts.Count
+                + StreamBuffer.Align4(ScriptSpace.Count)
                 + ScriptDataSize
-                + GTA3Save.SaveHeaderSize
+                + GTA3Save.BlockHeaderSize
                 + 3 * sizeof(int);
         }
 
