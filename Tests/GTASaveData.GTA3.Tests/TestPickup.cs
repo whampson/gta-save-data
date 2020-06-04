@@ -36,7 +36,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.PickupIndex, x1.PickupIndex);
             Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
     }
 }

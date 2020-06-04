@@ -23,7 +23,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.PedTypes, x1.PedTypes);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
     }
 }

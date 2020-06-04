@@ -10,8 +10,8 @@ namespace GTASaveData.GTA3.Tests
         public override SimpleVariables GenerateTestObject(FileFormat format)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.LastMissionPassedName, f => Generator.Words(f, SimpleVariables.Limits.MaxNameLength - 1))
-                .RuleFor(x => x.TimeLastSaved, f => Generator.Date(f))
+                .RuleFor(x => x.LastMissionPassedName, f => Generator.Words(f, SimpleVariables.MaxMissionPassedNameLength - 1))
+                .RuleFor(x => x.TimeStamp, f => Generator.Date(f))
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
@@ -73,7 +73,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.CameraPedZoomIndicator, x1.CameraPedZoomIndicator);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestType(format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
     }
 }

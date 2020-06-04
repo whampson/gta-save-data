@@ -76,7 +76,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.StoredCar, x1.StoredCar);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
     }
 }

@@ -39,6 +39,25 @@ namespace GTASaveData
             buf.Write(size);
         }
 
+        protected override void OnReading()
+        {
+            base.OnReading();
+            InitBuffer();
+        }
+
+        protected override void OnWriting()
+        {
+            base.OnWriting();
+            InitBuffer();
+        }
+
+        private void InitBuffer()
+        {
+            BufferSizes.TryGetValue(FileFormat, out int size);
+            BufferSize = size;
+            CreateWorkBuff();
+        }
+
         public void Dispose()
         {
             if (!m_disposed)

@@ -59,7 +59,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.MissionFlag, x1.MissionFlag);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestType(format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
     }
 }

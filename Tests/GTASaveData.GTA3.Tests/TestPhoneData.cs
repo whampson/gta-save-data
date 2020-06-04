@@ -27,7 +27,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Phones, x1.Phones);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Cranes, x1.Cranes);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
     }
 }
