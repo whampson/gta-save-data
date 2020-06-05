@@ -14,14 +14,25 @@ namespace GTASaveData
 
         private bool m_disposed;
 
-        protected int BufferSize { get; set; }
         protected StreamBuffer WorkBuff { get; private set; }
         protected int CheckSum { get; set; }
-        protected abstract Dictionary<FileFormat, int> BufferSizes { get; }
 
         protected GTA3VCSave()
         {
             WorkBuff = new StreamBuffer();
+        }
+
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                if (WorkBuff != null)
+                {
+                    WorkBuff.Dispose();
+                    WorkBuff = null;
+                }
+                m_disposed = true;
+            }
         }
 
         public static int ReadSaveHeader(StreamBuffer buf, string tag)
@@ -42,37 +53,25 @@ namespace GTASaveData
         protected override void OnReading()
         {
             base.OnReading();
-            InitBuffer();
+            ReInitWorkBuff();
         }
 
         protected override void OnWriting()
         {
             base.OnWriting();
-            InitBuffer();
+            ReInitWorkBuff();
         }
 
-        private void InitBuffer()
+        private void ReInitWorkBuff()
         {
-            BufferSizes.TryGetValue(FileFormat, out int size);
-            BufferSize = size;
-            CreateWorkBuff();
-        }
-
-        public void Dispose()
-        {
-            if (!m_disposed)
+            if (WorkBuff != null)
             {
                 WorkBuff.Dispose();
-                m_disposed = true;
+                WorkBuff = new StreamBuffer(GetBufferSize());
             }
         }
 
-        protected void CreateWorkBuff()
-        {
-            WorkBuff = (BufferSize > 0)
-                ? new StreamBuffer(BufferSize)
-                : new StreamBuffer();
-        }
+        protected abstract int GetBufferSize();
 
         protected T LoadType<T>() where T : SaveDataObject, new()
         {

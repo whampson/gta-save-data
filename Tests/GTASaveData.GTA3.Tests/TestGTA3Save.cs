@@ -57,10 +57,7 @@ namespace GTASaveData.GTA3.Tests
             using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
-
-            int calculatedSum = data.Take(data.Length - 4).Sum(x => x);
-            int storedSum = BitConverter.ToInt32(data, data.Length - 4);
-            Assert.Equal(calculatedSum, storedSum);
+            AssertCheckSumValid(data, format);
         }
 
         [Theory]
@@ -73,10 +70,7 @@ namespace GTASaveData.GTA3.Tests
             using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
-
-            int calculatedSum = data.Take(data.Length - 4).Sum(x => x);
-            int storedSum = BitConverter.ToInt32(data, data.Length - 4);
-            Assert.Equal(calculatedSum, storedSum);
+            AssertCheckSumValid(data, format);
         }
 
         [Fact]
@@ -124,6 +118,14 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0, x1);
         }
 
+        private void AssertCheckSumValid(byte[] data, FileFormat format)
+        {
+            int sumOffset = (format.IsXbox) ? data.Length - 24 : data.Length - 4;
+            int calculatedSum = data.Take(sumOffset).Sum(x => x);
+            int storedSum = BitConverter.ToInt32(data, sumOffset);
+            Assert.Equal(calculatedSum, storedSum);
+        }
+
         public static IEnumerable<object[]> TestFiles => new[]
         {
             //new object[] { GTA3Save.FileFormats.Android, "AS2" },
@@ -162,10 +164,13 @@ namespace GTASaveData.GTA3.Tests
             //new object[] { GTA3Save.FileFormats.PS2_NAEU, "LM1 EUv2" },
             //new object[] { GTA3Save.FileFormats.PS2_NAEU, "LM1 US" },
             //new object[] { GTA3Save.FileFormats.PS2_NAEU, "T4X4_1" },
-            //new object[] { GTA3Save.FileFormats.Xbox, "JM2" },
-            //new object[] { GTA3Save.FileFormats.Xbox, "LM1 1" },
-            //new object[] { GTA3Save.FileFormats.Xbox, "LM1 2" },
-            //new object[] { GTA3Save.FileFormats.Xbox, "LM1 ChainGame100" },
+            new object[] { GTA3Save.FileFormats.Xbox, "DIAB2" },
+            new object[] { GTA3Save.FileFormats.Xbox, "JM5" },
+            new object[] { GTA3Save.FileFormats.Xbox, "LM1 1" },
+            new object[] { GTA3Save.FileFormats.Xbox, "LM1 2" },
+            new object[] { GTA3Save.FileFormats.Xbox, "LM1 99Packages" },
+            new object[] { GTA3Save.FileFormats.Xbox, "LM1 ChainGame100" },
+            new object[] { GTA3Save.FileFormats.Xbox, "LM5" },
         };
     }
 }

@@ -1,4 +1,5 @@
 using GTASaveData.Extensions;
+using GTASaveData.Helpers;
 using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
 using System;
@@ -15,11 +16,8 @@ namespace GTASaveData.GTA3
         public const int SizeOfGameInBytes = 201728;
         public const int MaxNumPaddingBlocks = 4;
 
-        protected override Dictionary<FileFormat, int> BufferSizes => new Dictionary<FileFormat, int>()
-        {
-            { FileFormats.PC, 55000 },
-            { FileFormats.PS2, 50000 },
-        };
+        private static readonly byte[] XboxTitleKey =
+            { 0xFF, 0x3B, 0x8F, 0x5C, 0xDE, 0x53, 0xF3, 0x25, 0x9E, 0x70, 0x09, 0x54, 0xEF, 0xDC, 0xA8, 0xDC };
 
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
@@ -265,7 +263,9 @@ namespace GTASaveData.GTA3
             totalSize += ReadBlock(file); PedTypeInfo = LoadType<PedTypeData>();
 
             // Skip over padding
-            while (file.Position < file.Length - 4)
+            int dataLen = file.Length;
+            if (FileFormat.IsXbox) dataLen -= 20;
+            while (file.Position < dataLen - 4)
             {
                 totalSize += ReadBlock(file);
             }
@@ -304,12 +304,13 @@ namespace GTASaveData.GTA3
             SaveObject(Streaming); totalSize += WriteBlock(file);
             SaveObject(PedTypeInfo); totalSize += WriteBlock(file);
 
+            // TODO: crashes if buffersize = 0
             for (int i = 0; i < MaxNumPaddingBlocks; i++)
             {
                 size = StreamBuffer.Align4((SizeOfGameInBytes - 3) - totalSize);
-                if (size > BufferSize)
+                if (size > GetBufferSize())
                 {
-                    size = BufferSize;
+                    size = GetBufferSize();
                 }
                 if (size > 4)
                 {
@@ -319,10 +320,17 @@ namespace GTASaveData.GTA3
                 }
             }
 
-            file.Write(CheckSum);
-
             Debug.WriteLine("Save successful!");
             Debug.Assert(totalSize == SizeOfGameInBytes);
+
+            file.Write(CheckSum);
+
+            if (FileFormat.IsXbox)
+            {
+                byte[] data = file.GetBytes();
+                byte[] sig = XboxHelper.CalculateGameSaveSignature(XboxTitleKey, data, 0, data.Length - 4);
+                file.Write(sig);
+            }
         }
 
         protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
@@ -408,6 +416,17 @@ namespace GTASaveData.GTA3
             // Invalid
             fmt = FileFormat.Default;
             return false;
+        }
+
+        protected override int GetBufferSize()
+        {
+            // TODO: confirm these
+            if (FileFormat.IsPS2)
+            {
+                return 50000;
+            }
+
+            return 55000;
         }
 
         protected override int GetSize(FileFormat fmt)

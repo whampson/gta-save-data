@@ -1,12 +1,17 @@
 ﻿using GTASaveData;
 using GTASaveData.Extensions;
 using GTASaveData.GTA3;
+using GTASaveData.Helpers;
+using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
 using GTASaveData.VC;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using WpfEssentials;
@@ -151,19 +156,6 @@ namespace TestApp
         public void OnLoadingFile()
         {
             // Do random stuff here :p
-
-            if (CurrentSaveFile is GTA3Save)
-            {
-                // Fix save with multiple player peds
-                GTA3Save save = CurrentSaveFile as GTA3Save;
-                PlayerPedPool peds = save.PlayerPeds;
-                if (save.PlayerPeds.NumPlayerPeds > 1)
-                {
-                    PlayerPed theOneTruePlayer = peds[0];
-                    peds.PlayerPeds.Clear();
-                    peds.PlayerPeds.Add(theOneTruePlayer);
-                }
-            }
         }
 
         public void LoadSaveData(string path)

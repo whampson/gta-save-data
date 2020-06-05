@@ -196,9 +196,9 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
-            TimeStamp = buf.Read<SystemTime>();
-            buf.ReadInt32();
+            if (!fmt.IsPS2) LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
+            if (fmt.IsPC || fmt.IsXbox) TimeStamp = buf.Read<SystemTime>();
+            buf.ReadInt32();    // save size
             CurrLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.Read<Vector3D>();
             MillisecondsPerGameMinute = buf.ReadInt32();
@@ -234,8 +234,8 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
-            buf.Write(TimeStamp);
+            if (!fmt.IsPS2) buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
+            if (fmt.IsPC || fmt.IsXbox) buf.Write(TimeStamp);
             buf.Write(GTA3Save.SizeOfGameInBytes + 1);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
@@ -272,7 +272,7 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPC)
+            if (fmt.IsPC || fmt.IsXbox)
             {
                 return 0xBC;
             }

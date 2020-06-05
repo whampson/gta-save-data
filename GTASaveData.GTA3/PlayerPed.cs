@@ -156,6 +156,7 @@ namespace GTASaveData.GTA3
             buf.Skip(288);
             CreatedBy = (CharCreatedBy) buf.ReadByte();
             buf.Skip(351);
+            if (fmt.IsXbox) buf.Skip(4);
             Health = buf.ReadFloat();
             Armor = buf.ReadFloat();
             buf.Skip(148);
@@ -178,6 +179,7 @@ namespace GTASaveData.GTA3
             buf.Skip(288);
             buf.Write((byte) CreatedBy);
             buf.Skip(351);
+            if (fmt.IsXbox) buf.Skip(4);
             buf.Write(Health);
             buf.Write(Armor);
             buf.Skip(148);
@@ -198,6 +200,10 @@ namespace GTASaveData.GTA3
             if (fmt.IsPC)
             {
                 return 0x5F0;
+            }
+            if (fmt.IsXbox)
+            {
+                return 0x5F4;
             }
 
             throw SizeNotDefined(fmt);

@@ -16,14 +16,6 @@ namespace GTASaveData.VC
         public const int MaxNumPaddingBlocks = 4;
         public const int SteamId = 0x3DF5C2FD;      // constant?
 
-        protected override Dictionary<FileFormat, int> BufferSizes => new Dictionary<FileFormat, int>()
-        {
-            { FileFormats.PC, 55000 },
-            { FileFormats.PC_Steam, 55000 },
-            { FileFormats.Android, 0x10000 },
-            { FileFormats.iOS, 0x10000 },
-        };
-
         private SimpleVariables m_simpleVars;
         private Dummy m_scripts;
         private Dummy m_pedPool;
@@ -344,9 +336,9 @@ namespace GTASaveData.VC
             for (int i = 0; i < MaxNumPaddingBlocks; i++)
             {
                 size = StreamBuffer.Align4((SizeOfGameInBytes - 3) - totalSize);
-                if (size > BufferSize)
+                if (size > GetBufferSize())
                 {
-                    size = BufferSize;
+                    size = GetBufferSize();
                 }
                 if (size > 4)
                 {
@@ -393,6 +385,16 @@ namespace GTASaveData.VC
 
             fmt = FileFormat.Default;
             return false;
+        }
+
+        protected override int GetBufferSize()
+        {
+            if (FileFormat.IsMobile)
+            {
+                return 0x10000;
+            }
+
+            return 55000;
         }
 
         protected override int GetSize(FileFormat fmt)

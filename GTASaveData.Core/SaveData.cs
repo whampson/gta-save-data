@@ -50,9 +50,11 @@ namespace GTASaveData
 
         protected int Load(string path)
         {
+            OnFileLoading(path);
             byte[] data = File.ReadAllBytes(path);
-            int bytesRead = Load(data);
             OnFileLoad(path);
+
+            int bytesRead = Load(data);
 
             return bytesRead;
         }
@@ -60,6 +62,8 @@ namespace GTASaveData
         public int Save(string path)
         {
             int bytesWritten = Save(out byte[] data);
+
+            OnFileSaving(path);
             File.WriteAllBytes(path, data);
             OnFileSave(path);
 
@@ -84,16 +88,22 @@ namespace GTASaveData
         protected virtual void OnLoad()
         { }
 
+        protected virtual void OnSaving()
+        { }
+
+        protected virtual void OnSave()
+        { }
+
+        protected virtual void OnFileLoading(string path)
+        { }
+
         protected virtual void OnFileLoad(string path)
         {
             Name = Path.GetFileNameWithoutExtension(path);
             TimeStamp = File.GetLastWriteTime(path);
         }
 
-        protected virtual void OnSaving()
-        { }
-
-        protected virtual void OnSave()
+        protected virtual void OnFileSaving(string path)
         { }
 
         protected virtual void OnFileSave(string path)
