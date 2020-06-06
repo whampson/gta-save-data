@@ -10,21 +10,22 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<ObjectPool> model = new Faker<ObjectPool>()
                 .RuleFor(x => x.Objects,
-                    f => Generator.Array(f.Random.Int(1, 25), g => Generator.Generate<GameObject, TestGameObject>()));
+                    f => Generator.Array(f.Random.Int(1, 25), g => Generator.Generate<GameObject, TestGameObject>(format)));
 
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            ObjectPool x0 = GenerateTestObject();
-            ObjectPool x1 = CreateSerializedCopy(x0, out byte[] data);
+            ObjectPool x0 = GenerateTestObject(format);
+            ObjectPool x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.Objects, x1.Objects);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
     }
 }

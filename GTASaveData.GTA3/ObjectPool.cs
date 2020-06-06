@@ -28,17 +28,17 @@ namespace GTASaveData.GTA3
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int numObjects = buf.ReadInt32();
-            Objects = buf.Read<GameObject>(numObjects);
+            Objects = buf.Read<GameObject>(numObjects, fmt);
 
-            Debug.Assert(buf.Offset == SizeOfObject(this));
+            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Objects.Count);
-            buf.Write(Objects.ToArray());
+            buf.Write(Objects.ToArray(), fmt);
 
-            Debug.Assert(buf.Offset == SizeOfObject(this));
+            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

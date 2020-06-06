@@ -151,8 +151,10 @@ namespace GTASaveData.GTA3
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
             Matrix = buf.Read<CompressedMatrix>(fmt).Decompress();
+            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
             UprootLimit = buf.ReadFloat();
             ObjectMatrix = buf.Read<CompressedMatrix>(fmt).Decompress();
+            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
             CreatedBy = (ObjectCreatedBy) buf.ReadByte();
             IsPickup = buf.ReadBool();
             IsPickupInShop = buf.ReadBool();
@@ -175,8 +177,10 @@ namespace GTASaveData.GTA3
             buf.Write(ModelIndex);
             buf.Write(Handle);
             buf.Write(Matrix.Compress(), fmt);
+            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
             buf.Write(UprootLimit);
             buf.Write(ObjectMatrix.Compress(), fmt);
+            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
             buf.Write((byte) CreatedBy);
             buf.Write(IsPickup);
             buf.Write(IsPickupInShop);
@@ -196,15 +200,8 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPS2)        // non-Japanese
-            {
-                return 0x4C;
-            }
-            if (fmt.IsiOS)
-            {
-                return 0x52;
-            }
-
+            if (fmt.IsPS2 && !fmt.IsJapanese) return 0x4C;
+            if (fmt.IsiOS) return 0x52;
             return 0x54;
         }
 
