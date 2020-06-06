@@ -12,7 +12,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.State, f => f.PickRandom<WeaponState>())
                 .RuleFor(x => x.AmmoInClip, f => f.Random.UInt())
                 .RuleFor(x => x.AmmoInClip, f => f.Random.UInt())
-                .RuleFor(x => x.Unknown, f => f.Random.Bool());
+                .RuleFor(x => x.Unknown, f => (!format.IsPS2) ? f.Random.Bool() : default);
 
             return model.Generate();
         }

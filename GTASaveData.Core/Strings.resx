@@ -129,6 +129,9 @@
   <data name="Error_InvalidOperation_NoCollectionReentrancy" xml:space="preserve">
     <value>The collection cannot be modified while being changed by another thread.</value>
   </data>
+  <data name="Error_InvalidOperation_NoPlayerPed" xml:space="preserve">
+    <value>The ped pool must contain at least one PlayerPed.</value>
+  </data>
   <data name="Error_InvalidOperation_SizeNotDefined" xml:space="preserve">
     <value>Size not defined for type '{0}'.</value>
     <comment>{0} = data format name</comment>
@@ -139,9 +142,6 @@
   <data name="Error_JsonSerialization_UnexpectedToken" xml:space="preserve">
     <value>Unexpected token while parsing JSON: {0}</value>
     <comment>{0} = token type</comment>
-  </data>
-  <data name="Error_PlayerNotFound" xml:space="preserve">
-    <value>The first item in the ped pool must be a PlayerPed.</value>
   </data>
   <data name="Error_SerializationNotAllowed" xml:space="preserve">
     <value>The type '{0}' does not support serialization.</value>

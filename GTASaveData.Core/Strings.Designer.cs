@@ -97,6 +97,15 @@ namespace GTASaveData {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The ped pool must contain at least one PlayerPed..
+        /// </summary>
+        public static string Error_InvalidOperation_NoPlayerPed {
+            get {
+                return ResourceManager.GetString("Error_InvalidOperation_NoPlayerPed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Size not defined for type &apos;{0}&apos;..
         /// </summary>
         public static string Error_InvalidOperation_SizeNotDefined {
@@ -120,15 +129,6 @@ namespace GTASaveData {
         public static string Error_JsonSerialization_UnexpectedToken {
             get {
                 return ResourceManager.GetString("Error_JsonSerialization_UnexpectedToken", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The first item in the ped pool must be a PlayerPed..
-        /// </summary>
-        public static string Error_PlayerNotFound {
-            get {
-                return ResourceManager.GetString("Error_PlayerNotFound", resourceCulture);
             }
         }
         

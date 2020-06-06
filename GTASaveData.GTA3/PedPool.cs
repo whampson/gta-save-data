@@ -37,7 +37,7 @@ namespace GTASaveData.GTA3
         {
             if (PlayerPeds.Count == 0)
             {
-                throw new InvalidOperationException(Strings.Error_PlayerNotFound);
+                throw new InvalidOperationException(Strings.Error_InvalidOperation_NoPlayerPed);
             }
 
             return PlayerPeds[0];
@@ -54,11 +54,11 @@ namespace GTASaveData.GTA3
                 PedTypeId type = (PedTypeId) buf.ReadInt32();
                 short model = buf.ReadInt16();
                 int handle = buf.ReadInt32();
-                PlayerPed p = new PlayerPed(model, handle);
+                PlayerPed p = new PlayerPed(model, handle) { Type = type };
                 Serializer.Read(p, buf, fmt);
                 p.MaxWantedLevel = buf.ReadInt32();
                 p.MaxChaosLevel = buf.ReadInt32();
-                p.ModelName = buf.ReadString(PlayerPed.Limits.MaxModelNameLength);
+                p.ModelName = buf.ReadString(PlayerPed.MaxModelNameLength);
                 PlayerPeds.Add(p);
             }
 
@@ -77,16 +77,16 @@ namespace GTASaveData.GTA3
                 buf.Write(p, fmt);
                 buf.Write(p.MaxWantedLevel);
                 buf.Write(p.MaxChaosLevel);
-                buf.Write(p.ModelName, PlayerPed.Limits.MaxModelNameLength);
+                buf.Write(p.ModelName, PlayerPed.MaxModelNameLength);
             }
 
-            Debug.Assert(buf.Offset == SizeOfObject<PlayerPedPool>(this, fmt));
+            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
             int headerSize = 2 * sizeof(int) + sizeof(short);
-            int footerSize = 2 * sizeof(int) + PlayerPed.Limits.MaxModelNameLength;
+            int footerSize = 2 * sizeof(int) + PlayerPed.MaxModelNameLength;
 
             int size = 0;
             foreach (PlayerPed p in PlayerPeds)

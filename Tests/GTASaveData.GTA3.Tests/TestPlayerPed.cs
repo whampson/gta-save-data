@@ -14,10 +14,10 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.CreatedBy, f => f.PickRandom<CharCreatedBy>())
                 .RuleFor(x => x.Health, f => f.Random.Float())
                 .RuleFor(x => x.Armor, f => f.Random.Float())
-                .RuleFor(x => x.Weapons, f => Generator.Array(PlayerPed.Limits.NumWeapons, g => Generator.Generate<Weapon, TestWeapon>(format)))
+                .RuleFor(x => x.Weapons, f => Generator.Array(PlayerPed.NumWeapons, g => Generator.Generate<Weapon, TestWeapon>(format)))
                 .RuleFor(x => x.MaxWeaponTypeAllowed, f => f.Random.Byte())
                 .RuleFor(x => x.MaxStamina, f => f.Random.Float())
-                .RuleFor(x => x.TargetableObjects, f => Generator.Array(PlayerPed.Limits.NumTargetableObjects, g => f.Random.Int()));
+                .RuleFor(x => x.TargetableObjects, f => Generator.Array(PlayerPed.NumTargetableObjects, g => f.Random.Int()));
 
             return model.Generate();
         }

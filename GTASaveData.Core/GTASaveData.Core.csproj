@@ -9,10 +9,10 @@
     <Product>GTASaveData</Product>
     <Description>Shared objects and common APIs for the GTASaveData library.</Description>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
-    <AssemblyVersion>1.0.0.749</AssemblyVersion>
-    <FileVersion>1.0.0.749</FileVersion>
+    <AssemblyVersion>1.0.0.750</AssemblyVersion>
+    <FileVersion>1.0.0.750</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.0-beta-55</Version>
+    <Version>1.0.0-beta-56</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
