@@ -6,13 +6,10 @@ namespace GTASaveData.GTA3
 {
     public class DamageManager : SaveDataObject, IEquatable<DamageManager>
     {
-        public static class Limits
-        {
-            public const int NumWheels = 4;
-            public const int NumDoors = 6;
-            public const int NumLights = 4;
-            public const int NumPanels = 7;
-        }
+        public const int NumWheels = 4;
+        public const int NumDoors = 6;
+        public const int NumLights = 4;
+        public const int NumPanels = 7;
 
         private float m_wheelDamageEffect;
         private byte m_engine;
@@ -67,10 +64,10 @@ namespace GTASaveData.GTA3
         public DamageManager()
         {
             WheelDamageEffect = 0.75f;
-            Wheels = ArrayHelper.CreateArray<WheelStatus>(Limits.NumWheels);
-            Doors = ArrayHelper.CreateArray<DoorStatus>(Limits.NumDoors);
-            Lights = ArrayHelper.CreateArray<LightStatus>(Limits.NumLights);
-            Panels = ArrayHelper.CreateArray<PanelStatus>(Limits.NumPanels);
+            Wheels = ArrayHelper.CreateArray<WheelStatus>(NumWheels);
+            Doors = ArrayHelper.CreateArray<DoorStatus>(NumDoors);
+            Lights = ArrayHelper.CreateArray<LightStatus>(NumLights);
+            Panels = ArrayHelper.CreateArray<PanelStatus>(NumPanels);
             Field24h = 1;
         }
 
@@ -129,22 +126,22 @@ namespace GTASaveData.GTA3
         {
             WheelDamageEffect = buf.ReadFloat();
             Engine = buf.ReadByte();
-            Wheels = buf.Read<WheelStatus>(Limits.NumWheels);
-            Doors = buf.Read<DoorStatus>(Limits.NumDoors);
+            Wheels = buf.Read<WheelStatus>(NumWheels);
+            Doors = buf.Read<DoorStatus>(NumDoors);
             buf.Skip(1);
             int lightStatus = buf.ReadInt32();
             int panelStatus = buf.ReadInt32();
             Field24h = buf.ReadInt32();
 
             Lights.Clear();
-            for (int i = 0; i < Limits.NumLights; i++)
+            for (int i = 0; i < NumLights; i++)
             {
                 Lights.Add((LightStatus) (lightStatus & 0x3));
                 lightStatus >>= 2;
             }
 
             Panels.Clear();
-            for (int i = 0; i < Limits.NumPanels; i++)
+            for (int i = 0; i < NumPanels; i++)
             {
                 Panels.Add((PanelStatus) (panelStatus & 0xF));
                 panelStatus >>= 4;
@@ -158,20 +155,20 @@ namespace GTASaveData.GTA3
             int lightStatus = 0;
             int panelStatus = 0;
 
-            for (int i = 0; i < Limits.NumLights; i++)
+            for (int i = 0; i < NumLights; i++)
             {
                 lightStatus |= (((int) Lights[i]) & 0x3) << (i * 2);
             }
 
-            for (int i = 0; i < Limits.NumPanels; i++)
+            for (int i = 0; i < NumPanels; i++)
             {
                 panelStatus |= (((int) Panels[i]) & 0xF) << (i * 4);
             }
 
             buf.Write(WheelDamageEffect);
             buf.Write(Engine);
-            buf.Write(Wheels.ToArray(), Limits.NumWheels);
-            buf.Write(Doors.ToArray(), Limits.NumDoors);
+            buf.Write(Wheels.ToArray(), NumWheels);
+            buf.Write(Doors.ToArray(), NumDoors);
             buf.Skip(1);
             buf.Write(lightStatus);
             buf.Write(panelStatus);

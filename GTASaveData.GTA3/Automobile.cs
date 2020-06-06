@@ -17,6 +17,10 @@ namespace GTASaveData.GTA3
             : this(0, 0)
         { }
 
+        public Automobile(short model)
+            : this(model, 0)
+        { }
+
         public Automobile(short model, int handle)
             : base(VehicleType.Car, model, handle)
         {
@@ -34,7 +38,7 @@ namespace GTASaveData.GTA3
             base.ReadData(buf, fmt);
 
             Damage = buf.Read<DamageManager>();
-            buf.Skip(GetSize(fmt) - buf.Offset);    // The rest is useless
+            buf.Skip(SizeOfType<Automobile>(fmt) - buf.Offset);    // The rest is useless
 
             Debug.Assert(buf.Offset == SizeOfType<Automobile>(fmt));
         }
@@ -44,30 +48,17 @@ namespace GTASaveData.GTA3
             base.WriteData(buf, fmt);
 
             buf.Write(Damage);
-            buf.Skip(GetSize(fmt) - buf.Offset);
+            buf.Skip(SizeOfType<Automobile>(fmt) - buf.Offset);
 
             Debug.Assert(buf.Offset == SizeOfType<Automobile>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsMobile)
-            {
-                return 0x5AC;
-            }
-            if (fmt.IsPS2 && fmt.IsJapanese)
-            {
-                return 0x59C;
-            }
-            if (fmt.IsPS2)
-            {
-                return 0x5BC;
-            }
-            if (fmt.IsPC || fmt.IsXbox)
-            {
-                return 0x5A8;
-            }
-
+            if (fmt.IsPS2 && fmt.IsJapanese) return 0x59C;
+            if (fmt.IsPC || fmt.IsXbox) return 0x5A8;
+            if (fmt.IsMobile) return 0x5AC;
+            if (fmt.IsPS2) return 0x5BC;
             throw SizeNotDefined(fmt);
         }
 

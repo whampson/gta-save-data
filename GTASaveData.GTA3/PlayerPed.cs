@@ -218,7 +218,6 @@ namespace GTASaveData.GTA3
             if (fmt.IsXbox) return 0x5F4;
             if (fmt.IsiOS) return 0x614;
             if (fmt.IsAndroid) return 0x618;
-
             throw SizeNotDefined(fmt);
         }
 

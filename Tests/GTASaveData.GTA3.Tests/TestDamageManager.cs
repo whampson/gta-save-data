@@ -11,10 +11,10 @@ namespace GTASaveData.GTA3.Tests
             Faker<DamageManager> model = new Faker<DamageManager>()
                 .RuleFor(x => x.WheelDamageEffect, f => f.Random.Float())
                 .RuleFor(x => x.Engine, f => f.Random.Byte())
-                .RuleFor(x => x.Wheels, f => Generator.Array(DamageManager.Limits.NumWheels, g => f.PickRandom<WheelStatus>()))
-                .RuleFor(x => x.Doors, f => Generator.Array(DamageManager.Limits.NumDoors, g => f.PickRandom<DoorStatus>()))
-                .RuleFor(x => x.Lights, f => Generator.Array(DamageManager.Limits.NumLights, g => f.PickRandom<LightStatus>()))
-                .RuleFor(x => x.Panels, f => Generator.Array(DamageManager.Limits.NumPanels, g => f.PickRandom<PanelStatus>()))
+                .RuleFor(x => x.Wheels, f => Generator.Array(DamageManager.NumWheels, g => f.PickRandom<WheelStatus>()))
+                .RuleFor(x => x.Doors, f => Generator.Array(DamageManager.NumDoors, g => f.PickRandom<DoorStatus>()))
+                .RuleFor(x => x.Lights, f => Generator.Array(DamageManager.NumLights, g => f.PickRandom<LightStatus>()))
+                .RuleFor(x => x.Panels, f => Generator.Array(DamageManager.NumPanels, g => f.PickRandom<PanelStatus>()))
                 .RuleFor(x => x.Field24h, f => f.Random.Int());
 
             return model.Generate();

@@ -250,7 +250,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            buf.Skip(4);
+            if (!fmt.IsPS2) buf.Skip(4);
             Matrix m = new Matrix();
             m.Right = buf.Read<Vector3D>();
             buf.Skip(4);
@@ -259,12 +259,14 @@ namespace GTASaveData.GTA3
             m.Up = buf.Read<Vector3D>();
             buf.Skip(4);
             m.Position = buf.Read<Vector3D>();
+            buf.Skip(4);
             Matrix = m;
-            buf.Skip(16);
-            long eFlags = buf.ReadInt64();
-            EntityFlags = (EntityFlags) (eFlags & ~0xFF);
-            EntityType = (EntityType) (eFlags & 0x07);
-            EntityStatus = (EntityStatus) ((eFlags & 0xF8) >> 3);
+            if (fmt.IsPC || fmt.IsXbox) buf.Skip(12);
+            if (fmt.IsiOS) buf.Skip(15);
+            if (fmt.IsAndroid) buf.Skip(16);
+            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(28);
+            LoadEntityFlags(buf, fmt);
+            if (fmt.IsiOS) buf.Skip(1);
             buf.Skip(212);
             AutoPilot = buf.Read<AutoPilot>();
             Color1 = buf.ReadByte();
@@ -306,7 +308,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            buf.Skip(4);
+            if (!fmt.IsPS2) buf.Skip(4);
             buf.Write(Matrix.Right);
             buf.Skip(4);
             buf.Write(Matrix.Forward);
@@ -314,8 +316,13 @@ namespace GTASaveData.GTA3
             buf.Write(Matrix.Up);
             buf.Skip(4);
             buf.Write(Matrix.Position);
-            buf.Skip(16);
+            buf.Skip(4);
+            if (fmt.IsPC || fmt.IsXbox) buf.Skip(12);
+            if (fmt.IsiOS) buf.Skip(15);
+            if (fmt.IsAndroid) buf.Skip(16);
+            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(28);
             SaveEntityFlags(buf, fmt);
+            if (fmt.IsiOS) buf.Skip(1);
             buf.Skip(212);
             buf.Write(AutoPilot);
             buf.Write(Color1);
