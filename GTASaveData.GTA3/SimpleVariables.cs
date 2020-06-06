@@ -30,10 +30,21 @@ namespace GTASaveData.GTA3
         private WeatherType m_newWeatherType;
         private WeatherType m_forcedWeatherType;
         private float m_weatherInterpolationValue;
+        private int m_prefsMusicVolume;
+        private int m_prefsSfxVolume;
+        private bool m_prefsUseVibration;
+        private bool m_prefsStereoMono;
+        private RadioStation m_prefsRadioStation;
+        private int m_prefsBrightness;
+        private bool m_prefsShowSubtitles;
+        private Language m_prefsLanguage;
+        private bool m_prefsUseWideScreen;
+        private bool m_blurOn;
         private Date m_compileDateAndTime;
         private int m_weatherTypeInList;
         private float m_cameraCarZoomIndicator;
         private float m_cameraPedZoomIndicator;
+        private QuickSaveState m_isQuickSave;
 
         public string LastMissionPassedName
         {
@@ -164,6 +175,67 @@ namespace GTASaveData.GTA3
             set { m_weatherInterpolationValue = value; OnPropertyChanged(); }
         }
 
+        public int PrefsMusicVolume
+        {
+            get { return m_prefsMusicVolume; }
+            set { m_prefsMusicVolume = value; OnPropertyChanged(); }
+        }
+
+        public int PrefsSfxVolume
+        {
+            get { return m_prefsSfxVolume; }
+            set { m_prefsSfxVolume = value; OnPropertyChanged(); }
+        }
+
+        public bool PrefsUseVibration
+        {
+            get { return m_prefsUseVibration; }
+            set { m_prefsUseVibration = value; OnPropertyChanged(); }
+        }
+
+        public bool PrefsStereoMono
+        {
+            get { return m_prefsStereoMono; }
+            set { m_prefsStereoMono = value; OnPropertyChanged(); }
+        }
+
+        public RadioStation PrefsRadioStation
+        {
+            get { return m_prefsRadioStation; }
+            set { m_prefsRadioStation = value; OnPropertyChanged(); }
+        }
+
+        public int PrefsBrightness
+        {
+            get { return m_prefsBrightness; }
+            set { m_prefsBrightness = value; OnPropertyChanged(); }
+        }
+
+        public bool PrefsShowSubtitles
+        {
+            get { return m_prefsShowSubtitles; }
+            set { m_prefsShowSubtitles = value; OnPropertyChanged(); }
+        }
+
+        public Language PrefsLanguage
+        {
+            get { return m_prefsLanguage; }
+            set { m_prefsLanguage = value; OnPropertyChanged(); }
+        }
+
+        public bool PrefsUseWideScreen
+        {
+            get { return m_prefsUseWideScreen; }
+            set { m_prefsUseWideScreen = value; OnPropertyChanged(); }
+        }
+
+        public bool BlurOn
+        {
+            get { return m_blurOn; }
+            set { m_blurOn = value; OnPropertyChanged(); }
+        }
+
+
         [Obsolete("Not used by the game.")]
         public Date CompileDateAndTime
         {
@@ -189,9 +261,17 @@ namespace GTASaveData.GTA3
             set { m_cameraPedZoomIndicator = value; OnPropertyChanged(); }
         }
 
+        public QuickSaveState IsQuickSave
+        {
+            get { return m_isQuickSave; }
+            set { m_isQuickSave = value; OnPropertyChanged(); }
+        }
+
         public SimpleVariables()
         {
             LastMissionPassedName = "";
+            TimeStamp = DateTime.MinValue;
+            CompileDateAndTime = DateTime.MinValue;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -224,10 +304,42 @@ namespace GTASaveData.GTA3
             ForcedWeatherType = (WeatherType) buf.ReadInt16();
             buf.Align4();
             WeatherInterpolation = buf.ReadFloat();
+            if (fmt.IsPS2)
+            {
+                PrefsMusicVolume = buf.ReadInt32();
+                PrefsSfxVolume = buf.ReadInt32();
+                if (!fmt.IsAustralian)
+                {
+                    buf.ReadInt16();    // duplicate of CurrPadMode
+                    buf.Align4();
+                }
+                PrefsUseVibration = buf.ReadBool();
+                buf.Align4();
+                PrefsStereoMono = buf.ReadBool();
+                buf.Align4();
+                PrefsRadioStation = (RadioStation) buf.ReadByte();
+                buf.Align4();
+                PrefsBrightness = buf.ReadInt32();
+                if (!fmt.IsAustralian)
+                {
+                    buf.ReadBool();     // duplicate of BlurOn
+                    buf.Align4();
+                }
+                PrefsShowSubtitles = buf.ReadBool();
+                buf.Align4();
+                PrefsLanguage = (Language) buf.ReadInt32();
+                PrefsUseWideScreen = buf.ReadBool();
+                buf.Align4();
+                buf.ReadInt16();        // duplicate of CurrPadMode
+                buf.Align4();
+                BlurOn = buf.ReadBool();
+                buf.Align4();
+            }
             CompileDateAndTime = buf.Read<Date>();
             WeatherTypeInList = buf.ReadInt32();
             CameraCarZoomIndicator = buf.ReadFloat();
             CameraPedZoomIndicator = buf.ReadFloat();
+            if (fmt.IsMobile) IsQuickSave = (QuickSaveState) buf.ReadInt32();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
@@ -236,7 +348,7 @@ namespace GTASaveData.GTA3
         {
             if (!fmt.IsPS2) buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
             if (fmt.IsPC || fmt.IsXbox) buf.Write(TimeStamp);
-            buf.Write(GTA3Save.SizeOfGameInBytes + 1);
+            buf.Write((fmt.IsPS2 && fmt.IsJapanese) ? GTA3Save.SizeOfGameInBytes : GTA3Save.SizeOfGameInBytes + 1);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
             buf.Write(MillisecondsPerGameMinute);
@@ -262,10 +374,42 @@ namespace GTASaveData.GTA3
             buf.Write((short) ForcedWeatherType);
             buf.Align4();
             buf.Write(WeatherInterpolation);
+            if (fmt.IsPS2)
+            {
+                buf.Write(PrefsMusicVolume);
+                buf.Write(PrefsSfxVolume);
+                if (!fmt.IsAustralian)
+                {
+                    buf.Write(CurrPadMode);
+                    buf.Align4();
+                }
+                buf.Write(PrefsUseVibration);
+                buf.Align4();
+                buf.Write(PrefsStereoMono);
+                buf.Align4();
+                buf.Write((byte) PrefsRadioStation);
+                buf.Align4();
+                buf.Write(PrefsBrightness);
+                if (!fmt.IsAustralian)
+                {
+                    buf.Write(BlurOn);
+                    buf.Align4();
+                }
+                buf.Write(PrefsShowSubtitles);
+                buf.Align4();
+                buf.Write((int) PrefsLanguage);
+                buf.Write(PrefsUseWideScreen);
+                buf.Align4();
+                buf.Write(CurrPadMode);
+                buf.Align4();
+                buf.Write(BlurOn);
+                buf.Align4();
+            }
             buf.Write(CompileDateAndTime);
             buf.Write(WeatherTypeInList);
             buf.Write(CameraCarZoomIndicator);
             buf.Write(CameraPedZoomIndicator);
+            if (fmt.IsMobile) buf.Write((int) IsQuickSave);
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
@@ -275,6 +419,18 @@ namespace GTASaveData.GTA3
             if (fmt.IsPC || fmt.IsXbox)
             {
                 return 0xBC;
+            }
+            if (fmt.IsPS2)
+            {
+                if (fmt.IsAustralian)
+                {
+                    return 0xA8;
+                }
+                return 0xB0;
+            }
+            if (fmt.IsMobile)
+            {
+                return 0xB0;
             }
 
             throw SizeNotDefined(fmt);
@@ -313,10 +469,21 @@ namespace GTASaveData.GTA3
                 && NewWeatherType.Equals(other.NewWeatherType)
                 && ForcedWeatherType.Equals(other.ForcedWeatherType)
                 && WeatherInterpolation.Equals(other.WeatherInterpolation)
+                && PrefsMusicVolume.Equals(other.PrefsMusicVolume)
+                && PrefsSfxVolume.Equals(other.PrefsSfxVolume)
+                && PrefsUseVibration.Equals(other.PrefsUseVibration)
+                && PrefsStereoMono.Equals(other.PrefsStereoMono)
+                && PrefsRadioStation.Equals(other.PrefsRadioStation)
+                && PrefsBrightness.Equals(other.PrefsBrightness)
+                && PrefsShowSubtitles.Equals(other.PrefsShowSubtitles)
+                && PrefsLanguage.Equals(other.PrefsLanguage)
+                && PrefsUseWideScreen.Equals(other.PrefsUseWideScreen)
+                && BlurOn.Equals(other.BlurOn)
                 && CompileDateAndTime.Equals(other.CompileDateAndTime)
                 && WeatherTypeInList.Equals(other.WeatherTypeInList)
                 && CameraCarZoomIndicator.Equals(other.CameraCarZoomIndicator)
-                && CameraPedZoomIndicator.Equals(other.CameraPedZoomIndicator);
+                && CameraPedZoomIndicator.Equals(other.CameraPedZoomIndicator)
+                && IsQuickSave.Equals(other.IsQuickSave);
         }
     }
 
@@ -345,6 +512,13 @@ namespace GTASaveData.GTA3
         Cloudy,
         Rainy,
         Foggy
+    }
+
+    public enum QuickSaveState
+    {
+        None,
+        Normal,
+        OnMission
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

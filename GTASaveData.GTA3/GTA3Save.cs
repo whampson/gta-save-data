@@ -264,7 +264,7 @@ namespace GTASaveData.GTA3
 
             // Skip over padding
             int dataLen = file.Length;
-            if (FileFormat.IsXbox) dataLen -= 20;
+            if (FileFormat.IsXbox) dataLen -= XboxHelper.SignatureLength;
             while (file.Position < dataLen - 4)
             {
                 totalSize += ReadBlock(file);
@@ -304,7 +304,6 @@ namespace GTASaveData.GTA3
             SaveObject(Streaming); totalSize += WriteBlock(file);
             SaveObject(PedTypeInfo); totalSize += WriteBlock(file);
 
-            // TODO: crashes if buffersize = 0
             for (int i = 0; i < MaxNumPaddingBlocks; i++)
             {
                 size = StreamBuffer.Align4((SizeOfGameInBytes - 3) - totalSize);
@@ -420,7 +419,6 @@ namespace GTASaveData.GTA3
 
         protected override int GetBufferSize()
         {
-            // TODO: confirm these
             if (FileFormat.IsPS2)
             {
                 return 50000;
@@ -504,8 +502,7 @@ namespace GTASaveData.GTA3
             );
 
             public static readonly FileFormat Xbox = new FileFormat(
-                "Xbox",
-                GameConsole.Xbox
+                "Xbox", GameConsole.Xbox
             );
 
             public static FileFormat[] GetAll()
