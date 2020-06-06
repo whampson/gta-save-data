@@ -7,13 +7,10 @@ namespace GTASaveData.GTA3
 {
     public class RunningScript : SaveDataObject, IEquatable<RunningScript>
     {
-        public static class Limits
-        {
-            public const int MaxNameLength = 8;
-            public const int MaxStackDepth = 6;
-            public const int MaxStackDepthPS2 = 4;
-            public const int NumLocalVariables = 16;
-        }
+        public const int MaxNameLength = 8;
+        public const int MaxStackDepth = 6;
+        public const int MaxStackDepthPS2 = 4;
+        public const int NumLocalVariables = 16;
 
         private uint m_pNextScript; // not loaded
         private uint m_pPrevScript; // not loaded
@@ -155,12 +152,12 @@ namespace GTASaveData.GTA3
         {
             NextScriptPointer = buf.ReadUInt32();
             PrevScriptPointer = buf.ReadUInt32();
-            Name = buf.ReadString(Limits.MaxNameLength);
+            Name = buf.ReadString(MaxNameLength);
             IP = buf.ReadUInt32();
             Stack = buf.Read<int>(GetMaxStackDepth(fmt));
             StackPointer = buf.ReadUInt16();
             buf.Align4();
-            LocalVariables = buf.Read<int>(Limits.NumLocalVariables);
+            LocalVariables = buf.Read<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
             ConditionResult = buf.ReadBool();
@@ -182,12 +179,12 @@ namespace GTASaveData.GTA3
         {
             buf.Write(NextScriptPointer);
             buf.Write(PrevScriptPointer);
-            buf.Write(Name, Limits.MaxNameLength);
+            buf.Write(Name, MaxNameLength);
             buf.Write(IP);
             buf.Write(Stack.ToArray(), GetMaxStackDepth(fmt));
             buf.Write(StackPointer);
             buf.Align4();
-            buf.Write(LocalVariables.ToArray(), Limits.NumLocalVariables);
+            buf.Write(LocalVariables.ToArray(), NumLocalVariables);
             buf.Write(TimerA);
             buf.Write(TimerB);
             buf.Write(ConditionResult);
@@ -244,7 +241,7 @@ namespace GTASaveData.GTA3
 
         public static int GetMaxStackDepth(FileFormat fmt)
         {
-            return (fmt.IsPS2) ? Limits.MaxStackDepthPS2 : Limits.MaxStackDepth;
+            return (fmt.IsPS2) ? MaxStackDepthPS2 : MaxStackDepth;
         }
     }
 }

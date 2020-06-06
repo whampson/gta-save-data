@@ -17,11 +17,11 @@ namespace GTASaveData.GTA3.Tests
             Faker<ScriptData> model = new Faker<ScriptData>()
                 .RuleFor(x => x.ScriptSpace, f => Generator.Array(varSpace, g => f.Random.Byte()))
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
-                .RuleFor(x => x.Contacts, f => Generator.Array(ScriptData.Limits.MaxNumContacts, g => Generator.Generate<Contact, TestContact>()))
-                .RuleFor(x => x.Collectives, f => Generator.Array(ScriptData.Limits.MaxNumCollectives, g => Generator.Generate<Collective, TestCollective>()))
+                .RuleFor(x => x.Contacts, f => Generator.Array(ScriptData.MaxNumContacts, g => Generator.Generate<Contact, TestContact>()))
+                .RuleFor(x => x.Collectives, f => Generator.Array(ScriptData.MaxNumCollectives, g => Generator.Generate<Collective, TestCollective>()))
                 .RuleFor(x => x.NextFreeCollectiveIndex, f => f.Random.Int())
-                .RuleFor(x => x.BuildingSwaps, f => Generator.Array(ScriptData.Limits.MaxNumBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
-                .RuleFor(x => x.InvisibilitySettings, f => Generator.Array(ScriptData.Limits.MaxNumInvisibilitySettings, g => Generator.Generate<InvisibleObject, TestInvisibleEntity>()))
+                .RuleFor(x => x.BuildingSwaps, f => Generator.Array(ScriptData.MaxNumBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
+                .RuleFor(x => x.InvisibilitySettings, f => Generator.Array(ScriptData.MaxNumInvisibilitySettings, g => Generator.Generate<InvisibleObject, TestInvisibleEntity>()))
                 .RuleFor(x => x.UsingAMultiScriptFile, f => f.Random.Bool())
                 .RuleFor(x => x.MainScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.LargestMissionScriptSize, f => f.Random.Int())
@@ -78,6 +78,36 @@ namespace GTASaveData.GTA3.Tests
 
             Assert.Equal(v0, r0);
             Assert.Equal(v1, r1);
+        }
+
+        [Fact]
+        public void ScriptSpace()
+        {
+            string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileFormats.PC, "CAT2");
+            using GTA3Save x = SaveData.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
+
+            byte b = 0xA5;
+            ushort s = 0xCCEE;
+            uint i = 0xCAFEBABE;
+            float f = 133.7f;
+            int offset = 420;
+
+            offset += x.Scripts.Write1ByteToScript(offset, b);
+            offset += x.Scripts.Write2BytesToScript(offset, s);
+            offset += x.Scripts.Write4BytesToScript(offset, i);
+            offset += x.Scripts.WriteFloatToScript(offset, f);
+            Assert.Equal(431, offset);
+
+            offset = 420;
+            offset += x.Scripts.Read1ByteFromScript(offset, out byte b2);
+            offset += x.Scripts.Read2BytesFromScript(offset, out ushort s2);
+            offset += x.Scripts.Read4BytesFromScript(offset, out uint i2);
+            offset += x.Scripts.ReadFloatFromScript(offset, out float f2);
+            Assert.Equal(431, offset);
+            Assert.Equal(b, b2);
+            Assert.Equal(s, s2);
+            Assert.Equal(i, i2);
+            Assert.Equal(f, f2);
         }
     }
 }

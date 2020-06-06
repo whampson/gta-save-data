@@ -9,13 +9,10 @@ namespace GTASaveData.GTA3
 {
     public class ScriptData : SaveDataObject, IEquatable<ScriptData>
     {
-        public static class Limits
-        {
-            public const int MaxNumContacts = 16;
-            public const int MaxNumCollectives = 32;
-            public const int MaxNumBuildingSwaps = 25;
-            public const int MaxNumInvisibilitySettings = 20;
-        }
+        public const int MaxNumContacts = 16;
+        public const int MaxNumCollectives = 32;
+        public const int MaxNumBuildingSwaps = 25;
+        public const int MaxNumInvisibilitySettings = 20;
 
         private const int ScriptDataSize = 968;
 
@@ -145,26 +142,99 @@ namespace GTASaveData.GTA3
         public void SetGlobal(int index, int value)
         {
             byte[] intBits = BitConverter.GetBytes(value);
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < sizeof(int); i++)
             {
-                ScriptSpace[(index * 4) + i] = intBits[i];
+                ScriptSpace[(index * sizeof(int)) + i] = intBits[i];
             }
         }
 
         public void SetGlobal(int index, float value)
         {
             byte[] floatBits = BitConverter.GetBytes(value);
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < sizeof(float); i++)
             {
-                ScriptSpace[(index * 4) + i] = floatBits[i];
+                ScriptSpace[(index * sizeof(float)) + i] = floatBits[i];
             }
         }
 
-        // TODO: script read/write byte, short, int functions
+        public int Read1ByteFromScript(int offset, out byte value)
+        {
+            value = ScriptSpace[offset];
+            return sizeof(byte);
+        }
+
+        public int Read2BytesFromScript(int offset, out ushort value)
+        {
+            byte[] data = new byte[sizeof(ushort)];
+            for (int i = 0; i < sizeof(ushort); i++)
+            {
+                data[i] = ScriptSpace[offset + i];
+            }
+            value = BitConverter.ToUInt16(data, 0);
+            return sizeof(ushort);
+        }
+
+        public int Read4BytesFromScript(int offset, out uint value)
+        {
+            byte[] data = new byte[sizeof(uint)];
+            for (int i = 0; i < sizeof(uint); i++)
+            {
+                data[i] = ScriptSpace[offset + i];
+            }
+            value = BitConverter.ToUInt32(data, 0);
+            return sizeof(uint);
+        }
+
+        public int ReadFloatFromScript(int offset, out float value)
+        {
+            byte[] data = new byte[sizeof(float)];
+            for (int i = 0; i < sizeof(float); i++)
+            {
+                data[i] = ScriptSpace[offset + i];
+            }
+            value = BitConverter.ToSingle(data, 0);
+            return sizeof(float);
+        }
+
+        public int Write1ByteToScript(int offset, byte value)
+        {
+            ScriptSpace[offset] = value;
+            return sizeof(byte);
+        }
+
+        public int Write2BytesToScript(int offset, ushort value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            for (int i = 0; i < sizeof(ushort); i++)
+            {
+                ScriptSpace[offset + i] = data[i];
+            }
+            return sizeof(ushort);
+        }
+
+        public int Write4BytesToScript(int offset, uint value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            for (int i = 0; i < sizeof(uint); i++)
+            {
+                ScriptSpace[offset + i] = data[i];
+            }
+            return sizeof(uint);
+        }
+
+        public int WriteFloatToScript(int offset, float value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            for (int i = 0; i < sizeof(float); i++)
+            {
+                ScriptSpace[offset + i] = data[i];
+            }
+            return sizeof(float);
+        }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3Save.ReadSaveHeader(buf, "SCR");
+            int size = GTA3VCSave.ReadSaveHeader(buf, "SCR");
 
             int varSpace = buf.ReadInt32();
             ScriptSpace = buf.Read<byte>(varSpace);
@@ -172,11 +242,11 @@ namespace GTASaveData.GTA3
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
             OnAMissionFlag = buf.ReadInt32();
-            Contacts = buf.Read<Contact>(Limits.MaxNumContacts);
-            Collectives = buf.Read<Collective>(Limits.MaxNumCollectives);
+            Contacts = buf.Read<Contact>(MaxNumContacts);
+            Collectives = buf.Read<Collective>(MaxNumCollectives);
             NextFreeCollectiveIndex = buf.ReadInt32();
-            BuildingSwaps = buf.Read<BuildingSwap>(Limits.MaxNumBuildingSwaps);
-            InvisibilitySettings = buf.Read<InvisibleObject>(Limits.MaxNumInvisibilitySettings);
+            BuildingSwaps = buf.Read<BuildingSwap>(MaxNumBuildingSwaps);
+            InvisibilitySettings = buf.Read<InvisibleObject>(MaxNumInvisibilitySettings);
             UsingAMultiScriptFile = buf.ReadBool();
             buf.ReadByte();
             buf.ReadUInt16();
@@ -187,25 +257,25 @@ namespace GTASaveData.GTA3
             int runningScripts = buf.ReadInt32();
             ActiveScripts = buf.Read<RunningScript>(runningScripts, fmt);
 
-            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
-            Debug.Assert(size == SizeOfObject(this, fmt) - GTA3Save.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(size == SizeOfObject(this, fmt) - GTA3VCSave.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             int size = SizeOfObject(this, fmt);
-            GTA3Save.WriteSaveHeader(buf, "SCR", size - GTA3Save.BlockHeaderSize);
+            GTA3VCSave.WriteSaveHeader(buf, "SCR", size - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(ScriptSpace.Count);
             buf.Write(ScriptSpace.ToArray());
             buf.Align4();
             buf.Write(ScriptDataSize);
             buf.Write(OnAMissionFlag);
-            buf.Write(Contacts.ToArray(), Limits.MaxNumContacts);
-            buf.Write(Collectives.ToArray(), Limits.MaxNumCollectives);
+            buf.Write(Contacts.ToArray(), MaxNumContacts);
+            buf.Write(Collectives.ToArray(), MaxNumCollectives);
             buf.Write(NextFreeCollectiveIndex);
-            buf.Write(BuildingSwaps.ToArray(), Limits.MaxNumBuildingSwaps);
-            buf.Write(InvisibilitySettings.ToArray(), Limits.MaxNumInvisibilitySettings);
+            buf.Write(BuildingSwaps.ToArray(), MaxNumBuildingSwaps);
+            buf.Write(InvisibilitySettings.ToArray(), MaxNumInvisibilitySettings);
             buf.Write(UsingAMultiScriptFile);
             buf.Write((byte) 0);
             buf.Write((short) 0);
@@ -214,7 +284,7 @@ namespace GTASaveData.GTA3
             buf.Write(NumberOfMissionScripts);
             buf.Write((short) 0);
             buf.Write(ActiveScripts.Count);
-            buf.Write(ActiveScripts.ToArray(), format: fmt);
+            buf.Write(ActiveScripts.ToArray(), fmt);
 
             Debug.Assert(buf.Offset == size);
         }
@@ -224,7 +294,7 @@ namespace GTASaveData.GTA3
             return SizeOfType<RunningScript>(fmt) * ActiveScripts.Count
                 + StreamBuffer.Align4(ScriptSpace.Count)
                 + ScriptDataSize
-                + GTA3Save.BlockHeaderSize
+                + GTA3VCSave.BlockHeaderSize
                 + 3 * sizeof(int);
         }
 
