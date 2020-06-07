@@ -2,7 +2,8 @@
 
 namespace GTASaveData.GTA3
 {
-    public class Collective : SaveDataObject, IEquatable<Collective>
+    public class Collective : SaveDataObject,
+        IEquatable<Collective>, IDeepClonable<Collective>
     {
         private int m_index;
         private int m_field04h;
@@ -23,6 +24,12 @@ namespace GTASaveData.GTA3
         {
             Index = -1;
             Field04h = 0;
+        }
+
+        public Collective(Collective other)
+        {
+            Index = other.Index;
+            Field04h = other.Field04h;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -56,6 +63,11 @@ namespace GTASaveData.GTA3
 
             return Index.Equals(other.Index)
                 && Field04h.Equals(other.Field04h);
+        }
+
+        public Collective DeepClone()
+        {
+            return new Collective(this);
         }
     }
 }

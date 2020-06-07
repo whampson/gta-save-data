@@ -3,7 +3,8 @@ using System;
 
 namespace GTASaveData.GTA3
 {
-    public abstract class Vehicle : Entity, IEquatable<Vehicle>
+    public abstract class Vehicle : Entity,
+        IEquatable<Vehicle>
     {
         private VehicleType m_type;
         private short m_modelIndex;
@@ -203,6 +204,7 @@ namespace GTASaveData.GTA3
         }
 
         public Vehicle(VehicleType type, short model, int handle)
+            : base()
         {
             Type = type;
             ModelIndex = model;

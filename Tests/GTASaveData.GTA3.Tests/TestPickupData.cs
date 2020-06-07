@@ -9,9 +9,9 @@ namespace GTASaveData.GTA3.Tests
         public override PickupData GenerateTestObject(FileFormat format)
         {
             Faker<PickupData> model = new Faker<PickupData>()
-                .RuleFor(x => x.Pickups, f => Generator.Array(PickupData.Limits.MaxNumPickups, g => Generator.Generate<Pickup, TestPickup>()))
+                .RuleFor(x => x.Pickups, f => Generator.Array(PickupData.MaxNumPickups, g => Generator.Generate<Pickup, TestPickup>()))
                 .RuleFor(x => x.LastCollectedIndex, f => f.Random.Short())
-                .RuleFor(x => x.PickupsCollected, f => Generator.Array(PickupData.Limits.MaxNumCollectedPickups, g => f.Random.Int()));
+                .RuleFor(x => x.PickupsCollected, f => Generator.Array(PickupData.MaxNumCollectedPickups, g => f.Random.Int()));
 
             return model.Generate();
         }

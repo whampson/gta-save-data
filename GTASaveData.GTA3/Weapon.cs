@@ -3,7 +3,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class Weapon : SaveDataObject, IEquatable<Weapon>
+    public class Weapon : SaveDataObject,
+        IEquatable<Weapon>, IDeepClonable<Weapon>
     {
         private WeaponType m_type;
         private WeaponState m_state;
@@ -51,6 +52,15 @@ namespace GTASaveData.GTA3
 
         public Weapon()
         { }
+
+        public Weapon(Weapon other)
+        {
+            Type = other.Type;
+            State = other.State;
+            AmmoInClip = other.AmmoInClip;
+            AmmoInClip = other.AmmoInClip;
+            Unknown = other.Unknown;
+        }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
@@ -111,6 +121,11 @@ namespace GTASaveData.GTA3
                 && AmmoInClip.Equals(other.AmmoInClip)
                 && AmmoInClip.Equals(other.AmmoInClip)
                 && Unknown.Equals(other.Unknown);
+        }
+
+        public Weapon DeepClone()
+        {
+            return new Weapon(this);
         }
     }
 

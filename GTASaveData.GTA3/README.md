@@ -26,10 +26,10 @@
 - [x] PedTypeInfo
 
 ### Platform Support
-- [ ] Android
-- [ ] iOS
+- [x] Android
+- [x] iOS
 - [x] PC
-- [ ] PS2 US/EU
-- [ ] PS2 AU
-- [ ] PS2 JP
-- [ ] Xbox
+- [x] PS2 US/EU
+- [x] PS2 AU
+- [x] PS2 JP
+- [x] Xbox

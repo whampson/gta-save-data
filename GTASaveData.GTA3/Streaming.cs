@@ -4,12 +4,10 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class Streaming : SaveDataObject, IEquatable<Streaming>
+    public class Streaming : SaveDataObject,
+        IEquatable<Streaming>, IDeepClonable<Streaming>
     {
-        public static class Limits
-        {
-            public const int NumberOfModels = 200;
-        }
+        public const int NumModels = 200;
 
         private Array<StreamingFlags> m_modelFlags;
         public Array<StreamingFlags> ModelFlags
@@ -20,19 +18,24 @@ namespace GTASaveData.GTA3
 
         public Streaming()
         {
-            ModelFlags = new Array<StreamingFlags>();
+            ModelFlags = ArrayHelper.CreateArray<StreamingFlags>(NumModels);
+        }
+
+        public Streaming(Streaming other)
+        {
+            ModelFlags = ArrayHelper.DeepClone(other.ModelFlags);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            ModelFlags = buf.Read<StreamingFlags>(Limits.NumberOfModels);
+            ModelFlags = buf.Read<StreamingFlags>(NumModels);
 
             Debug.Assert(buf.Offset == SizeOfType<Streaming>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            buf.Write(ModelFlags.ToArray(), Limits.NumberOfModels);
+            buf.Write(ModelFlags.ToArray(), NumModels);
 
             Debug.Assert(buf.Offset == SizeOfType<Streaming>());
         }
@@ -55,6 +58,11 @@ namespace GTASaveData.GTA3
             }
 
             return ModelFlags.SequenceEqual(other.ModelFlags);
+        }
+
+        public Streaming DeepClone()
+        {
+            return new Streaming(this);
         }
     }
 

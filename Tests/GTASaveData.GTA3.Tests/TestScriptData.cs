@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Newtonsoft.Json.Converters;
 using TestFramework;
 using Xunit;
 
@@ -29,6 +30,19 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.ActiveScripts, f => Generator.Array(runningScripts, g => Generator.Generate<RunningScript, TestRunningScript>(format)));
 
             return model.Generate();
+        }
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            ScriptData x0 = GenerateTestObject();
+            ScriptData x1 = new ScriptData(x0);
+
+            Assert.Equal(x0, x1);
+
+            // Prove that deep copy actually happened
+            x0.ActiveScripts[0].IP = 6969;
+            Assert.NotEqual(x0.ActiveScripts[0], x1.ActiveScripts[0]);
         }
 
         [Theory]

@@ -26,16 +26,18 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Size, f => f.Random.Float())
                 .RuleFor(x => x.Color, f => f.Random.UInt())
                 .RuleFor(x => x.DestroyWhenFar, f => f.Random.Bool())
-                .RuleFor(x => x.CreationChance, f => f.Random.SByte());
+                .RuleFor(x => x.CreationChance, f => f.Random.SByte())
+                .RuleFor(x => x.Unknown, f => (format.IsPS2) ? f.Random.Int() : default);
 
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            ParticleObject x0 = GenerateTestObject();
-            ParticleObject x1 = CreateSerializedCopy(x0, out byte[] data);
+            ParticleObject x0 = GenerateTestObject(format);
+            ParticleObject x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0.NextParticleObjectPointer, x1.NextParticleObjectPointer);
@@ -54,9 +56,10 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Color, x1.Color);
             Assert.Equal(x0.DestroyWhenFar, x1.DestroyWhenFar);
             Assert.Equal(x0.CreationChance, x1.CreationChance);
+            Assert.Equal(x0.Unknown, x1.Unknown);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
     }
 }

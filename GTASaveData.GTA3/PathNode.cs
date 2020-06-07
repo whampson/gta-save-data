@@ -3,7 +3,8 @@ using WpfEssentials;
 
 namespace GTASaveData.GTA3
 {
-    public class PathNode : ObservableObject, IEquatable<PathNode>
+    public class PathNode : ObservableObject,
+        IEquatable<PathNode>, IDeepClonable<PathNode>
     {
         private bool m_disabled;
         private bool m_betweenLevels;
@@ -23,6 +24,12 @@ namespace GTASaveData.GTA3
         public PathNode()
         { }
 
+        public PathNode(PathNode other)
+        {
+            Disabled = other.Disabled;
+            BetweenLevels = other.BetweenLevels;
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as PathNode);
@@ -37,6 +44,11 @@ namespace GTASaveData.GTA3
 
             return Disabled.Equals(other.Disabled)
                 && BetweenLevels.Equals(other.BetweenLevels);
+        }
+
+        public PathNode DeepClone()
+        {
+            return new PathNode(this);
         }
     }
 }

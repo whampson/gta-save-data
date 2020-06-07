@@ -4,7 +4,8 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class DamageManager : SaveDataObject, IEquatable<DamageManager>
+    public class DamageManager : SaveDataObject,
+        IEquatable<DamageManager>, IDeepClonable<DamageManager>
     {
         public const int NumWheels = 4;
         public const int NumDoors = 6;
@@ -75,10 +76,10 @@ namespace GTASaveData.GTA3
         {
             WheelDamageEffect = other.WheelDamageEffect;
             Engine = other.Engine;
-            Wheels = new Array<WheelStatus>(other.Wheels);
-            Doors = new Array<DoorStatus>(other.Doors);
-            Lights = new Array<LightStatus>(other.Lights);
-            Panels = new Array<PanelStatus>(other.Panels);
+            Wheels = ArrayHelper.DeepClone(other.Wheels);
+            Doors = ArrayHelper.DeepClone(other.Doors);
+            Lights = ArrayHelper.DeepClone(other.Lights);
+            Panels = ArrayHelper.DeepClone(other.Panels);
             Field24h = other.Field24h;
         }
 
@@ -201,6 +202,11 @@ namespace GTASaveData.GTA3
                 && Lights.SequenceEqual(other.Lights)
                 && Panels.SequenceEqual(other.Panels)
                 && Field24h.Equals(other.Field24h);
+        }
+
+        public DamageManager DeepClone()
+        {
+            return new DamageManager(this);
         }
     }
 

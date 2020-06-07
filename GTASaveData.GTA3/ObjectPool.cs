@@ -4,7 +4,8 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class ObjectPool : SaveDataObject, IEquatable<ObjectPool>
+    public class ObjectPool : SaveDataObject,
+        IEquatable<ObjectPool>, IDeepClonable<ObjectPool>
     {
         private Array<GameObject> m_objects;
 
@@ -23,6 +24,11 @@ namespace GTASaveData.GTA3
         public ObjectPool()
         {
             Objects = new Array<GameObject>();
+        }
+
+        public ObjectPool(ObjectPool other)
+        {
+            Objects = ArrayHelper.DeepClone(other.Objects);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -59,6 +65,11 @@ namespace GTASaveData.GTA3
             }
 
             return Objects.SequenceEqual(other.Objects);
+        }
+
+        public ObjectPool DeepClone()
+        {
+            return new ObjectPool(this);
         }
     }
 }

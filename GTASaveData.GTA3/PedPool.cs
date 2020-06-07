@@ -4,7 +4,8 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class PlayerPedPool : SaveDataObject, IEquatable<PlayerPedPool>
+    public class PlayerPedPool : SaveDataObject,
+        IEquatable<PlayerPedPool>, IDeepClonable<PlayerPedPool>
     {
         // Yes, you can have multiple player peds
         // You get some weird behavior though...
@@ -31,6 +32,11 @@ namespace GTASaveData.GTA3
         public PlayerPedPool()
         {
             PlayerPeds = new Array<PlayerPed>();
+        }
+
+        public PlayerPedPool(PlayerPedPool other)
+        {
+            PlayerPeds = ArrayHelper.DeepClone(other.PlayerPeds);
         }
 
         public PlayerPed GetPlayerPed()
@@ -112,6 +118,11 @@ namespace GTASaveData.GTA3
             }
 
             return PlayerPeds.SequenceEqual(other.PlayerPeds);
+        }
+
+        public PlayerPedPool DeepClone()
+        {
+            return new PlayerPedPool(this);
         }
     }
 }

@@ -7,7 +7,8 @@ using System.Linq;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class ScriptData : SaveDataObject, IEquatable<ScriptData>
+    public class ScriptData : SaveDataObject,
+        IEquatable<ScriptData>, IDeepClonable<ScriptData>
     {
         public const int MaxNumContacts = 16;
         public const int MaxNumCollectives = 32;
@@ -110,11 +111,27 @@ namespace GTASaveData.GTA3
         public ScriptData()
         {
             ScriptSpace = new Array<byte>();
-            Contacts = new Array<Contact>();
-            Collectives = new Array<Collective>();
-            BuildingSwaps = new Array<BuildingSwap>();
-            InvisibilitySettings = new Array<InvisibleObject>();
+            Contacts = ArrayHelper.CreateArray<Contact>(MaxNumContacts);
+            Collectives = ArrayHelper.CreateArray<Collective>(MaxNumCollectives);
+            BuildingSwaps = ArrayHelper.CreateArray<BuildingSwap>(MaxNumBuildingSwaps);
+            InvisibilitySettings = ArrayHelper.CreateArray<InvisibleObject>(MaxNumInvisibilitySettings);
             ActiveScripts = new Array<RunningScript>();
+        }
+
+        public ScriptData(ScriptData other)
+        {
+            ScriptSpace = ArrayHelper.DeepClone(other.ScriptSpace);
+            OnAMissionFlag = other.OnAMissionFlag;
+            Contacts = ArrayHelper.DeepClone(other.Contacts);
+            Collectives = ArrayHelper.DeepClone(other.Collectives);
+            NextFreeCollectiveIndex = other.NextFreeCollectiveIndex;
+            BuildingSwaps = ArrayHelper.DeepClone(other.BuildingSwaps);
+            InvisibilitySettings = ArrayHelper.DeepClone(other.InvisibilitySettings);
+            UsingAMultiScriptFile = other.UsingAMultiScriptFile;
+            MainScriptSize = other.MainScriptSize;
+            LargestMissionScriptSize = other.LargestMissionScriptSize;
+            NumberOfMissionScripts = other.NumberOfMissionScripts;
+            ActiveScripts = ArrayHelper.DeepClone(other.ActiveScripts);
         }
 
         public int GetGlobal(int index)
@@ -322,6 +339,11 @@ namespace GTASaveData.GTA3
                 && LargestMissionScriptSize.Equals(other.LargestMissionScriptSize)
                 && NumberOfMissionScripts.Equals(other.NumberOfMissionScripts)
                 && ActiveScripts.SequenceEqual(other.ActiveScripts);
+        }
+
+        public ScriptData DeepClone()
+        {
+            return new ScriptData(this);
         }
     }
 }

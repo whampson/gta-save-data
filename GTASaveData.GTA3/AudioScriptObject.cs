@@ -4,7 +4,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class AudioScriptObject : SaveDataObject, IEquatable<AudioScriptObject>
+    public class AudioScriptObject : SaveDataObject,
+        IEquatable<AudioScriptObject>, IDeepClonable<AudioScriptObject>
     {
         private int m_index;
         private short m_audioId;
@@ -37,6 +38,14 @@ namespace GTASaveData.GTA3
 
         public AudioScriptObject()
         { }
+
+        public AudioScriptObject(AudioScriptObject other)
+        {
+            Index = other.Index;
+            AudioId = other.AudioId;
+            Position = other.Position;
+            AudioEntity = other.AudioEntity;
+        }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
@@ -81,6 +90,11 @@ namespace GTASaveData.GTA3
                 && AudioId.Equals(other.AudioId)
                 && Position.Equals(other.Position)
                 && AudioEntity.Equals(other.AudioEntity);
+        }
+
+        public AudioScriptObject DeepClone()
+        {
+            return new AudioScriptObject(this);
         }
     }
 }

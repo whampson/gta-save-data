@@ -6,8 +6,10 @@ using System.Drawing;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class ParticleObject : Placeable, IEquatable<ParticleObject>
+    public class ParticleObject : SaveDataObject,
+        IEquatable<ParticleObject>, IDeepClonable<ParticleObject>
     {
+        private Vector3D m_position;
         private uint m_nextParticleObjectPointer;
         private uint m_prevParticleObjectPointer;
         private uint m_particlePointer;
@@ -25,6 +27,12 @@ namespace GTASaveData.GTA3
         private bool m_destroyWhenFar;
         private sbyte m_creationChance;
         private int m_unknown;
+
+        public Vector3D Position
+        {
+            get { return m_position; }
+            set { m_position = value; OnPropertyChanged(); }
+        }
 
         [Obsolete("Value overridden by the game.")]
         public uint NextParticleObjectPointer
@@ -126,8 +134,36 @@ namespace GTASaveData.GTA3
             set { m_creationChance = value; OnPropertyChanged(); }
         }
 
+        public int Unknown
+        {
+            get { return m_unknown; }
+            set { m_unknown = value; OnPropertyChanged(); }
+        }
+
         public ParticleObject()
         { }
+
+        public ParticleObject(ParticleObject other)
+        {
+            Position = other.Position;
+            NextParticleObjectPointer = other.NextParticleObjectPointer;
+            PrevParticleObjectPointer = other.PrevParticleObjectPointer;
+            ParticlePointer = other.ParticlePointer;
+            Timer = other.Timer;
+            Type = other.Type;
+            ParticleType = other.ParticleType;
+            NumEffectCycles = other.NumEffectCycles;
+            SkipFrames = other.SkipFrames;
+            FrameCounter = other.FrameCounter;
+            State = other.State;
+            Target = other.Target;
+            Spread = other.Spread;
+            Size = other.Size;
+            Color = other.Color;
+            DestroyWhenFar = other.DestroyWhenFar;
+            CreationChance = other.CreationChance;
+            Unknown = other.Unknown;
+        }
 
         public Color GetColor()
         {
@@ -149,8 +185,12 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            base.ReadData(buf, fmt);
-            
+            if (!fmt.IsPS2) buf.Skip(4);
+            buf.Skip(48);
+            Position = buf.Read<Vector3D>();
+            buf.Skip(4);
+            if (!(fmt.IsPS2 && fmt.IsJapanese)) buf.Skip(8);
+            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(24);
             NextParticleObjectPointer = buf.ReadUInt32();
             PrevParticleObjectPointer = buf.ReadUInt32();
             ParticlePointer = buf.ReadUInt32();
@@ -169,18 +209,19 @@ namespace GTASaveData.GTA3
             DestroyWhenFar = buf.ReadBool();
             CreationChance = buf.ReadSByte();
             buf.Align4();
-            if (fmt.IsPS2)
-            {
-                m_unknown = buf.ReadInt32();
-            }
+            if (fmt.IsPS2) Unknown = buf.ReadInt32();
 
             Debug.Assert(buf.Offset == SizeOfType<ParticleObject>(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            base.WriteData(buf, fmt);
-
+            if (!fmt.IsPS2) buf.Skip(4);
+            buf.Skip(48);
+            buf.Write(Position);
+            buf.Skip(4);
+            if (!(fmt.IsPS2 && fmt.IsJapanese)) buf.Skip(8);
+            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(24);
             buf.Write(NextParticleObjectPointer);
             buf.Write(PrevParticleObjectPointer);
             buf.Write(ParticlePointer);
@@ -199,25 +240,16 @@ namespace GTASaveData.GTA3
             buf.Write(DestroyWhenFar);
             buf.Write(CreationChance);
             buf.Align4();
-            if (fmt.IsPS2)
-            {
-                buf.Write(m_unknown);
-            }
+            if (fmt.IsPS2) buf.Write(Unknown);
 
             Debug.Assert(buf.Offset == SizeOfType<ParticleObject>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPS2 && fmt.IsJapanese)
-            {
-                return 0x80;
-            }
-            if (fmt.IsPS2)
-            {
-                return 0xA0;
-            }
-            
+            if (fmt.IsPS2 && fmt.IsJapanese) return 0x80;
+            if (fmt.IsPS2) return 0xA0;
+
             return 0x88;
         }
 
@@ -233,7 +265,7 @@ namespace GTASaveData.GTA3
                 return false;
             }
 
-            return base.Equals(other)
+            return Position.Equals(other.Position)
                 && NextParticleObjectPointer.Equals(other.NextParticleObjectPointer)
                 && PrevParticleObjectPointer.Equals(other.PrevParticleObjectPointer)
                 && ParticlePointer.Equals(other.ParticlePointer)
@@ -249,7 +281,13 @@ namespace GTASaveData.GTA3
                 && Size.Equals(other.Size)
                 && Color.Equals(other.Color)
                 && DestroyWhenFar.Equals(other.DestroyWhenFar)
-                && CreationChance.Equals(other.CreationChance);
+                && CreationChance.Equals(other.CreationChance)
+                && Unknown.Equals(other.Unknown);
+        }
+
+        public ParticleObject DeepClone()
+        {
+            return new ParticleObject(this);
         }
     }
 

@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<Phone> model = new Faker<Phone>()
                 .RuleFor(x => x.Position, f => Generator.Vector3D(f))
-                .RuleFor(x => x.Messages, f => Generator.Array(Phone.Limits.MaxNumMessages, g => f.Random.UInt()))
+                .RuleFor(x => x.Messages, f => Generator.Array(Phone.MaxNumMessages, g => f.Random.UInt()))
                 .RuleFor(x => x.RepeatedMessageStartTime, f => f.Random.UInt())
                 .RuleFor(x => x.Handle, f => f.Random.Int())
                 .RuleFor(x => x.State, f => f.PickRandom<PhoneState>())

@@ -4,13 +4,11 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class RestartData : SaveDataObject, IEquatable<RestartData>
+    public class RestartData : SaveDataObject,
+        IEquatable<RestartData>, IDeepClonable<RestartData>
     {
-        public static class Limits
-        {
-            public const int MaxNumWastedRestarts = 8;
-            public const int MaxNumBustedRestarts = 8;
-        }
+        public const int MaxNumWastedRestarts = 8;
+        public const int MaxNumBustedRestarts = 8;
 
         private Array<RestartPoint> m_wastedRestartPoints;
         private Array<RestartPoint> m_bustedRestartPoints;
@@ -85,17 +83,31 @@ namespace GTASaveData.GTA3
 
         public RestartData()
         {
-            WastedRestartPoints = new Array<RestartPoint>();
-            BustedRestartPoints = new Array<RestartPoint>();
+            WastedRestartPoints = ArrayHelper.CreateArray<RestartPoint>(MaxNumWastedRestarts);
+            BustedRestartPoints = ArrayHelper.CreateArray<RestartPoint>(MaxNumBustedRestarts);
             OverrideRestartPoint = new RestartPoint();
+        }
+
+        public RestartData(RestartData other)
+        {
+            WastedRestartPoints = ArrayHelper.DeepClone(other.WastedRestartPoints);
+            BustedRestartPoints = ArrayHelper.DeepClone(other.BustedRestartPoints);
+            NumberOfWastedRestartPoints = other.NumberOfWastedRestartPoints;
+            NumberOfBustedRestartPoints = other.NumberOfBustedRestartPoints;
+            OverrideNextRestart = other.OverrideNextRestart;
+            OverrideRestartPoint = new RestartPoint(other.OverrideRestartPoint);
+            FadeInAfteNextDeath = other.FadeInAfteNextDeath;
+            FadeInAfteNextArrest = other.FadeInAfteNextArrest;
+            OverrideHospitalLevel = other.OverrideHospitalLevel;
+            OverridePoliceStationLevel = other.OverridePoliceStationLevel;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3Save.ReadSaveHeader(buf, "RST");
+            int size = GTA3VCSave.ReadSaveHeader(buf, "RST");
 
-            WastedRestartPoints = buf.Read<RestartPoint>(Limits.MaxNumWastedRestarts);
-            BustedRestartPoints = buf.Read<RestartPoint>(Limits.MaxNumBustedRestarts);
+            WastedRestartPoints = buf.Read<RestartPoint>(MaxNumWastedRestarts);
+            BustedRestartPoints = buf.Read<RestartPoint>(MaxNumBustedRestarts);
             NumberOfWastedRestartPoints = buf.ReadInt16();
             NumberOfBustedRestartPoints = buf.ReadInt16();
             OverrideNextRestart = buf.ReadBool();
@@ -106,16 +118,16 @@ namespace GTASaveData.GTA3
             OverrideHospitalLevel = (Level) buf.ReadByte();
             OverridePoliceStationLevel = (Level) buf.ReadByte();
 
-            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
-            Debug.Assert(size == SizeOfType<RestartData>() - GTA3Save.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<RestartData>() - GTA3VCSave.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3Save.WriteSaveHeader(buf, "RST", SizeOfType<RestartData>() - GTA3Save.BlockHeaderSize);
+            GTA3VCSave.WriteSaveHeader(buf, "RST", SizeOfType<RestartData>() - GTA3VCSave.BlockHeaderSize);
 
-            buf.Write(WastedRestartPoints.ToArray(), Limits.MaxNumWastedRestarts);
-            buf.Write(BustedRestartPoints.ToArray(), Limits.MaxNumBustedRestarts);
+            buf.Write(WastedRestartPoints.ToArray(), MaxNumWastedRestarts);
+            buf.Write(BustedRestartPoints.ToArray(), MaxNumBustedRestarts);
             buf.Write(NumberOfWastedRestartPoints);
             buf.Write(NumberOfBustedRestartPoints);
             buf.Write(OverrideNextRestart);
@@ -156,6 +168,11 @@ namespace GTASaveData.GTA3
                 && FadeInAfteNextArrest.Equals(other.FadeInAfteNextArrest)
                 && OverrideHospitalLevel.Equals(other.OverrideHospitalLevel)
                 && OverridePoliceStationLevel.Equals(other.OverridePoliceStationLevel);
+        }
+
+        public RestartData DeepClone()
+        {
+            return new RestartData(this);
         }
     }
 }

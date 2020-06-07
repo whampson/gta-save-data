@@ -5,7 +5,8 @@ using System.Linq;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class GarageData : SaveDataObject, IEquatable<GarageData>
+    public class GarageData : SaveDataObject,
+        IEquatable<GarageData>, IDeepClonable<GarageData>
     {
         public const int CarsPerSafeHouse = 6;
         public const int NumberOfSafeHouses = 3;
@@ -105,6 +106,12 @@ namespace GTASaveData.GTA3
             Garages = new Array<Garage>();
         }
 
+        public GarageData(GarageData other)
+        {
+            CarsInSafeHouse = ArrayHelper.DeepClone(other.CarsInSafeHouse);
+            Garages = ArrayHelper.DeepClone(other.Garages);
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             NumGarages = buf.ReadInt32();
@@ -174,6 +181,11 @@ namespace GTASaveData.GTA3
                 && LastTimeHelpMessage.Equals(other.LastTimeHelpMessage)
                 && CarsInSafeHouse.SequenceEqual(other.CarsInSafeHouse)
                 && Garages.SequenceEqual(other.Garages);
+        }
+
+        public GarageData DeepClone()
+        {
+            return new GarageData(this);
         }
     }
 

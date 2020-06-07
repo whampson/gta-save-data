@@ -3,7 +3,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class Automobile : Vehicle, IEquatable<Automobile>
+    public class Automobile : Vehicle,
+        IEquatable<Automobile>, IDeepClonable<Automobile>
     {
         private DamageManager m_damage;
 
@@ -76,6 +77,11 @@ namespace GTASaveData.GTA3
 
             return base.Equals(other)
                 && Damage.Equals(other.Damage);
+        }
+
+        public Automobile DeepClone()
+        {
+            return new Automobile(this);
         }
     }
 }

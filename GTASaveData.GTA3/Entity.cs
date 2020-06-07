@@ -5,9 +5,7 @@ namespace GTASaveData.GTA3
 {
     public abstract class Entity : SaveDataObject
     {
-        // TODO: move to Placeable and extend Placeable
         private Matrix m_matrix;
-
         private EntityType m_entityType;
         private EntityStatus m_entityStatus;
         private EntityFlags m_entityFlags;

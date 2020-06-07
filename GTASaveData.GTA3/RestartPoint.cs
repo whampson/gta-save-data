@@ -4,7 +4,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class RestartPoint : SaveDataObject, IEquatable<RestartPoint>
+    public class RestartPoint : SaveDataObject,
+        IEquatable<RestartPoint>, IDeepClonable<RestartPoint>
     {
         private Vector3D m_position;
         private float m_angle;
@@ -22,8 +23,12 @@ namespace GTASaveData.GTA3
         }
 
         public RestartPoint()
+        { }
+
+        public RestartPoint(RestartPoint other)
         {
-            Position = new Vector3D();
+            Position = other.Position;
+            Angle = other.Angle;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -61,6 +66,11 @@ namespace GTASaveData.GTA3
 
             return Position.Equals(other.Position)
                 && Angle.Equals(other.Angle);
+        }
+
+        public RestartPoint DeepClone()
+        {
+            return new RestartPoint(this);
         }
     }
 }

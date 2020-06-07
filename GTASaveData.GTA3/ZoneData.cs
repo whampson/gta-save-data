@@ -5,16 +5,13 @@ using System.Linq;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class ZoneData : SaveDataObject, IEquatable<ZoneData>
+    public class ZoneData : SaveDataObject,
+        IEquatable<ZoneData>, IDeepClonable<ZoneData>
     {
-        public static class Limits
-        {
-            public const int MaxNumZones = 50;
-            public const int MaxNumZoneInfos = 100;
-            public const int MaxNumMapZones = 25;
-            public const int MaxNumAudioZones = 36;
-
-        }
+        public const int MaxNumZones = 50;
+        public const int MaxNumZoneInfos = 100;
+        public const int MaxNumMapZones = 25;
+        public const int MaxNumAudioZones = 36;
 
         private int m_currentZoneIndex;
         private Level m_currentLevel;
@@ -97,47 +94,62 @@ namespace GTASaveData.GTA3
 
         public ZoneData()
         {
-            Zones = new Array<Zone>();
-            ZoneInfo = new Array<ZoneInfo>();
-            MapZones = new Array<Zone>();
-            AudioZones = new Array<short>();
+            Zones = ArrayHelper.CreateArray<Zone>(MaxNumZones);
+            ZoneInfo = ArrayHelper.CreateArray<ZoneInfo>(MaxNumZoneInfos);
+            MapZones = ArrayHelper.CreateArray<Zone>(MaxNumMapZones);
+            AudioZones = ArrayHelper.CreateArray<short>(MaxNumAudioZones);
+        }
+
+        public ZoneData(ZoneData other)
+        {
+            CurrentZoneIndex = other.CurrentZoneIndex;
+            CurrentLevel = other.CurrentLevel;
+            FindIndex = other.FindIndex;
+            Zones = ArrayHelper.DeepClone(other.Zones);
+            ZoneInfo = ArrayHelper.DeepClone(other.ZoneInfo);
+            NumberOfZones = other.NumberOfZones;
+            NumberOfZoneInfos = other.NumberOfZoneInfos;
+            MapZones = ArrayHelper.DeepClone(other.MapZones);
+            AudioZones = ArrayHelper.DeepClone(other.AudioZones);
+            NumberOfMapZones = other.NumberOfMapZones;
+            NumberOfAudioZones = other.NumberOfAudioZones;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3Save.ReadSaveHeader(buf, "ZNS");
+            int size = GTA3VCSave.ReadSaveHeader(buf, "ZNS");
 
             CurrentZoneIndex = buf.ReadInt32();
             CurrentLevel = (Level) buf.ReadInt32();
             FindIndex = buf.ReadInt16();
             buf.ReadInt16();
-            Zones = buf.Read<Zone>(Limits.MaxNumZones);
-            ZoneInfo = buf.Read<ZoneInfo>(Limits.MaxNumZoneInfos);
+            Zones = buf.Read<Zone>(MaxNumZones);
+            ZoneInfo = buf.Read<ZoneInfo>(MaxNumZoneInfos);
             NumberOfZones = buf.ReadInt16();
             NumberOfZoneInfos = buf.ReadInt16();
-            MapZones = buf.Read<Zone>(Limits.MaxNumMapZones);
-            AudioZones = buf.Read<short>(Limits.MaxNumAudioZones);
+            MapZones = buf.Read<Zone>(MaxNumMapZones);
+            AudioZones = buf.Read<short>(MaxNumAudioZones);
             NumberOfMapZones = buf.ReadInt16();
             NumberOfAudioZones = buf.ReadInt16();
 
-            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
-            Debug.Assert(size == SizeOfType<ZoneData>() - GTA3Save.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<ZoneData>() - GTA3VCSave.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3Save.WriteSaveHeader(buf, "ZNS", SizeOfType<ZoneData>() - GTA3Save.BlockHeaderSize);
+            GTA3VCSave.WriteSaveHeader(buf, "ZNS", SizeOfType<ZoneData>() - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(CurrentZoneIndex);
             buf.Write((int) CurrentLevel);
             buf.Write(FindIndex);
             buf.Write((short) 0);
-            buf.Write(Zones.ToArray(), Limits.MaxNumZones);
-            buf.Write(ZoneInfo.ToArray(), Limits.MaxNumZoneInfos);
+            buf.Write(Zones.ToArray(), MaxNumZones);
+            buf.Write(ZoneInfo.ToArray(), MaxNumZoneInfos);
             buf.Write(NumberOfZones);
             buf.Write(NumberOfZoneInfos);
-            buf.Write(MapZones.ToArray(), Limits.MaxNumMapZones);
-            buf.Write(AudioZones.ToArray(), Limits.MaxNumAudioZones);
+            buf.Write(MapZones.ToArray(), MaxNumMapZones);
+            buf.Write(AudioZones.ToArray(), MaxNumAudioZones);
             buf.Write(NumberOfMapZones);
             buf.Write(NumberOfAudioZones);
 
@@ -172,6 +184,11 @@ namespace GTASaveData.GTA3
                 && AudioZones.SequenceEqual(other.AudioZones)
                 && NumberOfMapZones.Equals(other.NumberOfMapZones)
                 && NumberOfAudioZones.Equals(other.NumberOfAudioZones);
+        }
+
+        public ZoneData DeepClone()
+        {
+            return new ZoneData(this);
         }
     }
 }

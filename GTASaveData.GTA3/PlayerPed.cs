@@ -5,7 +5,8 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class PlayerPed : SaveDataObject, IEquatable<PlayerPed>
+    public class PlayerPed : SaveDataObject,
+        IEquatable<PlayerPed>, IDeepClonable<PlayerPed>
     {
         public const int NumWeapons = 13;
         public const int MaxModelNameLength = 24;
@@ -124,8 +125,8 @@ namespace GTASaveData.GTA3
             ModelName = "player";
             Health = 100;
             MaxStamina = 150;
-            Weapons = new Array<Weapon>();
-            TargetableObjects = new Array<int>();
+            Weapons = ArrayHelper.CreateArray<Weapon>(NumWeapons);
+            TargetableObjects = ArrayHelper.CreateArray<int>(NumTargetableObjects);
         }
 
         public PlayerPed(PlayerPed other)
@@ -137,10 +138,10 @@ namespace GTASaveData.GTA3
             CreatedBy = other.CreatedBy;
             Health = other.Health;
             Armor = other.Armor;
-            Weapons = new Array<Weapon>(other.Weapons);
+            Weapons = ArrayHelper.DeepClone(other.Weapons);
             MaxWeaponTypeAllowed = other.MaxWeaponTypeAllowed;
             MaxStamina = other.MaxStamina;
-            TargetableObjects = new Array<int>(other.TargetableObjects);
+            TargetableObjects = ArrayHelper.DeepClone(other.TargetableObjects);
             MaxWantedLevel = other.MaxWantedLevel;
             MaxChaosLevel = other.MaxChaosLevel;
             ModelName = other.ModelName;
@@ -247,6 +248,11 @@ namespace GTASaveData.GTA3
                 && MaxWantedLevel.Equals(other.MaxWantedLevel)
                 && MaxChaosLevel.Equals(other.MaxChaosLevel)
                 && ModelName.Equals(other.ModelName);
+        }
+
+        public PlayerPed DeepClone()
+        {
+            return new PlayerPed(this);
         }
     }
 

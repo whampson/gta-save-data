@@ -11,7 +11,7 @@ namespace GTASaveData.GTA3.Tests
             Faker<PhoneData> model = new Faker<PhoneData>()
                 .RuleFor(x => x.NumPhones, f => f.Random.Int())
                 .RuleFor(x => x.NumActivePhones, f => f.Random.Int())
-                .RuleFor(x => x.Phones, f => Generator.Array(PhoneData.Limits.MaxNumPhones, g => Generator.Generate<Phone, TestPhone>()));
+                .RuleFor(x => x.Phones, f => Generator.Array(PhoneData.MaxNumPhones, g => Generator.Generate<Phone, TestPhone>()));
 
             return model.Generate();
         }

@@ -11,7 +11,8 @@ namespace GTASaveData.GTA3
     /// <summary>
     /// Represents a saved <i>Grand Theft Auto III</i> game.
     /// </summary>
-    public class GTA3Save : GTA3VCSave, ISaveData, IEquatable<GTA3Save>
+    public class GTA3Save : GTA3VCSave, ISaveData,
+        IEquatable<GTA3Save>, IDeepClonable<GTA3Save>
     {
         public const int SizeOfGameInBytes = 201728;
         public const int MaxNumPaddingBlocks = 4;
@@ -235,8 +236,36 @@ namespace GTASaveData.GTA3
             Streaming = new Streaming();
             PedTypeInfo = new PedTypeData();
         }
+
+        public GTA3Save(GTA3Save other)
+        {
+            SimpleVars = new SimpleVariables(other.SimpleVars);
+            Scripts = new ScriptData(other.Scripts);
+            PlayerPeds = new PlayerPedPool(other.PlayerPeds);
+            Garages = new GarageData(other.Garages);
+            Vehicles = new VehiclePool(other.Vehicles);
+            Objects = new ObjectPool(other.Objects);
+            Paths = new PathData(other.Paths);
+            Cranes = new CraneData(other.Cranes);
+            Pickups = new PickupData(other.Pickups);
+            PhoneInfo = new PhoneData(other.PhoneInfo);
+            RestartPoints = new RestartData(other.RestartPoints);
+            RadarBlips = new RadarData(other.RadarBlips);
+            Zones = new ZoneData(other.Zones);
+            Gangs = new GangData(other.Gangs);
+            CarGenerators = new CarGeneratorData(other.CarGenerators);
+            ParticleObjects = new ParticleData(other.ParticleObjects);
+            AudioScriptObjects = new AudioScriptData(other.AudioScriptObjects);
+            PlayerInfo = new PlayerInfo(other.PlayerInfo);
+            Stats = new Stats(other.Stats);
+            Streaming = new Streaming(other.Streaming);
+            PedTypeInfo = new PedTypeData(other.PedTypeInfo);
+        }
+
         protected override void LoadAllData(StreamBuffer file)
         {
+            // TODO: PS2
+
             int totalSize = 0;
 
             totalSize += ReadBlock(file);
@@ -276,6 +305,8 @@ namespace GTASaveData.GTA3
 
         protected override void SaveAllData(StreamBuffer file)
         {
+            // TODO: PS2
+
             int totalSize = 0;
             int size;
 
@@ -343,7 +374,6 @@ namespace GTASaveData.GTA3
 
             if (saveSizeOffset < 0 || scrOffset < 0)
             {
-                // Invalid
                 fmt = FileFormat.Default;
                 return false;
             }
@@ -412,7 +442,6 @@ namespace GTASaveData.GTA3
                 }
             }
 
-            // Invalid
             fmt = FileFormat.Default;
             return false;
         }
@@ -466,6 +495,11 @@ namespace GTASaveData.GTA3
                 && Stats.Equals(other.Stats)
                 && Streaming.Equals(other.Streaming)
                 && PedTypeInfo.Equals(other.PedTypeInfo);
+        }
+
+        public GTA3Save DeepClone()
+        {
+            return new GTA3Save(this);
         }
 
         public static class FileFormats

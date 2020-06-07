@@ -13,12 +13,12 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.CurrentZoneIndex, f => f.Random.Int())
                 .RuleFor(x => x.CurrentLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.FindIndex, f => f.Random.Short())
-                .RuleFor(x => x.Zones, f => Generator.Array(ZoneData.Limits.MaxNumZones, g => Generator.Generate<Zone, TestZone>()))
-                .RuleFor(x => x.ZoneInfo, f => Generator.Array(ZoneData.Limits.MaxNumZoneInfos, g => Generator.Generate<ZoneInfo, TestZoneInfo>()))
+                .RuleFor(x => x.Zones, f => Generator.Array(ZoneData.MaxNumZones, g => Generator.Generate<Zone, TestZone>()))
+                .RuleFor(x => x.ZoneInfo, f => Generator.Array(ZoneData.MaxNumZoneInfos, g => Generator.Generate<ZoneInfo, TestZoneInfo>()))
                 .RuleFor(x => x.NumberOfZones, f => f.Random.Short())
                 .RuleFor(x => x.NumberOfZoneInfos, f => f.Random.Short())
-                .RuleFor(x => x.MapZones, f => Generator.Array(ZoneData.Limits.MaxNumMapZones, g => Generator.Generate<Zone, TestZone>()))
-                .RuleFor(x => x.AudioZones, f => Generator.Array(ZoneData.Limits.MaxNumAudioZones, g => f.Random.Short()))
+                .RuleFor(x => x.MapZones, f => Generator.Array(ZoneData.MaxNumMapZones, g => Generator.Generate<Zone, TestZone>()))
+                .RuleFor(x => x.AudioZones, f => Generator.Array(ZoneData.MaxNumAudioZones, g => f.Random.Short()))
                 .RuleFor(x => x.NumberOfMapZones, f => f.Random.Short())
                 .RuleFor(x => x.NumberOfAudioZones, f => f.Random.Short());
 

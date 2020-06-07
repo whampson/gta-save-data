@@ -4,12 +4,10 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class Zone : SaveDataObject, IEquatable<Zone>
+    public class Zone : SaveDataObject,
+        IEquatable<Zone>, IDeepClonable<Zone>
     {
-        public static class Limits
-        {
-            public const int MaxNameLength = 8;
-        }
+        public const int MaxNameLength = 8;
 
         private string m_name;
         private Vector3D m_min;
@@ -82,15 +80,28 @@ namespace GTASaveData.GTA3
             set { m_nextZoneIndex = value; OnPropertyChanged(); }
         }
 
-
         public Zone()
         {
             Name = "";
         }
 
+        public Zone(Zone other)
+        {
+            Name = other.Name;
+            Min = other.Min;
+            Max = other.Max;
+            Type = other.Type;
+            Level = other.Level;
+            ZoneInfoDay = other.ZoneInfoDay;
+            ZoneInfoNight = other.ZoneInfoNight;
+            ChildZoneIndex = other.ChildZoneIndex;
+            ParentZoneIndex = other.ParentZoneIndex;
+            NextZoneIndex = other.NextZoneIndex;
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            Name = buf.ReadString(Limits.MaxNameLength);
+            Name = buf.ReadString(MaxNameLength);
             Min = buf.Read<Vector3D>();
             Max = buf.Read<Vector3D>();
             Type = (ZoneType) buf.ReadInt32();
@@ -106,7 +117,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            buf.Write(Name.PadRight(Limits.MaxNameLength, '\0'), Limits.MaxNameLength);
+            buf.Write(Name/*.PadRight(MaxNameLength, '\0')*/, MaxNameLength);
             buf.Write(Min);
             buf.Write(Max);
             buf.Write((int) Type);
@@ -147,6 +158,11 @@ namespace GTASaveData.GTA3
                 && ChildZoneIndex.Equals(other.ChildZoneIndex)
                 && ParentZoneIndex.Equals(other.ParentZoneIndex)
                 && NextZoneIndex.Equals(other.NextZoneIndex);
+        }
+
+        public Zone DeepClone()
+        {
+            return new Zone(this);
         }
     }
 

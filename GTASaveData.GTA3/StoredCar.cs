@@ -4,7 +4,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class StoredCar : SaveDataObject, IEquatable<StoredCar>
+    public class StoredCar : SaveDataObject,
+        IEquatable<StoredCar>, IDeepClonable<StoredCar>
     {
         private int m_model;
         private Vector3D m_position;
@@ -80,6 +81,20 @@ namespace GTASaveData.GTA3
         public StoredCar()
         { }
 
+        public StoredCar(StoredCar other)
+        {
+            Model = other.Model;
+            Position = other.Position;
+            Angle = other.Angle;
+            Flags = other.Flags;
+            Color1 = other.Color1;
+            Color2 = other.Color2;
+            Radio = other.Radio;
+            Extra1 = other.Extra1;
+            Extra2 = other.Extra2;
+            Bomb = other.Bomb;
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Model = buf.ReadInt32();
@@ -141,6 +156,11 @@ namespace GTASaveData.GTA3
                 && Extra1.Equals(other.Extra1)
                 && Extra2.Equals(other.Extra2)
                 && Bomb.Equals(other.Bomb);
+        }
+
+        public StoredCar DeepClone()
+        {
+            return new StoredCar(this);
         }
     }
 

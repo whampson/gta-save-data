@@ -4,7 +4,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class GameObject : Entity, IEquatable<GameObject>
+    public class GameObject : Entity,
+        IEquatable<GameObject>, IDeepClonable<GameObject>
     {
         private short m_modelIndex;
         private int m_handle;
@@ -237,6 +238,11 @@ namespace GTASaveData.GTA3
                 && EntityType.Equals(other.EntityType)
                 && EntityStatus.Equals(other.EntityStatus)
                 && EntityFlags.Equals(other.EntityFlags);
+        }
+
+        public GameObject DeepClone()
+        {
+            return new GameObject(this);
         }
     }
 

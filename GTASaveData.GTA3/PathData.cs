@@ -4,7 +4,8 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class PathData : SaveDataObject, IEquatable<PathData>
+    public class PathData : SaveDataObject,
+        IEquatable<PathData>, IDeepClonable<PathData>
     {
         private Array<PathNode> m_pathNodes;
         public Array<PathNode> PathNodes
@@ -20,6 +21,11 @@ namespace GTASaveData.GTA3
         public PathData(int saveSize)
         {
             PathNodes = ArrayHelper.CreateArray<PathNode>((saveSize / 2) * 8);
+        }
+
+        public PathData(PathData other)
+        {
+            PathNodes = ArrayHelper.DeepClone(other.PathNodes);
         }
 
         public static PathData Load(byte[] data)
@@ -93,6 +99,11 @@ namespace GTASaveData.GTA3
             }
 
             return PathNodes.SequenceEqual(other.PathNodes);
+        }
+
+        public PathData DeepClone()
+        {
+            return new PathData(this);
         }
     }
 }

@@ -115,6 +115,15 @@ namespace GTASaveData {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The stack is empty..
+        /// </summary>
+        public static string Error_InvalidOperation_StackEmpty {
+            get {
+                return ResourceManager.GetString("Error_InvalidOperation_StackEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected end of stream reached while parsing JSON..
         /// </summary>
         public static string Error_JsonSerialization_EndOfStream {
@@ -153,9 +162,9 @@ namespace GTASaveData {
         /// <summary>
         ///   Looks up a localized string similar to The type &apos;{0}&apos; does not support serialization..
         /// </summary>
-        public static string Error_SerializationNotAllowed {
+        public static string Error_Serialization_NotAllowed {
             get {
-                return ResourceManager.GetString("Error_SerializationNotAllowed", resourceCulture);
+                return ResourceManager.GetString("Error_Serialization_NotAllowed", resourceCulture);
             }
         }
     }

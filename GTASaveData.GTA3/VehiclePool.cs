@@ -5,7 +5,8 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class VehiclePool : SaveDataObject, IEquatable<VehiclePool>
+    public class VehiclePool : SaveDataObject,
+        IEquatable<VehiclePool>, IDeepClonable<VehiclePool>
     {
         private Array<Automobile> m_cars;
         private Array<Boat> m_boats;
@@ -26,6 +27,12 @@ namespace GTASaveData.GTA3
         {
             Cars = new Array<Automobile>();
             Boats = new Array<Boat>();
+        }
+
+        public VehiclePool(VehiclePool other)
+        {
+            Cars = ArrayHelper.DeepClone(other.Cars);
+            Boats = ArrayHelper.DeepClone(other.Boats);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -99,6 +106,11 @@ namespace GTASaveData.GTA3
 
             return Cars.SequenceEqual(other.Cars)
                 && Boats.SequenceEqual(other.Boats);
+        }
+
+        public VehiclePool DeepClone()
+        {
+            return new VehiclePool(this);
         }
     }
 }

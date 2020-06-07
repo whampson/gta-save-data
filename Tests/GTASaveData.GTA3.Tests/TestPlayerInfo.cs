@@ -21,7 +21,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.FastReload, f => f.Random.Bool())
                 .RuleFor(x => x.GetOutOfJailFree, f => f.Random.Bool())
                 .RuleFor(x => x.GetOutOfHospitalFree, f => f.Random.Bool())
-                .RuleFor(x => x.PlayerName, f => Generator.Words(f, PlayerInfo.Limits.MaxPlayerNameLength - 1));
+                .RuleFor(x => x.PlayerName, f => Generator.Words(f, PlayerInfo.MaxPlayerNameLength - 1));
 
             return model.Generate();
         }

@@ -5,7 +5,8 @@ using System.Diagnostics;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class Garage : SaveDataObject, IEquatable<Garage>
+    public class Garage : SaveDataObject,
+        IEquatable<Garage>, IDeepClonable<Garage>
     {
         private GarageType m_type;
         private GarageState m_state;
@@ -208,6 +209,37 @@ namespace GTASaveData.GTA3
             StoredCar = new StoredCar();
         }
 
+        public Garage(Garage other)
+        {
+            Type = other.Type;
+            State = other.State;
+            Field02h = other.Field02h;
+            ClosingWithoutTargetVehicle = other.ClosingWithoutTargetVehicle;
+            Deactivated = other.Deactivated;
+            ResprayHappened = other.ResprayHappened;
+            TargetModelIndex = other.TargetModelIndex;
+            Door1Pointer = other.Door1Pointer;
+            Door2Pointer = other.Door2Pointer;
+            Door1Handle = other.Door1Handle;
+            Door2Handle = other.Door2Handle;
+            IsDoor1Dummy = other.IsDoor1Dummy;
+            IsDoor2Dummy = other.IsDoor2Dummy;
+            RecreateDoorOnNextRefresh = other.RecreateDoorOnNextRefresh;
+            RotatedDoor = other.RotatedDoor;
+            CameraFollowsPlayer = other.CameraFollowsPlayer;
+            PositionMin = other.PositionMin;
+            PositionMax = other.PositionMax;
+            DoorOpenOffset = other.DoorOpenOffset;
+            DoorOpenMax = other.DoorOpenMax;
+            Door1Position = other.Door1Position;
+            Door2Position = other.Door2Position;
+            DoorLastOpenTime = other.DoorLastOpenTime;
+            CollectedCarsState = other.CollectedCarsState;
+            TargetCarPointer = other.TargetCarPointer;
+            Field96h = other.Field96h;
+            StoredCar = new StoredCar(other.StoredCar);
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Vector3D posMin, posMax, door1Pos, door2Pos;
@@ -347,6 +379,11 @@ namespace GTASaveData.GTA3
                 && TargetCarPointer.Equals(other.TargetCarPointer)
                 && Field96h.Equals(other.Field96h)
                 && StoredCar.Equals(other.StoredCar);
+        }
+
+        public Garage DeepClone()
+        {
+            return new Garage(this);
         }
     }
 

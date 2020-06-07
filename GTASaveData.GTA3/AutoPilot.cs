@@ -4,7 +4,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class AutoPilot : SaveDataObject, IEquatable<AutoPilot>
+    public class AutoPilot : SaveDataObject,
+        IEquatable<AutoPilot>, IDeepClonable<AutoPilot>
     {
         private int m_currRouteNode;
         private int m_nextRouteNode;
@@ -366,6 +367,11 @@ namespace GTASaveData.GTA3
                 && IgnorePathFinding.Equals(other.IgnorePathFinding)
                 && Destination.Equals(other.Destination)
                 && PathFindNodesCount.Equals(other.PathFindNodesCount);
+        }
+
+        public AutoPilot DeepClone()
+        {
+            return new AutoPilot(this);
         }
     }
 

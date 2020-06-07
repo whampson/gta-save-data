@@ -5,7 +5,8 @@ using System.Linq;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class RunningScript : SaveDataObject, IEquatable<RunningScript>
+    public class RunningScript : SaveDataObject,
+        IEquatable<RunningScript>, IDeepClonable<RunningScript>
     {
         public const int MaxNameLength = 8;
         public const int MaxStackDepth = 6;
@@ -63,7 +64,7 @@ namespace GTASaveData.GTA3
             set { m_stack = value; OnPropertyChanged(); }
         }
 
-        public ushort StackPointer
+        public ushort StackCount
         {
             get { return m_stackPointer; }
             set { m_stackPointer = value; OnPropertyChanged(); }
@@ -144,8 +145,61 @@ namespace GTASaveData.GTA3
         public RunningScript()
         {
             m_name = "noname";
-            m_stack = new Array<int>();
-            m_localVariables = new Array<int>();
+            m_stack = ArrayHelper.CreateArray<int>(MaxStackDepth);
+            m_localVariables = ArrayHelper.CreateArray<int>(NumLocalVariables);
+        }
+
+        public RunningScript(RunningScript other)
+        {
+            NextScriptPointer = other.NextScriptPointer;
+            PrevScriptPointer = other.PrevScriptPointer;
+            Name = other.Name;
+            IP = other.IP;
+            Stack = ArrayHelper.DeepClone(other.Stack);
+            StackCount = other.StackCount;
+            LocalVariables = ArrayHelper.DeepClone(other.LocalVariables);
+            TimerA = other.TimerA;
+            TimerB = other.TimerB;
+            ConditionResult = other.ConditionResult;
+            IsMissionScript = other.IsMissionScript;
+            ClearMessages = other.ClearMessages;
+            WakeTime = other.WakeTime;
+            AndOrState = other.AndOrState;
+            NotFlag = other.NotFlag;
+            WastedBustedCheckEnabled = other.WastedBustedCheckEnabled;
+            WastedBustedCheckResult = other.WastedBustedCheckResult;
+            MissionFlag = other.MissionFlag;
+        }
+
+        public void PushStack(int value)
+        {
+            if (StackCount + 1 >= Stack.Count)
+            {
+                Stack.Add(value);
+                StackCount++;
+            }
+            else
+            {
+                Stack[StackCount++] = value;
+            }
+        }
+
+        public int PopStack()
+        {
+            if (StackCount == 0)
+            {
+                throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
+            }
+            return Stack[--StackCount];
+        }
+
+        public int PeekStack()
+        {
+            if (StackCount == 0)
+            {
+                throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
+            }
+            return Stack[StackCount - 1];
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -155,7 +209,7 @@ namespace GTASaveData.GTA3
             Name = buf.ReadString(MaxNameLength);
             IP = buf.ReadUInt32();
             Stack = buf.Read<int>(GetMaxStackDepth(fmt));
-            StackPointer = buf.ReadUInt16();
+            StackCount = buf.ReadUInt16();
             buf.Align4();
             LocalVariables = buf.Read<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
@@ -182,7 +236,7 @@ namespace GTASaveData.GTA3
             buf.Write(Name, MaxNameLength);
             buf.Write(IP);
             buf.Write(Stack.ToArray(), GetMaxStackDepth(fmt));
-            buf.Write(StackPointer);
+            buf.Write(StackCount);
             buf.Align4();
             buf.Write(LocalVariables.ToArray(), NumLocalVariables);
             buf.Write(TimerA);
@@ -200,6 +254,11 @@ namespace GTASaveData.GTA3
             buf.Align4();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
+        }
+
+        public static int GetMaxStackDepth(FileFormat fmt)
+        {
+            return (fmt.IsPS2) ? MaxStackDepthPS2 : MaxStackDepth;
         }
 
         protected override int GetSize(FileFormat fmt)
@@ -224,7 +283,7 @@ namespace GTASaveData.GTA3
                 && Name.Equals(other.Name)
                 && IP.Equals(other.IP)
                 && Stack.SequenceEqual(other.Stack)
-                && StackPointer.Equals(other.StackPointer)
+                && StackCount.Equals(other.StackCount)
                 && LocalVariables.SequenceEqual(other.LocalVariables)
                 && TimerA.Equals(other.TimerA)
                 && TimerB.Equals(other.TimerB)
@@ -239,9 +298,9 @@ namespace GTASaveData.GTA3
                 && MissionFlag.Equals(other.MissionFlag);
         }
 
-        public static int GetMaxStackDepth(FileFormat fmt)
+        public RunningScript DeepClone()
         {
-            return (fmt.IsPS2) ? MaxStackDepthPS2 : MaxStackDepth;
+            return new RunningScript(this);
         }
     }
 }

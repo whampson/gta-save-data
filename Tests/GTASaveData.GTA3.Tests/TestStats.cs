@@ -13,7 +13,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.PeopleKilledByOthers, f => f.Random.Int())
                 .RuleFor(x => x.CarsExploded, f => f.Random.Int())
                 .RuleFor(x => x.RoundsFiredByPlayer, f => f.Random.Int())
-                .RuleFor(x => x.PedsKilledOfThisType, f => Generator.Array(PedTypeData.Limits.NumberOfPedTypes, g => f.Random.Int()))
+                .RuleFor(x => x.PedsKilledOfThisType, f => Generator.Array(PedTypeData.NumPedTypes, g => f.Random.Int()))
                 .RuleFor(x => x.HelisDestroyed, f => f.Random.Int())
                 .RuleFor(x => x.ProgressMade, f => f.Random.Int())
                 .RuleFor(x => x.TotalProgressInGame, f => f.Random.Int())
@@ -56,11 +56,11 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.NumberKillFrenziesPassed, f => f.Random.Int())
                 .RuleFor(x => x.TotalNumberKillFrenzies, f => f.Random.Int())
                 .RuleFor(x => x.TotalNumberMissions, f => f.Random.Int())
-                .RuleFor(x => x.FastestTimes, f => Generator.Array(Stats.Limits.MaxNumFastestTimes, g => f.Random.Int()))
-                .RuleFor(x => x.HighestScores, f => Generator.Array(Stats.Limits.MaxNumHighestScores, g => f.Random.Int()))
+                .RuleFor(x => x.FastestTimes, f => Generator.Array(Stats.MaxNumFastestTimes, g => f.Random.Int()))
+                .RuleFor(x => x.HighestScores, f => Generator.Array(Stats.MaxNumHighestScores, g => f.Random.Int()))
                 .RuleFor(x => x.KillsSinceLastCheckpoint, f => f.Random.Int())
                 .RuleFor(x => x.TotalLegitimateKills, f => f.Random.Int())
-                .RuleFor(x => x.LastMissionPassedName, f => Generator.Words(f, Stats.Limits.MaxLastMissionPassedNameLength - 1));
+                .RuleFor(x => x.LastMissionPassedName, f => Generator.Words(f, Stats.MaxLastMissionPassedNameLength - 1));
 
             return model.Generate();
         }

@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3.Tests
         public override Streaming GenerateTestObject(FileFormat format)
         {
             Faker<Streaming> model = new Faker<Streaming>()
-                .RuleFor(x => x.ModelFlags, f => Generator.Array(Streaming.Limits.NumberOfModels, g => f.PickRandom<StreamingFlags>()));
+                .RuleFor(x => x.ModelFlags, f => Generator.Array(Streaming.NumModels, g => f.PickRandom<StreamingFlags>()));
 
             return model.Generate();
         }

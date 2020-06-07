@@ -3,7 +3,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class Boat : Vehicle, IEquatable<Boat>
+    public class Boat : Vehicle,
+        IEquatable<Boat>, IDeepClonable<Boat>
     {
         // This class sucks, nothing is editable :-(
         // But I will keep it for completeness.
@@ -62,6 +63,11 @@ namespace GTASaveData.GTA3
             }
 
             return base.Equals(other);
+        }
+
+        public Boat DeepClone()
+        {
+            return new Boat(this);
         }
     }
 }

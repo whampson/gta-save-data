@@ -3,7 +3,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class PedType : SaveDataObject, IEquatable<PedType>
+    public class PedType : SaveDataObject,
+        IEquatable<PedType>, IDeepClonable<PedType>
     {
         private PedTypeFlags m_flag;
         private float m_unknown0;
@@ -65,6 +66,18 @@ namespace GTASaveData.GTA3
         public PedType()
         { }
 
+        public PedType(PedType other)
+        {
+            Flag = other.Flag;
+            Unknown0 = other.Unknown0;
+            Unknown1 = other.Unknown1;
+            Unknown2 = other.Unknown2;
+            Unknown3 = other.Unknown3;
+            Unknown4 = other.Unknown4;
+            Threats = other.Threats;
+            Avoid = other.Avoid;
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Flag = (PedTypeFlags) buf.ReadInt32();
@@ -118,6 +131,11 @@ namespace GTASaveData.GTA3
                 && Unknown4.Equals(other.Unknown4)
                 && Threats.Equals(other.Threats)
                 && Avoid.Equals(other.Avoid);
+        }
+
+        public PedType DeepClone()
+        {
+            return new PedType(this);
         }
     }
 

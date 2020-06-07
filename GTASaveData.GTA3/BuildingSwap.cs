@@ -3,7 +3,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class BuildingSwap : SaveDataObject, IEquatable<BuildingSwap>
+    public class BuildingSwap : SaveDataObject,
+        IEquatable<BuildingSwap>, IDeepClonable<BuildingSwap>
     {
         private PoolType m_type;
         private int m_handle;
@@ -38,6 +39,14 @@ namespace GTASaveData.GTA3
         {
             NewModel = -1;
             OldModel = -1;
+        }
+
+        public BuildingSwap(BuildingSwap other)
+        {
+            Type = other.Type;
+            Handle = other.Handle;
+            NewModel = other.NewModel;
+            OldModel = other.OldModel;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -81,6 +90,11 @@ namespace GTASaveData.GTA3
                 && Handle.Equals(other.Handle)
                 && NewModel.Equals(other.NewModel)
                 && OldModel.Equals(other.OldModel);
+        }
+
+        public BuildingSwap DeepClone()
+        {
+            return new BuildingSwap(this);
         }
     }
 }

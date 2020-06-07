@@ -1221,7 +1221,7 @@ namespace GTASaveData
         #region Exception Helpers
         private static NotSupportedException SerializationNotSupported(Type t)
         {
-            return new NotSupportedException(string.Format(Strings.Error_SerializationNotAllowed, t.Name));
+            return new NotSupportedException(string.Format(Strings.Error_Serialization_NotAllowed, t.Name));
         }
 
         private static EndOfStreamException EndOfStream()

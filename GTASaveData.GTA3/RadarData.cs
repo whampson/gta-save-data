@@ -4,12 +4,10 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class RadarData : SaveDataObject, IEquatable<RadarData>
+    public class RadarData : SaveDataObject,
+        IEquatable<RadarData>, IDeepClonable<RadarData>
     {
-        public static class Limits
-        {
-            public const int MaxNumRadarBlips = 32;
-        }
+        public const int MaxNumRadarBlips = 32;
 
         private Array<RadarBlip> m_radarBlips;
         public Array<RadarBlip> RadarBlips
@@ -20,22 +18,27 @@ namespace GTASaveData.GTA3
 
         public RadarData()
         {
-            RadarBlips = new Array<RadarBlip>();
+            RadarBlips = ArrayHelper.CreateArray<RadarBlip>(MaxNumRadarBlips);
+        }
+
+        public RadarData(RadarData other)
+        {
+            RadarBlips = ArrayHelper.DeepClone(other.RadarBlips);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3Save.ReadSaveHeader(buf, "RDR");
-            RadarBlips = buf.Read<RadarBlip>(Limits.MaxNumRadarBlips);
+            int size = GTA3VCSave.ReadSaveHeader(buf, "RDR");
+            RadarBlips = buf.Read<RadarBlip>(MaxNumRadarBlips);
 
-            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
-            Debug.Assert(size == SizeOfType<RadarData>() - GTA3Save.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<RadarData>() - GTA3VCSave.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3Save.WriteSaveHeader(buf, "RDR", SizeOfType<RadarData>() - GTA3Save.BlockHeaderSize);
-            buf.Write(RadarBlips.ToArray(), Limits.MaxNumRadarBlips);
+            GTA3VCSave.WriteSaveHeader(buf, "RDR", SizeOfType<RadarData>() - GTA3VCSave.BlockHeaderSize);
+            buf.Write(RadarBlips.ToArray(), MaxNumRadarBlips);
 
             Debug.Assert(buf.Offset == SizeOfType<RadarData>());
         }
@@ -58,6 +61,11 @@ namespace GTASaveData.GTA3
             }
 
             return RadarBlips.SequenceEqual(other.RadarBlips);
+        }
+
+        public RadarData DeepClone()
+        {
+            return new RadarData(this);
         }
     }
 }

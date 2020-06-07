@@ -5,7 +5,8 @@ using System.Diagnostics;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class SimpleVariables : SaveDataObject, IEquatable<SimpleVariables>
+    public class SimpleVariables : SaveDataObject,
+        IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
         public const int MaxMissionPassedNameLength = 24;
 
@@ -274,6 +275,46 @@ namespace GTASaveData.GTA3
             CompileDateAndTime = DateTime.MinValue;
         }
 
+        public SimpleVariables(SimpleVariables other)
+        {
+            LastMissionPassedName = other.LastMissionPassedName;
+            TimeStamp = other.TimeStamp;
+            CurrLevel = other.CurrLevel;
+            CameraPosition = other.CameraPosition;
+            MillisecondsPerGameMinute = other.MillisecondsPerGameMinute;
+            LastClockTick = other.LastClockTick;
+            GameClockHours = other.GameClockHours;
+            GameClockMinutes = other.GameClockMinutes;
+            CurrPadMode = other.CurrPadMode;
+            TimeInMilliseconds = other.TimeInMilliseconds;
+            TimeScale = other.TimeScale;
+            TimeStep = other.TimeStep;
+            TimeStepNonClipped = other.TimeStepNonClipped;
+            FrameCounter = other.FrameCounter;
+            TimeStep2 = other.TimeStep2;
+            FramesPerUpdate = other.FramesPerUpdate;
+            TimeScale2 = other.TimeScale2;
+            OldWeatherType = other.OldWeatherType;
+            NewWeatherType = other.NewWeatherType;
+            ForcedWeatherType = other.ForcedWeatherType;
+            WeatherInterpolation = other.WeatherInterpolation;
+            PrefsMusicVolume = other.PrefsMusicVolume;
+            PrefsSfxVolume = other.PrefsSfxVolume;
+            PrefsUseVibration = other.PrefsUseVibration;
+            PrefsStereoMono = other.PrefsStereoMono;
+            PrefsRadioStation = other.PrefsRadioStation;
+            PrefsBrightness = other.PrefsBrightness;
+            PrefsShowSubtitles = other.PrefsShowSubtitles;
+            PrefsLanguage = other.PrefsLanguage;
+            PrefsUseWideScreen = other.PrefsUseWideScreen;
+            BlurOn = other.BlurOn;
+            CompileDateAndTime = other.CompileDateAndTime;
+            WeatherTypeInList = other.WeatherTypeInList;
+            CameraCarZoomIndicator = other.CameraCarZoomIndicator;
+            CameraPedZoomIndicator = other.CameraPedZoomIndicator;
+            IsQuickSave = other.IsQuickSave;
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
@@ -471,6 +512,11 @@ namespace GTASaveData.GTA3
                 && CameraCarZoomIndicator.Equals(other.CameraCarZoomIndicator)
                 && CameraPedZoomIndicator.Equals(other.CameraPedZoomIndicator)
                 && IsQuickSave.Equals(other.IsQuickSave);
+        }
+
+        public SimpleVariables DeepClone()
+        {
+            return new SimpleVariables(this);
         }
     }
 

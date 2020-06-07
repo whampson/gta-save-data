@@ -4,12 +4,10 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class CraneData : SaveDataObject, IEquatable<CraneData>
+    public class CraneData : SaveDataObject,
+        IEquatable<CraneData>, IDeepClonable<CraneData>
     {
-        public static class Limits
-        {
-            public const int MaxNumCranes = 8;
-        }
+        public const int MaxNumCranes = 8;
 
         private int m_numCranes;
         private CollectCarsMilitaryCrane m_carsCollectedMilitaryCrane;
@@ -35,14 +33,19 @@ namespace GTASaveData.GTA3
 
         public CraneData()
         {
-            Cranes = new Array<Crane>();
+            Cranes = ArrayHelper.CreateArray<Crane>(MaxNumCranes);
+        }
+
+        public CraneData(CraneData other)
+        {
+            Cranes = ArrayHelper.DeepClone(other.Cranes);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             NumCranes = buf.ReadInt32();
             CarsCollectedMilitaryCrane = (CollectCarsMilitaryCrane) buf.ReadInt32();
-            Cranes = buf.Read<Crane>(Limits.MaxNumCranes);
+            Cranes = buf.Read<Crane>(MaxNumCranes);
 
             Debug.Assert(buf.Offset == SizeOfType<CraneData>());
         }
@@ -51,7 +54,7 @@ namespace GTASaveData.GTA3
         {
             buf.Write(NumCranes);
             buf.Write((int) CarsCollectedMilitaryCrane);
-            buf.Write(Cranes.ToArray(), Limits.MaxNumCranes);
+            buf.Write(Cranes.ToArray(), MaxNumCranes);
 
             Debug.Assert(buf.Offset == SizeOfType<CraneData>());
         }
@@ -76,6 +79,11 @@ namespace GTASaveData.GTA3
             return NumCranes.Equals(other.NumCranes)
                 && CarsCollectedMilitaryCrane.Equals(other.CarsCollectedMilitaryCrane)
                 && Cranes.SequenceEqual(other.Cranes);
+        }
+
+        public CraneData DeepClone()
+        {
+            return new CraneData(this);
         }
     }
 

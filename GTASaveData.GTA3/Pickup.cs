@@ -4,7 +4,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class Pickup : SaveDataObject, IEquatable<Pickup>
+    public class Pickup : SaveDataObject,
+        IEquatable<Pickup>, IDeepClonable<Pickup>
     {
         private PickupType m_type;
         private bool m_removed;
@@ -68,6 +69,18 @@ namespace GTASaveData.GTA3
             PickupIndex = 1;
         }
 
+        public Pickup(Pickup other)
+        {
+            Type = other.Type;
+            HasBeenPickedUp = other.HasBeenPickedUp;
+            Quantity = other.Quantity;
+            Handle = other.Handle;
+            RegenerationTime = other.RegenerationTime;
+            ModelIndex = other.ModelIndex;
+            PickupIndex = other.PickupIndex;
+            Position = other.Position;
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Type = (PickupType) buf.ReadByte();
@@ -121,6 +134,11 @@ namespace GTASaveData.GTA3
                 && ModelIndex.Equals(other.ModelIndex)
                 && PickupIndex.Equals(other.PickupIndex)
                 && Position.Equals(other.Position);
+        }
+
+        public Pickup DeepClone()
+        {
+            return new Pickup(this);
         }
     }
 

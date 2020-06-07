@@ -4,7 +4,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class RadarBlip : SaveDataObject, IEquatable<RadarBlip>
+    public class RadarBlip : SaveDataObject,
+        IEquatable<RadarBlip>, IDeepClonable<RadarBlip>
     {
         private int m_colorId;
         private RadarBlipType m_type;
@@ -96,6 +97,22 @@ namespace GTASaveData.GTA3
             BlipIndex = 1;
         }
 
+        public RadarBlip(RadarBlip other)
+        {
+            ColorId = other.ColorId;
+            Type = other.Type;
+            Handle = other.Handle;
+            RadarPosition = other.RadarPosition;
+            WorldPosition = other.WorldPosition;
+            BlipIndex = other.BlipIndex;
+            Dim = other.Dim;
+            InUse = other.InUse;
+            Radius = other.Radius;
+            Scale = other.Scale;
+            Display = other.Display;
+            Sprite = other.Sprite;
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             ColorId = buf.ReadInt32();
@@ -163,6 +180,11 @@ namespace GTASaveData.GTA3
                 && Scale.Equals(other.Scale)
                 && Display.Equals(other.Display)
                 && Sprite.Equals(other.Sprite);
+        }
+
+        public RadarBlip DeepClone()
+        {
+            return new RadarBlip(this);
         }
     }
 

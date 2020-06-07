@@ -5,12 +5,10 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class Phone : SaveDataObject, IEquatable<Phone>
+    public class Phone : SaveDataObject,
+        IEquatable<Phone>, IDeepClonable<Phone>
     {
-        public static class Limits
-        {
-            public const int MaxNumMessages = 6;
-        }
+        public const int MaxNumMessages = 6;
 
         private Vector3D m_position;
         private Array<uint> m_messages;     // wchar pointers
@@ -57,13 +55,23 @@ namespace GTASaveData.GTA3
 
         public Phone()
         {
-            Messages = new Array<uint>();
+            Messages = ArrayHelper.CreateArray<uint>(MaxNumMessages);
+        }
+
+        public Phone(Phone other)
+        {
+            Position = other.Position;
+            Messages = ArrayHelper.DeepClone(other.Messages);
+            RepeatedMessageStartTime = other.RepeatedMessageStartTime;
+            Handle = other.Handle;
+            State = other.State;
+            VisibleToCam = other.VisibleToCam;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Position = buf.Read<Vector3D>();
-            Messages = buf.Read<uint>(Limits.MaxNumMessages);
+            Messages = buf.Read<uint>(MaxNumMessages);
             RepeatedMessageStartTime = buf.ReadUInt32();
             Handle = buf.ReadInt32();
             State = (PhoneState) buf.ReadUInt32();
@@ -76,7 +84,7 @@ namespace GTASaveData.GTA3
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Position);
-            buf.Write(Messages.ToArray(), Limits.MaxNumMessages);
+            buf.Write(Messages.ToArray(), MaxNumMessages);
             buf.Write(RepeatedMessageStartTime);
             buf.Write(Handle);
             buf.Write((int) State);
@@ -109,6 +117,11 @@ namespace GTASaveData.GTA3
                 && Handle.Equals(other.Handle)
                 && State.Equals(other.State)
                 && VisibleToCam.Equals(other.VisibleToCam);
+        }
+
+        public Phone DeepClone()
+        {
+            return new Phone(this);
         }
     }
 

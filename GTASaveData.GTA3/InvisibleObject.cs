@@ -2,7 +2,8 @@
 
 namespace GTASaveData.GTA3
 {
-    public class InvisibleObject : SaveDataObject, IEquatable<InvisibleObject>
+    public class InvisibleObject : SaveDataObject,
+        IEquatable<InvisibleObject>, IDeepClonable<InvisibleObject>
     {
         private PoolType m_type;
         private int m_handle;
@@ -17,6 +18,15 @@ namespace GTASaveData.GTA3
         {
             get { return m_handle; }
             set { m_handle = value; OnPropertyChanged(); }
+        }
+
+        public InvisibleObject()
+        { }
+
+        public InvisibleObject(InvisibleObject other)
+        {
+            Type = other.Type;
+            Handle = other.Handle;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -50,6 +60,11 @@ namespace GTASaveData.GTA3
 
             return Type.Equals(other.Type)
                 && Handle.Equals(other.Handle);
+        }
+
+        public InvisibleObject DeepClone()
+        {
+            return new InvisibleObject(this);
         }
     }
 }

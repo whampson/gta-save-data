@@ -4,7 +4,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class Crane : SaveDataObject, IEquatable<Crane>
+    public class Crane : SaveDataObject,
+        IEquatable<Crane>, IDeepClonable<Crane>
     {
         private uint m_handle;
         private uint m_hookHandle;
@@ -220,6 +221,40 @@ namespace GTASaveData.GTA3
         public Crane()
         { }
 
+        public Crane(Crane other)
+        {
+            Handle = other.Handle;
+            HookHandle = other.HookHandle;
+            AudioHandle = other.AudioHandle;
+            PickupX1 = other.PickupX1;
+            PickupX2 = other.PickupX2;
+            PickupY1 = other.PickupY1;
+            PickupY2 = other.PickupY2;
+            DropoffTarget = other.DropoffTarget;
+            DropoffHeading = other.DropoffHeading;
+            PickupAngle = other.PickupAngle;
+            DropoffAngle = other.DropoffAngle;
+            PickupDistance = other.PickupDistance;
+            DropoffDistance = other.DropoffDistance;
+            PickupHeight = other.PickupHeight;
+            DropoffHeight = other.DropoffHeight;
+            HookAngle = other.HookAngle;
+            HookDistance = other.HookDistance;
+            HookHeight = other.HookHeight;
+            HookInitialPosition = other.HookInitialPosition;
+            HookCurrentPosition = other.HookCurrentPosition;
+            HookVelocity = other.HookVelocity;
+            VehiclePickedUpHandle = other.VehiclePickedUpHandle;
+            TimeForNextCheck = other.TimeForNextCheck;
+            Status = other.Status;
+            State = other.State;
+            VehiclesCollected = other.VehiclesCollected;
+            IsCrusher = other.IsCrusher;
+            IsMilitaryCrane = other.IsMilitaryCrane;
+            WasMilitaryCrane = other.WasMilitaryCrane;
+            IsTop = other.IsTop;
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Handle = buf.ReadUInt32();
@@ -341,6 +376,11 @@ namespace GTASaveData.GTA3
                 && IsMilitaryCrane.Equals(other.IsMilitaryCrane)
                 && WasMilitaryCrane.Equals(other.WasMilitaryCrane)
                 && IsTop.Equals(other.IsTop);
+        }
+
+        public Crane DeepClone()
+        {
+            return new Crane(this);
         }
     }
 }

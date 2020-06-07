@@ -4,12 +4,10 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class GangData : SaveDataObject, IEquatable<GangData>
+    public class GangData : SaveDataObject,
+        IEquatable<GangData>, IDeepClonable<GangData>
     {
-        public static class Limits
-        {
-            public const int MaxNumGangs = 9;
-        }
+        public const int MaxNumGangs = 9;
 
         private Array<Gang> m_gangs;
         public Array<Gang> Gangs
@@ -20,23 +18,28 @@ namespace GTASaveData.GTA3
 
         public GangData()
         {
-            Gangs = new Array<Gang>();
+            Gangs = ArrayHelper.CreateArray<Gang>(MaxNumGangs);
+        }
+
+        public GangData(GangData other)
+        {
+            Gangs = ArrayHelper.DeepClone(other.Gangs);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3Save.ReadSaveHeader(buf, "GNG");
+            int size = GTA3VCSave.ReadSaveHeader(buf, "GNG");
 
-            Gangs = buf.Read<Gang>(Limits.MaxNumGangs);
+            Gangs = buf.Read<Gang>(MaxNumGangs);
 
             Debug.Assert(buf.Offset == SizeOfType<GangData>());
-            Debug.Assert(size == SizeOfType<GangData>() - GTA3Save.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<GangData>() - GTA3VCSave.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3Save.WriteSaveHeader(buf, "GNG", SizeOfType<GangData>() - GTA3Save.BlockHeaderSize);
-            buf.Write(Gangs.ToArray(), Limits.MaxNumGangs);
+            GTA3VCSave.WriteSaveHeader(buf, "GNG", SizeOfType<GangData>() - GTA3VCSave.BlockHeaderSize);
+            buf.Write(Gangs.ToArray(), MaxNumGangs);
 
             Debug.Assert(buf.Offset == SizeOfType<GangData>());
         }
@@ -59,6 +62,11 @@ namespace GTASaveData.GTA3
             }
 
             return Gangs.SequenceEqual(other.Gangs);
+        }
+
+        public GangData DeepClone()
+        {
+            return new GangData(this);
         }
     }
 

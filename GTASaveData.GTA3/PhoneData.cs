@@ -4,12 +4,10 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class PhoneData : SaveDataObject, IEquatable<PhoneData>
+    public class PhoneData : SaveDataObject,
+        IEquatable<PhoneData>, IDeepClonable<PhoneData>
     {
-        public static class Limits
-        {
-            public const int MaxNumPhones = 50;
-        }
+        public const int MaxNumPhones = 50;
 
         private int m_numPhones;
         private int m_numActivePhones;
@@ -33,17 +31,23 @@ namespace GTASaveData.GTA3
             set { m_phones = value; OnPropertyChanged(); }
         }
 
-
         public PhoneData()
         {
-            Phones = new Array<Phone>();
+            Phones = ArrayHelper.CreateArray<Phone>(MaxNumPhones);
+        }
+
+        public PhoneData(PhoneData other)
+        {
+            NumPhones = other.NumPhones;
+            NumActivePhones = other.NumActivePhones;
+            Phones = ArrayHelper.DeepClone(other.Phones);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             NumPhones = buf.ReadInt32();
             NumActivePhones = buf.ReadInt32();
-            Phones = buf.Read<Phone>(Limits.MaxNumPhones);
+            Phones = buf.Read<Phone>(MaxNumPhones);
 
             Debug.Assert(buf.Offset == SizeOfType<PhoneData>());
         }
@@ -52,7 +56,7 @@ namespace GTASaveData.GTA3
         {
             buf.Write(NumPhones);
             buf.Write(NumActivePhones);
-            buf.Write(Phones.ToArray(), Limits.MaxNumPhones);
+            buf.Write(Phones.ToArray(), MaxNumPhones);
 
             Debug.Assert(buf.Offset == SizeOfType<PhoneData>());
         }
@@ -77,6 +81,11 @@ namespace GTASaveData.GTA3
             return NumPhones.Equals(other.NumPhones)
                 && NumActivePhones.Equals(other.NumActivePhones)
                 && Phones.SequenceEqual(other.Phones);
+        }
+
+        public PhoneData DeepClone()
+        {
+            return new PhoneData(this);
         }
     }
 }

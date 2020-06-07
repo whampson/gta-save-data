@@ -6,7 +6,8 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class CarGeneratorData : SaveDataObject, ICarGeneratorData, IEquatable<CarGeneratorData>
+    public class CarGeneratorData : SaveDataObject, ICarGeneratorData,
+        IEquatable<CarGeneratorData>, IDeepClonable<CarGeneratorData>
     {
         public const int MaxNumCarGenerators = 160;
 
@@ -68,7 +69,16 @@ namespace GTASaveData.GTA3
 
         public CarGeneratorData()
         {
-            CarGenerators = new Array<CarGenerator>();
+            CarGenerators = ArrayHelper.CreateArray<CarGenerator>(MaxNumCarGenerators);
+        }
+
+        public CarGeneratorData(CarGeneratorData other)
+        {
+            NumberOfCarGenerators = other.NumberOfCarGenerators;
+            NumberOfEnabledCarGenerators = other.NumberOfEnabledCarGenerators;
+            ProcessCounter = other.ProcessCounter;
+            GenerateEvenIfPlayerIsCloseCounter = other.GenerateEvenIfPlayerIsCloseCounter;
+            CarGenerators = ArrayHelper.DeepClone(other.CarGenerators);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -128,6 +138,11 @@ namespace GTASaveData.GTA3
                 && ProcessCounter.Equals(other.ProcessCounter)
                 && GenerateEvenIfPlayerIsCloseCounter.Equals(other.GenerateEvenIfPlayerIsCloseCounter)
                 && CarGenerators.SequenceEqual(other.CarGenerators);
+        }
+
+        public CarGeneratorData DeepClone()
+        {
+            return new CarGeneratorData(this);
         }
     }
 }

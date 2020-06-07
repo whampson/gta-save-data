@@ -11,7 +11,7 @@ namespace GTASaveData.GTA3.Tests
         public override Zone GenerateTestObject(FileFormat format)
         {
             Faker<Zone> model = new Faker<Zone>()
-                .RuleFor(x => x.Name, f => Generator.Words(f, Zone.Limits.MaxNameLength - 1))
+                .RuleFor(x => x.Name, f => Generator.Words(f, Zone.MaxNameLength - 1))
                 .RuleFor(x => x.Min, f => Generator.Vector3D(f))
                 .RuleFor(x => x.Max, f => Generator.Vector3D(f))
                 .RuleFor(x => x.Type, f => f.PickRandom<ZoneType>())

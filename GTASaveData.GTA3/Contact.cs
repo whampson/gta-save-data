@@ -2,7 +2,8 @@
 
 namespace GTASaveData.GTA3
 {
-    public class Contact : SaveDataObject, IEquatable<Contact>
+    public class Contact : SaveDataObject,
+        IEquatable<Contact>, IDeepClonable<Contact>
     {
         private int m_onAMissionFlag;
         private int m_baseBriefId;
@@ -17,6 +18,15 @@ namespace GTASaveData.GTA3
         {
             get { return m_baseBriefId; }
             set { m_baseBriefId = value; OnPropertyChanged(); }
+        }
+
+        public Contact()
+        { }
+
+        public Contact(Contact other)
+        {
+            OnAMissionFlag = other.OnAMissionFlag;
+            BaseBriefId = other.BaseBriefId;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -50,6 +60,11 @@ namespace GTASaveData.GTA3
 
             return OnAMissionFlag.Equals(other.OnAMissionFlag)
                 && BaseBriefId.Equals(other.BaseBriefId);
+        }
+
+        public Contact DeepClone()
+        {
+            return new Contact(this);
         }
     }
 }

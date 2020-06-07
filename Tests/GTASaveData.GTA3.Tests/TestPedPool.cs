@@ -14,6 +14,15 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
+        [Fact]
+        public void CopyConstructor()
+        {
+            PlayerPedPool x0 = GenerateTestObject();
+            PlayerPedPool x1 = new PlayerPedPool(x0);
+
+            Assert.Equal(x0, x1);
+        }
+
         [Theory]
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileFormat format)

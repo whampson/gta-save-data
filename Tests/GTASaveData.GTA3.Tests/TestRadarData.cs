@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<RadarData> model = new Faker<RadarData>()
                 .RuleFor(x => x.RadarBlips,
-                    f => Generator.Array(RadarData.Limits.MaxNumRadarBlips, g => Generator.Generate<RadarBlip, TestRadarBlip>()));
+                    f => Generator.Array(RadarData.MaxNumRadarBlips, g => Generator.Generate<RadarBlip, TestRadarBlip>()));
 
             return model.Generate();
         }

@@ -3,7 +3,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class Gang : SaveDataObject, IEquatable<Gang>
+    public class Gang : SaveDataObject,
+        IEquatable<Gang>, IDeepClonable<Gang>
     {
         private int m_vehicleModel;
         private sbyte m_pedModelOverride;
@@ -38,6 +39,14 @@ namespace GTASaveData.GTA3
         {
             VehicleModel = -1;
             PedModelOverride = -1;
+        }
+
+        public Gang(Gang other)
+        {
+            VehicleModel = other.VehicleModel;
+            PedModelOverride = other.PedModelOverride;
+            Weapon1 = other.Weapon1;
+            Weapon2 = other.Weapon2;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -83,6 +92,11 @@ namespace GTASaveData.GTA3
                 && PedModelOverride.Equals(other.PedModelOverride)
                 && Weapon1.Equals(other.Weapon1)
                 && Weapon2.Equals(other.Weapon2);
+        }
+
+        public Gang DeepClone()
+        {
+            return new Gang(this);
         }
     }
 }

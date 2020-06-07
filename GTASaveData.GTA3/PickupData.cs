@@ -4,13 +4,11 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class PickupData : SaveDataObject, IEquatable<PickupData>
+    public class PickupData : SaveDataObject,
+        IEquatable<PickupData>, IDeepClonable<PickupData>
     {
-        public static class Limits
-        {
-            public const int MaxNumPickups = 336;
-            public const int MaxNumCollectedPickups = 20;
-        }
+        public const int MaxNumPickups = 336;
+        public const int MaxNumCollectedPickups = 20;
 
         private Array<Pickup> m_pickUps;
         private short m_collectedPickupIndex;
@@ -36,26 +34,33 @@ namespace GTASaveData.GTA3
 
         public PickupData()
         {
-            Pickups = new Array<Pickup>();
-            PickupsCollected = new Array<int>();
+            Pickups = ArrayHelper.CreateArray<Pickup>(MaxNumPickups);
+            PickupsCollected = ArrayHelper.CreateArray<int>(MaxNumCollectedPickups);
+        }
+
+        public PickupData(PickupData other)
+        {
+            Pickups = ArrayHelper.DeepClone(other.Pickups);
+            LastCollectedIndex = other.LastCollectedIndex;
+            PickupsCollected = ArrayHelper.DeepClone(other.PickupsCollected);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            Pickups = buf.Read<Pickup>(Limits.MaxNumPickups);
+            Pickups = buf.Read<Pickup>(MaxNumPickups);
             LastCollectedIndex = buf.ReadInt16();
             buf.ReadInt16();
-            PickupsCollected = buf.Read<int>(Limits.MaxNumCollectedPickups);
+            PickupsCollected = buf.Read<int>(MaxNumCollectedPickups);
 
             Debug.Assert(buf.Offset == SizeOfType<PickupData>());
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            buf.Write(Pickups.ToArray(), Limits.MaxNumPickups);
+            buf.Write(Pickups.ToArray(), MaxNumPickups);
             buf.Write(LastCollectedIndex);
             buf.Write((short) 0);
-            buf.Write(PickupsCollected.ToArray(), Limits.MaxNumCollectedPickups);
+            buf.Write(PickupsCollected.ToArray(), MaxNumCollectedPickups);
 
             Debug.Assert(buf.Offset == SizeOfType<PickupData>());
         }
@@ -80,6 +85,11 @@ namespace GTASaveData.GTA3
             return Pickups.SequenceEqual(other.Pickups)
                 && LastCollectedIndex.Equals(other.LastCollectedIndex)
                 && PickupsCollected.SequenceEqual(other.PickupsCollected);
+        }
+
+        public PickupData DeepClone()
+        {
+            return new PickupData(this);
         }
     }
 }

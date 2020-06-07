@@ -4,15 +4,13 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class Stats : SaveDataObject, IEquatable<Stats>
+    public class Stats : SaveDataObject, 
+        IEquatable<Stats>, IDeepClonable<Stats>
     {
-        public static class Limits
-        {
-            public const int MaxNumPedTypes = 23;
-            public const int MaxNumFastestTimes = 16;
-            public const int MaxNumHighestScores = 16;
-            public const int MaxLastMissionPassedNameLength = 8;
-        }
+        public const int MaxNumPedTypes = 23;
+        public const int MaxNumFastestTimes = 16;
+        public const int MaxNumHighestScores = 16;
+        public const int MaxLastMissionPassedNameLength = 8;
 
         private int m_peopleKilledByPlayer;
         private int m_peopleKilledByOthers;
@@ -381,10 +379,66 @@ namespace GTASaveData.GTA3
 
         public Stats()
         {
-            PedsKilledOfThisType = new Array<int>();
-            FastestTimes = new Array<int>();
-            HighestScores = new Array<int>();
+            PedsKilledOfThisType = ArrayHelper.CreateArray<int>(MaxNumPedTypes);
+            FastestTimes = ArrayHelper.CreateArray<int>(MaxNumFastestTimes);
+            HighestScores = ArrayHelper.CreateArray<int>(MaxNumHighestScores);
             LastMissionPassedName = "";
+        }
+
+        public Stats(Stats other)
+        {
+            PeopleKilledByPlayer = other.PeopleKilledByPlayer;
+            PeopleKilledByOthers = other.PeopleKilledByOthers;
+            CarsExploded = other.CarsExploded;
+            RoundsFiredByPlayer = other.RoundsFiredByPlayer;
+            PedsKilledOfThisType = ArrayHelper.DeepClone(other.PedsKilledOfThisType);
+            HelisDestroyed = other.HelisDestroyed;
+            ProgressMade = other.ProgressMade;
+            TotalProgressInGame = other.TotalProgressInGame;
+            KgsOfExplosivesUsed = other.KgsOfExplosivesUsed;
+            InstantHitsFiredByPlayer = other.InstantHitsFiredByPlayer;
+            InstantHitsHitByPlayer = other.InstantHitsHitByPlayer;
+            CarsCrushed = other.CarsCrushed;
+            HeadsPopped = other.HeadsPopped;
+            TimesArrested = other.TimesArrested;
+            TimesDied = other.TimesDied;
+            DaysPassed = other.DaysPassed;
+            MmRain = other.MmRain;
+            MaximumJumpDistance = other.MaximumJumpDistance;
+            MaximumJumpHeight = other.MaximumJumpHeight;
+            MaximumJumpFlips = other.MaximumJumpFlips;
+            MaximumJumpSpins = other.MaximumJumpSpins;
+            BestStuntJump = other.BestStuntJump;
+            NumberOfUniqueJumpsFound = other.NumberOfUniqueJumpsFound;
+            TotalNumberOfUniqueJumps = other.TotalNumberOfUniqueJumps;
+            MissionsGiven = other.MissionsGiven;
+            MissionsPassed = other.MissionsPassed;
+            PassengersDroppedOffWithTaxi = other.PassengersDroppedOffWithTaxi;
+            MoneyMadeWithTaxi = other.MoneyMadeWithTaxi;
+            IndustrialPassed = other.IndustrialPassed;
+            CommercialPassed = other.CommercialPassed;
+            SuburbanPassed = other.SuburbanPassed;
+            ElBurroTime = other.ElBurroTime;
+            DistanceTravelledOnFoot = other.DistanceTravelledOnFoot;
+            DistanceTravelledInVehicle = other.DistanceTravelledInVehicle;
+            Record4x4One = other.Record4x4One;
+            Record4x4Two = other.Record4x4Two;
+            Record4x4Three = other.Record4x4Three;
+            Record4x4Mayhem = other.Record4x4Mayhem;
+            LivesSavedWithAmbulance = other.LivesSavedWithAmbulance;
+            CriminalsCaught = other.CriminalsCaught;
+            HighestLevelAmbulanceMission = other.HighestLevelAmbulanceMission;
+            FiresExtinguished = other.FiresExtinguished;
+            LongestFlightInDodo = other.LongestFlightInDodo;
+            TimeTakenDefuseMission = other.TimeTakenDefuseMission;
+            NumberKillFrenziesPassed = other.NumberKillFrenziesPassed;
+            TotalNumberKillFrenzies = other.TotalNumberKillFrenzies;
+            TotalNumberMissions = other.TotalNumberMissions;
+            FastestTimes = ArrayHelper.DeepClone(other.FastestTimes);
+            HighestScores = ArrayHelper.DeepClone(other.HighestScores);
+            KillsSinceLastCheckpoint = other.KillsSinceLastCheckpoint;
+            TotalLegitimateKills = other.TotalLegitimateKills;
+            LastMissionPassedName = other.LastMissionPassedName;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -393,7 +447,7 @@ namespace GTASaveData.GTA3
             PeopleKilledByOthers = buf.ReadInt32();
             CarsExploded = buf.ReadInt32();
             RoundsFiredByPlayer = buf.ReadInt32();
-            PedsKilledOfThisType = buf.Read<int>(Limits.MaxNumPedTypes);
+            PedsKilledOfThisType = buf.Read<int>(MaxNumPedTypes);
             HelisDestroyed = buf.ReadInt32();
             ProgressMade = buf.ReadInt32();
             TotalProgressInGame = buf.ReadInt32();
@@ -436,11 +490,11 @@ namespace GTASaveData.GTA3
             NumberKillFrenziesPassed = buf.ReadInt32();
             TotalNumberKillFrenzies = buf.ReadInt32();
             TotalNumberMissions = buf.ReadInt32();
-            FastestTimes = buf.Read<int>(Limits.MaxNumFastestTimes);
-            HighestScores = buf.Read<int>(Limits.MaxNumHighestScores);
+            FastestTimes = buf.Read<int>(MaxNumFastestTimes);
+            HighestScores = buf.Read<int>(MaxNumHighestScores);
             KillsSinceLastCheckpoint = buf.ReadInt32();
             TotalLegitimateKills = buf.ReadInt32();
-            LastMissionPassedName = buf.ReadString(Limits.MaxLastMissionPassedNameLength);
+            LastMissionPassedName = buf.ReadString(MaxLastMissionPassedNameLength);
 
             Debug.Assert(buf.Offset == SizeOfType<Stats>());
         }
@@ -451,7 +505,7 @@ namespace GTASaveData.GTA3
             buf.Write(PeopleKilledByOthers);
             buf.Write(CarsExploded);
             buf.Write(RoundsFiredByPlayer);
-            buf.Write(PedsKilledOfThisType.ToArray(), Limits.MaxNumPedTypes);
+            buf.Write(PedsKilledOfThisType.ToArray(), MaxNumPedTypes);
             buf.Write(HelisDestroyed);
             buf.Write(ProgressMade);
             buf.Write(TotalProgressInGame);
@@ -494,11 +548,11 @@ namespace GTASaveData.GTA3
             buf.Write(NumberKillFrenziesPassed);
             buf.Write(TotalNumberKillFrenzies);
             buf.Write(TotalNumberMissions);
-            buf.Write(FastestTimes.ToArray(), Limits.MaxNumFastestTimes);
-            buf.Write(HighestScores.ToArray(), Limits.MaxNumHighestScores);
+            buf.Write(FastestTimes.ToArray(), MaxNumFastestTimes);
+            buf.Write(HighestScores.ToArray(), MaxNumHighestScores);
             buf.Write(KillsSinceLastCheckpoint);
             buf.Write(TotalLegitimateKills);
-            buf.Write(LastMissionPassedName, Limits.MaxLastMissionPassedNameLength);
+            buf.Write(LastMissionPassedName, MaxLastMissionPassedNameLength);
 
             Debug.Assert(buf.Offset == SizeOfType<Stats>());
         }
@@ -572,6 +626,11 @@ namespace GTASaveData.GTA3
                 && KillsSinceLastCheckpoint.Equals(other.KillsSinceLastCheckpoint)
                 && TotalLegitimateKills.Equals(other.TotalLegitimateKills)
                 && LastMissionPassedName.Equals(other.LastMissionPassedName);
+        }
+
+        public Stats DeepClone()
+        {
+            return new Stats(this);
         }
     }
 }

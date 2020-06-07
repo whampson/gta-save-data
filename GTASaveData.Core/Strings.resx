@@ -136,6 +136,9 @@
     <value>Size not defined for type '{0}'.</value>
     <comment>{0} = data format name</comment>
   </data>
+  <data name="Error_InvalidOperation_StackEmpty" xml:space="preserve">
+    <value>The stack is empty.</value>
+  </data>
   <data name="Error_JsonSerialization_EndOfStream" xml:space="preserve">
     <value>Unexpected end of stream reached while parsing JSON.</value>
   </data>
@@ -143,16 +146,16 @@
     <value>Unexpected token while parsing JSON: {0}</value>
     <comment>{0} = token type</comment>
   </data>
-  <data name="Error_SerializationNotAllowed" xml:space="preserve">
-    <value>The type '{0}' does not support serialization.</value>
-    <comment>{0} = object type</comment>
-  </data>
   <data name="Error_Serialization_BadBlockSize" xml:space="preserve">
     <value>Bad block size: {0}</value>
     <comment>{0} = block size value</comment>
   </data>
   <data name="Error_Serialization_NoPreAlloc" xml:space="preserve">
     <value>The type '{0}' cannot be pre-allocated.</value>
+    <comment>{0} = object type</comment>
+  </data>
+  <data name="Error_Serialization_NotAllowed" xml:space="preserve">
+    <value>The type '{0}' does not support serialization.</value>
     <comment>{0} = object type</comment>
   </data>
 </root>

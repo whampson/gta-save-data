@@ -5,7 +5,8 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class CarGenerator : SaveDataObject, ICarGenerator, IEquatable<CarGenerator>
+    public class CarGenerator : SaveDataObject, ICarGenerator,
+        IEquatable<CarGenerator>, IDeepClonable<CarGenerator>
     {
         private int m_modelIndex;
         private Vector3D m_position;
@@ -154,6 +155,27 @@ namespace GTASaveData.GTA3
         public CarGenerator()
         { }
 
+        public CarGenerator(CarGenerator other)
+        {
+            Model = other.Model;
+            Position = other.Position;
+            Heading = other.Heading;
+            Color1 = other.Color1;
+            Color2 = other.Color2;
+            ForceSpawn = other.ForceSpawn;
+            AlarmChance = other.AlarmChance;
+            LockedChance = other.LockedChance;
+            MinDelay = other.MinDelay;
+            MaxDelay = other.MaxDelay;
+            Timer = other.Timer;
+            Handle = other.Handle;
+            Enabled = other.Enabled;
+            IsBlocking = other.IsBlocking;
+            CollisionBoundingMin = other.CollisionBoundingMin;
+            CollisionBoundingMax = other.CollisionBoundingMax;
+            CollisionSize = other.CollisionSize;
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Model = buf.ReadInt32();
@@ -238,6 +260,11 @@ namespace GTASaveData.GTA3
                 && CollisionBoundingMin.Equals(other.CollisionBoundingMin)
                 && CollisionBoundingMax.Equals(other.CollisionBoundingMax)
                 && CollisionSize.Equals(other.CollisionSize);
+        }
+
+        public CarGenerator DeepClone()
+        {
+            return new CarGenerator(this);
         }
     }
 }

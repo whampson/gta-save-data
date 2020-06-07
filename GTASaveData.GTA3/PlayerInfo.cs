@@ -3,12 +3,10 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class PlayerInfo : SaveDataObject, IEquatable<PlayerInfo>
+    public class PlayerInfo : SaveDataObject,
+        IEquatable<PlayerInfo>, IDeepClonable<PlayerInfo>
     {
-        public static class Limits
-        {
-            public const int MaxPlayerNameLength = 70;
-        }
+        public const int MaxPlayerNameLength = 70;
 
         private int m_money;
         private WastedBustedState m_wastedBustedState;
@@ -107,6 +105,23 @@ namespace GTASaveData.GTA3
             PlayerName = "";
         }
 
+        public PlayerInfo(PlayerInfo other)
+        {
+            Money = other.Money;
+            WastedBustedState = other.WastedBustedState;
+            WastedBustedTime = other.WastedBustedTime;
+            TrafficMultiplier = other.TrafficMultiplier;
+            RoadDensity = other.RoadDensity;
+            MoneyOnScreen = other.MoneyOnScreen;
+            PackagesCollected = other.PackagesCollected;
+            PackagesTotal = other.PackagesTotal;
+            InfinteSprint = other.InfinteSprint;
+            FastReload = other.FastReload;
+            GetOutOfJailFree = other.GetOutOfJailFree;
+            GetOutOfHospitalFree = other.GetOutOfHospitalFree;
+            PlayerName = other.PlayerName;
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Money = buf.ReadInt32();
@@ -121,7 +136,7 @@ namespace GTASaveData.GTA3
             FastReload = buf.ReadBool();
             GetOutOfJailFree = buf.ReadBool();
             GetOutOfHospitalFree = buf.ReadBool();
-            PlayerName = buf.ReadString(Limits.MaxPlayerNameLength);
+            PlayerName = buf.ReadString(MaxPlayerNameLength);
 
             buf.Skip(215);
 
@@ -142,7 +157,7 @@ namespace GTASaveData.GTA3
             buf.Write(FastReload);
             buf.Write(GetOutOfJailFree);
             buf.Write(GetOutOfHospitalFree);
-            buf.Write(PlayerName, Limits.MaxPlayerNameLength);
+            buf.Write(PlayerName, MaxPlayerNameLength);
 
             // Game writes some garbage here due to incorrect size calculation
             buf.Skip(215);
@@ -180,6 +195,11 @@ namespace GTASaveData.GTA3
                 && GetOutOfJailFree.Equals(other.GetOutOfJailFree)
                 && GetOutOfHospitalFree.Equals(other.GetOutOfHospitalFree)
                 && PlayerName.Equals(other.PlayerName);
+        }
+
+        public PlayerInfo DeepClone()
+        {
+            return new PlayerInfo(this);
         }
     }
 

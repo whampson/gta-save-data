@@ -4,7 +4,8 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class AudioScriptData : SaveDataObject, IEquatable<AudioScriptData>
+    public class AudioScriptData : SaveDataObject,
+        IEquatable<AudioScriptData>, IDeepClonable<AudioScriptData>
     {
         private Array<AudioScriptObject> m_audioScriptObjects;
         public Array<AudioScriptObject> AudioScriptObjects
@@ -18,20 +19,25 @@ namespace GTASaveData.GTA3
             AudioScriptObjects = new Array<AudioScriptObject>();
         }
 
+        public AudioScriptData(AudioScriptData other)
+        {
+            AudioScriptObjects = ArrayHelper.DeepClone(other.AudioScriptObjects);
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3Save.ReadSaveHeader(buf, "AUD");
+            int size = GTA3VCSave.ReadSaveHeader(buf, "AUD");
 
             int count = buf.ReadInt32();
             AudioScriptObjects = buf.Read<AudioScriptObject>(count);
 
-            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
-            Debug.Assert(size == SizeOfObject(this) - GTA3Save.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(size == SizeOfObject(this) - GTA3VCSave.BlockHeaderSize);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3Save.WriteSaveHeader(buf, "AUD", SizeOfObject(this) - GTA3Save.BlockHeaderSize);
+            GTA3VCSave.WriteSaveHeader(buf, "AUD", SizeOfObject(this) - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(AudioScriptObjects.Count);
             buf.Write(AudioScriptObjects.ToArray());
@@ -42,7 +48,7 @@ namespace GTASaveData.GTA3
         protected override int GetSize(FileFormat fmt)
         {
             return SizeOfType<AudioScriptObject>() * AudioScriptObjects.Count
-                + GTA3Save.BlockHeaderSize
+                + GTA3VCSave.BlockHeaderSize
                 + sizeof(int);
         }
 
@@ -59,6 +65,11 @@ namespace GTASaveData.GTA3
             }
 
             return AudioScriptObjects.SequenceEqual(other.AudioScriptObjects);
+        }
+
+        public AudioScriptData DeepClone()
+        {
+            return new AudioScriptData(this);
         }
     }
 }

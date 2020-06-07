@@ -4,13 +4,11 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class ZoneInfo : SaveDataObject, IEquatable<ZoneInfo>
+    public class ZoneInfo : SaveDataObject,
+        IEquatable<ZoneInfo>, IDeepClonable<ZoneInfo>
     {
-        public static class Limits
-        {
-            public const int CarThresholdCapacity = 6;
-            public const int GangDensityCapacity = 9;
-        }
+        public const int CarThresholdCapacity = 6;
+        public const int GangDensityCapacity = 9;
 
         private short m_carDensity;
         private Array<short> m_carThreshold;
@@ -71,20 +69,32 @@ namespace GTASaveData.GTA3
 
         public ZoneInfo()
         {
-            CarThreshold = new Array<short>();
-            GangCarDensity = new Array<short>();
-            GangPedDensity = new Array<short>();
+            CarThreshold = ArrayHelper.CreateArray<short>(CarThresholdCapacity);
+            GangCarDensity = ArrayHelper.CreateArray<short>(GangDensityCapacity);
+            GangPedDensity = ArrayHelper.CreateArray<short>(GangDensityCapacity);
+        }
+
+        public ZoneInfo(ZoneInfo other)
+        {
+            CarDensity = other.CarDensity;
+            CarThreshold = ArrayHelper.DeepClone(other.CarThreshold);
+            CopCarDensity = other.CopCarDensity;
+            GangCarDensity = ArrayHelper.DeepClone(other.GangCarDensity);
+            PedDensity = other.PedDensity;
+            CopPedDensity = other.CopPedDensity;
+            GangPedDensity = ArrayHelper.DeepClone(other.GangPedDensity);
+            PedGroup = other.PedGroup;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             CarDensity = buf.ReadInt16();
-            CarThreshold = buf.Read<short>(Limits.CarThresholdCapacity);
+            CarThreshold = buf.Read<short>(CarThresholdCapacity);
             CopCarDensity = buf.ReadInt16();
-            GangCarDensity = buf.Read<short>(Limits.GangDensityCapacity);
+            GangCarDensity = buf.Read<short>(GangDensityCapacity);
             PedDensity = buf.ReadInt16();
             CopPedDensity = buf.ReadInt16();
-            GangPedDensity = buf.Read<short>(Limits.GangDensityCapacity);
+            GangPedDensity = buf.Read<short>(GangDensityCapacity);
             PedGroup = buf.ReadInt16();
 
             Debug.Assert(buf.Offset == SizeOfType<ZoneInfo>());
@@ -93,12 +103,12 @@ namespace GTASaveData.GTA3
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(CarDensity);
-            buf.Write(CarThreshold.ToArray(), Limits.CarThresholdCapacity);
+            buf.Write(CarThreshold.ToArray(), CarThresholdCapacity);
             buf.Write(CopCarDensity);
-            buf.Write(GangCarDensity.ToArray(), Limits.GangDensityCapacity);
+            buf.Write(GangCarDensity.ToArray(), GangDensityCapacity);
             buf.Write(PedDensity);
             buf.Write(CopPedDensity);
-            buf.Write(GangPedDensity.ToArray(), Limits.GangDensityCapacity);
+            buf.Write(GangPedDensity.ToArray(), GangDensityCapacity);
             buf.Write(PedGroup);
 
             Debug.Assert(buf.Offset == SizeOfType<ZoneInfo>());
@@ -129,6 +139,11 @@ namespace GTASaveData.GTA3
                 && CopPedDensity.Equals(other.CopPedDensity)
                 && GangPedDensity.SequenceEqual(other.GangPedDensity)
                 && PedGroup.Equals(other.PedGroup);
+        }
+
+        public ZoneInfo DeepClone()
+        {
+            return new ZoneInfo(this);
         }
     }
 }

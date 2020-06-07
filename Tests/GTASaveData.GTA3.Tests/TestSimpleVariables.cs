@@ -51,6 +51,15 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
+        [Fact]
+        public void CopyConstructor()
+        {
+            SimpleVariables x0 = GenerateTestObject();
+            SimpleVariables x1 = new SimpleVariables(x0);
+
+            Assert.Equal(x0, x1);
+        }
+
         [Theory]
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileFormat format)

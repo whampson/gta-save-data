@@ -4,7 +4,8 @@ using System.Linq;
 
 namespace GTASaveData.GTA3
 {
-    public class ParticleData : SaveDataObject, IEquatable<ParticleData>
+    public class ParticleData : SaveDataObject,
+        IEquatable<ParticleData>, IDeepClonable<ParticleData>
     {
         private Array<ParticleObject> m_particleObjects;
 
@@ -17,6 +18,11 @@ namespace GTASaveData.GTA3
         public ParticleData()
         {
             ParticleObjects = new Array<ParticleObject>();
+        }
+
+        public ParticleData(ParticleData other)
+        {
+            ParticleObjects = ArrayHelper.DeepClone(other.ParticleObjects);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -56,6 +62,11 @@ namespace GTASaveData.GTA3
             }
 
             return ParticleObjects.SequenceEqual(other.ParticleObjects);
+        }
+
+        public ParticleData DeepClone()
+        {
+            return new ParticleData(this);
         }
     }
 }
