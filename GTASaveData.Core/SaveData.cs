@@ -172,7 +172,6 @@ namespace GTASaveData
                 $"TimeStamp = {now}; " +
                 $"FileFormat = {FileFormat}; " +
                 $"Size = {size}; " +
-                $"Size = {size}; " +
                 $"}}";
         }
     }

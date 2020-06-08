@@ -31,7 +31,10 @@ namespace GTASaveData.GTA3
 
         public PlayerPedPool()
         {
-            PlayerPeds = new Array<PlayerPed>();
+            PlayerPeds = new Array<PlayerPed>()
+            {
+                new PlayerPed()
+            };
         }
 
         public PlayerPedPool(PlayerPedPool other)

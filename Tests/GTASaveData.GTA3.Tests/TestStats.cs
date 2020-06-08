@@ -65,11 +65,12 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            Stats x0 = GenerateTestObject();
-            Stats x1 = CreateSerializedCopy(x0, out byte[] data);
+            Stats x0 = GenerateTestObject(format);
+            Stats x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.PeopleKilledByPlayer, x1.PeopleKilledByPlayer);
             Assert.Equal(x0.PeopleKilledByOthers, x1.PeopleKilledByOthers);
@@ -125,7 +126,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            Stats x0 = GenerateTestObject();
+            Stats x1 = new Stats(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

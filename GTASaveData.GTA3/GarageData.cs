@@ -102,8 +102,8 @@ namespace GTASaveData.GTA3
 
         public GarageData()
         {
-            CarsInSafeHouse = new Array<StoredCar>();
-            Garages = new Array<Garage>();
+            CarsInSafeHouse = ArrayHelper.CreateArray<StoredCar>(CarsPerSafeHouse * NumberOfSafeHouses);
+            Garages = ArrayHelper.CreateArray<Garage>(MaxNumGarages);
         }
 
         public GarageData(GarageData other)

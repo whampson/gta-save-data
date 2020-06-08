@@ -25,11 +25,12 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            Zone x0 = GenerateTestObject();
-            Zone x1 = CreateSerializedCopy(x0, out byte[] data);
+            Zone x0 = GenerateTestObject(format);
+            Zone x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.Name, x1.Name);
             Assert.Equal(x0.Min, x1.Min);
@@ -43,7 +44,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.NextZoneIndex, x1.NextZoneIndex);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            Zone x0 = GenerateTestObject();
+            Zone x1 = new Zone(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

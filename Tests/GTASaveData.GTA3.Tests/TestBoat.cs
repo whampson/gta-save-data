@@ -10,8 +10,6 @@ namespace GTASaveData.GTA3.Tests
         public override Boat GenerateTestObject(FileFormat format)
         {
             Faker<Boat> model = new Faker<Boat>()
-                //.RuleFor(x => x.ModelIndex, f => f.Random.Short())
-                //.RuleFor(x => x.Handle, f => f.Random.Int())
                 .RuleFor(x => x.Matrix, f => TestMatrix.GenerateRandom(f))
                 .RuleFor(x => x.EntityType, f => f.PickRandom<EntityType>())
                 .RuleFor(x => x.EntityStatus, f => f.PickRandom<EntityStatus>())
@@ -85,6 +83,16 @@ namespace GTASaveData.GTA3.Tests
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            Boat x0 = GenerateTestObject();
+            Boat x1 = new Boat(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

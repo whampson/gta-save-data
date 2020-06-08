@@ -25,11 +25,12 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            RadarBlip x0 = GenerateTestObject();
-            RadarBlip x1 = CreateSerializedCopy(x0, out byte[] data);
+            RadarBlip x0 = GenerateTestObject(format);
+            RadarBlip x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.ColorId, x1.ColorId);
             Assert.Equal(x0.Type, x1.Type);
@@ -45,7 +46,17 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Sprite, x1.Sprite);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            RadarBlip x0 = GenerateTestObject();
+            RadarBlip x1 = new RadarBlip(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

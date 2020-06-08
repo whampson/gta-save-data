@@ -26,11 +26,12 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            PlayerInfo x0 = GenerateTestObject();
-            PlayerInfo x1 = CreateSerializedCopy(x0, out byte[] data);
+            PlayerInfo x0 = GenerateTestObject(format);
+            PlayerInfo x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.Money, x1.Money);
             Assert.Equal(x0.WastedBustedState, x1.WastedBustedState);
@@ -47,7 +48,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.PlayerName, x1.PlayerName);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            PlayerInfo x0 = GenerateTestObject();
+            PlayerInfo x1 = new PlayerInfo(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

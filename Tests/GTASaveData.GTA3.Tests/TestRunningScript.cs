@@ -33,15 +33,6 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void CopyConstructor()
-        {
-            RunningScript x0 = GenerateTestObject();
-            RunningScript x1 = new RunningScript(x0);
-
-            Assert.Equal(x0, x1);
-        }
-
         [Theory]
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileFormat format)
@@ -70,6 +61,16 @@ namespace GTASaveData.GTA3.Tests
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            RunningScript x0 = GenerateTestObject();
+            RunningScript x1 = new RunningScript(x0);
+
+            Assert.Equal(x0, x1);
         }
 
         [Fact]

@@ -138,9 +138,10 @@ namespace GTASaveData.GTA3
             GetOutOfHospitalFree = buf.ReadBool();
             PlayerName = buf.ReadString(MaxPlayerNameLength);
 
-            buf.Skip(215);
+            if (fmt.IsPS2) buf.Skip(175);
+            else buf.Skip(215);
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>());
+            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -160,13 +161,15 @@ namespace GTASaveData.GTA3
             buf.Write(PlayerName, MaxPlayerNameLength);
 
             // Game writes some garbage here due to incorrect size calculation
-            buf.Skip(215);
+            if (fmt.IsPS2) buf.Skip(175);
+            else buf.Skip(215);
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>());
+            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
+            if (fmt.IsPS2) return 0x114;
             return 0x13C;
         }
 

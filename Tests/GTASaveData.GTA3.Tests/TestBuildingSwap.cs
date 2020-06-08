@@ -16,11 +16,12 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            BuildingSwap x0 = GenerateTestObject();
-            BuildingSwap x1 = CreateSerializedCopy(x0, out byte[] data);
+            BuildingSwap x0 = GenerateTestObject(format);
+            BuildingSwap x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.Type, x1.Type);
             Assert.Equal(x0.Handle, x1.Handle);
@@ -28,7 +29,17 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.OldModel, x1.OldModel);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            BuildingSwap x0 = GenerateTestObject();
+            BuildingSwap x1 = new BuildingSwap(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

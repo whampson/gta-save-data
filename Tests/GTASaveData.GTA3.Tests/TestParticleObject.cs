@@ -61,6 +61,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            ParticleObject x0 = GenerateTestObject();
+            ParticleObject x1 = new ParticleObject(x0);
+
+            Assert.Equal(x0, x1);
+        }
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

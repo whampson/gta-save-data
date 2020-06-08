@@ -15,16 +15,27 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            RadarData x0 = GenerateTestObject();
-            RadarData x1 = CreateSerializedCopy(x0, out byte[] data);
+            RadarData x0 = GenerateTestObject(format);
+            RadarData x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.RadarBlips, x1.RadarBlips);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            RadarData x0 = GenerateTestObject();
+            RadarData x1 = new RadarData(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

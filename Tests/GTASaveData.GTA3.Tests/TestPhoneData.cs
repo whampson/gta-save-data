@@ -16,18 +16,28 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            PhoneData x0 = GenerateTestObject();
-            PhoneData x1 = CreateSerializedCopy(x0, out byte[] data);
+            PhoneData x0 = GenerateTestObject(format);
+            PhoneData x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.NumPhones, x1.NumPhones);
             Assert.Equal(x0.NumActivePhones, x1.NumActivePhones);
             Assert.Equal(x0.Phones, x1.Phones);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            PhoneData x0 = GenerateTestObject();
+            PhoneData x1 = new PhoneData(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

@@ -250,7 +250,7 @@ namespace GTASaveData.GTA3
             ClosingWithoutTargetVehicle = buf.ReadBool();
             Deactivated = buf.ReadBool();
             ResprayHappened = buf.ReadBool();
-            buf.Align4();
+            buf.Skip(2);
             TargetModelIndex = buf.ReadInt32();
             Door1Pointer = buf.ReadUInt32();
             Door2Pointer = buf.ReadUInt32();
@@ -261,7 +261,7 @@ namespace GTASaveData.GTA3
             RecreateDoorOnNextRefresh = buf.ReadBool();
             RotatedDoor = buf.ReadBool();
             CameraFollowsPlayer = buf.ReadBool();
-            buf.Align4();
+            buf.Skip(1);
             posMin.X = buf.ReadFloat();
             posMax.X = buf.ReadFloat();
             posMin.Y = buf.ReadFloat();
@@ -278,7 +278,7 @@ namespace GTASaveData.GTA3
             door2Pos.Z = buf.ReadFloat();
             DoorLastOpenTime = buf.ReadUInt32();
             CollectedCarsState = buf.ReadByte();
-            buf.Align4();
+            buf.Skip(3);
             TargetCarPointer = buf.ReadUInt32();
             Field96h = buf.ReadInt32();
             StoredCar = buf.Read<StoredCar>();
@@ -299,7 +299,7 @@ namespace GTASaveData.GTA3
             buf.Write(ClosingWithoutTargetVehicle);
             buf.Write(Deactivated);
             buf.Write(ResprayHappened);
-            buf.Align4();
+            buf.Skip(2);
             buf.Write(TargetModelIndex);
             buf.Write(Door1Pointer);
             buf.Write(Door2Pointer);
@@ -310,7 +310,7 @@ namespace GTASaveData.GTA3
             buf.Write(RecreateDoorOnNextRefresh);
             buf.Write(RotatedDoor);
             buf.Write(CameraFollowsPlayer);
-            buf.Align4();
+            buf.Skip(1);
             buf.Write(PositionMin.X);
             buf.Write(PositionMax.X);
             buf.Write(PositionMin.Y);
@@ -327,7 +327,7 @@ namespace GTASaveData.GTA3
             buf.Write(Door2Position.Z);
             buf.Write(DoorLastOpenTime);
             buf.Write(CollectedCarsState);
-            buf.Align4();
+            buf.Skip(3);
             buf.Write(TargetCarPointer);
             buf.Write(Field96h);
             buf.Write(StoredCar);

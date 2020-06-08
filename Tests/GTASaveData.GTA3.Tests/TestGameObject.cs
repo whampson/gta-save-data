@@ -60,5 +60,15 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            GameObject x0 = GenerateTestObject();
+            GameObject x1 = new GameObject(x0);
+
+            Assert.Equal(x0, x1);
+        }
     }
 }

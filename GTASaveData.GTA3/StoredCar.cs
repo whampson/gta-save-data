@@ -107,7 +107,7 @@ namespace GTASaveData.GTA3
             Extra1 = buf.ReadSByte();
             Extra2 = buf.ReadSByte();
             Bomb = (BombType) buf.ReadSByte();
-            buf.Align4();
+            buf.Skip(2);
 
             Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
         }
@@ -124,7 +124,7 @@ namespace GTASaveData.GTA3
             buf.Write(Extra1);
             buf.Write(Extra2);
             buf.Write((sbyte) Bomb);
-            buf.Align4();
+            buf.Skip(2);
 
             Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
         }

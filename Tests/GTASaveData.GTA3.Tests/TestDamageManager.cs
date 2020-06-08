@@ -20,11 +20,12 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            DamageManager x0 = GenerateTestObject();
-            DamageManager x1 = CreateSerializedCopy(x0, out byte[] data);
+            DamageManager x0 = GenerateTestObject(format);
+            DamageManager x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.WheelDamageEffect, x1.WheelDamageEffect);
             Assert.Equal(x0.Engine, x1.Engine);
@@ -35,7 +36,17 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Field24h, x1.Field24h);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            DamageManager x0 = GenerateTestObject();
+            DamageManager x1 = new DamageManager(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

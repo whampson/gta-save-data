@@ -19,17 +19,28 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            PathData x0 = GenerateTestObject();
-            byte[] data = Serializer.Write(x0);
+            PathData x0 = GenerateTestObject(format);
+            byte[] data = Serializer.Write(x0, format);
             PathData x1 = PathData.Load(data);
 
             Assert.Equal(x0.PathNodes, x1.PathNodes);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            PathData x0 = GenerateTestObject();
+            PathData x1 = new PathData(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

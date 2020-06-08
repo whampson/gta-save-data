@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TestFramework;
@@ -58,6 +57,7 @@ namespace GTASaveData.GTA3.Tests
 
             AssertSavesAreEqual(x0, x1);
             AssertCheckSumValid(data, format);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
 
         [Theory]
@@ -71,6 +71,17 @@ namespace GTASaveData.GTA3.Tests
 
             AssertSavesAreEqual(x0, x1);
             AssertCheckSumValid(data, format);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            GTA3Save x0 = GenerateTestObject();
+            GTA3Save x1 = new GTA3Save(x0);
+
+            Assert.Equal(x0, x1);
         }
 
         [Fact]

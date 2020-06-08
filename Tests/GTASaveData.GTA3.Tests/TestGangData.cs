@@ -14,16 +14,27 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            GangData x0 = GenerateTestObject();
-            GangData x1 = CreateSerializedCopy(x0, out byte[] data);
+            GangData x0 = GenerateTestObject(format);
+            GangData x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.Gangs, x1.Gangs);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            GangData x0 = GenerateTestObject();
+            GangData x1 = new GangData(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

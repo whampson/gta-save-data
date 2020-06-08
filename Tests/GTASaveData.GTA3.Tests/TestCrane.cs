@@ -43,11 +43,12 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            Crane x0 = GenerateTestObject();
-            Crane x1 = CreateSerializedCopy(x0, out byte[] data);
+            Crane x0 = GenerateTestObject(format);
+            Crane x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.Handle, x1.Handle);
             Assert.Equal(x0.HookHandle, x1.HookHandle);
@@ -81,7 +82,17 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.IsTop, x1.IsTop);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            Crane x0 = GenerateTestObject();
+            Crane x1 = new Crane(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

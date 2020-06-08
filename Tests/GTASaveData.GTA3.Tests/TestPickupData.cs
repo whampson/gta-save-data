@@ -16,17 +16,27 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            PickupData x0 = GenerateTestObject();
-            PickupData x1 = CreateSerializedCopy(x0, out byte[] data);
+            PickupData x0 = GenerateTestObject(format);
+            PickupData x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.Pickups, x1.Pickups);
             Assert.Equal(x0.LastCollectedIndex, x1.LastCollectedIndex);
             Assert.Equal(x0.PickupsCollected, x1.PickupsCollected);
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            PickupData x0 = GenerateTestObject();
+            PickupData x1 = new PickupData(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

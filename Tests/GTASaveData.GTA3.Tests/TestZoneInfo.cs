@@ -21,11 +21,12 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Fact]
-        public void RandomDataSerialization()
+        [Theory]
+        [MemberData(nameof(FileFormats))]
+        public void RandomDataSerialization(FileFormat format)
         {
-            ZoneInfo x0 = GenerateTestObject();
-            ZoneInfo x1 = CreateSerializedCopy(x0, out byte[] data);
+            ZoneInfo x0 = GenerateTestObject(format);
+            ZoneInfo x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.CarDensity, x1.CarDensity);
             Assert.Equal(x0.CarThreshold, x1.CarThreshold);
@@ -37,7 +38,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.PedGroup, x1.PedGroup);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            ZoneInfo x0 = GenerateTestObject();
+            ZoneInfo x1 = new ZoneInfo(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

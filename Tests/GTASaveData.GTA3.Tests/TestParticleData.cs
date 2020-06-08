@@ -17,15 +17,25 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat fmt)
+        public void RandomDataSerialization(FileFormat format)
         {
-            ParticleData x0 = GenerateTestObject(fmt);
-            ParticleData x1 = CreateSerializedCopy(x0, fmt, out byte[] data);
+            ParticleData x0 = GenerateTestObject(format);
+            ParticleData x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.ParticleObjects, x1.ParticleObjects);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, fmt), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            ParticleData x0 = GenerateTestObject();
+            ParticleData x1 = new ParticleData(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }
