@@ -1,4 +1,7 @@
 # GTASaveData
+[![Build Status](https://github.com/whampson/GTASaveData/workflows/CoreLib/badge.svg)](https://github.com/whampson/GTASaveData/actions)
+[![Build Status](https://github.com/whampson/GTASaveData/workflows/GTA3/badge.svg)](https://github.com/whampson/GTASaveData/actions)
+
 A .NET library for reading and writing save files from various
 *Grand Theft Auto* games.
 
