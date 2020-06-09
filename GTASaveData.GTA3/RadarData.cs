@@ -38,7 +38,7 @@ namespace GTASaveData.GTA3
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             GTA3VCSave.WriteSaveHeader(buf, "RDR", SizeOfType<RadarData>() - GTA3VCSave.BlockHeaderSize);
-            buf.Write(RadarBlips.ToArray(), MaxNumRadarBlips);
+            buf.Write(RadarBlips, MaxNumRadarBlips);
 
             Debug.Assert(buf.Offset == SizeOfType<RadarData>());
         }

@@ -284,15 +284,15 @@ namespace GTASaveData.GTA3
             GTA3VCSave.WriteSaveHeader(buf, "SCR", size - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(ScriptSpace.Count);
-            buf.Write(ScriptSpace.ToArray());
+            buf.Write(ScriptSpace);
             buf.Align4();
             buf.Write(ScriptDataSize);
             buf.Write(OnAMissionFlag);
-            buf.Write(Contacts.ToArray(), MaxNumContacts);
-            buf.Write(Collectives.ToArray(), MaxNumCollectives);
+            buf.Write(Contacts, MaxNumContacts);
+            buf.Write(Collectives, MaxNumCollectives);
             buf.Write(NextFreeCollectiveIndex);
-            buf.Write(BuildingSwaps.ToArray(), MaxNumBuildingSwaps);
-            buf.Write(InvisibilitySettings.ToArray(), MaxNumInvisibilitySettings);
+            buf.Write(BuildingSwaps, MaxNumBuildingSwaps);
+            buf.Write(InvisibilitySettings, MaxNumInvisibilitySettings);
             buf.Write(UsingAMultiScriptFile);
             buf.Write((byte) 0);
             buf.Write((short) 0);
@@ -301,7 +301,7 @@ namespace GTASaveData.GTA3
             buf.Write(NumberOfMissionScripts);
             buf.Write((short) 0);
             buf.Write(ActiveScripts.Count);
-            buf.Write(ActiveScripts.ToArray(), fmt);
+            buf.Write(ActiveScripts, fmt);
 
             Debug.Assert(buf.Offset == size);
         }

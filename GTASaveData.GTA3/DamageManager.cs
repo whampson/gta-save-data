@@ -168,8 +168,8 @@ namespace GTASaveData.GTA3
 
             buf.Write(WheelDamageEffect);
             buf.Write(Engine);
-            buf.Write(Wheels.ToArray(), NumWheels);
-            buf.Write(Doors.ToArray(), NumDoors);
+            buf.Write(Wheels, NumWheels);
+            buf.Write(Doors, NumDoors);
             buf.Skip(1);
             buf.Write(lightStatus);
             buf.Write(panelStatus);

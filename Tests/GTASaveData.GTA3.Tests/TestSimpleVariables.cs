@@ -13,6 +13,7 @@ namespace GTASaveData.GTA3.Tests
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
                 .RuleFor(x => x.LastMissionPassedName, f => (!format.IsPS2) ? Generator.Words(f, SimpleVariables.MaxMissionPassedNameLength - 1) : "")
                 .RuleFor(x => x.TimeStamp, f => (format.IsPC || format.IsXbox) ? Generator.Date(f) : DateTime.MinValue)
+                .RuleFor(x => x.SizeOfGameInBytes, f => (format.IsPS2 && format.IsJapanese) ? 0x31400 : 0x31401)
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
@@ -60,6 +61,7 @@ namespace GTASaveData.GTA3.Tests
 
             Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
             Assert.Equal(x0.TimeStamp, x1.TimeStamp);
+            Assert.Equal(x0.SizeOfGameInBytes, x1.SizeOfGameInBytes);
             Assert.Equal(x0.CurrLevel, x1.CurrLevel);
             Assert.Equal(x0.CameraPosition, x1.CameraPosition);
             Assert.Equal(x0.MillisecondsPerGameMinute, x1.MillisecondsPerGameMinute);

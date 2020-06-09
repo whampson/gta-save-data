@@ -103,12 +103,12 @@ namespace GTASaveData.GTA3
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(CarDensity);
-            buf.Write(CarThreshold.ToArray(), CarThresholdCapacity);
+            buf.Write(CarThreshold, CarThresholdCapacity);
             buf.Write(CopCarDensity);
-            buf.Write(GangCarDensity.ToArray(), GangDensityCapacity);
+            buf.Write(GangCarDensity, GangDensityCapacity);
             buf.Write(PedDensity);
             buf.Write(CopPedDensity);
-            buf.Write(GangPedDensity.ToArray(), GangDensityCapacity);
+            buf.Write(GangPedDensity, GangDensityCapacity);
             buf.Write(PedGroup);
 
             Debug.Assert(buf.Offset == SizeOfType<ZoneInfo>());

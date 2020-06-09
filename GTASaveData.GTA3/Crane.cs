@@ -287,7 +287,7 @@ namespace GTASaveData.GTA3
             IsMilitaryCrane = buf.ReadBool();
             WasMilitaryCrane = buf.ReadBool();
             IsTop = buf.ReadBool();
-            buf.Align4();
+            buf.Skip(1);
 
             Debug.Assert(buf.Offset == SizeOfType<Crane>());
         }
@@ -324,7 +324,7 @@ namespace GTASaveData.GTA3
             buf.Write(IsMilitaryCrane);
             buf.Write(WasMilitaryCrane);
             buf.Write(IsTop);
-            buf.Align4();
+            buf.Skip(1);
 
             Debug.Assert(buf.Offset == SizeOfType<Crane>());
         }

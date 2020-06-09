@@ -144,12 +144,12 @@ namespace GTASaveData.GTA3
             buf.Write((int) CurrentLevel);
             buf.Write(FindIndex);
             buf.Write((short) 0);
-            buf.Write(Zones.ToArray(), MaxNumZones);
-            buf.Write(ZoneInfo.ToArray(), MaxNumZoneInfos);
+            buf.Write(Zones, MaxNumZones);
+            buf.Write(ZoneInfo, MaxNumZoneInfos);
             buf.Write(NumberOfZones);
             buf.Write(NumberOfZoneInfos);
-            buf.Write(MapZones.ToArray(), MaxNumMapZones);
-            buf.Write(AudioZones.ToArray(), MaxNumAudioZones);
+            buf.Write(MapZones, MaxNumMapZones);
+            buf.Write(AudioZones, MaxNumAudioZones);
             buf.Write(NumberOfMapZones);
             buf.Write(NumberOfAudioZones);
 

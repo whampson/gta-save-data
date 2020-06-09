@@ -60,7 +60,7 @@ namespace GTASaveData.GTA4
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(PickupsCount);
-            buf.Write(PickupsArray.ToArray(), Limits.MaxPickupsCount);
+            buf.Write(PickupsArray, Limits.MaxPickupsCount);
             buf.Write(WeaponPickupMessagesRemaining);
             buf.Write(Unknown);
 

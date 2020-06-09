@@ -195,7 +195,7 @@ namespace GTASaveData.GTA3
             buf.Write(Health);
             buf.Write(Armor);
             buf.Skip(148);
-            buf.Write(Weapons.ToArray(), fmt, NumWeapons);
+            buf.Write(Weapons, fmt, NumWeapons);
             buf.Skip(5);
             buf.Write(MaxWeaponTypeAllowed);
             buf.Skip(178);
@@ -203,7 +203,7 @@ namespace GTASaveData.GTA3
             if (fmt.IsPS2) buf.Skip(8);
             buf.Write(MaxStamina);
             buf.Skip(28);
-            buf.Write(TargetableObjects.ToArray(), NumTargetableObjects);
+            buf.Write(TargetableObjects, NumTargetableObjects);
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(116);
             if (fmt.IsMobile) buf.Skip(144);
             if (fmt.IsPS2) buf.Skip(32);

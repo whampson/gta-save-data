@@ -38,6 +38,8 @@ namespace GTASaveData.GTA3
 
         public CraneData(CraneData other)
         {
+            NumCranes = other.NumCranes;
+            CarsCollectedMilitaryCrane = other.CarsCollectedMilitaryCrane;
             Cranes = ArrayHelper.DeepClone(other.Cranes);
         }
 
@@ -54,7 +56,7 @@ namespace GTASaveData.GTA3
         {
             buf.Write(NumCranes);
             buf.Write((int) CarsCollectedMilitaryCrane);
-            buf.Write(Cranes.ToArray(), MaxNumCranes);
+            buf.Write(Cranes, MaxNumCranes);
 
             Debug.Assert(buf.Offset == SizeOfType<CraneData>());
         }

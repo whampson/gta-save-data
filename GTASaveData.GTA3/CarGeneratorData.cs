@@ -111,7 +111,7 @@ namespace GTASaveData.GTA3
             buf.Write(GenerateEvenIfPlayerIsCloseCounter);
             buf.Write((short) 0);
             buf.Write(CarGeneratorArraySize);
-            buf.Write(CarGenerators.ToArray(), MaxNumCarGenerators);
+            buf.Write(CarGenerators, MaxNumCarGenerators);
 
             Debug.Assert(buf.Offset == SizeOfType<CarGeneratorData>());
         }

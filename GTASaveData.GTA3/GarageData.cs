@@ -108,6 +108,16 @@ namespace GTASaveData.GTA3
 
         public GarageData(GarageData other)
         {
+            NumGarages = other.NumGarages;
+            BombsAreFree = other.BombsAreFree;
+            RespraysAreFree = other.RespraysAreFree;
+            CarsCollected = other.CarsCollected;
+            BankVansCollected = other.BankVansCollected;
+            PoliceCarsCollected = other.PoliceCarsCollected;
+            CarTypesCollected1 = other.CarTypesCollected1;
+            CarTypesCollected2 = other.CarTypesCollected2;
+            CarTypesCollected3 = other.CarTypesCollected3;
+            LastTimeHelpMessage = other.LastTimeHelpMessage;
             CarsInSafeHouse = ArrayHelper.DeepClone(other.CarsInSafeHouse);
             Garages = ArrayHelper.DeepClone(other.Garages);
         }
@@ -143,8 +153,8 @@ namespace GTASaveData.GTA3
             buf.Write((int) CarTypesCollected2);
             buf.Write(CarTypesCollected3);
             buf.Write(LastTimeHelpMessage);
-            buf.Write(CarsInSafeHouse.ToArray(), CarsPerSafeHouse * NumberOfSafeHouses);
-            buf.Write(Garages.ToArray(), MaxNumGarages);
+            buf.Write(CarsInSafeHouse, CarsPerSafeHouse * NumberOfSafeHouses);
+            buf.Write(Garages, MaxNumGarages);
 
             // Game writes some garbage here due to incorrect size calculation
             buf.Skip(244);

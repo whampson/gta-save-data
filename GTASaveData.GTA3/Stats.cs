@@ -505,7 +505,7 @@ namespace GTASaveData.GTA3
             buf.Write(PeopleKilledByOthers);
             buf.Write(CarsExploded);
             buf.Write(RoundsFiredByPlayer);
-            buf.Write(PedsKilledOfThisType.ToArray(), MaxNumPedTypes);
+            buf.Write(PedsKilledOfThisType, MaxNumPedTypes);
             buf.Write(HelisDestroyed);
             buf.Write(ProgressMade);
             buf.Write(TotalProgressInGame);
@@ -548,8 +548,8 @@ namespace GTASaveData.GTA3
             buf.Write(NumberKillFrenziesPassed);
             buf.Write(TotalNumberKillFrenzies);
             buf.Write(TotalNumberMissions);
-            buf.Write(FastestTimes.ToArray(), MaxNumFastestTimes);
-            buf.Write(HighestScores.ToArray(), MaxNumHighestScores);
+            buf.Write(FastestTimes, MaxNumFastestTimes);
+            buf.Write(HighestScores, MaxNumHighestScores);
             buf.Write(KillsSinceLastCheckpoint);
             buf.Write(TotalLegitimateKills);
             buf.Write(LastMissionPassedName, MaxLastMissionPassedNameLength);

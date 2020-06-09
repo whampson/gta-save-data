@@ -40,7 +40,7 @@ namespace GTASaveData.GTA3
             GTA3VCSave.WriteSaveHeader(buf, "AUD", SizeOfObject(this) - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(AudioScriptObjects.Count);
-            buf.Write(AudioScriptObjects.ToArray());
+            buf.Write(AudioScriptObjects);
 
             Debug.Assert(buf.Offset == SizeOfObject(this));
         }

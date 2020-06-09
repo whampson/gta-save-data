@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3.Tests
         public override PlayerPedPool GenerateTestObject(FileFormat format)
         {
             Faker<PlayerPedPool> model = new Faker<PlayerPedPool>()
-                .RuleFor(x => x.PlayerPeds, f => Generator.Array(f.Random.Int(1, 25), g => Generator.Generate<PlayerPed, TestPlayerPed>(format)));
+                .RuleFor(x => x.PlayerPeds, f => Generator.Array(f.Random.Int(1, 10), g => Generator.Generate<PlayerPed, TestPlayerPed>(format)));
 
             return model.Generate();
         }

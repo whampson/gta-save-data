@@ -84,7 +84,7 @@ namespace GTASaveData.GTA3
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Position);
-            buf.Write(Messages.ToArray(), MaxNumMessages);
+            buf.Write(Messages, MaxNumMessages);
             buf.Write(RepeatedMessageStartTime);
             buf.Write(Handle);
             buf.Write((int) State);

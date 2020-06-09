@@ -126,8 +126,8 @@ namespace GTASaveData.GTA3
         {
             GTA3VCSave.WriteSaveHeader(buf, "RST", SizeOfType<RestartData>() - GTA3VCSave.BlockHeaderSize);
 
-            buf.Write(WastedRestartPoints.ToArray(), MaxNumWastedRestarts);
-            buf.Write(BustedRestartPoints.ToArray(), MaxNumBustedRestarts);
+            buf.Write(WastedRestartPoints, MaxNumWastedRestarts);
+            buf.Write(BustedRestartPoints, MaxNumBustedRestarts);
             buf.Write(NumberOfWastedRestartPoints);
             buf.Write(NumberOfBustedRestartPoints);
             buf.Write(OverrideNextRestart);

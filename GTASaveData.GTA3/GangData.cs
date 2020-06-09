@@ -39,7 +39,7 @@ namespace GTASaveData.GTA3
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             GTA3VCSave.WriteSaveHeader(buf, "GNG", SizeOfType<GangData>() - GTA3VCSave.BlockHeaderSize);
-            buf.Write(Gangs.ToArray(), MaxNumGangs);
+            buf.Write(Gangs, MaxNumGangs);
 
             Debug.Assert(buf.Offset == SizeOfType<GangData>());
         }

@@ -235,10 +235,10 @@ namespace GTASaveData.GTA3
             buf.Write(PrevScriptPointer);
             buf.Write(Name, MaxNameLength);
             buf.Write(IP);
-            buf.Write(Stack.ToArray(), GetMaxStackDepth(fmt));
+            buf.Write(Stack, GetMaxStackDepth(fmt));
             buf.Write(StackCount);
             buf.Align4();
-            buf.Write(LocalVariables.ToArray(), NumLocalVariables);
+            buf.Write(LocalVariables, NumLocalVariables);
             buf.Write(TimerA);
             buf.Write(TimerB);
             buf.Write(ConditionResult);

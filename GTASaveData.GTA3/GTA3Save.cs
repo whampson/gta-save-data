@@ -14,8 +14,7 @@ namespace GTASaveData.GTA3
     public class GTA3Save : GTA3VCSave, ISaveData,
         IEquatable<GTA3Save>, IDeepClonable<GTA3Save>
     {
-        public const int SizeOfGameInBytes = 201728;
-        public const int MaxNumPaddingBlocks = 4;
+        private const int MaxNumPaddingBlocks = 4;
 
         private static readonly byte[] XboxTitleKey =
             { 0xFF, 0x3B, 0x8F, 0x5C, 0xDE, 0x53, 0xF3, 0x25, 0x9E, 0x70, 0x09, 0x54, 0xEF, 0xDC, 0xA8, 0xDC };
@@ -212,6 +211,8 @@ namespace GTASaveData.GTA3
             PedTypeInfo
         };
 
+        //private int SizeOfDataInBytes => (FileFormat.IsPS2 && FileFormat.IsJapanese) ? 0x31400 : 0x31401;
+
         public GTA3Save()
         {
             SimpleVars = new SimpleVariables();
@@ -329,7 +330,7 @@ namespace GTASaveData.GTA3
             }
 
             Debug.WriteLine("Load successful!");
-            Debug.Assert(totalSize == SizeOfGameInBytes);
+            Debug.Assert(totalSize == ((SimpleVars.SizeOfGameInBytes - 1) & 0x7FFFFFFC));
         }
 
         protected override void SaveAllData(StreamBuffer file)
@@ -342,6 +343,7 @@ namespace GTASaveData.GTA3
 
             if (FileFormat.IsPS2)
             {
+                SimpleVars.SizeOfGameInBytes = (FileFormat.IsJapanese) ? 0x31400 : 0x31401;
                 WorkBuff.Write(SimpleVars, FileFormat);
                 SaveObject(Scripts);
                 SaveObject(PlayerPeds);
@@ -369,6 +371,7 @@ namespace GTASaveData.GTA3
             }
             else
             {
+                SimpleVars.SizeOfGameInBytes = 0x31401;
                 WorkBuff.Write(SimpleVars, FileFormat);
                 SaveObject(Scripts); totalSize += WriteBlock(file);
                 SaveObject(PlayerPeds); totalSize += WriteBlock(file);
@@ -394,7 +397,8 @@ namespace GTASaveData.GTA3
 
             for (int i = 0; i < MaxNumPaddingBlocks; i++)
             {
-                size = StreamBuffer.Align4((SizeOfGameInBytes - 3) - totalSize);
+                // really stupid 'size remaining' calculation that the game uses
+                size = (SimpleVars.SizeOfGameInBytes - totalSize - 1) & 0x7FFFFFFC;
                 if (size > GetBufferSize())
                 {
                     size = GetBufferSize();
@@ -408,7 +412,7 @@ namespace GTASaveData.GTA3
             }
 
             Debug.WriteLine("Save successful!");
-            Debug.Assert(totalSize == SizeOfGameInBytes);
+            Debug.Assert(totalSize == ((SimpleVars.SizeOfGameInBytes - 1) & 0x7FFFFFFC));
 
             file.Write(CheckSum);
 
@@ -429,20 +433,10 @@ namespace GTASaveData.GTA3
             int saveSizeOffsetJP = data.FindFirst(BitConverter.GetBytes(0x31400));
             int scrOffset = data.FindFirst("SCR\0".GetAsciiBytes());
 
-            if (saveSizeOffset < 0 || scrOffset < 0)
+            if ((saveSizeOffset < 0 && saveSizeOffsetJP < 0) || scrOffset < 0)
             {
                 fmt = FileFormat.Default;
                 return false;
-            }
-
-            int sizeOfPlayerPed;
-            using (StreamBuffer s = new StreamBuffer(data))
-            {
-                int block0Size = s.ReadInt32();
-                s.Skip(block0Size + 4);
-                int sizeOfPedPool = s.ReadInt32() - 4;
-                int numPlayerPeds = s.ReadInt32();
-                sizeOfPlayerPed = sizeOfPedPool / numPlayerPeds;
             }
 
             if (scrOffset == 0xB0 && saveSizeOffset == 0x04)
@@ -470,6 +464,16 @@ namespace GTASaveData.GTA3
             else if (scrOffset == 0xC4 && saveSizeOffset == 0x44)
             {
                 isPcOrXbox = true;
+            }
+
+            int sizeOfPlayerPed;
+            using (StreamBuffer s = new StreamBuffer(data))
+            {
+                int block0Size = s.ReadInt32();
+                s.Skip(block0Size + sizeof(int));
+                int sizeOfPedPool = s.ReadInt32() - sizeof(int);
+                int numPlayerPeds = s.ReadInt32();
+                sizeOfPlayerPed = sizeOfPedPool / numPlayerPeds;
             }
 
             if (isMobile)
@@ -537,12 +541,12 @@ namespace GTASaveData.GTA3
             size += SizeOfObject(Stats, fmt) + sizeof(int);
             size += SizeOfObject(Streaming, fmt) + sizeof(int);
             size += SizeOfObject(PedTypeInfo, fmt) + sizeof(int);
-            int numPadding = ((SizeOfGameInBytes - size) / (GetBufferSize() - sizeof(int))) + 1;
-            size += (SizeOfGameInBytes - size);
-            Debug.Assert(size == SizeOfGameInBytes);
+            int numRemaining = ((SimpleVars.SizeOfGameInBytes - 1) & 0x7FFFFFFC) - size;
+            int numPadding = (numRemaining / (GetBufferSize() - sizeof(int))) + 1;
+            size += numRemaining;
 
             size += sizeof(int);
-            if (fmt.IsPS2) size += sizeof(int) * 3;
+            if (fmt.IsPS2) size += sizeof(int) * (3 + numPadding);
             else size += sizeof(int) * (20 + numPadding);
             if (fmt.IsXbox) size += XboxHelper.SignatureLength;
 

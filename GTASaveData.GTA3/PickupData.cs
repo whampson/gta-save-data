@@ -57,10 +57,10 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            buf.Write(Pickups.ToArray(), MaxNumPickups);
+            buf.Write(Pickups, MaxNumPickups);
             buf.Write(LastCollectedIndex);
             buf.Write((short) 0);
-            buf.Write(PickupsCollected.ToArray(), MaxNumCollectedPickups);
+            buf.Write(PickupsCollected, MaxNumCollectedPickups);
 
             Debug.Assert(buf.Offset == SizeOfType<PickupData>());
         }

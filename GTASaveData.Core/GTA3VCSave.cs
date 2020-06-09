@@ -91,6 +91,8 @@ namespace GTASaveData
             Debug.WriteLine($"{typeof(T).Name}: {size} bytes pre-allocated");
 
             int bytesRead = Serializer.Read(obj, WorkBuff, FileFormat);
+            WorkBuff.Align4();
+
             Debug.WriteLine($"{typeof(T).Name}: {bytesRead} bytes read");
             Debug.Assert(bytesRead <= StreamBuffer.Align4(size));
 
@@ -101,6 +103,7 @@ namespace GTASaveData
         {
             int size = WorkBuff.ReadInt32();
             int bytesRead = Serializer.Read(obj, WorkBuff, FileFormat);
+            WorkBuff.Align4();
 
             Debug.WriteLine($"{typeof(T).Name}: {bytesRead} bytes read");
             Debug.Assert(bytesRead <= StreamBuffer.Align4(size));
@@ -138,6 +141,7 @@ namespace GTASaveData
             }
             WorkBuff.Write(file.ReadBytes(size));
             Debug.Assert(file.Offset == size + 4);
+            file.Align4();
 
             WorkBuff.Reset();
             return size;

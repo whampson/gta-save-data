@@ -266,10 +266,11 @@ namespace GTASaveData.GTA3
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(12);
             if (fmt.IsiOS) buf.Skip(15);
             if (fmt.IsAndroid) buf.Skip(16);
-            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(28);
+            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(32);
             LoadEntityFlags(buf, fmt);
             if (fmt.IsiOS) buf.Skip(1);
-            buf.Skip(212);
+            if (fmt.IsPS2) buf.Skip(236);
+            else buf.Skip(212);
             AutoPilot = buf.Read<AutoPilot>();
             Color1 = buf.ReadByte();
             Color2 = buf.ReadByte();
@@ -304,8 +305,9 @@ namespace GTASaveData.GTA3
             buf.Skip(2);
             BombTimer = buf.ReadInt16();
             buf.Skip(12);
-            DoorLock = (CarLock) buf.ReadByte();
-            buf.Skip(99);
+            DoorLock = (CarLock) buf.ReadInt32();
+            if (fmt.IsPS2) buf.Skip(156);
+            else buf.Skip(96);
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -322,10 +324,11 @@ namespace GTASaveData.GTA3
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(12);
             if (fmt.IsiOS) buf.Skip(15);
             if (fmt.IsAndroid) buf.Skip(16);
-            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(28);
+            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(32);
             SaveEntityFlags(buf, fmt);
             if (fmt.IsiOS) buf.Skip(1);
-            buf.Skip(212);
+            if (fmt.IsPS2) buf.Skip(236);
+            else buf.Skip(212);
             buf.Write(AutoPilot);
             buf.Write(Color1);
             buf.Write(Color2);
@@ -361,8 +364,9 @@ namespace GTASaveData.GTA3
             buf.Skip(2);
             buf.Write(BombTimer);
             buf.Skip(12);
-            buf.Write((byte) DoorLock);
-            buf.Skip(99);
+            buf.Write((int) DoorLock);
+            if (fmt.IsPS2) buf.Skip(156);
+            else buf.Skip(96);
         }
 
         public override bool Equals(object obj)

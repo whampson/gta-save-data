@@ -12,6 +12,7 @@ namespace GTASaveData.GTA3
 
         private string m_lastMissionPassedName;
         private SystemTime m_timeStamp;
+        private int m_sizeOfGameInBytes;
         private Level m_currLevel;
         private Vector3D m_cameraPosition;
         private int m_millisecondsPerGameMinute;
@@ -57,6 +58,12 @@ namespace GTASaveData.GTA3
         {
             get { return m_timeStamp; }
             set { m_timeStamp = value; OnPropertyChanged(); }
+        }
+
+        public int SizeOfGameInBytes
+        {
+            get { return m_sizeOfGameInBytes; }
+            set { m_sizeOfGameInBytes = value; }
         }
 
         public Level CurrLevel
@@ -279,6 +286,7 @@ namespace GTASaveData.GTA3
         {
             LastMissionPassedName = other.LastMissionPassedName;
             TimeStamp = other.TimeStamp;
+            SizeOfGameInBytes = other.SizeOfGameInBytes;
             CurrLevel = other.CurrLevel;
             CameraPosition = other.CameraPosition;
             MillisecondsPerGameMinute = other.MillisecondsPerGameMinute;
@@ -319,7 +327,7 @@ namespace GTASaveData.GTA3
         {
             if (!fmt.IsPS2) LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
             if (fmt.IsPC || fmt.IsXbox) TimeStamp = buf.Read<SystemTime>();
-            buf.ReadInt32();    // save size
+            SizeOfGameInBytes = buf.ReadInt32();
             CurrLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.Read<Vector3D>();
             MillisecondsPerGameMinute = buf.ReadInt32();
@@ -389,7 +397,7 @@ namespace GTASaveData.GTA3
         {
             if (!fmt.IsPS2) buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
             if (fmt.IsPC || fmt.IsXbox) buf.Write(TimeStamp);
-            buf.Write((fmt.IsPS2 && fmt.IsJapanese) ? GTA3Save.SizeOfGameInBytes : GTA3Save.SizeOfGameInBytes + 1);
+            buf.Write(SizeOfGameInBytes);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
             buf.Write(MillisecondsPerGameMinute);
@@ -478,6 +486,7 @@ namespace GTASaveData.GTA3
 
             return LastMissionPassedName.Equals(other.LastMissionPassedName)
                 && TimeStamp.Equals(other.TimeStamp)
+                && SizeOfGameInBytes.Equals(other.SizeOfGameInBytes)
                 && CurrLevel.Equals(other.CurrLevel)
                 && CameraPosition.Equals(other.CameraPosition)
                 && MillisecondsPerGameMinute.Equals(other.MillisecondsPerGameMinute)

@@ -75,7 +75,7 @@ namespace GTASaveData.GTA3
         {
             GTA3VCSave.WriteSaveHeader(buf, "PTP", SizeOfType<PedTypeData>() - GTA3VCSave.BlockHeaderSize);
 
-            buf.Write(PedTypes.ToArray(), NumPedTypes);
+            buf.Write(PedTypes, NumPedTypes);
 
             Debug.Assert(buf.Offset == SizeOfType<PedTypeData>());
         }

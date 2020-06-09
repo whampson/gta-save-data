@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Objects.Count);
-            buf.Write(Objects.ToArray(), fmt);
+            buf.Write(Objects, fmt);
 
             Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
         }

@@ -35,7 +35,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            buf.Write(ModelFlags.ToArray(), NumModels);
+            buf.Write(ModelFlags, NumModels);
 
             Debug.Assert(buf.Offset == SizeOfType<Streaming>());
         }

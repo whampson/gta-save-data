@@ -43,10 +43,10 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPS2 && fmt.IsJapanese) return 0x478;
+            if (fmt.IsPS2 && fmt.IsJapanese) return 0x50C;
             if (fmt.IsPC || fmt.IsXbox) return 0x484;
             if (fmt.IsMobile) return 0x488;
-            if (fmt.IsPS2) return 0x498;
+            if (fmt.IsPS2) return 0x52C;
             throw SizeNotDefined(fmt);
         }
 

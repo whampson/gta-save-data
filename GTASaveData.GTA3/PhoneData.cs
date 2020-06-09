@@ -56,7 +56,7 @@ namespace GTASaveData.GTA3
         {
             buf.Write(NumPhones);
             buf.Write(NumActivePhones);
-            buf.Write(Phones.ToArray(), MaxNumPhones);
+            buf.Write(Phones, MaxNumPhones);
 
             Debug.Assert(buf.Offset == SizeOfType<PhoneData>());
         }
