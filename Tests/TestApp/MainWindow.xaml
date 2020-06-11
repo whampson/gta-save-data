@@ -13,27 +13,65 @@
     Height="550" Width="800">
 
     <Window.DataContext>
-        <local:ViewModel/>
+        <local:MainViewModel/>
     </Window.DataContext>
 
     <Window.Resources>
         <econv:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
-        <local:EnumBooleanConverter x:Key="EnumBooleanConverter"/>
-        <local:NullBooleanConverter x:Key="NullBooleanConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
-        <Style TargetType="ComboBox" x:Key="ComboBoxStyle">
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
-        <Style TargetType="ComboBox" x:Key="EnumComboBoxStyle" BasedOn="{StaticResource ComboBoxStyle}">
-            <Setter Property="ItemTemplate">
+        <DataTemplate DataType="{x:Type local:JsonViewModel}">
+            <local:JsonView/>
+        </DataTemplate>
+
+        <Style TargetType="{x:Type local:TabControlEx}" x:Key="TabControlStyle">
+            <Setter Property="Template">
                 <Setter.Value>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"/>
-                    </DataTemplate>
+                    <!-- Template code to render TabControlEx. Adapted from http://stackoverflow.com/a/9802346. -->
+                    <ControlTemplate TargetType="{x:Type TabControl}">
+                        <Grid
+                                Background="{TemplateBinding Background}"
+                                ClipToBounds="True"
+                                KeyboardNavigation.TabNavigation="Local"
+                                SnapsToDevicePixels="True">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="0"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <DockPanel Margin="2,2,0,0" LastChildFill="False">
+                                <TabPanel
+                                        x:Name="HeaderPanel"
+                                        Margin="0,0,0,-1"
+                                        VerticalAlignment="Bottom"
+                                        Panel.ZIndex="1"
+                                        DockPanel.Dock="Left"
+                                        IsItemsHost="True"
+                                        KeyboardNavigation.TabIndex="1"/>
+                            </DockPanel>
+                            <Border
+                                    x:Name="ContentPanel"
+                                    Grid.Row="1" Grid.Column="0"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    KeyboardNavigation.DirectionalNavigation="Contained"
+                                    KeyboardNavigation.TabIndex="2"
+                                    KeyboardNavigation.TabNavigation="Local">
+                                <Grid
+                                        x:Name="PART_ItemsHolder"
+                                        Margin="{TemplateBinding Padding}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
     </Window.Resources>
 
     <Window.InputBindings>
@@ -60,59 +98,36 @@
                     InputGestureText="Alt+F4"
                     Command="{Binding FileExitCommand}"/>
             </MenuItem>
-            <!--<MenuItem Header="_Options">
-                <MenuItem Header="File _Type" x:Name="m_fileTypeList">
-                    --><!-- Items added programmatically --><!--
-                </MenuItem>
-            </MenuItem>-->
         </Menu>
 
         <Grid DockPanel.Dock="Bottom">
+
             <Grid.RowDefinitions>
-                <RowDefinition Height="35"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition/>
                 <RowDefinition Height="25"/>
             </Grid.RowDefinitions>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="175"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="175"/>
-            </Grid.ColumnDefinitions>
+            <local:TabControlEx
+                DockPanel.Dock="Top"
+                Style="{StaticResource TabControlStyle}"
+                ItemsSource="{Binding Tabs}"
+                IsSynchronizedWithCurrentItem="True"
+                SelectedIndex="{Binding SelectedTabIndex}">
 
-            <Label Grid.Row="0" Grid.Column="0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Content="Block:"
-                IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
+                <TabControl.ItemContainerStyle>
+                    <Style TargetType="{x:Type TabItem}">
+                        <Setter
+                                Property="Visibility"
+                                Value="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </Style>
+                </TabControl.ItemContainerStyle>
 
-            <ComboBox Grid.Row="0" Grid.Column="1"
-                Style="{StaticResource ComboBoxStyle}"
-                ItemsSource="{Binding BlockNameForCurrentGame, Mode=OneWay}"
-                SelectedIndex="{Binding SelectedBlockIndex}"
-                SelectionChanged="BlockComboBox_SelectionChanged"
-                IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
-
-            <Label Grid.Row="0" Grid.Column="3"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Content="Name:"
-                IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
-
-            <TextBox Grid.Row="0" Grid.Column="4"
-                Margin="5,5,5,5"
-                Text="{Binding CurrentSaveFile.Name}"
-                VerticalContentAlignment="Center"
-                IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
-
-            <TextBox Grid.Row="1" Grid.ColumnSpan="5"
-                IsReadOnly="True"
-                FontFamily="Consolas"
-                VerticalScrollBarVisibility="Auto"
-                TextWrapping="Wrap"
-                Text="{Binding Text}"/>
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Title, Mode=OneWay}"/>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </local:TabControlEx>
 
             <StatusBar Grid.Row="2" Grid.ColumnSpan="5">
                 <StatusBar.ItemsPanel>
@@ -170,8 +185,9 @@
                         </TextBlock.ContextMenu>
                     </TextBlock>
                 </StatusBarItem>
-
             </StatusBar>
+
         </Grid>
+
     </DockPanel>
 </Window>
