@@ -117,7 +117,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            buf.Write(Name/*.PadRight(MaxNameLength, '\0')*/, MaxNameLength);
+            buf.Write(Name.PadRight(MaxNameLength, '\0'), MaxNameLength);
             buf.Write(Min);
             buf.Write(Max);
             buf.Write((int) Type);
