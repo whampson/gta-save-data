@@ -59,6 +59,7 @@ namespace GTASaveData.GTA3.Tests
             new object[] { GTA3Save.FileFormats.PS2_JP, "LM1" },
             new object[] { GTA3Save.FileFormats.PS2_JP, "LM2" },
             new object[] { GTA3Save.FileFormats.PS2_JP, "LM2 Cheats" },
+            new object[] { GTA3Save.FileFormats.Xbox, "CAT2" },
             new object[] { GTA3Save.FileFormats.Xbox, "DIAB2" },
             new object[] { GTA3Save.FileFormats.Xbox, "JM5" },
             new object[] { GTA3Save.FileFormats.Xbox, "LM1 1" },
@@ -67,6 +68,7 @@ namespace GTASaveData.GTA3.Tests
             new object[] { GTA3Save.FileFormats.Xbox, "LM1 ChainGame100" },
             new object[] { GTA3Save.FileFormats.Xbox, "LM1 VehiclePool" },
             new object[] { GTA3Save.FileFormats.Xbox, "LM5" },
+            new object[] { GTA3Save.FileFormats.Xbox, "LOVE2" },
         };
     }
 }
