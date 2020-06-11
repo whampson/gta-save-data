@@ -162,7 +162,8 @@ namespace GTASaveData.GTA3
             if (fmt.IsXbox) buf.Skip(4);
             Health = buf.ReadFloat();
             Armor = buf.ReadFloat();
-            buf.Skip(148);
+            if (fmt.IsPS2) buf.Skip(164);
+            else buf.Skip(148);
             Weapons = buf.Read<Weapon>(NumWeapons, fmt);
             buf.Skip(5);
             MaxWeaponTypeAllowed = buf.ReadByte();
@@ -174,7 +175,7 @@ namespace GTASaveData.GTA3
             TargetableObjects = buf.Read<int>(NumTargetableObjects);
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(116);
             if (fmt.IsMobile) buf.Skip(144);
-            if (fmt.IsPS2) buf.Skip(32);
+            if (fmt.IsPS2) buf.Skip(16);
 
             Debug.Assert(buf.Offset == SizeOfType<PlayerPed>(fmt));
         }
@@ -194,7 +195,8 @@ namespace GTASaveData.GTA3
             if (fmt.IsXbox) buf.Skip(4);
             buf.Write(Health);
             buf.Write(Armor);
-            buf.Skip(148);
+            if (fmt.IsPS2) buf.Skip(164);
+            else buf.Skip(148);
             buf.Write(Weapons, fmt, NumWeapons);
             buf.Skip(5);
             buf.Write(MaxWeaponTypeAllowed);
@@ -206,7 +208,7 @@ namespace GTASaveData.GTA3
             buf.Write(TargetableObjects, NumTargetableObjects);
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(116);
             if (fmt.IsMobile) buf.Skip(144);
-            if (fmt.IsPS2) buf.Skip(32);
+            if (fmt.IsPS2) buf.Skip(16);
 
             Debug.Assert(buf.Offset == SizeOfType<PlayerPed>(fmt));
         }
