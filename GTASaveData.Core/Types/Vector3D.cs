@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Types.Interfaces;
+using System;
 
 namespace GTASaveData.Types
 {

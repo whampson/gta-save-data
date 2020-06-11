@@ -1,4 +1,4 @@
-﻿namespace GTASaveData
+﻿namespace GTASaveData.Types.Interfaces
 {
     /// <summary>
     /// Allows an object to control its own binary serialization.

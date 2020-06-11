@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using GTASaveData.Types.Interfaces;
+using Newtonsoft.Json;
 using System;
 using WpfEssentials;
 

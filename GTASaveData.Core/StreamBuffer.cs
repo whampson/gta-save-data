@@ -1,4 +1,5 @@
 ﻿using GTASaveData.Extensions;
+using GTASaveData.Types.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
