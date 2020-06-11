@@ -60,11 +60,11 @@
                     InputGestureText="Alt+F4"
                     Command="{Binding FileExitCommand}"/>
             </MenuItem>
-            <MenuItem Header="_Options">
+            <!--<MenuItem Header="_Options">
                 <MenuItem Header="File _Type" x:Name="m_fileTypeList">
-                    <!-- Items added programmatically -->
+                    --><!-- Items added programmatically --><!--
                 </MenuItem>
-            </MenuItem>
+            </MenuItem>-->
         </Menu>
 
         <Grid DockPanel.Dock="Bottom">
@@ -78,10 +78,12 @@
                 <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="175"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="175"/>
             </Grid.ColumnDefinitions>
 
             <Label Grid.Row="0" Grid.Column="0"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Content="Block:"
                 IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
@@ -93,20 +95,26 @@
                 SelectionChanged="BlockComboBox_SelectionChanged"
                 IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
 
-            <CheckBox Grid.Row="0" Grid.Column="2"
-                Margin="5,5,5,5"
+            <Label Grid.Row="0" Grid.Column="3"
+                HorizontalAlignment="Right"
                 VerticalAlignment="Center"
-                Content="Show entire file"
-                IsChecked="{Binding ShowEntireFileChecked}"/>
+                Content="Name:"
+                IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
 
-            <TextBox Grid.Row="1" Grid.ColumnSpan="3"
+            <TextBox Grid.Row="0" Grid.Column="4"
+                Margin="5,5,5,5"
+                Text="{Binding CurrentSaveFile.Name}"
+                VerticalContentAlignment="Center"
+                IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
+
+            <TextBox Grid.Row="1" Grid.ColumnSpan="5"
                 IsReadOnly="True"
                 FontFamily="Consolas"
                 VerticalScrollBarVisibility="Auto"
                 TextWrapping="Wrap"
                 Text="{Binding Text}"/>
 
-            <StatusBar Grid.Row="2" Grid.ColumnSpan="3">
+            <StatusBar Grid.Row="2" Grid.ColumnSpan="5">
                 <StatusBar.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid>
@@ -132,6 +140,18 @@
                         <TextBlock.ToolTip>
                             <ToolTip Content="{Binding CurrentFileFormat.Description}"/>
                         </TextBlock.ToolTip>
+                        <TextBlock.ContextMenu>
+                            <ContextMenu ItemsSource="{Binding FileFormats}">
+                                <ContextMenu.ItemContainerStyle>
+                                    <Style TargetType="MenuItem">
+                                        <EventSetter Event="Click" Handler="FileTypeMenuItem_Click"/>
+                                        <Setter Property="Header" Value="{Binding}"/>
+                                        <Setter Property="local:MenuItemExtensions.GroupName" Value="FileFormatGroup"/>
+                                        <Setter Property="IsCheckable" Value="True"/>
+                                    </Style>
+                                </ContextMenu.ItemContainerStyle>
+                            </ContextMenu>
+                        </TextBlock.ContextMenu>
                     </TextBlock>
                 </StatusBarItem>
 

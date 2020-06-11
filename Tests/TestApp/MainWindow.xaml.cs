@@ -1,4 +1,5 @@
 ﻿using GTASaveData;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using WpfEssentials.Win32;
@@ -23,7 +24,7 @@ namespace TestApp
 
             ViewModel.FileDialogRequested += FileDialogRequested;
             ViewModel.MessageBoxRequested += MessageBoxRequested;
-            ViewModel.PopulateFileTypeList += PopulateFileTypeList;
+            //ViewModel.PopulateFileTypeList += PopulateFileTypeList;
             AutoDetectFileTypeItem.Checked += FileTypeMenuItem_Checked;
         }
 
@@ -43,34 +44,31 @@ namespace TestApp
             e.Show(this);
         }
 
-        private void PopulateFileTypeList(object sender, FileTypeListEventArgs e)
-        {
-            foreach (var item in m_fileTypeList.Items)
-            {
-                if (item is RadioMenuItem radioItem)
-                {
-                    if (radioItem != AutoDetectFileTypeItem)
-                    {
-                        radioItem.Checked -= FileTypeMenuItem_Checked;
-                    }
-                }
-            }
-            m_fileTypeList.Items.Clear();
+        //private void PopulateFileTypeList(object sender, FileTypeListEventArgs e)
+        //{
+        //    foreach (var item in m_fileTypeList.Items)
+        //    {
+        //        if (item is RadioMenuItem radioItem)
+        //        {
+        //            if (radioItem != AutoDetectFileTypeItem)
+        //            {
+        //                radioItem.Checked -= FileTypeMenuItem_Checked;
+        //            }
+        //        }
+        //    }
+        //    m_fileTypeList.Items.Clear();
 
-            foreach (var type in e.FileTypes)
-            {
-                RadioMenuItem item = new RadioMenuItem
-                {
-                    Header = type.Name,
-                    GroupName = FileTypeGroupName,
-                };
-                item.Checked += FileTypeMenuItem_Checked;
-                m_fileTypeList.Items.Add(item);
-            }
-            m_fileTypeList.Items.Add(new Separator());
-            m_fileTypeList.Items.Add(AutoDetectFileTypeItem);
-            
-        }
+        //    foreach (var type in e.FileTypes)
+        //    {
+        //        RadioMenuItem item = new RadioMenuItem
+        //        {
+        //            Header = type.Name,
+        //            GroupName = FileTypeGroupName,
+        //        };
+        //        item.Checked += FileTypeMenuItem_Checked;
+        //        m_fileTypeList.Items.Add(item);
+        //    }
+        //}
 
         private void BlockComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -88,6 +86,23 @@ namespace TestApp
             }
         }
 
+        private void FileTypeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem item && item.Header is FileFormat fmt)
+            {
+                //if (item.Parent is ItemsControl ic)
+                //{
+                //    MenuItem menuItem = ic.Items.OfType<MenuItem>().FirstOrDefault(i => i.IsChecked);
+                //    if (menuItem != null)
+                //    {
+                //        menuItem.IsChecked = false;
+                //    }
+                //}
+                //item.IsChecked = true;
+                ViewModel.CurrentFileFormat = fmt;
+            }
+        }
+
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             ViewModel.UpdateTextBox();
@@ -102,15 +117,7 @@ namespace TestApp
         {
             if (sender is RadioMenuItem menuItem)
             {
-                if (menuItem == AutoDetectFileTypeItem)
-                {
-                    ViewModel.SetFileTypeByName(null);
-                }
-                else
-                {
-                    ViewModel.SetFileTypeByName(menuItem.Header as string);
-                }
-                
+                ViewModel.SetFileTypeByName(menuItem.Header as string);
             }
         }
     }
