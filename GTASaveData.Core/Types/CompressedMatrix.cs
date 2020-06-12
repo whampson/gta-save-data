@@ -1,11 +1,13 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
 {
     /// <summary>
     /// A compressed form of the <see cref="Matrix"/> data structure.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 20)]
     public struct CompressedMatrix : ISaveDataObject, IEquatable<CompressedMatrix>
     {
         private const int Size = 20;

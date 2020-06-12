@@ -1,11 +1,13 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
 {
     /// <summary>
     /// A 2-dimensional vector.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 8)]
     public struct Vector2D : ISaveDataObject, IEquatable<Vector2D>
     {
         private const int Size = 8;

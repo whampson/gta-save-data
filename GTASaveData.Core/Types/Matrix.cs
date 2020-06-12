@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
 {
@@ -6,6 +7,7 @@ namespace GTASaveData.Types
     /// Represents a 3D view matrix.
     /// </summary>
     /// <remarks>Code largely taken from GTA.</remarks>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Matrix : IEquatable<Matrix>       // TODO: Serializable?
     {
         public static readonly Vector3D UnitX = new Vector3D(1, 0, 0);

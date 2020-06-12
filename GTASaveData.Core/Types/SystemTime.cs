@@ -1,11 +1,13 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
 {
     /// <summary>
     /// A .NET version of the Win32 <c>SYSTEMTIME</c> structure.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 16)]
     public struct SystemTime : ISaveDataObject, IEquatable<SystemTime>
     {
         private const int Size = 16;

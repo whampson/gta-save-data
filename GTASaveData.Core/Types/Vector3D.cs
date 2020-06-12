@@ -1,11 +1,13 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
 {
     /// <summary>
     /// A 3-dimensional vector.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 12)]
     public struct Vector3D : ISaveDataObject, IEquatable<Vector3D>
     {
         private const int Size = 12;

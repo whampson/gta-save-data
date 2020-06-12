@@ -1,11 +1,13 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
 {
     /// <summary>
     /// Represents a date and time.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 24)]
     public struct Date : ISaveDataObject, IEquatable<Date>
     {
         private const int Size = 24;

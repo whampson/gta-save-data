@@ -7,13 +7,15 @@
     <Authors>Wes Hampson</Authors>
     <Company>Wes Hampson</Company>
     <Product>GTASaveData</Product>
-    <Description>Shared objects and common APIs for the GTASaveData library.</Description>
+    <Description>GTASaveData core framework library.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
-    <AssemblyVersion>1.0.0.813</AssemblyVersion>
-    <FileVersion>1.0.0.813</FileVersion>
+    <AssemblyVersion>1.0.0.819</AssemblyVersion>
+    <FileVersion>1.0.0.819</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.0.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RepositoryUrl>https://github.com/whampson/gta-save-data</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
