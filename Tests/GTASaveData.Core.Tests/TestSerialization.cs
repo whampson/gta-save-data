@@ -6,7 +6,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestSerialization
+    public class TestSerialization : TestBase
     {
         [Fact]
         public void Alignment()

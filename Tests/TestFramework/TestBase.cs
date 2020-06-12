@@ -1,7 +1,27 @@
 ﻿using GTASaveData;
+using System;
 
 namespace TestFramework
 {
+    public abstract class TestBase : IDisposable
+    {
+        public TestBase()
+        {
+            ResetSerializer();
+        }
+
+        public void Dispose()
+        {
+            ResetSerializer();
+        }
+
+        public void ResetSerializer()
+        {
+            Serializer.PaddingType = PaddingType.Default;
+            Serializer.BigEndian = false;
+        }
+    }
+
     public abstract class TestBase<T> where T : new()
     {
         public int GetSizeOfTestObject(T obj)

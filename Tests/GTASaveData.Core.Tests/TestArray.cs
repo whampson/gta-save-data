@@ -10,7 +10,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestArray
+    public class TestArray : TestBase
     {
         private const string IndexerPropertyName = "Items[]";
         private const string CountPropertyName = "Count";
