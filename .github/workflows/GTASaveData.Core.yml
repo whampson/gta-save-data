@@ -5,6 +5,8 @@ on:
     branches: [ master, corelib ]
   pull_request:
     branches: [ master, corelib ]
+  schedule:
+    - cron: '*/15 * * * *'
 
 jobs:
   build:
