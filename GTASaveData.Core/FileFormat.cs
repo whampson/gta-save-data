@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,20 +25,46 @@ namespace GTASaveData
         public FileFormatFlags Flags => m_flags;
         public IEnumerable<GameConsole> SupportedConsoles => m_supportedConsoles ?? new List<GameConsole>();
 
+        [JsonIgnore]
         public bool IsAndroid => IsSupportedOn(GameConsole.Android);
+
+        [JsonIgnore]
         public bool IsiOS => IsSupportedOn(GameConsole.iOS);
+
+        [JsonIgnore]
         public bool IsMobile => IsAndroid || IsiOS;
+
+        [JsonIgnore]
         public bool IsPS2 => IsSupportedOn(GameConsole.PS2);
+
+        [JsonIgnore]
         public bool IsPS3 => IsSupportedOn(GameConsole.PS3);
+
+        [JsonIgnore]
         public bool IsPSP => IsSupportedOn(GameConsole.PSP);
+
+        [JsonIgnore]
         public bool IsXbox => IsSupportedOn(GameConsole.Xbox);
+
+        [JsonIgnore]
         public bool IsXbox360 => IsSupportedOn(GameConsole.Xbox360);
+
+        [JsonIgnore]
         public bool IsWin32 => IsSupportedOn(GameConsole.Win32);
+
+        [JsonIgnore]
         public bool IsMacOS => IsSupportedOn(GameConsole.MacOS);
+
+        [JsonIgnore]
         public bool IsPC => IsMacOS || IsWin32;
 
+        [JsonIgnore]
         public bool IsSteam => HasFlag(FileFormatFlags.Steam);
+
+        [JsonIgnore]
         public bool IsAustralian => HasFlag(FileFormatFlags.Australian);
+
+        [JsonIgnore]
         public bool IsJapanese => HasFlag(FileFormatFlags.Japanese);
 
         public FileFormat(string name, GameConsole console)
