@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ master, gta3 ]
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/5 * * * *'
 
 jobs:
   build:
