@@ -10,10 +10,10 @@
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
     <Description>A .NET library for manipulating Grand Theft Auto III save files.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>1.0.0.1079</AssemblyVersion>
-    <FileVersion>1.0.0.1079</FileVersion>
+    <AssemblyVersion>1.0.1.1079</AssemblyVersion>
+    <FileVersion>1.0.1.1079</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>gta3 save data; gta3 save file; gta3 save; gta3; gta</PackageTags>
     <RepositoryUrl>https://github.com/whampson/gta-save-data</RepositoryUrl>

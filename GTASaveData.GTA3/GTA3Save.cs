@@ -596,11 +596,13 @@ namespace GTASaveData.GTA3
         public static class FileFormats
         {
             public static readonly FileFormat Android = new FileFormat(
-                "Android", GameConsole.Android
+                "Android",
+                GameConsole.Android
             );
 
             public static readonly FileFormat iOS = new FileFormat(
-                "iOS", GameConsole.iOS
+                "iOS", "iOS", "Apple iOS",
+                GameConsole.iOS
             );
 
             public static readonly FileFormat PC = new FileFormat(
@@ -627,7 +629,8 @@ namespace GTASaveData.GTA3
             );
 
             public static readonly FileFormat Xbox = new FileFormat(
-                "Xbox", GameConsole.Xbox
+                "Xbox",
+                GameConsole.Xbox
             );
 
             public static FileFormat[] GetAll()
