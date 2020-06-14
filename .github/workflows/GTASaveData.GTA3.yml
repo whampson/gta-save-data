@@ -5,13 +5,12 @@ on:
     branches: [ master, gta3 ]
   pull_request:
     branches: [ master, gta3 ]
+  schedule:
+    - cron: '0 2 * * *'   # At 02:00 every day
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ windows-latest, macos-latest, ubuntu-latest ]
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
