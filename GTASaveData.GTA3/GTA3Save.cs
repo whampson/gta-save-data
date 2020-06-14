@@ -211,8 +211,6 @@ namespace GTASaveData.GTA3
             PedTypeInfo
         };
 
-        //private int SizeOfDataInBytes => (FileFormat.IsPS2 && FileFormat.IsJapanese) ? 0x31400 : 0x31401;
-
         public GTA3Save()
         {
             SimpleVars = new SimpleVariables();

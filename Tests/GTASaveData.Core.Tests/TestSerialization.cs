@@ -85,8 +85,8 @@ namespace GTASaveData.Core.Tests
         [Theory]
         [InlineData(true, false)]
         [InlineData(false, false)]
-        [InlineData(true, true)]
-        [InlineData(false, true)]
+        //[InlineData(true, true)]
+        //[InlineData(false, true)]
         public void Bool(bool value, bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -102,8 +102,8 @@ namespace GTASaveData.Core.Tests
         [Theory]
         [InlineData(true, false)]
         [InlineData(false, false)]
-        [InlineData(true, true)]
-        [InlineData(false, true)]
+        //[InlineData(true, true)]
+        //[InlineData(false, true)]
         public void BoolMultiByte(bool value, bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -177,7 +177,7 @@ namespace GTASaveData.Core.Tests
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public void Char(bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -193,7 +193,7 @@ namespace GTASaveData.Core.Tests
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public void CharUnicode(bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -220,7 +220,7 @@ namespace GTASaveData.Core.Tests
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public void Double(bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -236,7 +236,7 @@ namespace GTASaveData.Core.Tests
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public void Float(bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -252,7 +252,7 @@ namespace GTASaveData.Core.Tests
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public void Int16(bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -268,7 +268,7 @@ namespace GTASaveData.Core.Tests
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public void UInt16(bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -284,7 +284,7 @@ namespace GTASaveData.Core.Tests
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public void Int32(bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -300,7 +300,7 @@ namespace GTASaveData.Core.Tests
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public void UInt32(bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -316,7 +316,7 @@ namespace GTASaveData.Core.Tests
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public void Int64(bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -332,7 +332,7 @@ namespace GTASaveData.Core.Tests
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public void UInt64(bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
@@ -348,7 +348,7 @@ namespace GTASaveData.Core.Tests
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public void Object(bool bigEndian)
         {
             Serializer.BigEndian = bigEndian;
