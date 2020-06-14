@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using Newtonsoft.Json.Converters;
 using TestFramework;
 using Xunit;
 
@@ -12,8 +11,8 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker faker = new Faker();
 
-            int varSpace = faker.Random.Int(4, 4000);
-            int runningScripts = faker.Random.Int(1, 10);
+            int varSpace = faker.Random.Int(4, 8000);
+            int runningScripts = faker.Random.Int(1, 20);
 
             Faker<ScriptData> model = new Faker<ScriptData>()
                 .RuleFor(x => x.ScriptSpace, f => Generator.Array(varSpace, g => f.Random.Byte()))
