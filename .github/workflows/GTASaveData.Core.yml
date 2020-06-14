@@ -5,13 +5,10 @@ on:
     branches: [ master, corelib ]
   pull_request:
     branches: [ master, corelib ]
-  schedule:
-    - cron: '*/5 * * * *'
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    # continue-on-error: true
     strategy:
       matrix:
         os: [ windows-latest, macos-latest, ubuntu-latest ]
