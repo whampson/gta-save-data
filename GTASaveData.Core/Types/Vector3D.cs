@@ -1,5 +1,7 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
@@ -12,9 +14,9 @@ namespace GTASaveData.Types
     {
         private const int Size = 12;
 
-        public float X;
-        public float Y;
-        public float Z;
+        public float Z { get; set; }
+        public float Y { get; set; }
+        public float X { get; set; }
 
         public Vector3D(float x, float y, float z)
         {
@@ -43,6 +45,11 @@ namespace GTASaveData.Types
         public float GetMagnitudeSquared()
         {
             return (X * X) + (Y * Y) + (Z * Z);
+        }
+
+        public Vector2D Get2DComponent()
+        {
+            return new Vector2D(X, Y);
         }
 
         public static Vector3D Normalize(Vector3D v)
@@ -110,6 +117,16 @@ namespace GTASaveData.Types
         public static Vector3D operator /(Vector3D left, float right)
         {
             return new Vector3D(left.X / right, left.Y / right, left.Z / right);
+        }
+
+        public static bool operator ==(Vector3D left, Vector3D right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Vector3D left, Vector3D right)
+        {
+            return !left.Equals(right);
         }
 
         int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)

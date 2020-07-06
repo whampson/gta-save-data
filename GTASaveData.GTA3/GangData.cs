@@ -1,19 +1,35 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
     public class GangData : SaveDataObject,
-        IEquatable<GangData>, IDeepClonable<GangData>
+        IEquatable<GangData>, IDeepClonable<GangData>,
+        IEnumerable<Gang>
     {
         public const int MaxNumGangs = 9;
 
         private Array<Gang> m_gangs;
+
         public Array<Gang> Gangs
         {
             get { return m_gangs; }
             set { m_gangs = value;OnPropertyChanged(); }
+        }
+
+        public Gang this[int i]
+        {
+            get { return Gangs[i]; }
+            set { Gangs[i] = value; OnPropertyChanged(); }
+        }
+
+        public Gang this[GangType g]
+        {
+            get { return Gangs[(int) g]; }
+            set { Gangs[(int) g] = value; OnPropertyChanged(); }
         }
 
         public GangData()
@@ -67,6 +83,16 @@ namespace GTASaveData.GTA3
         public GangData DeepClone()
         {
             return new GangData(this);
+        }
+
+        public IEnumerator<Gang> GetEnumerator()
+        {
+            return Gangs.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 

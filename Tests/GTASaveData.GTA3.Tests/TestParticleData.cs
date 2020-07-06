@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3.Tests
         public override ParticleData GenerateTestObject(FileFormat format)
         {
             Faker<ParticleData> model = new Faker<ParticleData>()
-                .RuleFor(x => x.ParticleObjects,
+                .RuleFor(x => x.Objects,
                     f => Generator.Array(f.Random.Int(1, 50), g => Generator.Generate<ParticleObject, TestParticleObject>(format)));
 
             return model.Generate();
@@ -22,7 +22,7 @@ namespace GTASaveData.GTA3.Tests
             ParticleData x0 = GenerateTestObject(format);
             ParticleData x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
-            Assert.Equal(x0.ParticleObjects, x1.ParticleObjects);
+            Assert.Equal(x0.Objects, x1.Objects);
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);

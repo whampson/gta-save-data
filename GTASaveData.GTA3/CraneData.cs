@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
     public class CraneData : SaveDataObject,
-        IEquatable<CraneData>, IDeepClonable<CraneData>
+        IEquatable<CraneData>, IDeepClonable<CraneData>,
+        IEnumerable<Crane>
     {
         public const int MaxNumCranes = 8;
 
@@ -29,6 +32,12 @@ namespace GTASaveData.GTA3
         {
             get { return m_cranes; }
             set { m_cranes = value; OnPropertyChanged(); }
+        }
+
+        public Crane this[int i]
+        {
+            get { return Cranes[i]; }
+            set { Cranes[i] = value; OnPropertyChanged(); }
         }
 
         public CraneData()
@@ -86,6 +95,16 @@ namespace GTASaveData.GTA3
         public CraneData DeepClone()
         {
             return new CraneData(this);
+        }
+
+        public IEnumerator<Crane> GetEnumerator()
+        {
+            return Cranes.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 

@@ -1,17 +1,27 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
     public class PathData : SaveDataObject,
-        IEquatable<PathData>, IDeepClonable<PathData>
+        IEquatable<PathData>, IDeepClonable<PathData>,
+        IEnumerable<PathNode>
     {
         private Array<PathNode> m_pathNodes;
+
         public Array<PathNode> PathNodes
         {
             get { return m_pathNodes; }
             set { m_pathNodes = value; OnPropertyChanged(); }
+        }
+
+        public PathNode this[int i]
+        {
+            get { return PathNodes[i]; }
+            set { PathNodes[i] = value; OnPropertyChanged(); }
         }
 
         public PathData()
@@ -104,6 +114,16 @@ namespace GTASaveData.GTA3
         public PathData DeepClone()
         {
             return new PathData(this);
+        }
+
+        public IEnumerator<PathNode> GetEnumerator()
+        {
+            return PathNodes.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

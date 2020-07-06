@@ -1,5 +1,7 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
@@ -10,14 +12,16 @@ namespace GTASaveData.Types
     [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 24)]
     public struct Date : ISaveDataObject, IEquatable<Date>
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private const int Size = 24;
 
-        public int Second;
-        public int Minute;
-        public int Hour;
-        public int Day;
-        public int Month;
-        public int Year;
+        public int Second { get; set; }
+        public int Minute { get; set; }
+        public int Hour { get; set; }
+        public int Day { get; set; }
+        public int Month { get; set; }
+        public int Year { get; set; }
 
         public Date(int year, int month, int day, int hour, int minute, int second)
         {
@@ -27,6 +31,7 @@ namespace GTASaveData.Types
             Day = day;
             Month = month;
             Year = year;
+            PropertyChanged = null;
         }
 
         public Date(DateTime dateTime)
@@ -37,6 +42,7 @@ namespace GTASaveData.Types
             Day = dateTime.Day;
             Month = dateTime.Month;
             Year = dateTime.Year;
+            PropertyChanged = null;
         }
 
         int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
@@ -77,6 +83,11 @@ namespace GTASaveData.Types
                 Hour,
                 Minute,
                 Second);
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public override int GetHashCode()

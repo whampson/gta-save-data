@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<ObjectPool> model = new Faker<ObjectPool>()
                 .RuleFor(x => x.Objects,
-                    f => Generator.Array(f.Random.Int(1, 25), g => Generator.Generate<GameObject, TestGameObject>(format)));
+                    f => Generator.Array(f.Random.Int(1, 25), g => Generator.Generate<PhysicalObject, TestGameObject>(format)));
 
             return model.Generate();
         }

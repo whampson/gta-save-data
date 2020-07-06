@@ -1,17 +1,27 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
     public class AudioScriptData : SaveDataObject,
-        IEquatable<AudioScriptData>, IDeepClonable<AudioScriptData>
+        IEquatable<AudioScriptData>, IDeepClonable<AudioScriptData>,
+        IEnumerable<AudioScriptObject>
     {
         private Array<AudioScriptObject> m_audioScriptObjects;
+
         public Array<AudioScriptObject> AudioScriptObjects
         {
             get { return m_audioScriptObjects; }
             set { m_audioScriptObjects = value; OnPropertyChanged(); }
+        }
+
+        public AudioScriptObject this[int i]
+        {
+            get { return AudioScriptObjects[i]; }
+            set { AudioScriptObjects[i] = value; OnPropertyChanged(); }
         }
 
         public AudioScriptData()
@@ -70,6 +80,16 @@ namespace GTASaveData.GTA3
         public AudioScriptData DeepClone()
         {
             return new AudioScriptData(this);
+        }
+
+        public IEnumerator<AudioScriptObject> GetEnumerator()
+        {
+            return AudioScriptObjects.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

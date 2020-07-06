@@ -4,16 +4,16 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestGameObject : Base<GameObject>
+    public class TestGameObject : Base<PhysicalObject>
     {
-        public override GameObject GenerateTestObject(FileFormat format)
+        public override PhysicalObject GenerateTestObject(FileFormat format)
         {
-            Faker<GameObject> model = new Faker<GameObject>()
+            Faker<PhysicalObject> model = new Faker<PhysicalObject>()
                 .RuleFor(x => x.ModelIndex, f => f.Random.Short())
                 .RuleFor(x => x.Handle, f => f.Random.Int())
-                .RuleFor(x => x.Matrix, f => TestMatrix.GenerateRandom(f))
+                .RuleFor(x => x.Matrix, f => TestViewMatrix.GenerateRandom(f))
                 .RuleFor(x => x.UprootLimit, f => f.Random.Float())
-                .RuleFor(x => x.ObjectMatrix, f => TestMatrix.GenerateRandom(f))
+                .RuleFor(x => x.ObjectMatrix, f => TestViewMatrix.GenerateRandom(f))
                 .RuleFor(x => x.CreatedBy, f => f.PickRandom<ObjectCreatedBy>())
                 .RuleFor(x => x.IsPickup, f => f.Random.Bool())
                 .RuleFor(x => x.IsPickupInShop, f => f.Random.Bool())
@@ -35,8 +35,8 @@ namespace GTASaveData.GTA3.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileFormat format)
         {
-            GameObject x0 = GenerateTestObject(format);
-            GameObject x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            PhysicalObject x0 = GenerateTestObject(format);
+            PhysicalObject x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.ModelIndex, x1.ModelIndex);
             Assert.Equal(x0.Handle, x1.Handle);
@@ -65,8 +65,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void CopyConstructor()
         {
-            GameObject x0 = GenerateTestObject();
-            GameObject x1 = new GameObject(x0);
+            PhysicalObject x0 = GenerateTestObject();
+            PhysicalObject x1 = new PhysicalObject(x0);
 
             Assert.Equal(x0, x1);
         }

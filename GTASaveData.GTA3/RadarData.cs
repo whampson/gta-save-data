@@ -1,19 +1,29 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
     public class RadarData : SaveDataObject,
-        IEquatable<RadarData>, IDeepClonable<RadarData>
+        IEquatable<RadarData>, IDeepClonable<RadarData>,
+        IEnumerable<RadarBlip>
     {
         public const int MaxNumRadarBlips = 32;
 
         private Array<RadarBlip> m_radarBlips;
+
         public Array<RadarBlip> RadarBlips
         {
             get { return m_radarBlips; }
             set { m_radarBlips = value; OnPropertyChanged(); }
+        }
+
+        public RadarBlip this[int i]
+        {
+            get { return RadarBlips[i]; }
+            set { RadarBlips[i] = value; OnPropertyChanged(); }
         }
 
         public RadarData()
@@ -66,6 +76,16 @@ namespace GTASaveData.GTA3
         public RadarData DeepClone()
         {
             return new RadarData(this);
+        }
+
+        public IEnumerator<RadarBlip> GetEnumerator()
+        {
+            return RadarBlips.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

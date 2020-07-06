@@ -5,14 +5,14 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests.Types
 {
-    public class TestCompressedMatrix : TestBase<CompressedMatrix>
+    public class TestCompressedViewMatrix : TestBase<CompressedViewMatrix>
     {
         [Fact]
         public void RandomDataSerialization()
         {
             Faker f = new Faker();
 
-            CompressedMatrix x0 = new CompressedMatrix()
+            CompressedViewMatrix x0 = new CompressedViewMatrix()
             {
                 Position = Generator.Vector3D(f),
                 RightX = f.Random.Byte(),
@@ -22,7 +22,7 @@ namespace GTASaveData.Core.Tests.Types
                 ForwardY = f.Random.Byte(),
                 ForwardZ = f.Random.Byte()
             };
-            CompressedMatrix x1 = CreateSerializedCopy(x0, out byte[] data);
+            CompressedViewMatrix x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0.RightX, x1.RightX);

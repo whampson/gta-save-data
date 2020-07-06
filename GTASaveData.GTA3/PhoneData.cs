@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
     public class PhoneData : SaveDataObject,
-        IEquatable<PhoneData>, IDeepClonable<PhoneData>
+        IEquatable<PhoneData>, IDeepClonable<PhoneData>,
+        IEnumerable<Phone>
     {
         public const int MaxNumPhones = 50;
 
@@ -29,6 +32,12 @@ namespace GTASaveData.GTA3
         {
             get { return m_phones; }
             set { m_phones = value; OnPropertyChanged(); }
+        }
+
+        public Phone this[int i]
+        {
+            get { return Phones[i]; }
+            set { Phones[i] = value; OnPropertyChanged(); }
         }
 
         public PhoneData()
@@ -86,6 +95,16 @@ namespace GTASaveData.GTA3
         public PhoneData DeepClone()
         {
             return new PhoneData(this);
+        }
+
+        public IEnumerator<Phone> GetEnumerator()
+        {
+            return Phones.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

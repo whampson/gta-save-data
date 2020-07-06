@@ -1,5 +1,6 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,7 +8,8 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     public class CarGeneratorData : SaveDataObject, ICarGeneratorData,
-        IEquatable<CarGeneratorData>, IDeepClonable<CarGeneratorData>
+        IEquatable<CarGeneratorData>, IDeepClonable<CarGeneratorData>,
+        IEnumerable<CarGenerator>
     {
         public const int MaxNumCarGenerators = 160;
 
@@ -56,15 +58,15 @@ namespace GTASaveData.GTA3
             set { CarGenerators[i] = value; OnPropertyChanged(); }
         }
 
+        ICarGenerator ICarGeneratorData.this[int i]
+        {
+            get { return CarGenerators[i]; }
+            set { CarGenerators[i] = (CarGenerator) value; OnPropertyChanged(); }
+        }
+
         IEnumerable<ICarGenerator> ICarGeneratorData.CarGenerators
         {
             get { return m_carGeneratorArray; }
-        }
-
-        ICarGenerator ICarGeneratorData.this[int index]
-        {
-            get { return CarGenerators[index]; }
-            set { CarGenerators[index] = (CarGenerator) value; OnPropertyChanged(); }
         }
 
         public CarGeneratorData()
@@ -143,6 +145,16 @@ namespace GTASaveData.GTA3
         public CarGeneratorData DeepClone()
         {
             return new CarGeneratorData(this);
+        }
+
+        public IEnumerator<CarGenerator> GetEnumerator()
+        {
+            return CarGenerators.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

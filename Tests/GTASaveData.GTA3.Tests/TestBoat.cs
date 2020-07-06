@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3.Tests
         public override Boat GenerateTestObject(FileFormat format)
         {
             Faker<Boat> model = new Faker<Boat>()
-                .RuleFor(x => x.Matrix, f => TestMatrix.GenerateRandom(f))
+                .RuleFor(x => x.Matrix, f => TestViewMatrix.GenerateRandom(f))
                 .RuleFor(x => x.EntityType, f => f.PickRandom<EntityType>())
                 .RuleFor(x => x.EntityStatus, f => f.PickRandom<EntityStatus>())
                 .RuleFor(x => x.EntityFlags, f => f.PickRandom<EntityFlags>())

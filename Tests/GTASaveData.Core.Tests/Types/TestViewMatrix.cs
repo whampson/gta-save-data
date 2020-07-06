@@ -4,11 +4,11 @@ using TestFramework;
 
 namespace GTASaveData.Core.Tests.Types
 {
-    public class TestMatrix : TestBase<Matrix>
+    public class TestViewMatrix : TestBase<ViewMatrix>
     {
-        public static Matrix GenerateRandom(Faker f)
+        public static ViewMatrix GenerateRandom(Faker f)
         {
-            Matrix m = Matrix.Identity;
+            ViewMatrix m = ViewMatrix.Identity;
             m.Position = Generator.Vector3D(f);
 
             return m;

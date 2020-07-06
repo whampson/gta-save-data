@@ -4,13 +4,13 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class GameObject : Entity,
-        IEquatable<GameObject>, IDeepClonable<GameObject>
+    public class PhysicalObject : Entity,
+        IEquatable<PhysicalObject>, IDeepClonable<PhysicalObject>
     {
         private short m_modelIndex;
         private int m_handle;
         private float m_uprootLimit;
-        private Matrix m_objectMatrix;
+        private ViewMatrix m_objectMatrix;
         private ObjectCreatedBy m_createdBy;
         private bool m_isPickup;
         private bool m_isPickupInShop;
@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3
             set { m_uprootLimit = value; OnPropertyChanged(); }
         }
 
-        public Matrix ObjectMatrix
+        public ViewMatrix ObjectMatrix
         {
             get { return m_objectMatrix; }
             set { m_objectMatrix = value; OnPropertyChanged(); }
@@ -120,13 +120,13 @@ namespace GTASaveData.GTA3
             set { m_endOfLifeTime = value; OnPropertyChanged(); }
         }
 
-        public GameObject()
+        public PhysicalObject()
         {
-            ObjectMatrix = Matrix.Identity;
+            ObjectMatrix = ViewMatrix.Identity;
             EntityType = EntityType.Object;
         }
 
-        public GameObject(GameObject other)
+        public PhysicalObject(PhysicalObject other)
             : base(other)
         {
             ModelIndex = other.ModelIndex;
@@ -151,10 +151,10 @@ namespace GTASaveData.GTA3
         {
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
-            Matrix = buf.Read<CompressedMatrix>(fmt).Decompress();
+            Matrix = buf.Read<CompressedViewMatrix>(fmt).Decompress();
             if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
             UprootLimit = buf.ReadFloat();
-            ObjectMatrix = buf.Read<CompressedMatrix>(fmt).Decompress();
+            ObjectMatrix = buf.Read<CompressedViewMatrix>(fmt).Decompress();
             if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
             CreatedBy = (ObjectCreatedBy) buf.ReadByte();
             IsPickup = buf.ReadBool();
@@ -170,7 +170,7 @@ namespace GTASaveData.GTA3
             EndOfLifeTime = buf.ReadUInt32();
             LoadEntityFlags(buf, fmt);
 
-            Debug.Assert(buf.Offset == SizeOfType<GameObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<PhysicalObject>(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
@@ -196,7 +196,7 @@ namespace GTASaveData.GTA3
             buf.Write(EndOfLifeTime);
             SaveEntityFlags(buf, fmt);
 
-            Debug.Assert(buf.Offset == SizeOfType<GameObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOfType<PhysicalObject>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
@@ -208,10 +208,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as GameObject);
+            return Equals(obj as PhysicalObject);
         }
 
-        public bool Equals(GameObject other)
+        public bool Equals(PhysicalObject other)
         {
             if (other == null)
             {
@@ -240,9 +240,9 @@ namespace GTASaveData.GTA3
                 && EntityFlags.Equals(other.EntityFlags);
         }
 
-        public GameObject DeepClone()
+        public PhysicalObject DeepClone()
         {
-            return new GameObject(this);
+            return new PhysicalObject(this);
         }
     }
 

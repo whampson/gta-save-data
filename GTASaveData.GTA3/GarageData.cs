@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -6,7 +8,8 @@ using System.Linq;
 namespace GTASaveData.GTA3
 {
     public class GarageData : SaveDataObject,
-        IEquatable<GarageData>, IDeepClonable<GarageData>
+        IEquatable<GarageData>, IDeepClonable<GarageData>,
+        IEnumerable<Garage>
     {
         public const int CarsPerSafeHouse = 6;
         public const int NumberOfSafeHouses = 3;
@@ -98,6 +101,12 @@ namespace GTASaveData.GTA3
         { 
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
+        }
+
+        public Garage this[int i]
+        {
+            get { return Garages[i]; }
+            set { Garages[i] = value; OnPropertyChanged(); }
         }
 
         public GarageData()
@@ -196,6 +205,16 @@ namespace GTASaveData.GTA3
         public GarageData DeepClone()
         {
             return new GarageData(this);
+        }
+
+        public IEnumerator<Garage> GetEnumerator()
+        {
+            return Garages.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 

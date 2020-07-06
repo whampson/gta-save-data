@@ -1,21 +1,24 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
     public class ObjectPool : SaveDataObject,
-        IEquatable<ObjectPool>, IDeepClonable<ObjectPool>
+        IEquatable<ObjectPool>, IDeepClonable<ObjectPool>,
+        IEnumerable<PhysicalObject>
     {
-        private Array<GameObject> m_objects;
+        private Array<PhysicalObject> m_objects;
 
-        public Array<GameObject> Objects
+        public Array<PhysicalObject> Objects
         {
             get { return m_objects; }
             set { m_objects = value; OnPropertyChanged(); }
         }
 
-        public GameObject this[int i]
+        public PhysicalObject this[int i]
         {
             get { return Objects[i]; }
             set { Objects[i] = value; OnPropertyChanged(); }
@@ -23,7 +26,7 @@ namespace GTASaveData.GTA3
 
         public ObjectPool()
         {
-            Objects = new Array<GameObject>();
+            Objects = new Array<PhysicalObject>();
         }
 
         public ObjectPool(ObjectPool other)
@@ -34,7 +37,7 @@ namespace GTASaveData.GTA3
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int numObjects = buf.ReadInt32();
-            Objects = buf.Read<GameObject>(numObjects, fmt);
+            Objects = buf.Read<PhysicalObject>(numObjects, fmt);
 
             Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
         }
@@ -49,7 +52,7 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(FileFormat fmt)
         {
-            return (SizeOfType<GameObject>(fmt) * Objects.Count) + sizeof(int);
+            return (SizeOfType<PhysicalObject>(fmt) * Objects.Count) + sizeof(int);
         }
 
         public override bool Equals(object obj)
@@ -70,6 +73,16 @@ namespace GTASaveData.GTA3
         public ObjectPool DeepClone()
         {
             return new ObjectPool(this);
+        }
+
+        public IEnumerator<PhysicalObject> GetEnumerator()
+        {
+            return Objects.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

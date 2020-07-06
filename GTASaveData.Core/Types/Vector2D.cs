@@ -1,5 +1,7 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
@@ -12,8 +14,8 @@ namespace GTASaveData.Types
     {
         private const int Size = 8;
 
-        public float X;
-        public float Y;
+        public float X { get; set; }
+        public float Y { get; set; }
 
         public Vector2D(float x, float y)
         {

@@ -5,7 +5,7 @@ namespace GTASaveData.GTA3
 {
     public abstract class Entity : SaveDataObject
     {
-        private Matrix m_matrix;
+        private ViewMatrix m_matrix;
         private EntityType m_entityType;
         private EntityStatus m_entityStatus;
         private EntityFlags m_entityFlags;
@@ -28,7 +28,7 @@ namespace GTASaveData.GTA3
             set { m_entityFlags = value; OnPropertyChanged(); }
         }
 
-        public Matrix Matrix
+        public ViewMatrix Matrix
         {
             get { return m_matrix; }
             set { m_matrix = value; OnPropertyChanged(); }
@@ -39,7 +39,7 @@ namespace GTASaveData.GTA3
             EntityType = EntityType.None;
             EntityStatus = EntityStatus.Abandoned;
             EntityFlags = EntityFlags.IsVisible;
-            Matrix = Matrix.Identity;
+            Matrix = ViewMatrix.Identity;
         }
 
         public Entity(Entity other)
@@ -57,7 +57,7 @@ namespace GTASaveData.GTA3
 
         public void SetPosition(Vector3D pos)
         {
-            Matrix m = Matrix;
+            ViewMatrix m = Matrix;
             m.Position = pos;
 
             Matrix = m;
@@ -65,17 +65,17 @@ namespace GTASaveData.GTA3
 
         public void SetHeading(float angle)
         {
-            Matrix = Matrix.RotateZ(Matrix, angle);
+            Matrix = ViewMatrix.RotateZ(Matrix, angle);
         }
 
         public void SetOrientation(float xAngle, float yAngle, float zAngle)
         {
-            Matrix = Matrix.Rotate(Matrix, xAngle, yAngle, zAngle);
+            Matrix = ViewMatrix.Rotate(Matrix, xAngle, yAngle, zAngle);
         }
 
         public void ResetOrientation()
         {
-            Matrix m = Matrix.Identity;
+            ViewMatrix m = ViewMatrix.Identity;
             m.Position = Matrix.Position;
 
             Matrix = m;
@@ -158,7 +158,7 @@ namespace GTASaveData.GTA3
         BulletProof = (1L << 24),
         FireProof = (1L << 25),
         CollisionProof = (1L << 26),
-        MeeeProof = (1L << 27),
+        MeleeProof = (1L << 27),
         OnlyDamagedByPlayer = (1L << 28),
         StreamingDontDelete = (1L << 29),
         ZoneCulled = (1L << 30),

@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
     public class PlayerPedPool : SaveDataObject,
-        IEquatable<PlayerPedPool>, IDeepClonable<PlayerPedPool>
+        IEquatable<PlayerPedPool>, IDeepClonable<PlayerPedPool>,
+        IEnumerable<PlayerPed>
     {
         // Yes, you can have multiple player peds
         // You get some weird behavior though...
@@ -126,6 +129,16 @@ namespace GTASaveData.GTA3
         public PlayerPedPool DeepClone()
         {
             return new PlayerPedPool(this);
+        }
+
+        public IEnumerator<PlayerPed> GetEnumerator()
+        {
+            return PlayerPeds.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

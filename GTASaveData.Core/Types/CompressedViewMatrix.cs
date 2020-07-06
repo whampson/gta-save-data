@@ -1,37 +1,51 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.ComponentModel;
+using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
 {
     /// <summary>
-    /// A compressed form of the <see cref="Matrix"/> data structure.
+    /// A compressed form of the <see cref="ViewMatrix"/> data structure.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 20)]
-    public struct CompressedMatrix : ISaveDataObject, IEquatable<CompressedMatrix>
+    public struct CompressedViewMatrix : ISaveDataObject, IEquatable<CompressedViewMatrix>
     {
         private const int Size = 20;
 
-        public Vector3D Position;
-        public byte RightX;
-        public byte RightY;
-        public byte RightZ;
-        public byte ForwardX;
-        public byte ForwardY;
-        public byte ForwardZ;
+        public Vector3D Position { get; set; }
+        public byte RightX { get; set; }
+        public byte RightY { get; set; }
+        public byte RightZ { get; set; }
+        public byte ForwardX { get; set; }
+        public byte ForwardY { get; set; }
+        public byte ForwardZ { get; set; }
 
-        public Matrix Decompress()
+        public ViewMatrix Decompress()
         {
-            Matrix m = new Matrix(Position);
-            m.Right.X = RightX / 127.0f;
-            m.Right.Y = RightY / 127.0f;
-            m.Right.Z = RightZ / 127.0f;
-            m.Forward.X = ForwardX / 127.0f;
-            m.Forward.Y = ForwardY / 127.0f;
-            m.Forward.Z = ForwardZ / 127.0f;
-            m.Up = Vector3D.Cross(m.Right, m.Forward);
+            Vector3D r = new Vector3D
+            {
+                X = RightX / 127.0f,
+                Y = RightY / 127.0f,
+                Z = RightZ / 127.0f
+            };
+            Vector3D f = new Vector3D
+            {
+                X = ForwardX / 127.0f,
+                Y = ForwardY / 127.0f,
+                Z = ForwardZ / 127.0f
+            };
+            Vector3D u = Vector3D.Cross(r, f);
 
-            return m;
+            return new ViewMatrix()
+            {
+                Right = r,
+                Forward = f,
+                Up = u,
+                Position = Position
+            };
         }
 
         int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
@@ -83,15 +97,15 @@ namespace GTASaveData.Types
 
         public override bool Equals(object obj)
         {
-            if (!(obj is CompressedMatrix))
+            if (!(obj is CompressedViewMatrix))
             {
                 return false;
             }
 
-            return Equals((CompressedMatrix) obj);
+            return Equals((CompressedViewMatrix) obj);
         }
 
-        public bool Equals(CompressedMatrix other)
+        public bool Equals(CompressedViewMatrix other)
         {
             return Position.Equals(other.Position)
                 && RightX.Equals(other.RightX)
@@ -102,12 +116,12 @@ namespace GTASaveData.Types
                 && ForwardZ.Equals(other.ForwardZ);
         }
 
-        public static bool operator ==(CompressedMatrix m1, CompressedMatrix m2)
+        public static bool operator ==(CompressedViewMatrix m1, CompressedViewMatrix m2)
         {
             return m1.Equals(m2);
         }
 
-        public static bool operator !=(CompressedMatrix m1, CompressedMatrix m2)
+        public static bool operator !=(CompressedViewMatrix m1, CompressedViewMatrix m2)
         {
             return !m1.Equals(m2);
         }

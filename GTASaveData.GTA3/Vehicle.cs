@@ -253,7 +253,7 @@ namespace GTASaveData.GTA3
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
-            Matrix m = new Matrix();
+            ViewMatrix m = new ViewMatrix();
             m.Right = buf.Read<Vector3D>();
             buf.Skip(4);
             m.Forward = buf.Read<Vector3D>();

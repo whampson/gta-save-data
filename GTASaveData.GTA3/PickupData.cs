@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.GTA3
 {
     public class PickupData : SaveDataObject,
-        IEquatable<PickupData>, IDeepClonable<PickupData>
+        IEquatable<PickupData>, IDeepClonable<PickupData>,
+        IEnumerable<Pickup>
     {
         public const int MaxNumPickups = 336;
         public const int MaxNumCollectedPickups = 20;
@@ -30,6 +33,12 @@ namespace GTASaveData.GTA3
         {
             get { return m_pickUpsCollected; }
             set { m_pickUpsCollected = value; OnPropertyChanged(); }
+        }
+
+        public Pickup this[int i]
+        {
+            get { return Pickups[i]; }
+            set { Pickups[i] = value; OnPropertyChanged(); }
         }
 
         public PickupData()
@@ -90,6 +99,16 @@ namespace GTASaveData.GTA3
         public PickupData DeepClone()
         {
             return new PickupData(this);
+        }
+
+        public IEnumerator<Pickup> GetEnumerator()
+        {
+            return Pickups.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
@@ -12,14 +14,14 @@ namespace GTASaveData.Types
     {
         private const int Size = 16;
 
-        public short Year;
-        public short Month;
-        public short DayOfWeek;
-        public short Day;
-        public short Hour;
-        public short Minute;
-        public short Second;
-        public short Millisecond;
+        public short Year { get; set; }
+        public short Month { get; set; }
+        public short DayOfWeek { get; set; }
+        public short Day { get; set; }
+        public short Hour { get; set; }
+        public short Minute { get; set; }
+        public short Second { get; set; }
+        public short Millisecond { get; set; }
 
         public SystemTime(short year, short month, short dayOfWeek, short day,
             short hour, short minute, short second, short millisecond)

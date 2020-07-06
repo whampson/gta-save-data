@@ -242,8 +242,6 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            Vector3D posMin, posMax, door1Pos, door2Pos;
-
             Type = (GarageType) buf.ReadByte();
             State = (GarageState) buf.ReadByte();
             Field02h = buf.ReadBool();
@@ -262,6 +260,8 @@ namespace GTASaveData.GTA3
             RotatedDoor = buf.ReadBool();
             CameraFollowsPlayer = buf.ReadBool();
             buf.Skip(1);
+            Vector3D posMin = new Vector3D();
+            Vector3D posMax = new Vector3D();
             posMin.X = buf.ReadFloat();
             posMax.X = buf.ReadFloat();
             posMin.Y = buf.ReadFloat();
@@ -270,6 +270,8 @@ namespace GTASaveData.GTA3
             posMax.Z = buf.ReadFloat();
             DoorOpenOffset = buf.ReadFloat();
             DoorOpenMax = buf.ReadFloat();
+            Vector3D door1Pos = new Vector3D();
+            Vector3D door2Pos = new Vector3D();
             door1Pos.X = buf.ReadFloat();
             door1Pos.Y = buf.ReadFloat();
             door2Pos.X = buf.ReadFloat();
