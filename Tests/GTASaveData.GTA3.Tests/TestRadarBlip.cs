@@ -16,7 +16,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.MarkerPosition, f => Generator.Vector3D(f))
                 .RuleFor(x => x.Index, f => f.Random.Short())
                 .RuleFor(x => x.IsBright, f => f.Random.Bool())
-                .RuleFor(x => x.Enabled, f => f.Random.Bool())
+                .RuleFor(x => x.IsInUse, f => f.Random.Bool())
                 .RuleFor(x => x.DebugSphereRadius, f => f.Random.Float())
                 .RuleFor(x => x.Scale, f => f.Random.Short())
                 .RuleFor(x => x.Display, f => f.PickRandom<RadarBlipDisplay>())
@@ -39,7 +39,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.MarkerPosition, x1.MarkerPosition);
             Assert.Equal(x0.Index, x1.Index);
             Assert.Equal(x0.IsBright, x1.IsBright);
-            Assert.Equal(x0.Enabled, x1.Enabled);
+            Assert.Equal(x0.IsInUse, x1.IsInUse);
             Assert.Equal(x0.DebugSphereRadius, x1.DebugSphereRadius);
             Assert.Equal(x0.Scale, x1.Scale);
             Assert.Equal(x0.Display, x1.Display);
