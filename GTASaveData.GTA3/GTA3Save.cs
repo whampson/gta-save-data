@@ -437,8 +437,7 @@ namespace GTASaveData.GTA3
 
             if ((saveSizeOffset < 0 && saveSizeOffsetJP < 0) || scrOffset < 0)
             {
-                fmt = FileFormat.Default;
-                return false;
+                goto DetectionFailed;
             }
 
             if (scrOffset == 0xB0 && saveSizeOffset == 0x04)
@@ -472,6 +471,7 @@ namespace GTASaveData.GTA3
             using (StreamBuffer s = new StreamBuffer(data))
             {
                 int block0Size = s.ReadInt32();
+                if (block0Size > s.Length) goto DetectionFailed;
                 s.Skip(block0Size + sizeof(int));
                 int sizeOfPedPool = s.ReadInt32() - sizeof(int);
                 int numPlayerPeds = s.ReadInt32();
@@ -505,6 +505,7 @@ namespace GTASaveData.GTA3
                 }
             }
 
+        DetectionFailed:
             fmt = FileFormat.Default;
             return false;
         }
