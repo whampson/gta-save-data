@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.MoneyOnScreen, f => f.Random.Int())
                 .RuleFor(x => x.PackagesCollected, f => f.Random.Int())
                 .RuleFor(x => x.PackagesTotal, f => f.Random.Int())
-                .RuleFor(x => x.InfinteSprint, f => f.Random.Bool())
+                .RuleFor(x => x.InfiniteSprint, f => f.Random.Bool())
                 .RuleFor(x => x.FastReload, f => f.Random.Bool())
                 .RuleFor(x => x.GetOutOfJailFree, f => f.Random.Bool())
                 .RuleFor(x => x.GetOutOfHospitalFree, f => f.Random.Bool())
@@ -41,7 +41,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.MoneyOnScreen, x1.MoneyOnScreen);
             Assert.Equal(x0.PackagesCollected, x1.PackagesCollected);
             Assert.Equal(x0.PackagesTotal, x1.PackagesTotal);
-            Assert.Equal(x0.InfinteSprint, x1.InfinteSprint);
+            Assert.Equal(x0.InfiniteSprint, x1.InfiniteSprint);
             Assert.Equal(x0.FastReload, x1.FastReload);
             Assert.Equal(x0.GetOutOfJailFree, x1.GetOutOfJailFree);
             Assert.Equal(x0.GetOutOfHospitalFree, x1.GetOutOfHospitalFree);

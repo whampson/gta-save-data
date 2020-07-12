@@ -249,6 +249,11 @@ namespace GTASaveData.GTA3
             return sizeof(float);
         }
 
+        public RunningScript GetRunningScript(string name)
+        {
+            return ActiveScripts.Where(x => x.Name == name).FirstOrDefault();
+        }
+
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             int size = GTA3VCSave.ReadSaveHeader(buf, "SCR");

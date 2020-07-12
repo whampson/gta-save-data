@@ -16,7 +16,7 @@ namespace GTASaveData.GTA3
         private int m_moneyOnScreen;
         private int m_packagesCollected;
         private int m_packagesTotal;
-        private bool m_infinteSprint;
+        private bool m_infiniteSprint;
         private bool m_fastReload;
         private bool m_getOutOfJailFree;
         private bool m_getOutOfHospitalFree;
@@ -70,10 +70,10 @@ namespace GTASaveData.GTA3
             set { m_packagesTotal = value; OnPropertyChanged(); }
         }
 
-        public bool InfinteSprint
+        public bool InfiniteSprint
         {
-            get { return m_infinteSprint; }
-            set { m_infinteSprint = value; OnPropertyChanged(); }
+            get { return m_infiniteSprint; }
+            set { m_infiniteSprint = value; OnPropertyChanged(); }
         }
 
         public bool FastReload
@@ -115,7 +115,7 @@ namespace GTASaveData.GTA3
             MoneyOnScreen = other.MoneyOnScreen;
             PackagesCollected = other.PackagesCollected;
             PackagesTotal = other.PackagesTotal;
-            InfinteSprint = other.InfinteSprint;
+            InfiniteSprint = other.InfiniteSprint;
             FastReload = other.FastReload;
             GetOutOfJailFree = other.GetOutOfJailFree;
             GetOutOfHospitalFree = other.GetOutOfHospitalFree;
@@ -132,7 +132,7 @@ namespace GTASaveData.GTA3
             MoneyOnScreen = buf.ReadInt32();
             PackagesCollected = buf.ReadInt32();
             PackagesTotal = buf.ReadInt32();
-            InfinteSprint = buf.ReadBool();
+            InfiniteSprint = buf.ReadBool();
             FastReload = buf.ReadBool();
             GetOutOfJailFree = buf.ReadBool();
             GetOutOfHospitalFree = buf.ReadBool();
@@ -154,7 +154,7 @@ namespace GTASaveData.GTA3
             buf.Write(MoneyOnScreen);
             buf.Write(PackagesCollected);
             buf.Write(PackagesTotal);
-            buf.Write(InfinteSprint);
+            buf.Write(InfiniteSprint);
             buf.Write(FastReload);
             buf.Write(GetOutOfJailFree);
             buf.Write(GetOutOfHospitalFree);
@@ -193,7 +193,7 @@ namespace GTASaveData.GTA3
                 && MoneyOnScreen.Equals(other.MoneyOnScreen)
                 && PackagesCollected.Equals(other.PackagesCollected)
                 && PackagesTotal.Equals(other.PackagesTotal)
-                && InfinteSprint.Equals(other.InfinteSprint)
+                && InfiniteSprint.Equals(other.InfiniteSprint)
                 && FastReload.Equals(other.FastReload)
                 && GetOutOfJailFree.Equals(other.GetOutOfJailFree)
                 && GetOutOfHospitalFree.Equals(other.GetOutOfHospitalFree)

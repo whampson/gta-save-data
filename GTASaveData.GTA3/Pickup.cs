@@ -8,12 +8,12 @@ namespace GTASaveData.GTA3
         IEquatable<Pickup>, IDeepClonable<Pickup>
     {
         private PickupType m_type;
-        private bool m_removed;
-        private ushort m_quantity;
-        private uint m_pObject;
+        private bool m_hasBeenPickedUp;
+        private ushort m_value;
+        private uint m_objectIndex;
         private uint m_timer;
         private short m_modelIndex;
-        private short m_index;
+        private short m_poolIndex;
         private Vector3D m_position;
 
         public PickupType Type
@@ -24,20 +24,20 @@ namespace GTASaveData.GTA3
 
         public bool HasBeenPickedUp
         {
-            get { return m_removed; }
-            set { m_removed = value; OnPropertyChanged(); }
+            get { return m_hasBeenPickedUp; }
+            set { m_hasBeenPickedUp = value; OnPropertyChanged(); }
         }
 
-        public ushort Quantity
+        public ushort Value
         {
-            get { return m_quantity; }
-            set { m_quantity = value; OnPropertyChanged(); }
+            get { return m_value; }
+            set { m_value = value; OnPropertyChanged(); }
         }
 
-        public uint Handle
+        public uint ObjectIndex
         {
-            get { return m_pObject; }
-            set { m_pObject = value; OnPropertyChanged(); }
+            get { return m_objectIndex; }
+            set { m_objectIndex = value; OnPropertyChanged(); }
         }
 
         public uint RegenerationTime
@@ -52,10 +52,10 @@ namespace GTASaveData.GTA3
             set { m_modelIndex = value; OnPropertyChanged(); }
         }
 
-        public short PickupIndex
+        public short PoolIndex
         {
-            get { return m_index; }
-            set { m_index = value; OnPropertyChanged(); }
+            get { return m_poolIndex; }
+            set { m_poolIndex = value; OnPropertyChanged(); }
         }
 
         public Vector3D Position
@@ -66,18 +66,18 @@ namespace GTASaveData.GTA3
 
         public Pickup()
         {
-            PickupIndex = 1;
+            PoolIndex = 1;
         }
 
         public Pickup(Pickup other)
         {
             Type = other.Type;
             HasBeenPickedUp = other.HasBeenPickedUp;
-            Quantity = other.Quantity;
-            Handle = other.Handle;
+            Value = other.Value;
+            ObjectIndex = other.ObjectIndex;
             RegenerationTime = other.RegenerationTime;
             ModelIndex = other.ModelIndex;
-            PickupIndex = other.PickupIndex;
+            PoolIndex = other.PoolIndex;
             Position = other.Position;
         }
 
@@ -85,11 +85,11 @@ namespace GTASaveData.GTA3
         {
             Type = (PickupType) buf.ReadByte();
             HasBeenPickedUp = buf.ReadBool();
-            Quantity = buf.ReadUInt16();
-            Handle = buf.ReadUInt32();
+            Value = buf.ReadUInt16();
+            ObjectIndex = buf.ReadUInt32();
             RegenerationTime = buf.ReadUInt32();
             ModelIndex = buf.ReadInt16();
-            PickupIndex = buf.ReadInt16();
+            PoolIndex = buf.ReadInt16();
             Position = buf.Read<Vector3D>();
 
             Debug.Assert(buf.Offset == SizeOfType<Pickup>());
@@ -99,11 +99,11 @@ namespace GTASaveData.GTA3
         {
             buf.Write((byte) Type);
             buf.Write(HasBeenPickedUp);
-            buf.Write(Quantity);
-            buf.Write(Handle);
+            buf.Write(Value);
+            buf.Write(ObjectIndex);
             buf.Write(RegenerationTime);
             buf.Write(ModelIndex);
-            buf.Write(PickupIndex);
+            buf.Write(PoolIndex);
             buf.Write(Position);
 
             Debug.Assert(buf.Offset == SizeOfType<Pickup>());
@@ -128,11 +128,11 @@ namespace GTASaveData.GTA3
 
             return Type.Equals(other.Type)
                 && HasBeenPickedUp.Equals(other.HasBeenPickedUp)
-                && Quantity.Equals(other.Quantity)
-                && Handle.Equals(other.Handle)
+                && Value.Equals(other.Value)
+                && ObjectIndex.Equals(other.ObjectIndex)
                 && RegenerationTime.Equals(other.RegenerationTime)
                 && ModelIndex.Equals(other.ModelIndex)
-                && PickupIndex.Equals(other.PickupIndex)
+                && PoolIndex.Equals(other.PoolIndex)
                 && Position.Equals(other.Position);
         }
 
