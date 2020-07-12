@@ -104,7 +104,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadSaveHeader(buf, "RST");
+            int size = GTA3VCSave.ReadBlockHeader(buf, "RST");
 
             WastedRestartPoints = buf.Read<RestartPoint>(MaxNumWastedRestarts);
             BustedRestartPoints = buf.Read<RestartPoint>(MaxNumBustedRestarts);
@@ -124,7 +124,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3VCSave.WriteSaveHeader(buf, "RST", SizeOfType<RestartData>() - GTA3VCSave.BlockHeaderSize);
+            GTA3VCSave.WriteBlockHeader(buf, "RST", SizeOfType<RestartData>() - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(WastedRestartPoints, MaxNumWastedRestarts);
             buf.Write(BustedRestartPoints, MaxNumBustedRestarts);

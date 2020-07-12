@@ -117,43 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Error_ArgumentOutOfRange_IndexOutOfRange" xml:space="preserve">
-    <value>The index is out of range.</value>
+  <data name="Error_InvalidOperation_NoPlayerPed" xml:space="preserve">
+    <value>The ped pool must contain at least one PlayerPed.</value>
   </data>
-  <data name="Error_Argument_SequenceTooBig" xml:space="preserve">
-    <value>The sequence length must be less than or equal to the length of the array.</value>
-  </data>
-  <data name="Error_EndOfStream" xml:space="preserve">
-    <value>End of stream reached.</value>
-  </data>
-  <data name="Error_InvalidOperation_NoCollectionReentrancy" xml:space="preserve">
-    <value>The collection cannot be modified while being changed by another thread.</value>
-  </data>
-  <data name="Error_InvalidOperation_NotDeepClonable" xml:space="preserve">
-    <value>The type '{0}' is not deep clonable.</value>
-    <comment>{0} = type name</comment>
-  </data>
-  <data name="Error_InvalidOperation_SizeNotDefined" xml:space="preserve">
-    <value>Size not defined for type '{0}'.</value>
-    <comment>{0} = data format name</comment>
-  </data>
-  <data name="Error_JsonSerialization_EndOfStream" xml:space="preserve">
-    <value>Unexpected end of stream reached while parsing JSON.</value>
-  </data>
-  <data name="Error_JsonSerialization_UnexpectedToken" xml:space="preserve">
-    <value>Unexpected token while parsing JSON: {0}</value>
-    <comment>{0} = token type</comment>
-  </data>
-  <data name="Error_Serialization_BadBlockSize" xml:space="preserve">
-    <value>The block size exceeds the size of the buffer: {0}</value>
-    <comment>{0} = block size value</comment>
-  </data>
-  <data name="Error_Serialization_NoPreAlloc" xml:space="preserve">
-    <value>The type '{0}' cannot be pre-allocated.</value>
-    <comment>{0} = object type</comment>
-  </data>
-  <data name="Error_Serialization_NotAllowed" xml:space="preserve">
-    <value>The type '{0}' does not support serialization.</value>
-    <comment>{0} = object type</comment>
+  <data name="Error_InvalidOperation_StackEmpty" xml:space="preserve">
+    <value>The stack is empty.</value>
   </data>
 </root>

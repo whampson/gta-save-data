@@ -117,7 +117,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadSaveHeader(buf, "ZNS");
+            int size = GTA3VCSave.ReadBlockHeader(buf, "ZNS");
 
             CurrentZoneIndex = buf.ReadInt32();
             CurrentLevel = (Level) buf.ReadInt32();
@@ -138,7 +138,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3VCSave.WriteSaveHeader(buf, "ZNS", SizeOfType<ZoneData>() - GTA3VCSave.BlockHeaderSize);
+            GTA3VCSave.WriteBlockHeader(buf, "ZNS", SizeOfType<ZoneData>() - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(CurrentZoneIndex);
             buf.Write((int) CurrentLevel);

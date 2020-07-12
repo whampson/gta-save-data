@@ -10,8 +10,8 @@
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
     <Description>A .NET library for manipulating Grand Theft Auto III save files.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>1.1.0.1136</AssemblyVersion>
-    <FileVersion>1.1.0.1136</FileVersion>
+    <AssemblyVersion>1.1.0.1140</AssemblyVersion>
+    <FileVersion>1.1.0.1140</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.1.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -45,6 +45,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GTASaveData.Core\GTASaveData.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

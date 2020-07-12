@@ -5,7 +5,8 @@ using System.Collections.Generic;
 namespace GTASaveData.JsonConverters
 {
     /// <summary>
-    /// Converts a <see cref="byte"/> <see cref="Array{T}"/> to a base64 string if the array is sufficiently large.
+    /// Converts a <see cref="byte"/> <see cref="Array{T}"/> to
+    /// a base64 string if the array is sufficiently large.
     /// </summary>
     public class ByteArrayConverter : JsonConverter<Array<byte>>
     {
@@ -17,7 +18,8 @@ namespace GTASaveData.JsonConverters
         /// </summary>
         public static int Threshold { get; set; }
 
-        public override Array<byte> ReadJson(JsonReader reader, Type objectType, Array<byte> existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override Array<byte> ReadJson(JsonReader reader, Type objectType,
+            Array<byte> existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -67,19 +69,18 @@ namespace GTASaveData.JsonConverters
             if (value == null)
             {
                 writer.WriteNull();
+                return;
+            }
+            
+            if (value.Count < Threshold)
+            {
+                // Regular ol' array
+                serializer.Serialize(writer, value);
             }
             else
             {
-                if (value.Count < Threshold)
-                {
-                    // Regular ol' array
-                    serializer.Serialize(writer, value);
-                }
-                else
-                {
-                    // Base64 string
-                    writer.WriteValue(value.ToArray());
-                }
+                // Base64 string
+                writer.WriteValue(value.ToArray());
             }
         }
 
@@ -90,7 +91,8 @@ namespace GTASaveData.JsonConverters
 
         private JsonSerializationException UnexpectedToken(JsonToken t)
         {
-            return new JsonSerializationException(string.Format(Strings.Error_JsonSerialization_UnexpectedToken, t));
+            string msg = string.Format(Strings.Error_JsonSerialization_UnexpectedToken, t);
+            return new JsonSerializationException(msg);
         }
     }
 }

@@ -73,7 +73,7 @@ namespace GTASaveData.VC
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadSaveHeader(buf, "CGN");
+            int size = GTA3VCSave.ReadBlockHeader(buf, "CGN");
 
             int infoSize = buf.ReadInt32();
             Debug.Assert(infoSize == CarGeneratorDataSize);
@@ -92,7 +92,7 @@ namespace GTASaveData.VC
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3VCSave.WriteSaveHeader(buf, "CGN", SizeOfType<CarGeneratorData>() - GTA3VCSave.BlockHeaderSize);
+            GTA3VCSave.WriteBlockHeader(buf, "CGN", SizeOfType<CarGeneratorData>() - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(CarGeneratorDataSize);
             buf.Write(NumberOfCarGenerators);

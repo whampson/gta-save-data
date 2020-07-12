@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace GTASaveData
 {
@@ -15,8 +16,15 @@ namespace GTASaveData
             return Enumerable.Range(0, count).Select(x => new T()).ToArray();
         }
 
+        /// <summary>
+        /// Creates a deep clone of an array.
+        /// </summary>
+        /// <typeparam name="T">The element type.</typeparam>
+        /// <param name="array">The array to clone.</param>
+        /// <returns>A deep clone of the array.</returns>
         public static Array<T> DeepClone<T>(Array<T> array)
         {
+            Type t = typeof(T);
             Array<T> newArray = new Array<T>();
             foreach (T item in array)
             {
@@ -24,9 +32,14 @@ namespace GTASaveData
                 {
                     newArray.Add((item as IDeepClonable<T>).DeepClone());
                 }
-                else
+                else if (t.IsValueType)
                 {
                     newArray.Add(item);
+                }
+                else
+                {
+                    string msg = string.Format(Strings.Error_InvalidOperation_NotDeepClonable, t.Name);
+                    throw new InvalidOperationException(msg);
                 }
             }
 

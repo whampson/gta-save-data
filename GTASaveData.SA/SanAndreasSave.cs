@@ -351,6 +351,7 @@ namespace GTASaveData.SA
 
         private int SaveObject(SaveDataObject o)
         {
+            // TODO: padding not applied
             int count = Serializer.Write(o, FileFormat, out byte[] data);
             int written = SaveDataToWorkBuffer(data, count);
 

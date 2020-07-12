@@ -63,7 +63,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadSaveHeader(buf, "PTP");
+            int size = GTA3VCSave.ReadBlockHeader(buf, "PTP");
 
             PedTypes = buf.Read<PedType>(NumPedTypes);
 
@@ -73,7 +73,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3VCSave.WriteSaveHeader(buf, "PTP", SizeOfType<PedTypeData>() - GTA3VCSave.BlockHeaderSize);
+            GTA3VCSave.WriteBlockHeader(buf, "PTP", SizeOfType<PedTypeData>() - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(PedTypes, NumPedTypes);
 

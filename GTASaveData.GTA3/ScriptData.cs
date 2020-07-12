@@ -256,7 +256,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadSaveHeader(buf, "SCR");
+            int size = GTA3VCSave.ReadBlockHeader(buf, "SCR");
 
             int varSpace = buf.ReadInt32();
             ScriptSpace = buf.Read<byte>(varSpace);
@@ -286,7 +286,7 @@ namespace GTASaveData.GTA3
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             int size = SizeOfObject(this, fmt);
-            GTA3VCSave.WriteSaveHeader(buf, "SCR", size - GTA3VCSave.BlockHeaderSize);
+            GTA3VCSave.WriteBlockHeader(buf, "SCR", size - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(ScriptSpace.Count);
             buf.Write(ScriptSpace);

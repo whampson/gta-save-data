@@ -36,7 +36,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadSaveHeader(buf, "AUD");
+            int size = GTA3VCSave.ReadBlockHeader(buf, "AUD");
 
             int count = buf.ReadInt32();
             AudioScriptObjects = buf.Read<AudioScriptObject>(count);
@@ -47,7 +47,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            GTA3VCSave.WriteSaveHeader(buf, "AUD", SizeOfObject(this) - GTA3VCSave.BlockHeaderSize);
+            GTA3VCSave.WriteBlockHeader(buf, "AUD", SizeOfObject(this) - GTA3VCSave.BlockHeaderSize);
 
             buf.Write(AudioScriptObjects.Count);
             buf.Write(AudioScriptObjects);

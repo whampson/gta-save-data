@@ -17,7 +17,10 @@ namespace GTASaveData.GTA3
         private const int MaxNumPaddingBlocks = 4;
 
         private static readonly byte[] XboxTitleKey =
-            { 0xFF, 0x3B, 0x8F, 0x5C, 0xDE, 0x53, 0xF3, 0x25, 0x9E, 0x70, 0x09, 0x54, 0xEF, 0xDC, 0xA8, 0xDC };
+        {
+            0xFF, 0x3B, 0x8F, 0x5C, 0xDE, 0x53, 0xF3, 0x25,
+            0x9E, 0x70, 0x09, 0x54, 0xEF, 0xDC, 0xA8, 0xDC
+        };
 
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
@@ -180,6 +183,7 @@ namespace GTASaveData.GTA3
         }
 
         bool ISaveData.HasCarGenerators => true;
+
         ICarGeneratorData ISaveData.CarGenerators
         {
             get { return CarGenerators; }
