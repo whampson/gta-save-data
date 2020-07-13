@@ -8,7 +8,8 @@ namespace GTASaveData
     /// <summary>
     /// A container for arbitraty data.
     /// </summary>
-    public class Dummy : SaveDataObject, IEquatable<Dummy>
+    public class Dummy : SaveDataObject,
+        IEquatable<Dummy>, IDeepClonable<Dummy>
     {
         private Array<byte> m_data;
 
@@ -26,6 +27,11 @@ namespace GTASaveData
         public Dummy(int size)
         {
             Data = new byte[size];
+        }
+
+        public Dummy(Dummy other)
+        {
+            Data = other.Data;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -57,6 +63,11 @@ namespace GTASaveData
             }
 
             return Data.SequenceEqual(other.Data);
+        }
+
+        public Dummy DeepClone()
+        {
+            return new Dummy(this);
         }
     }
 }

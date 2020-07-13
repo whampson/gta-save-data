@@ -73,6 +73,7 @@ namespace GTASaveData.LCS.Tests
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);
+            Assert.Equal(x0.Garages, x1.Garages);
             Assert.Equal(x0.PlayerInfo, x1.PlayerInfo);
             Assert.Equal(x0.Stats, x1.Stats);
             Assert.Equal(x0, x1);

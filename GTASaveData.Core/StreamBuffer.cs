@@ -1159,7 +1159,7 @@ namespace GTASaveData
         /// Writes the specified number of bytes for padding.
         /// </summary>
         /// <param name="count"></param>
-        public void Pad(int count)
+        public int Pad(int count)
         {
             switch (PaddingType)
             {
@@ -1198,6 +1198,8 @@ namespace GTASaveData
                     break;
                 }
             }
+
+            return count;
         }
 
         /// <summary>
