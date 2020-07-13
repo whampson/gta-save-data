@@ -32,9 +32,9 @@ namespace GTASaveData.LCS
         private Vector3D m_cameraPosition;
         private float m_cameraModeInCar;
         private float m_cameraModeOnFoot;
-        private int m_timeCyc0;
-        private int m_timeCyc1;
-        private float m_timeCyc2;
+        private int m_extraColor;
+        private bool m_isExtraColorOn;
+        private float m_extraColorInterpolation;
         private int m_prefsBrightness;
         private bool m_prefsDisplayHud;
         private bool m_prefsShowSubtitles;
@@ -193,22 +193,22 @@ namespace GTASaveData.LCS
             set { m_cameraModeOnFoot = value; OnPropertyChanged(); }
         }
 
-        public int TimeCycleValue0
+        public int ExtraColor
         {
-            get { return m_timeCyc0; }
-            set { m_timeCyc0 = value; OnPropertyChanged(); }
+            get { return m_extraColor; }
+            set { m_extraColor = value; OnPropertyChanged(); }
         }
 
-        public int TimeCycleValue1
+        public bool IsExtraColorOn
         {
-            get { return m_timeCyc1; }
-            set { m_timeCyc1 = value; OnPropertyChanged(); }
+            get { return m_isExtraColorOn; }
+            set { m_isExtraColorOn = value; OnPropertyChanged(); }
         }
 
-        public float TimeCycleValue2
+        public float ExtraColorInterpolation
         {
-            get { return m_timeCyc2; }
-            set { m_timeCyc2 = value; OnPropertyChanged(); }
+            get { return m_extraColorInterpolation; }
+            set { m_extraColorInterpolation = value; OnPropertyChanged(); }
         }
 
         public int Brightness
@@ -356,9 +356,9 @@ namespace GTASaveData.LCS
             CameraPosition = other.CameraPosition;
             CameraModeInCar = other.CameraModeInCar;
             CameraModeOnFoot = other.CameraModeOnFoot;
-            TimeCycleValue0 = other.TimeCycleValue0;
-            TimeCycleValue1 = other.TimeCycleValue1;
-            TimeCycleValue2 = other.TimeCycleValue2;
+            ExtraColor = other.ExtraColor;
+            IsExtraColorOn = other.IsExtraColorOn;
+            ExtraColorInterpolation = other.ExtraColorInterpolation;
             Brightness = other.Brightness;
             DisplayHud = other.DisplayHud;
             ShowSubtitles = other.ShowSubtitles;
@@ -411,9 +411,9 @@ namespace GTASaveData.LCS
             CameraPosition = buf.Read<Vector3D>();
             CameraModeInCar = buf.ReadFloat();
             CameraModeOnFoot = buf.ReadFloat();
-            TimeCycleValue0 = buf.ReadInt32();
-            TimeCycleValue1 = buf.ReadInt32();
-            TimeCycleValue2 = buf.ReadFloat();
+            ExtraColor = buf.ReadInt32();       // for interiors, I think
+            IsExtraColorOn = buf.ReadBool(4);
+            ExtraColorInterpolation = buf.ReadFloat();
             Brightness = buf.ReadInt32();
             DisplayHud = buf.ReadBool();
             ShowSubtitles = buf.ReadBool();
@@ -502,9 +502,9 @@ namespace GTASaveData.LCS
             buf.Write(CameraPosition);
             buf.Write(CameraModeInCar);
             buf.Write(CameraModeOnFoot);
-            buf.Write(TimeCycleValue0);
-            buf.Write(TimeCycleValue1);
-            buf.Write(TimeCycleValue2);
+            buf.Write(ExtraColor);
+            buf.Write(IsExtraColorOn);
+            buf.Write(ExtraColorInterpolation);
             buf.Write(Brightness);
             buf.Write(DisplayHud);
             buf.Write(ShowSubtitles);
@@ -603,9 +603,9 @@ namespace GTASaveData.LCS
                 && CameraPosition.Equals(other.CameraPosition)
                 && CameraModeInCar.Equals(other.CameraModeInCar)
                 && CameraModeOnFoot.Equals(other.CameraModeOnFoot)
-                && TimeCycleValue0.Equals(other.TimeCycleValue0)
-                && TimeCycleValue1.Equals(other.TimeCycleValue1)
-                && TimeCycleValue2.Equals(other.TimeCycleValue2)
+                && ExtraColor.Equals(other.ExtraColor)
+                && IsExtraColorOn.Equals(other.IsExtraColorOn)
+                && ExtraColorInterpolation.Equals(other.ExtraColorInterpolation)
                 && Brightness.Equals(other.Brightness)
                 && DisplayHud.Equals(other.DisplayHud)
                 && ShowSubtitles.Equals(other.ShowSubtitles)
@@ -631,6 +631,15 @@ namespace GTASaveData.LCS
         {
             return new SimpleVariables(this);
         }
+    }
+
+    public enum DataBlock
+    {
+        SimpleVars,
+        Scripts,
+        Garages,
+        PlayerInfo,
+        Stats
     }
 
     public enum WeatherType

@@ -1,5 +1,6 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
+using GTASaveData.LCS;
 using GTASaveData.VC;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,10 @@ using System.Windows;
 using System.Windows.Input;
 using WpfEssentials;
 using WpfEssentials.Win32;
+
+using IIIBlock = GTASaveData.GTA3.DataBlock;
+using VCBlock = GTASaveData.VC.DataBlock;
+using LCSBlock = GTASaveData.LCS.DataBlock;
 
 namespace TestApp
 {
@@ -55,7 +60,12 @@ namespace TestApp
         public Game SelectedGame
         {
             get { return m_selectedGame; }
-            set { m_selectedGame = value; /*OnPopulateFileTypeList(); */OnPropertyChanged(); }
+            set
+            {
+                m_selectedGame = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(BlockNameForCurrentGame));
+            }
         }
 
         public string StatusText
@@ -72,9 +82,22 @@ namespace TestApp
                 {
                     Game.GTA3 => GTA3Save.FileFormats.GetAll(),
                     Game.VC => VCSave.FileFormats.GetAll(),
+                    Game.LCS => LCSSave.FileFormats.GetAll(),
                     _ => new FileFormat[0],
                 };
             }
+        }
+
+        public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
+        {
+            { Game.GTA3, Enum.GetNames(typeof(IIIBlock)) },
+            { Game.VC, Enum.GetNames(typeof(VCBlock)) },
+            { Game.LCS, Enum.GetNames(typeof(LCSBlock)) },
+        };
+
+        public string[] BlockNameForCurrentGame
+        {
+            get { return BlockNames[SelectedGame]; }
         }
 
         public MainViewModel()
@@ -157,7 +180,7 @@ namespace TestApp
                 case Game.GTA3: DoLoad<GTA3Save>(path); break;
                 case Game.VC: DoLoad<VCSave>(path); break;
                 //case GameType.SA: DoLoad<SanAndreasSave>(path); break;
-                //case GameType.LCS: DoLoad<LibertyCityStoriesSave>(path); break;
+                case Game.LCS: DoLoad<LCSSave>(path); break;
                 //case GameType.VCS: DoLoad<ViceCityStoriesSave>(path); break;
                 //case GameType.IV: DoLoad<GTA4Save>(path); break;
                 default: RequestMessageBoxError("Selected game not yet supported!"); return;

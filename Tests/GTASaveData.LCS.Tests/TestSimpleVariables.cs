@@ -33,9 +33,9 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
                 .RuleFor(x => x.CameraModeInCar, f => f.Random.Float())
                 .RuleFor(x => x.CameraModeOnFoot, f => f.Random.Float())
-                .RuleFor(x => x.TimeCycleValue0, f => f.Random.Int())
-                .RuleFor(x => x.TimeCycleValue1, f => f.Random.Int())
-                .RuleFor(x => x.TimeCycleValue2, f => f.Random.Float())
+                .RuleFor(x => x.ExtraColor, f => f.Random.Int())
+                .RuleFor(x => x.IsExtraColorOn, f => f.Random.Bool())
+                .RuleFor(x => x.ExtraColorInterpolation, f => f.Random.Float())
                 .RuleFor(x => x.Brightness, f => f.Random.Int())
                 .RuleFor(x => x.DisplayHud, f => f.Random.Bool())
                 .RuleFor(x => x.ShowSubtitles, f => f.Random.Bool())
@@ -89,9 +89,9 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0.CameraPosition, x1.CameraPosition);
             Assert.Equal(x0.CameraModeInCar, x1.CameraModeInCar);
             Assert.Equal(x0.CameraModeOnFoot, x1.CameraModeOnFoot);
-            Assert.Equal(x0.TimeCycleValue0, x1.TimeCycleValue0);
-            Assert.Equal(x0.TimeCycleValue1, x1.TimeCycleValue1);
-            Assert.Equal(x0.TimeCycleValue2, x1.TimeCycleValue2);
+            Assert.Equal(x0.ExtraColor, x1.ExtraColor);
+            Assert.Equal(x0.IsExtraColorOn, x1.IsExtraColorOn);
+            Assert.Equal(x0.ExtraColorInterpolation, x1.ExtraColorInterpolation);
             Assert.Equal(x0.Brightness, x1.Brightness);
             Assert.Equal(x0.DisplayHud, x1.DisplayHud);
             Assert.Equal(x0.ShowSubtitles, x1.ShowSubtitles);

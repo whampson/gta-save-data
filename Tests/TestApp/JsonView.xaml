@@ -51,7 +51,7 @@
 
             <ComboBox Grid.Row="0" Grid.Column="1"
                 Style="{StaticResource ComboBoxStyle}"
-                ItemsSource="{Binding BlockNameForCurrentGame, Mode=OneWay}"
+                ItemsSource="{Binding MainViewModel.BlockNameForCurrentGame, Mode=OneWay}"
                 SelectedIndex="{Binding SelectedBlockIndex}"
                 SelectionChanged="BlockComboBox_SelectionChanged"
                 IsEnabled="{Binding MainViewModel.CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>

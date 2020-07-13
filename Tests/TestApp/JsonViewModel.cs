@@ -2,8 +2,6 @@
 using GTASaveData.Types.Interfaces;
 using System;
 using System.Collections.Generic;
-using IIIBlock = GTASaveData.GTA3.DataBlock;
-using VCBlock = GTASaveData.VC.DataBlock;
 
 namespace TestApp
 {
@@ -11,17 +9,6 @@ namespace TestApp
     {
         private int m_selectedBlockIndex;
         private string m_text;
-
-        public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
-        {
-            { Game.GTA3, Enum.GetNames(typeof(IIIBlock)) },
-            { Game.VC, Enum.GetNames(typeof(VCBlock)) },
-        };
-
-        public string[] BlockNameForCurrentGame
-        {
-            get { return BlockNames[MainViewModel.SelectedGame]; }
-        }
 
         public int SelectedBlockIndex
         {
