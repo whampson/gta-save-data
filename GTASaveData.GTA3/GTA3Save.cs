@@ -599,7 +599,7 @@ namespace GTASaveData.GTA3
         public static class FileFormats
         {
             public static readonly FileFormat Android = new FileFormat(
-                "Android",
+                "Android", "Android", "Android OS",
                 GameConsole.Android
             );
 
