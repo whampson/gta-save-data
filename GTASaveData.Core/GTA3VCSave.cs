@@ -167,9 +167,7 @@ namespace GTASaveData
             file.Align4();
 
             Debug.Assert(file.Offset == size + 4);
-
-            CheckSum += BitConverter.GetBytes(size).Sum(x => x);
-            CheckSum += data.Sum(x => x);
+            CheckSum += file.GetBytesFromMark().Sum(x => x);
 
             WorkBuff.Reset();
             return size;

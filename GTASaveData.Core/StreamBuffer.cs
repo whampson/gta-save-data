@@ -1209,6 +1209,11 @@ namespace GTASaveData
             return GetBufferBytes().Take(Position).ToArray();
         }
 
+        public byte[] GetBytesFromMark()
+        {
+            return GetBufferBytes().Skip(MarkedPosition).Take(Position).ToArray();
+        }
+
         /// <summary>
         /// Gets all data in the buffer.
         /// </summary>
