@@ -14,13 +14,13 @@ namespace GTASaveData.LCS
 
         private int m_checkSum;
 
-        private Dummy m_simpleVars;
+        private SimpleVariables m_simpleVars;
         private Dummy m_scripts;
         private Dummy m_garages;
         private Dummy m_playerInfo;
         private Dummy m_stats;
 
-        public Dummy SimpleVars
+        public SimpleVariables SimpleVars
         {
             get { return m_simpleVars; }
             set { m_simpleVars = value; OnPropertyChanged(); }
@@ -69,19 +69,19 @@ namespace GTASaveData.LCS
 
         public override string Name
         {
-            get { return /*SimpleVars.LastMissionPassedName;*/ ""; }
-            set { /*SimpleVars.LastMissionPassedName = value;*/ OnPropertyChanged(); }
+            get { return SimpleVars.LastMissionPassedName; }
+            set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
         }
 
         public override DateTime TimeStamp
         {
-            get { return /*(DateTime) SimpleVars.TimeStamp;*/ DateTime.Now; }
-            set { /*SimpleVars.TimeStamp = new Date(value);*/ OnPropertyChanged(); }
+            get { return (DateTime) SimpleVars.TimeStamp; }
+            set { SimpleVars.TimeStamp = new Date(value); OnPropertyChanged(); }
         }
 
         public LCSSave()
         {
-            SimpleVars = new Dummy();
+            SimpleVars = new SimpleVariables();
             Scripts = new Dummy();
             Garages = new Dummy();
             PlayerInfo = new Dummy();
@@ -90,7 +90,7 @@ namespace GTASaveData.LCS
 
         public LCSSave(LCSSave other)
         {
-            SimpleVars = new Dummy(other.SimpleVars);
+            SimpleVars = new SimpleVariables(other.SimpleVars);
             Scripts = new Dummy(other.Scripts);
             Garages = new Dummy(other.Garages);
             PlayerInfo = new Dummy(other.PlayerInfo);
@@ -153,7 +153,7 @@ namespace GTASaveData.LCS
         {
             int totalSize = 0;
 
-            totalSize += Align4(ReadDummyBlock(file, "SIMP", out Dummy simp));
+            totalSize += Align4(ReadDataBlock(file, "SIMP", out SimpleVariables simp));
             SimpleVars = simp;
             totalSize += Align4(ReadDummyBlock(file, "SRPT", out Dummy srpt));
             Scripts = srpt;

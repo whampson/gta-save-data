@@ -278,8 +278,8 @@ namespace GTASaveData.GTA3
         public SimpleVariables()
         {
             LastMissionPassedName = "";
-            TimeStamp = DateTime.Now;
-            CompileDateAndTime = DateTime.Now;
+            TimeStamp = DateTime.MinValue;
+            CompileDateAndTime = DateTime.MinValue;
         }
 
         public SimpleVariables(SimpleVariables other)

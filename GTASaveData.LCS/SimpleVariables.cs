@@ -1,5 +1,6 @@
 ﻿using GTASaveData.Types;
 using System;
+using System.Diagnostics;
 
 namespace GTASaveData.LCS
 {
@@ -39,6 +40,7 @@ namespace GTASaveData.LCS
         private bool m_prefsShowSubtitles;
         private RadarMode m_prefsRadarMode;
         private bool m_blurOn;  // turns on PSP color filter
+        private bool m_prefsUseWideScreen;
         private int m_prefsMusicVolume;
         private int m_prefsSfxVolume;
         private RadioStation m_prefsRadioStation;
@@ -239,6 +241,12 @@ namespace GTASaveData.LCS
             set { m_blurOn = value; OnPropertyChanged(); }
         }
 
+        public bool UseWideScreen
+        {
+            get { return m_prefsUseWideScreen; }
+            set { m_prefsUseWideScreen = value; OnPropertyChanged(); }
+        }
+
         public int MusicVolume
         {
             get { return m_prefsMusicVolume; }
@@ -320,7 +328,7 @@ namespace GTASaveData.LCS
         public SimpleVariables()
         {
             LastMissionPassedName = "";
-            TimeStamp = DateTime.Now;
+            TimeStamp = DateTime.MinValue;
         }
 
         public SimpleVariables(SimpleVariables other)
@@ -356,6 +364,7 @@ namespace GTASaveData.LCS
             ShowSubtitles = other.ShowSubtitles;
             RadarMode = other.RadarMode;
             BlurOn = other.BlurOn;
+            UseWideScreen = other.UseWideScreen;
             MusicVolume = other.MusicVolume;
             SfxVolume = other.SfxVolume;
             RadioStation = other.RadioStation;
@@ -373,12 +382,183 @@ namespace GTASaveData.LCS
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
-            //throw new NotImplementedException();
+            buf.Skip(8); // unused
+            if (fmt.IsMobile)
+            {
+                buf.Skip(4); // unused
+                LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
+            }
+            CurrentLevel = buf.ReadInt32();
+            CurrentArea = buf.ReadInt32();
+            Language = buf.ReadInt32();
+            MillisecondsPerGameMinute = buf.ReadInt32();
+            LastClockTick = buf.ReadUInt32();
+            GameClockHours = buf.ReadByte();
+            GameClockMinutes = buf.ReadByte();
+            GameClockSeconds = buf.ReadInt16();
+            TimeInMilliseconds = buf.ReadUInt32();
+            TimeScale = buf.ReadFloat();
+            TimeStep = buf.ReadFloat();
+            TimeStepNonClipped = buf.ReadFloat();
+            FramesPerUpdate = buf.ReadFloat();
+            FrameCounter = buf.ReadUInt32();
+            OldWeatherType = (WeatherType) buf.ReadInt16();
+            NewWeatherType = (WeatherType) buf.ReadInt16();
+            ForcedWeatherType = (WeatherType) buf.ReadInt16();
+            buf.Skip(2);
+            WeatherTypeInList = buf.ReadInt32();
+            WeatherInterpolationValue = buf.ReadFloat();
+            CameraPosition = buf.Read<Vector3D>();
+            CameraModeInCar = buf.ReadFloat();
+            CameraModeOnFoot = buf.ReadFloat();
+            TimeCycleValue0 = buf.ReadInt32();
+            TimeCycleValue1 = buf.ReadInt32();
+            TimeCycleValue2 = buf.ReadFloat();
+            Brightness = buf.ReadInt32();
+            DisplayHud = buf.ReadBool();
+            ShowSubtitles = buf.ReadBool();
+            buf.Skip(2);
+            RadarMode = (RadarMode) buf.ReadInt32();
+            if (fmt.IsPS2)
+            {
+                BlurOn = buf.ReadBool(4);
+                buf.Skip(8); // possibly 2 unused settings
+                UseWideScreen = buf.ReadBool(4);
+            }
+            else
+            {
+                BlurOn = buf.ReadBool();
+                buf.Skip(3);
+            }
+            MusicVolume = buf.ReadInt32();
+            SfxVolume = buf.ReadInt32();
+            RadioStation = (RadioStation) buf.ReadByte();
+            StereoOutput = buf.ReadBool();
+            buf.Skip(2);
+            buf.Skip(10 * 4); // unused
+            if (!fmt.IsPSP) buf.Skip(4); // unused
+            PadMode = buf.ReadInt16();
+            if (fmt.IsPS2)
+            {
+                buf.Skip(2);
+                InvertLook = !buf.ReadBool(4);  // negated
+                UseVibration = buf.ReadBool();
+                buf.Skip(3);
+                HasPlayerCheated = buf.ReadBool(4);
+                AllTaxisHaveNitro = buf.ReadBool(4);
+                TargetIsOn = buf.ReadBool();
+                buf.Skip(3);
+            }
+            else
+            {
+                InvertLook = buf.ReadBool();
+                if (fmt.IsPSP) InvertLook = !InvertLook;
+                SwapNippleAndDPad = buf.ReadBool();
+                HasPlayerCheated = buf.ReadBool();
+                AllTaxisHaveNitro = buf.ReadBool();
+                TargetIsOn = buf.ReadBool();
+                buf.Skip(1);
+            }
+            TargetPosition = buf.Read<Vector2D>();
+            if (fmt.IsPS2)
+            {
+                buf.Skip(4);    // unused
+                TimeStamp = buf.Read<Date>();
+            }
+
+            Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            //throw new NotImplementedException();
+            buf.Skip(4); // unused
+            if (fmt.IsPS2 || fmt.IsPSP) buf.Write(3);
+            else buf.Write(8);
+            if (fmt.IsMobile)
+            {
+                buf.Skip(4); // unused
+                buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
+            }
+            buf.Write(CurrentLevel);
+            buf.Write(CurrentArea);
+            buf.Write(Language);
+            buf.Write(MillisecondsPerGameMinute);
+            buf.Write(LastClockTick);
+            buf.Write(GameClockHours);
+            buf.Write(GameClockMinutes);
+            buf.Write(GameClockSeconds);
+            buf.Write(TimeInMilliseconds);
+            buf.Write(TimeScale);
+            buf.Write(TimeStep);
+            buf.Write(TimeStepNonClipped);
+            buf.Write(FramesPerUpdate);
+            buf.Write(FrameCounter);
+            buf.Write((short) OldWeatherType);
+            buf.Write((short) NewWeatherType);
+            buf.Write((short) ForcedWeatherType);
+            buf.Skip(2);
+            buf.Write(WeatherTypeInList);
+            buf.Write(WeatherInterpolationValue);
+            buf.Write(CameraPosition);
+            buf.Write(CameraModeInCar);
+            buf.Write(CameraModeOnFoot);
+            buf.Write(TimeCycleValue0);
+            buf.Write(TimeCycleValue1);
+            buf.Write(TimeCycleValue2);
+            buf.Write(Brightness);
+            buf.Write(DisplayHud);
+            buf.Write(ShowSubtitles);
+            buf.Skip(2);
+            buf.Write((int) RadarMode);
+            if (fmt.IsPS2)
+            {
+                buf.Write(BlurOn, 4);
+                buf.Skip(8); // possibly 2 unused settings
+                buf.Write(UseWideScreen, 4);
+            }
+            else
+            {
+                buf.Write(BlurOn);
+                buf.Skip(3);
+            }
+            buf.Write(MusicVolume);
+            buf.Write(SfxVolume);
+            buf.Write((byte) RadioStation);
+            buf.Write(StereoOutput);
+            buf.Skip(2);
+            buf.Skip(10 * 4); // unused
+            if (!fmt.IsPSP) buf.Skip(4); // unused
+            buf.Write(PadMode);
+            if (fmt.IsPS2)
+            {
+                buf.Skip(2);
+                buf.Write(!InvertLook, 4);  // negated
+                buf.Write(UseVibration);
+                buf.Skip(3);
+                buf.Write(HasPlayerCheated, 4);
+                buf.Write(AllTaxisHaveNitro, 4);
+                buf.Write(TargetIsOn);
+                buf.Skip(3);
+            }
+            else
+            {
+                bool invertLook = InvertLook;
+                if (fmt.IsPSP) invertLook = !invertLook;
+                buf.Write(invertLook);
+                buf.Write(SwapNippleAndDPad);
+                buf.Write(HasPlayerCheated);
+                buf.Write(AllTaxisHaveNitro);
+                buf.Write(TargetIsOn);
+                buf.Skip(1);
+            }
+            buf.Write(TargetPosition);
+            if (fmt.IsPS2)
+            {
+                buf.Skip(4);    // unused
+                buf.Write(TimeStamp);
+            }
+
+            Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
@@ -431,6 +611,7 @@ namespace GTASaveData.LCS
                 && ShowSubtitles.Equals(other.ShowSubtitles)
                 && RadarMode.Equals(other.RadarMode)
                 && BlurOn.Equals(other.BlurOn)
+                && UseWideScreen.Equals(other.UseWideScreen)
                 && MusicVolume.Equals(other.MusicVolume)
                 && SfxVolume.Equals(other.SfxVolume)
                 && RadioStation.Equals(other.RadioStation)
@@ -489,49 +670,3 @@ namespace GTASaveData.LCS
         RadarOff,
     }
 }
-
-
-//LastMissionPassedName
-//CurrentLevel
-//CurrentArea
-//Language
-//MillisecondsPerGameMinute
-//LastClockTick
-//GameClockHours
-//GameClockMinutes
-//GameClockSeconds
-//TimeInMilliseconds
-//TimeScale
-//TimeStep
-//TimeStepNonClipped
-//FramesPerUpdate
-//FrameCounter
-//OldWeatherType
-//NewWeatherType
-//ForcedWeatherType
-//WeatherTypeInList
-//WeatherInterpolationValue
-//CameraPosition
-//CameraModeInCar
-//CameraModeOnFoot
-//TimeCycleValue0
-//TimeCycleValue1
-//TimeCycleValue2
-//Brightness
-//DisplayHud
-//ShowSubtitles
-//RadarMode
-//BlurOn
-//MusicVolume
-//SfxVolume
-//RadioStation
-//StereoOutput
-//PadMode
-//InvertLook
-//UseVibration
-//SwapNippleAndDPad
-//HasPlayerCheated
-//AllTaxisHaveNitro
-//TargetIsOn
-//TargetPosition
-//TimeStamp

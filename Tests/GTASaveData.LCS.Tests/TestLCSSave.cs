@@ -14,7 +14,7 @@ namespace GTASaveData.LCS.Tests
         {
             Faker<LCSSave> model = new Faker<LCSSave>()
                 .RuleFor(x => x.FileFormat, format)
-                //.RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
+                .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 //.RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
                 //.RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData>(format))
                 //.RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))
