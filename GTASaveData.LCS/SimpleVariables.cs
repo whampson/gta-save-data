@@ -565,7 +565,8 @@ namespace GTASaveData.LCS
         {
             if (fmt.IsPSP) return 0xBC;
             if (fmt.IsPS2) return 0xF8;
-            return 0x13C;
+            if (fmt.IsMobile) return 0x13C;
+            throw SizeNotDefined(fmt);
         }
 
         public override bool Equals(object obj)

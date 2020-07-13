@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,8 +10,8 @@
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
     <Description>A .NET library for manipulating Grand Theft Auto: Liberty City Stories save files.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>0.1.0.36</AssemblyVersion>
-    <FileVersion>0.1.0.36</FileVersion>
+    <AssemblyVersion>0.1.0.39</AssemblyVersion>
+    <FileVersion>0.1.0.39</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>0.1.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

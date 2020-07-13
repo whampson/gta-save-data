@@ -18,7 +18,7 @@ namespace GTASaveData.LCS
         private Dummy m_scripts;
         private Dummy m_garages;
         private Dummy m_playerInfo;
-        private Dummy m_stats;
+        private Stats m_stats;
 
         public SimpleVariables SimpleVars
         {
@@ -44,7 +44,7 @@ namespace GTASaveData.LCS
             set { m_playerInfo = value; OnPropertyChanged(); }
         }
 
-        public Dummy Stats
+        public Stats Stats
         {
             get { return m_stats; }
             set { m_stats = value; OnPropertyChanged(); }
@@ -85,7 +85,7 @@ namespace GTASaveData.LCS
             Scripts = new Dummy();
             Garages = new Dummy();
             PlayerInfo = new Dummy();
-            Stats = new Dummy();
+            Stats = new Stats();
         }
 
         public LCSSave(LCSSave other)
@@ -94,7 +94,7 @@ namespace GTASaveData.LCS
             Scripts = new Dummy(other.Scripts);
             Garages = new Dummy(other.Garages);
             PlayerInfo = new Dummy(other.PlayerInfo);
-            Stats = new Dummy(other.Stats);
+            Stats = new Stats(other.Stats);
         }
 
         private int ReadDataBlock<T>(StreamBuffer file, string tag, out T obj)
@@ -161,7 +161,7 @@ namespace GTASaveData.LCS
             Garages = grge;
             totalSize += Align4(ReadDummyBlock(file, "PLYR", out Dummy plyr));
             PlayerInfo = plyr;
-            totalSize += Align4(ReadDummyBlock(file, "STAT", out Dummy stat));
+            totalSize += Align4(ReadDataBlock(file, "STAT", out Stats stat));
             Stats = stat;
 
             if (FileFormat.IsPS2)
