@@ -1,9 +1,9 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 
 namespace GTASaveData.LCS
 {
@@ -67,8 +67,17 @@ namespace GTASaveData.LCS
             Stats
         };
 
-        public override string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override DateTime TimeStamp { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override string Name
+        {
+            get { return /*SimpleVars.LastMissionPassedName;*/ ""; }
+            set { /*SimpleVars.LastMissionPassedName = value;*/ OnPropertyChanged(); }
+        }
+
+        public override DateTime TimeStamp
+        {
+            get { return /*(DateTime) SimpleVars.TimeStamp;*/ DateTime.Now; }
+            set { /*SimpleVars.TimeStamp = new Date(value);*/ OnPropertyChanged(); }
+        }
 
         public LCSSave()
         {
@@ -81,8 +90,11 @@ namespace GTASaveData.LCS
 
         public LCSSave(LCSSave other)
         {
-            //SimpleVars = new SimpleVariables(other.SimpleVars);
-            // TODO
+            SimpleVars = new Dummy(other.SimpleVars);
+            Scripts = new Dummy(other.Scripts);
+            Garages = new Dummy(other.Garages);
+            PlayerInfo = new Dummy(other.PlayerInfo);
+            Stats = new Dummy(other.Stats);
         }
 
         private int ReadDataBlock<T>(StreamBuffer file, string tag, out T obj)
@@ -102,11 +114,28 @@ namespace GTASaveData.LCS
             return file.Offset;
         }
 
+        private int ReadDummyBlock(StreamBuffer file, string tag, out Dummy obj)
+        {
+            file.Mark();
+
+            string savedTag = file.ReadString(4);
+            Debug.Assert(savedTag == tag);
+
+            int size = file.ReadInt32();
+            Debug.Assert(file.Position + size <= file.Length);
+
+            obj = new Dummy(size);
+            Serializer.Read(obj, file, FileFormat);
+            file.Align4();
+
+            return file.Offset;
+        }
+
         private int WriteDataBlock<T>(StreamBuffer file, string tag, T obj)
             where T : SaveDataObject
         {
             int size = SerializeData(obj, out byte[] data);
-            size = (int) (size + 3 & 0xFFFFFFFC);
+            int sizeAligned = Align4(size);
 
             file.Mark();
             file.Write(tag, length: 4, zeroTerminate: false);
@@ -114,34 +143,30 @@ namespace GTASaveData.LCS
             file.Write(data);
             file.Align4();
 
-            Debug.Assert(file.Offset == size + 8);
+            Debug.Assert(file.Offset == sizeAligned + 8);
             m_checkSum += file.GetBytesFromMark().Sum(x => x);
 
-            return file.Offset;
+            return size + 8;
         }
 
         protected override void LoadAllData(StreamBuffer file)
         {
             int totalSize = 0;
 
-            totalSize += ReadDataBlock(file, "SIMP", out Dummy simp);
+            totalSize += Align4(ReadDummyBlock(file, "SIMP", out Dummy simp));
             SimpleVars = simp;
-            totalSize += ReadDataBlock(file, "SRPT", out Dummy srpt);
+            totalSize += Align4(ReadDummyBlock(file, "SRPT", out Dummy srpt));
             Scripts = srpt;
-            totalSize += ReadDataBlock(file, "GRGE", out Dummy grge);
+            totalSize += Align4(ReadDummyBlock(file, "GRGE", out Dummy grge));
             Garages = grge;
-            totalSize += ReadDataBlock(file, "PLYR", out Dummy plyr);
+            totalSize += Align4(ReadDummyBlock(file, "PLYR", out Dummy plyr));
             PlayerInfo = plyr;
-            totalSize += ReadDataBlock(file, "STAT", out Dummy stat);
+            totalSize += Align4(ReadDummyBlock(file, "STAT", out Dummy stat));
             Stats = stat;
 
             if (FileFormat.IsPS2)
             {
                 file.Skip(SizeOfGameInBytes - totalSize);
-            }
-            else
-            {
-                file.Skip(3);
             }
 
             Debug.WriteLine("Load successful!");
@@ -152,20 +177,21 @@ namespace GTASaveData.LCS
             int totalSize = 0;
             m_checkSum = 0;
 
-            totalSize += WriteDataBlock(file, "SIMP", SimpleVars);
-            totalSize += WriteDataBlock(file, "SRPT", Scripts);
-            totalSize += WriteDataBlock(file, "GRGE", Garages);
-            totalSize += WriteDataBlock(file, "PLYR", PlayerInfo);
-            totalSize += WriteDataBlock(file, "STAT", Stats);
+            totalSize += Align4(WriteDataBlock(file, "SIMP", SimpleVars));
+            totalSize += Align4(WriteDataBlock(file, "SRPT", Scripts));
+            totalSize += Align4(WriteDataBlock(file, "GRGE", Garages));
+            totalSize += Align4(WriteDataBlock(file, "PLYR", PlayerInfo));
+            totalSize += Align4(WriteDataBlock(file, "STAT", Stats));
 
             if (FileFormat.IsPS2)
             {
-                file.Pad(SizeOfGameInBytes - totalSize - 4);
-                file.Write(m_checkSum);
-            }
-            else
-            {
-                file.Write(new byte[3]);
+                file.Mark();
+                totalSize += file.Pad(SizeOfGameInBytes - totalSize - 4);
+
+                m_checkSum += file.GetBytesFromMark().Sum(x => x);
+                totalSize += file.Write(m_checkSum);
+
+                Debug.Assert(totalSize == SizeOfGameInBytes);
             }
 
             Debug.WriteLine("Save successful!");
@@ -173,21 +199,77 @@ namespace GTASaveData.LCS
 
         protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
         {
-            // TODO
-            throw new NotImplementedException();
+            const int SimpSizePS2 = 0xF8;
+            const int SimpSizePSP = 0xBC;
+            const int RunningScriptSizeAndroid = 0x21C;
+            const int RunningScriptSizeiOS = 0x228;
+
+            using (StreamBuffer buf = new StreamBuffer(data))
+            {
+                if (buf.Length < 8) goto DetectionFailed;
+                buf.Skip(4);
+
+                int simpSize = buf.ReadInt32();
+                int skip = simpSize + 4;
+                if (buf.Position + skip > buf.Length) goto DetectionFailed;
+                buf.Skip(skip);
+
+                int srptSize = buf.ReadInt32();
+                int srptOffset = buf.Position;
+                buf.Skip(8);
+
+                int globalsSize = buf.ReadInt32();
+                skip = globalsSize + 0x7C0;
+                if (buf.Position + skip > buf.Length) goto DetectionFailed;
+                buf.Skip(skip);
+
+                int numRunningScripts = buf.ReadInt32();
+                int runningScriptSize = (srptOffset + srptSize - buf.Position) / numRunningScripts;
+
+                if (simpSize == SimpSizePS2)
+                {
+                    fmt = FileFormats.PS2;
+                    return true;
+                }
+                if (simpSize == SimpSizePSP)
+                {
+                    fmt = FileFormats.PSP;
+                    return true;
+                }
+                if (runningScriptSize == RunningScriptSizeAndroid)
+                {
+                    fmt = FileFormats.Android;
+                    return true;
+                }
+                if (runningScriptSize == RunningScriptSizeiOS)
+                {
+                    fmt = FileFormats.iOS;
+                    return true;
+                }
+            }
+
+        DetectionFailed:
+            fmt = FileFormat.Default;
+            return false;
+        }
+
+        private static int Align4(int addr)
+        {
+            return (int) (addr + 3 & 0xFFFFFFFC);
         }
 
         protected override int GetSize(FileFormat fmt)
         {
             int size = 0;
-            size += SizeOfObject(SimpleVars, fmt) + 8;
-            size += SizeOfObject(Scripts, fmt) + 8;
-            size += SizeOfObject(Garages, fmt) + 8;
-            size += SizeOfObject(PlayerInfo, fmt) + 8;
-            size += SizeOfObject(Stats, fmt) + 8;
+            size += Align4(SizeOfObject(SimpleVars, fmt)) + 8;
+            size += Align4(SizeOfObject(Scripts, fmt)) + 8;
+            size += Align4(SizeOfObject(Garages, fmt)) + 8;
+            size += Align4(SizeOfObject(PlayerInfo, fmt)) + 8;
+            size += Align4(SizeOfObject(Stats, fmt)) + 8;
 
             if (fmt.IsPS2) size += (SizeOfGameInBytes - size);
-            return size + 3;
+
+            return size;
         }
 
         public override bool Equals(object obj)
