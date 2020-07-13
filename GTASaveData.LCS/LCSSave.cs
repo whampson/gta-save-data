@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 
 namespace GTASaveData.LCS
 {
@@ -49,9 +50,13 @@ namespace GTASaveData.LCS
             set { m_stats = value; OnPropertyChanged(); }
         }
 
-        public bool HasCarGenerators => false;
+        bool ISaveData.HasCarGenerators => false;
 
-        public ICarGeneratorData CarGenerators { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        ICarGeneratorData ISaveData.CarGenerators
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
 
         IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
         {
@@ -168,6 +173,7 @@ namespace GTASaveData.LCS
 
         protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
         {
+            // TODO
             throw new NotImplementedException();
         }
 
@@ -206,6 +212,34 @@ namespace GTASaveData.LCS
         public LCSSave DeepClone()
         {
             return new LCSSave(this);
+        }
+
+        public static class FileFormats
+        {
+            public static readonly FileFormat Android = new FileFormat(
+                "Android", "Android", "Android OS",
+                GameConsole.Android
+            );
+
+            public static readonly FileFormat iOS = new FileFormat(
+                "iOS", "iOS", "Apple iOS",
+                GameConsole.iOS
+            );
+
+            public static readonly FileFormat PS2 = new FileFormat(
+                "PS2", "PS2", "PlayStation 2",
+                GameConsole.PS2
+            );
+
+            public static readonly FileFormat PSP = new FileFormat(
+                "PSP", "PSP", "PlayStation Portable",
+                GameConsole.PSP
+            );
+
+            public static FileFormat[] GetAll()
+            {
+                return new FileFormat[] { Android, iOS, PS2, PSP };
+            }
         }
     }
 }
