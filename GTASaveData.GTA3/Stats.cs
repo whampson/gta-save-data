@@ -7,10 +7,10 @@ namespace GTASaveData.GTA3
     public class Stats : SaveDataObject, 
         IEquatable<Stats>, IDeepClonable<Stats>
     {
-        public const int MaxNumPedTypes = 23;
-        public const int MaxNumFastestTimes = 16;
-        public const int MaxNumHighestScores = 16;
-        public const int MaxLastMissionPassedNameLength = 8;
+        public const int NumPedTypes = 23;
+        public const int NumFastestTimes = 16;
+        public const int NumHighestScores = 16;
+        public const int MaxMissionPassedNameLength = 8;
 
         private int m_peopleKilledByPlayer;
         private int m_peopleKilledByOthers;
@@ -379,9 +379,9 @@ namespace GTASaveData.GTA3
 
         public Stats()
         {
-            PedsKilledOfThisType = ArrayHelper.CreateArray<int>(MaxNumPedTypes);
-            FastestTimes = ArrayHelper.CreateArray<int>(MaxNumFastestTimes);
-            HighestScores = ArrayHelper.CreateArray<int>(MaxNumHighestScores);
+            PedsKilledOfThisType = ArrayHelper.CreateArray<int>(NumPedTypes);
+            FastestTimes = ArrayHelper.CreateArray<int>(NumFastestTimes);
+            HighestScores = ArrayHelper.CreateArray<int>(NumHighestScores);
             LastMissionPassedName = "";
         }
 
@@ -447,7 +447,7 @@ namespace GTASaveData.GTA3
             PeopleKilledByOthers = buf.ReadInt32();
             CarsExploded = buf.ReadInt32();
             RoundsFiredByPlayer = buf.ReadInt32();
-            PedsKilledOfThisType = buf.Read<int>(MaxNumPedTypes);
+            PedsKilledOfThisType = buf.Read<int>(NumPedTypes);
             HelisDestroyed = buf.ReadInt32();
             ProgressMade = buf.ReadInt32();
             TotalProgressInGame = buf.ReadInt32();
@@ -490,11 +490,11 @@ namespace GTASaveData.GTA3
             NumberKillFrenziesPassed = buf.ReadInt32();
             TotalNumberKillFrenzies = buf.ReadInt32();
             TotalNumberMissions = buf.ReadInt32();
-            FastestTimes = buf.Read<int>(MaxNumFastestTimes);
-            HighestScores = buf.Read<int>(MaxNumHighestScores);
+            FastestTimes = buf.Read<int>(NumFastestTimes);
+            HighestScores = buf.Read<int>(NumHighestScores);
             KillsSinceLastCheckpoint = buf.ReadInt32();
             TotalLegitimateKills = buf.ReadInt32();
-            LastMissionPassedName = buf.ReadString(MaxLastMissionPassedNameLength);
+            LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength);
 
             Debug.Assert(buf.Offset == SizeOfType<Stats>());
         }
@@ -505,7 +505,7 @@ namespace GTASaveData.GTA3
             buf.Write(PeopleKilledByOthers);
             buf.Write(CarsExploded);
             buf.Write(RoundsFiredByPlayer);
-            buf.Write(PedsKilledOfThisType, MaxNumPedTypes);
+            buf.Write(PedsKilledOfThisType, NumPedTypes);
             buf.Write(HelisDestroyed);
             buf.Write(ProgressMade);
             buf.Write(TotalProgressInGame);
@@ -548,11 +548,11 @@ namespace GTASaveData.GTA3
             buf.Write(NumberKillFrenziesPassed);
             buf.Write(TotalNumberKillFrenzies);
             buf.Write(TotalNumberMissions);
-            buf.Write(FastestTimes, MaxNumFastestTimes);
-            buf.Write(HighestScores, MaxNumHighestScores);
+            buf.Write(FastestTimes, NumFastestTimes);
+            buf.Write(HighestScores, NumHighestScores);
             buf.Write(KillsSinceLastCheckpoint);
             buf.Write(TotalLegitimateKills);
-            buf.Write(LastMissionPassedName, MaxLastMissionPassedNameLength);
+            buf.Write(LastMissionPassedName, MaxMissionPassedNameLength);
 
             Debug.Assert(buf.Offset == SizeOfType<Stats>());
         }

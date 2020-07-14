@@ -170,6 +170,10 @@ namespace GTASaveData
             CheckSum += file.GetBytesFromMark().Sum(x => x);
 
             WorkBuff.Reset();
+
+            // game code has a bug where the size of the 'size' itself is not
+            // factored in to the total file size, so savefiles are always
+            // 4 * numBlocks bytes larger than told by SizeOfGameInBytes
             return size;
         }
 

@@ -84,26 +84,36 @@ namespace GTASaveData
 
         /// <summary>
         /// Creates a <see cref="SaveData"/> object from the specified byte array
-        /// using the default file format.
+        /// using the detected file format.
         /// </summary>
         /// <typeparam name="T">The <see cref="SaveData"/> type to create.</typeparam>
         /// <param name="data">The data to deserialize.</param>
         /// <returns>A <see cref="SaveData"/> object containing the deserialized data.</returns>
         public static T Load<T>(byte[] data) where T : SaveData, new()
         {
-            return Load<T>(data, FileFormat.Default);
+            if (GetFileFormat<T>(data, out FileFormat fmt))
+            {
+                return Load<T>(data, fmt);
+            }
+
+            return null;
         }
 
         /// <summary>
         /// Creates a <see cref="SaveData"/> object from the specified file
-        /// using the default file format.
+        /// using the detected file format.
         /// </summary>
         /// <typeparam name="T">The <see cref="SaveData"/> type to create.</typeparam>
         /// <param name="path">The path to the file to deserialize.</param>
         /// <returns>A <see cref="SaveData"/> object containing the deserialized data.</returns>
         public static T Load<T>(string path) where T : SaveData, new()
         {
-            return Load<T>(path, FileFormat.Default);
+            if (GetFileFormat<T>(path, out FileFormat fmt))
+            {
+                return Load<T>(path, fmt);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -204,12 +214,6 @@ namespace GTASaveData
 
             return bytesWritten;
         }
-
-        //protected int DeserializeData<T>(byte[] data, out T obj,
-        //    bool bigEndian = false) where T : SaveDataObject
-        //{
-        //    return Serializer.Read(data, FileFormat, out obj, bigEndian);
-        //}
 
         /// <summary>
         /// Reads in the object's data from a byte buffer using

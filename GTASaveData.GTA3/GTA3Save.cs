@@ -399,7 +399,7 @@ namespace GTASaveData.GTA3
 
             for (int i = 0; i < MaxNumPaddingBlocks; i++)
             {
-                // really stupid 'size remaining' calculation that the game uses
+                // weird align calculation that the game uses
                 size = (SimpleVars.SizeOfGameInBytes - totalSize - 1) & 0x7FFFFFFC;
                 if (size > GetBufferSize())
                 {
@@ -428,6 +428,11 @@ namespace GTASaveData.GTA3
 
         protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
         {
+            if (data.Length < 0x10000)
+            {
+                goto DetectionFailed;
+            }
+
             bool isMobile = false;
             bool isPcOrXbox = false;
 
