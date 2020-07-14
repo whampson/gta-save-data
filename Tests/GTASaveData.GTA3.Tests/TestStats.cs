@@ -56,11 +56,11 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.NumberKillFrenziesPassed, f => f.Random.Int())
                 .RuleFor(x => x.TotalNumberKillFrenzies, f => f.Random.Int())
                 .RuleFor(x => x.TotalNumberMissions, f => f.Random.Int())
-                .RuleFor(x => x.FastestTimes, f => Generator.Array(Stats.MaxNumFastestTimes, g => f.Random.Int()))
-                .RuleFor(x => x.HighestScores, f => Generator.Array(Stats.MaxNumHighestScores, g => f.Random.Int()))
+                .RuleFor(x => x.FastestTimes, f => Generator.Array(Stats.NumFastestTimes, g => f.Random.Int()))
+                .RuleFor(x => x.HighestScores, f => Generator.Array(Stats.NumHighestScores, g => f.Random.Int()))
                 .RuleFor(x => x.KillsSinceLastCheckpoint, f => f.Random.Int())
                 .RuleFor(x => x.TotalLegitimateKills, f => f.Random.Int())
-                .RuleFor(x => x.LastMissionPassedName, f => Generator.Words(f, Stats.MaxLastMissionPassedNameLength - 1));
+                .RuleFor(x => x.LastMissionPassedName, f => Generator.Words(f, Stats.MaxMissionPassedNameLength - 1));
 
             return model.Generate();
         }
