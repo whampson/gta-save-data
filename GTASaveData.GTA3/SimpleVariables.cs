@@ -66,7 +66,7 @@ namespace GTASaveData.GTA3
             set { m_sizeOfGameInBytes = value; }
         }
 
-        public Level CurrLevel
+        public Level CurrentLevel
         {
             get { return m_currLevel; }
             set { m_currLevel = value; OnPropertyChanged(); }
@@ -183,55 +183,55 @@ namespace GTASaveData.GTA3
             set { m_weatherInterpolationValue = value; OnPropertyChanged(); }
         }
 
-        public int PrefsMusicVolume
+        public int MusicVolume
         {
             get { return m_prefsMusicVolume; }
             set { m_prefsMusicVolume = value; OnPropertyChanged(); }
         }
 
-        public int PrefsSfxVolume
+        public int SfxVolume
         {
             get { return m_prefsSfxVolume; }
             set { m_prefsSfxVolume = value; OnPropertyChanged(); }
         }
 
-        public bool PrefsUseVibration
+        public bool UseVibration
         {
             get { return m_prefsUseVibration; }
             set { m_prefsUseVibration = value; OnPropertyChanged(); }
         }
 
-        public bool PrefsStereoMono
+        public bool StereoOutput
         {
             get { return m_prefsStereoMono; }
             set { m_prefsStereoMono = value; OnPropertyChanged(); }
         }
 
-        public RadioStation PrefsRadioStation
+        public RadioStation RadioStation
         {
             get { return m_prefsRadioStation; }
             set { m_prefsRadioStation = value; OnPropertyChanged(); }
         }
 
-        public int PrefsBrightness
+        public int Brightness
         {
             get { return m_prefsBrightness; }
             set { m_prefsBrightness = value; OnPropertyChanged(); }
         }
 
-        public bool PrefsShowSubtitles
+        public bool ShowSubtitles
         {
             get { return m_prefsShowSubtitles; }
             set { m_prefsShowSubtitles = value; OnPropertyChanged(); }
         }
 
-        public Language PrefsLanguage
+        public Language Language
         {
             get { return m_prefsLanguage; }
             set { m_prefsLanguage = value; OnPropertyChanged(); }
         }
 
-        public bool PrefsUseWideScreen
+        public bool UseWideScreen
         {
             get { return m_prefsUseWideScreen; }
             set { m_prefsUseWideScreen = value; OnPropertyChanged(); }
@@ -257,13 +257,13 @@ namespace GTASaveData.GTA3
             set { m_weatherTypeInList = value; OnPropertyChanged(); }
         }
 
-        public float CameraCarZoomIndicator
+        public float CameraModeInCar
         {
             get { return m_cameraCarZoomIndicator; }
             set { m_cameraCarZoomIndicator = value; OnPropertyChanged(); }
         }
 
-        public float CameraPedZoomIndicator
+        public float CameraModeInOnFoot
         {
             get { return m_cameraPedZoomIndicator; }
             set { m_cameraPedZoomIndicator = value; OnPropertyChanged(); }
@@ -287,7 +287,7 @@ namespace GTASaveData.GTA3
             LastMissionPassedName = other.LastMissionPassedName;
             TimeStamp = other.TimeStamp;
             SizeOfGameInBytes = other.SizeOfGameInBytes;
-            CurrLevel = other.CurrLevel;
+            CurrentLevel = other.CurrentLevel;
             CameraPosition = other.CameraPosition;
             MillisecondsPerGameMinute = other.MillisecondsPerGameMinute;
             LastClockTick = other.LastClockTick;
@@ -306,20 +306,20 @@ namespace GTASaveData.GTA3
             NewWeatherType = other.NewWeatherType;
             ForcedWeatherType = other.ForcedWeatherType;
             WeatherInterpolation = other.WeatherInterpolation;
-            PrefsMusicVolume = other.PrefsMusicVolume;
-            PrefsSfxVolume = other.PrefsSfxVolume;
-            PrefsUseVibration = other.PrefsUseVibration;
-            PrefsStereoMono = other.PrefsStereoMono;
-            PrefsRadioStation = other.PrefsRadioStation;
-            PrefsBrightness = other.PrefsBrightness;
-            PrefsShowSubtitles = other.PrefsShowSubtitles;
-            PrefsLanguage = other.PrefsLanguage;
-            PrefsUseWideScreen = other.PrefsUseWideScreen;
+            MusicVolume = other.MusicVolume;
+            SfxVolume = other.SfxVolume;
+            UseVibration = other.UseVibration;
+            StereoOutput = other.StereoOutput;
+            RadioStation = other.RadioStation;
+            Brightness = other.Brightness;
+            ShowSubtitles = other.ShowSubtitles;
+            Language = other.Language;
+            UseWideScreen = other.UseWideScreen;
             BlurOn = other.BlurOn;
             CompileDateAndTime = other.CompileDateAndTime;
             WeatherTypeInList = other.WeatherTypeInList;
-            CameraCarZoomIndicator = other.CameraCarZoomIndicator;
-            CameraPedZoomIndicator = other.CameraPedZoomIndicator;
+            CameraModeInCar = other.CameraModeInCar;
+            CameraModeInOnFoot = other.CameraModeInOnFoot;
             IsQuickSave = other.IsQuickSave;
         }
 
@@ -328,7 +328,7 @@ namespace GTASaveData.GTA3
             if (!fmt.IsPS2) LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
             if (fmt.IsPC || fmt.IsXbox) TimeStamp = buf.Read<SystemTime>();
             SizeOfGameInBytes = buf.ReadInt32();
-            CurrLevel = (Level) buf.ReadInt32();
+            CurrentLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.Read<Vector3D>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
@@ -355,29 +355,29 @@ namespace GTASaveData.GTA3
             WeatherInterpolation = buf.ReadFloat();
             if (fmt.IsPS2)
             {
-                PrefsMusicVolume = buf.ReadInt32();
-                PrefsSfxVolume = buf.ReadInt32();
+                MusicVolume = buf.ReadInt32();
+                SfxVolume = buf.ReadInt32();
                 if (!fmt.IsAustralian)
                 {
                     buf.ReadInt16();    // duplicate of CurrPadMode
                     buf.Align4();
                 }
-                PrefsUseVibration = buf.ReadBool();
+                UseVibration = buf.ReadBool();
                 buf.Align4();
-                PrefsStereoMono = buf.ReadBool();
+                StereoOutput = buf.ReadBool();
                 buf.Align4();
-                PrefsRadioStation = (RadioStation) buf.ReadByte();
+                RadioStation = (RadioStation) buf.ReadByte();
                 buf.Align4();
-                PrefsBrightness = buf.ReadInt32();
+                Brightness = buf.ReadInt32();
                 if (!fmt.IsAustralian)
                 {
                     buf.ReadBool();     // duplicate of BlurOn
                     buf.Align4();
                 }
-                PrefsShowSubtitles = buf.ReadBool();
+                ShowSubtitles = buf.ReadBool();
                 buf.Align4();
-                PrefsLanguage = (Language) buf.ReadInt32();
-                PrefsUseWideScreen = buf.ReadBool();
+                Language = (Language) buf.ReadInt32();
+                UseWideScreen = buf.ReadBool();
                 buf.Align4();
                 buf.ReadInt16();        // duplicate of CurrPadMode
                 buf.Align4();
@@ -386,8 +386,8 @@ namespace GTASaveData.GTA3
             }
             CompileDateAndTime = buf.Read<Date>();
             WeatherTypeInList = buf.ReadInt32();
-            CameraCarZoomIndicator = buf.ReadFloat();
-            CameraPedZoomIndicator = buf.ReadFloat();
+            CameraModeInCar = buf.ReadFloat();
+            CameraModeInOnFoot = buf.ReadFloat();
             if (fmt.IsMobile) IsQuickSave = (QuickSaveState) buf.ReadInt32();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
@@ -398,7 +398,7 @@ namespace GTASaveData.GTA3
             if (!fmt.IsPS2) buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
             if (fmt.IsPC || fmt.IsXbox) buf.Write(TimeStamp);
             buf.Write(SizeOfGameInBytes);
-            buf.Write((int) CurrLevel);
+            buf.Write((int) CurrentLevel);
             buf.Write(CameraPosition);
             buf.Write(MillisecondsPerGameMinute);
             buf.Write(LastClockTick);
@@ -425,29 +425,29 @@ namespace GTASaveData.GTA3
             buf.Write(WeatherInterpolation);
             if (fmt.IsPS2)
             {
-                buf.Write(PrefsMusicVolume);
-                buf.Write(PrefsSfxVolume);
+                buf.Write(MusicVolume);
+                buf.Write(SfxVolume);
                 if (!fmt.IsAustralian)
                 {
                     buf.Write(CurrPadMode);
                     buf.Align4();
                 }
-                buf.Write(PrefsUseVibration);
+                buf.Write(UseVibration);
                 buf.Align4();
-                buf.Write(PrefsStereoMono);
+                buf.Write(StereoOutput);
                 buf.Align4();
-                buf.Write((byte) PrefsRadioStation);
+                buf.Write((byte) RadioStation);
                 buf.Align4();
-                buf.Write(PrefsBrightness);
+                buf.Write(Brightness);
                 if (!fmt.IsAustralian)
                 {
                     buf.Write(BlurOn);
                     buf.Align4();
                 }
-                buf.Write(PrefsShowSubtitles);
+                buf.Write(ShowSubtitles);
                 buf.Align4();
-                buf.Write((int) PrefsLanguage);
-                buf.Write(PrefsUseWideScreen);
+                buf.Write((int) Language);
+                buf.Write(UseWideScreen);
                 buf.Align4();
                 buf.Write(CurrPadMode);
                 buf.Align4();
@@ -456,8 +456,8 @@ namespace GTASaveData.GTA3
             }
             buf.Write(CompileDateAndTime);
             buf.Write(WeatherTypeInList);
-            buf.Write(CameraCarZoomIndicator);
-            buf.Write(CameraPedZoomIndicator);
+            buf.Write(CameraModeInCar);
+            buf.Write(CameraModeInOnFoot);
             if (fmt.IsMobile) buf.Write((int) IsQuickSave);
 
             Debug.Assert(buf.Offset == GetSize(fmt));
@@ -487,7 +487,7 @@ namespace GTASaveData.GTA3
             return LastMissionPassedName.Equals(other.LastMissionPassedName)
                 && TimeStamp.Equals(other.TimeStamp)
                 && SizeOfGameInBytes.Equals(other.SizeOfGameInBytes)
-                && CurrLevel.Equals(other.CurrLevel)
+                && CurrentLevel.Equals(other.CurrentLevel)
                 && CameraPosition.Equals(other.CameraPosition)
                 && MillisecondsPerGameMinute.Equals(other.MillisecondsPerGameMinute)
                 && LastClockTick.Equals(other.LastClockTick)
@@ -506,20 +506,20 @@ namespace GTASaveData.GTA3
                 && NewWeatherType.Equals(other.NewWeatherType)
                 && ForcedWeatherType.Equals(other.ForcedWeatherType)
                 && WeatherInterpolation.Equals(other.WeatherInterpolation)
-                && PrefsMusicVolume.Equals(other.PrefsMusicVolume)
-                && PrefsSfxVolume.Equals(other.PrefsSfxVolume)
-                && PrefsUseVibration.Equals(other.PrefsUseVibration)
-                && PrefsStereoMono.Equals(other.PrefsStereoMono)
-                && PrefsRadioStation.Equals(other.PrefsRadioStation)
-                && PrefsBrightness.Equals(other.PrefsBrightness)
-                && PrefsShowSubtitles.Equals(other.PrefsShowSubtitles)
-                && PrefsLanguage.Equals(other.PrefsLanguage)
-                && PrefsUseWideScreen.Equals(other.PrefsUseWideScreen)
+                && MusicVolume.Equals(other.MusicVolume)
+                && SfxVolume.Equals(other.SfxVolume)
+                && UseVibration.Equals(other.UseVibration)
+                && StereoOutput.Equals(other.StereoOutput)
+                && RadioStation.Equals(other.RadioStation)
+                && Brightness.Equals(other.Brightness)
+                && ShowSubtitles.Equals(other.ShowSubtitles)
+                && Language.Equals(other.Language)
+                && UseWideScreen.Equals(other.UseWideScreen)
                 && BlurOn.Equals(other.BlurOn)
                 && CompileDateAndTime.Equals(other.CompileDateAndTime)
                 && WeatherTypeInList.Equals(other.WeatherTypeInList)
-                && CameraCarZoomIndicator.Equals(other.CameraCarZoomIndicator)
-                && CameraPedZoomIndicator.Equals(other.CameraPedZoomIndicator)
+                && CameraModeInCar.Equals(other.CameraModeInCar)
+                && CameraModeInOnFoot.Equals(other.CameraModeInOnFoot)
                 && IsQuickSave.Equals(other.IsQuickSave);
         }
 

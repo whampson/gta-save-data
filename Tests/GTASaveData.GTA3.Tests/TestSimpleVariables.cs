@@ -14,7 +14,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.LastMissionPassedName, f => (!format.IsPS2) ? Generator.Words(f, SimpleVariables.MaxMissionPassedNameLength - 1) : "")
                 .RuleFor(x => x.TimeStamp, f => (format.IsPC || format.IsXbox) ? Generator.Date(f) : DateTime.MinValue)
                 .RuleFor(x => x.SizeOfGameInBytes, f => (format.IsPS2 && format.IsJapanese) ? 0x31400 : 0x31401)
-                .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
+                .RuleFor(x => x.CurrentLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
@@ -33,20 +33,20 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.NewWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.ForcedWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.WeatherInterpolation, f => f.Random.Float())
-                .RuleFor(x => x.PrefsMusicVolume, f => (format.IsPS2) ? f.Random.Int() : default)
-                .RuleFor(x => x.PrefsSfxVolume, f => (format.IsPS2) ? f.Random.Int() : default)
-                .RuleFor(x => x.PrefsUseVibration, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.PrefsStereoMono, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.PrefsRadioStation, f => (format.IsPS2) ? f.PickRandom<RadioStation>() : default)
-                .RuleFor(x => x.PrefsBrightness, f => (format.IsPS2) ? f.Random.Int() : default)
-                .RuleFor(x => x.PrefsShowSubtitles, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.PrefsLanguage, f => (format.IsPS2) ? f.PickRandom<Language>() : default)
-                .RuleFor(x => x.PrefsUseWideScreen, f => (format.IsPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.MusicVolume, f => (format.IsPS2) ? f.Random.Int() : default)
+                .RuleFor(x => x.SfxVolume, f => (format.IsPS2) ? f.Random.Int() : default)
+                .RuleFor(x => x.UseVibration, f => (format.IsPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.StereoOutput, f => (format.IsPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.RadioStation, f => (format.IsPS2) ? f.PickRandom<RadioStation>() : default)
+                .RuleFor(x => x.Brightness, f => (format.IsPS2) ? f.Random.Int() : default)
+                .RuleFor(x => x.ShowSubtitles, f => (format.IsPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.Language, f => (format.IsPS2) ? f.PickRandom<Language>() : default)
+                .RuleFor(x => x.UseWideScreen, f => (format.IsPS2) ? f.Random.Bool() : default)
                 .RuleFor(x => x.BlurOn, f => (format.IsPS2) ? f.Random.Bool() : default)
                 .RuleFor(x => x.CompileDateAndTime, f => Generator.Date(f))
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
-                .RuleFor(x => x.CameraCarZoomIndicator, f => f.Random.Float())
-                .RuleFor(x => x.CameraPedZoomIndicator, f => f.Random.Float())
+                .RuleFor(x => x.CameraModeInCar, f => f.Random.Float())
+                .RuleFor(x => x.CameraModeInOnFoot, f => f.Random.Float())
                 .RuleFor(x => x.IsQuickSave, f => (format.IsMobile) ? f.PickRandom<QuickSaveState>() : default);
 
             return model.Generate();
@@ -62,7 +62,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
             Assert.Equal(x0.TimeStamp, x1.TimeStamp);
             Assert.Equal(x0.SizeOfGameInBytes, x1.SizeOfGameInBytes);
-            Assert.Equal(x0.CurrLevel, x1.CurrLevel);
+            Assert.Equal(x0.CurrentLevel, x1.CurrentLevel);
             Assert.Equal(x0.CameraPosition, x1.CameraPosition);
             Assert.Equal(x0.MillisecondsPerGameMinute, x1.MillisecondsPerGameMinute);
             Assert.Equal(x0.LastClockTick, x1.LastClockTick);
@@ -81,20 +81,20 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.NewWeatherType, x1.NewWeatherType);
             Assert.Equal(x0.ForcedWeatherType, x1.ForcedWeatherType);
             Assert.Equal(x0.WeatherInterpolation, x1.WeatherInterpolation);
-            Assert.Equal(x0.PrefsMusicVolume, x1.PrefsMusicVolume);
-            Assert.Equal(x0.PrefsSfxVolume, x1.PrefsSfxVolume);
-            Assert.Equal(x0.PrefsUseVibration, x1.PrefsUseVibration);
-            Assert.Equal(x0.PrefsStereoMono, x1.PrefsStereoMono);
-            Assert.Equal(x0.PrefsRadioStation, x1.PrefsRadioStation);
-            Assert.Equal(x0.PrefsBrightness, x1.PrefsBrightness);
-            Assert.Equal(x0.PrefsShowSubtitles, x1.PrefsShowSubtitles);
-            Assert.Equal(x0.PrefsLanguage, x1.PrefsLanguage);
-            Assert.Equal(x0.PrefsUseWideScreen, x1.PrefsUseWideScreen);
+            Assert.Equal(x0.MusicVolume, x1.MusicVolume);
+            Assert.Equal(x0.SfxVolume, x1.SfxVolume);
+            Assert.Equal(x0.UseVibration, x1.UseVibration);
+            Assert.Equal(x0.StereoOutput, x1.StereoOutput);
+            Assert.Equal(x0.RadioStation, x1.RadioStation);
+            Assert.Equal(x0.Brightness, x1.Brightness);
+            Assert.Equal(x0.ShowSubtitles, x1.ShowSubtitles);
+            Assert.Equal(x0.Language, x1.Language);
+            Assert.Equal(x0.UseWideScreen, x1.UseWideScreen);
             Assert.Equal(x0.BlurOn, x1.BlurOn);
             Assert.Equal(x0.CompileDateAndTime, x1.CompileDateAndTime);
             Assert.Equal(x0.WeatherTypeInList, x1.WeatherTypeInList);
-            Assert.Equal(x0.CameraCarZoomIndicator, x1.CameraCarZoomIndicator);
-            Assert.Equal(x0.CameraPedZoomIndicator, x1.CameraPedZoomIndicator);
+            Assert.Equal(x0.CameraModeInCar, x1.CameraModeInCar);
+            Assert.Equal(x0.CameraModeInOnFoot, x1.CameraModeInOnFoot);
             Assert.Equal(x0.IsQuickSave, x1.IsQuickSave);
 
             Assert.Equal(x0, x1);
