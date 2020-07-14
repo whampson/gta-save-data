@@ -1142,7 +1142,7 @@ namespace GTASaveData.LCS
             BloodringKills = buf.ReadInt32();
             BloodringTime = buf.ReadInt32();
             PropertyOwned = buf.Read<byte>(NumProperties);
-            HighestChaseValue = buf.ReadInt32();
+            HighestChaseValue = buf.ReadFloat();
             FastestTimes = buf.Read<int>(NumFastestTimes);
             HighestScores = buf.Read<int>(NumHighestScores);
             BestPositions = buf.ReadInt32();
@@ -1274,7 +1274,7 @@ namespace GTASaveData.LCS
             buf.Write((short) UnlockedCostumes);
             buf.Write(BloodringKills);
             buf.Write(BloodringTime);
-            buf.Write(PropertyOwned, NumPropertyOwned);
+            buf.Write(PropertyOwned, NumProperties);
             buf.Write(HighestChaseValue);
             buf.Write(FastestTimes, NumFastestTimes);
             buf.Write(HighestScores, NumHighestScores);

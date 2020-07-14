@@ -39,14 +39,14 @@ namespace GTASaveData.LCS
         private bool m_prefsDisplayHud;
         private bool m_prefsShowSubtitles;
         private RadarMode m_prefsRadarMode;
-        private bool m_blurOn;  // turns on PSP color filter
+        private bool m_blurOn;  // PSP color filter
         private bool m_prefsUseWideScreen;
         private int m_prefsMusicVolume;
         private int m_prefsSfxVolume;
         private RadioStation m_prefsRadioStation;
         private bool m_prefsStereoMono;
         private short m_padMode;
-        private bool m_prefsInvertLook;     // TOOD: value is inverted on PS2/PSP
+        private bool m_prefsInvertLook;
         private bool m_prefsUseVibration;
         private bool m_swapNippleAndDPad;
         private bool m_hasPlayerCheated;
@@ -503,7 +503,7 @@ namespace GTASaveData.LCS
             buf.Write(CameraModeInCar);
             buf.Write(CameraModeOnFoot);
             buf.Write(ExtraColor);
-            buf.Write(IsExtraColorOn);
+            buf.Write(IsExtraColorOn, 4);
             buf.Write(ExtraColorInterpolation);
             buf.Write(Brightness);
             buf.Write(DisplayHud);
