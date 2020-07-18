@@ -1,9 +1,11 @@
 ﻿using Bogus;
+using GTASaveData.Core.Types;
+using TestFramework;
 using Xunit;
 
-namespace GTASaveData.GTA3.Tests
+namespace GTASaveData.Core.Tests
 {
-    public class TestBuildingSwap : Base<BuildingSwap>
+    public class TestBuildingSwap : SaveDataObjectTestBase<BuildingSwap>
     {
         public override BuildingSwap GenerateTestObject(FileFormat format)
         {
@@ -16,12 +18,11 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        [Fact]
+        public void RandomDataSerialization()
         {
-            BuildingSwap x0 = GenerateTestObject(format);
-            BuildingSwap x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            BuildingSwap x0 = GenerateTestObject();
+            BuildingSwap x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Type, x1.Type);
             Assert.Equal(x0.Handle, x1.Handle);
@@ -29,7 +30,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.OldModel, x1.OldModel);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
 
 

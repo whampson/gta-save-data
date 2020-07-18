@@ -1138,7 +1138,7 @@ namespace GTASaveData.LCS
             AutoPaintingBudget = buf.ReadFloat();
             PropertyDestroyed = buf.ReadInt32();
             NumPropertyOwned = buf.ReadInt32();
-            UnlockedCostumes = (UnlockedCostumes) buf.ReadInt16();
+            UnlockedCostumes = (UnlockedCostumes) buf.ReadUInt16();
             BloodringKills = buf.ReadInt32();
             BloodringTime = buf.ReadInt32();
             PropertyOwned = buf.Read<byte>(NumProperties);
@@ -1271,7 +1271,7 @@ namespace GTASaveData.LCS
             buf.Write(AutoPaintingBudget);
             buf.Write(PropertyDestroyed);
             buf.Write(NumPropertyOwned);
-            buf.Write((short) UnlockedCostumes);
+            buf.Write((ushort) UnlockedCostumes);
             buf.Write(BloodringKills);
             buf.Write(BloodringTime);
             buf.Write(PropertyOwned, NumProperties);
@@ -1477,7 +1477,7 @@ namespace GTASaveData.LCS
     }
 
     [Flags]
-    public enum UnlockedCostumes
+    public enum UnlockedCostumes : ushort
     {
         None,
         CasualClothes = (1 << 0),

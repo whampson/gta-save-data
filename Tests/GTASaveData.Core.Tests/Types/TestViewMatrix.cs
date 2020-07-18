@@ -2,7 +2,7 @@
 using GTASaveData.Types;
 using TestFramework;
 
-namespace GTASaveData.Core.Tests.Types
+namespace GTASaveData.Core.Tests
 {
     public class TestViewMatrix : TestBase<ViewMatrix>
     {

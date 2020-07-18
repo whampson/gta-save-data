@@ -10,8 +10,8 @@
     <Description>GTASaveData core framework library.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
-    <AssemblyVersion>1.2.0.881</AssemblyVersion>
-    <FileVersion>1.2.0.881</FileVersion>
+    <AssemblyVersion>1.2.0.886</AssemblyVersion>
+    <FileVersion>1.2.0.886</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.2.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

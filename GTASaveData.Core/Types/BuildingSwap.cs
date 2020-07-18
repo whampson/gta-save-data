@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace GTASaveData.GTA3
+namespace GTASaveData.Core.Types
 {
     public class BuildingSwap : SaveDataObject,
         IEquatable<BuildingSwap>, IDeepClonable<BuildingSwap>
@@ -96,5 +96,14 @@ namespace GTASaveData.GTA3
         {
             return new BuildingSwap(this);
         }
+    }
+
+    public enum PoolType
+    {
+        None,
+        Treadable,
+        Building,
+        Object,
+        Dummy
     }
 }

@@ -15,7 +15,7 @@ namespace GTASaveData.LCS
         private int m_checkSum;
 
         private SimpleVariables m_simpleVars;
-        private Dummy m_scripts;
+        private ScriptData m_scripts;
         private Dummy m_garages;
         private Dummy m_playerInfo;
         private Stats m_stats;
@@ -26,7 +26,7 @@ namespace GTASaveData.LCS
             set { m_simpleVars = value; OnPropertyChanged(); }
         }
 
-        public Dummy Scripts
+        public ScriptData Scripts
         {
             get { return m_scripts; }
             set { m_scripts = value; OnPropertyChanged(); }
@@ -82,7 +82,7 @@ namespace GTASaveData.LCS
         public LCSSave()
         {
             SimpleVars = new SimpleVariables();
-            Scripts = new Dummy();
+            Scripts = new ScriptData();
             Garages = new Dummy();
             PlayerInfo = new Dummy();
             Stats = new Stats();
@@ -91,7 +91,7 @@ namespace GTASaveData.LCS
         public LCSSave(LCSSave other)
         {
             SimpleVars = new SimpleVariables(other.SimpleVars);
-            Scripts = new Dummy(other.Scripts);
+            Scripts = new ScriptData(other.Scripts);
             Garages = new Dummy(other.Garages);
             PlayerInfo = new Dummy(other.PlayerInfo);
             Stats = new Stats(other.Stats);
@@ -155,7 +155,7 @@ namespace GTASaveData.LCS
 
             totalSize += Align4(ReadDataBlock(file, "SIMP", out SimpleVariables simp));
             SimpleVars = simp;
-            totalSize += Align4(ReadDummyBlock(file, "SRPT", out Dummy srpt));
+            totalSize += Align4(ReadDataBlock(file, "SRPT", out ScriptData srpt));
             Scripts = srpt;
             totalSize += Align4(ReadDummyBlock(file, "GRGE", out Dummy grge));
             Garages = grge;

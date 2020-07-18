@@ -5,27 +5,26 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 
-#pragma warning disable CS0618 // Type or member is obsolete
-namespace GTASaveData.GTA3
+namespace GTASaveData.LCS
 {
     public class ScriptData : SaveDataObject,
         IEquatable<ScriptData>, IDeepClonable<ScriptData>
     {
-        public const int NumContacts = 16;
         public const int NumCollectives = 32;
-        public const int NumBuildingSwaps = 25;
-        public const int NumInvisibilitySettings = 20;
+        public const int NumBuildingSwaps = 80;
+        public const int NumInvisibilitySettings = 52;
 
-        private const int ScriptDataSize = 968;
+        private const int ScriptDataSize = 0x6B8;
 
         private Array<byte> m_scriptSpace;
         private int m_onAMissionFlag;
-        private Array<Contact> m_contacts;
+        private uint m_lastMissionPassedTime;
         private Array<Collective> m_collectives;    // not used
         private int m_nextFreeCollectiveIndex;      // not used
         private Array<BuildingSwap> m_buildingSwapArray;
         private Array<InvisibleObject> m_invisibilitySettingArray;
         private bool m_usingAMultiScriptFile;
+        private bool m_playerHasMetDebbieHarry;
         private int m_mainScriptSize;
         private int m_largestMissionScriptSize;
         private short m_numberOfMissionScripts;
@@ -47,20 +46,18 @@ namespace GTASaveData.GTA3
             set { m_onAMissionFlag = value; OnPropertyChanged(); }
         }
 
-        public Array<Contact> Contacts
+        public uint LastMissionPassedTime
         {
-            get { return m_contacts; }
-            set { m_contacts = value; OnPropertyChanged(); }
+            get { return m_lastMissionPassedTime; }
+            set { m_lastMissionPassedTime = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not used by the game.")]
         public Array<Collective> Collectives
         {
             get { return m_collectives; }
             set { m_collectives = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not used by the game.")]
         public int NextFreeCollectiveIndex
         {
             get { return m_nextFreeCollectiveIndex; }
@@ -85,6 +82,12 @@ namespace GTASaveData.GTA3
             set { m_usingAMultiScriptFile = value; OnPropertyChanged(); }
         }
 
+        public bool PlayerHasMetDebbieHarry
+        {
+            get { return m_playerHasMetDebbieHarry; }
+            set { m_playerHasMetDebbieHarry = value; OnPropertyChanged(); }
+        }
+
         public int MainScriptSize
         {
             get { return m_mainScriptSize; }
@@ -103,7 +106,7 @@ namespace GTASaveData.GTA3
             set { m_numberOfMissionScripts = value; OnPropertyChanged(); }
         }
 
-        public Array<RunningScript> ActiveScripts
+        public Array<RunningScript> Threads
         {
             get { return m_activeScripts; }
             set { m_activeScripts = value; OnPropertyChanged(); }
@@ -112,27 +115,27 @@ namespace GTASaveData.GTA3
         public ScriptData()
         {
             ScriptSpace = new Array<byte>();
-            Contacts = ArrayHelper.CreateArray<Contact>(NumContacts);
             Collectives = ArrayHelper.CreateArray<Collective>(NumCollectives);
             BuildingSwaps = ArrayHelper.CreateArray<BuildingSwap>(NumBuildingSwaps);
             InvisibilitySettings = ArrayHelper.CreateArray<InvisibleObject>(NumInvisibilitySettings);
-            ActiveScripts = new Array<RunningScript>();
+            Threads = new Array<RunningScript>();
         }
 
         public ScriptData(ScriptData other)
         {
             ScriptSpace = ArrayHelper.DeepClone(other.ScriptSpace);
             OnAMissionFlag = other.OnAMissionFlag;
-            Contacts = ArrayHelper.DeepClone(other.Contacts);
+            LastMissionPassedTime = other.LastMissionPassedTime;
             Collectives = ArrayHelper.DeepClone(other.Collectives);
             NextFreeCollectiveIndex = other.NextFreeCollectiveIndex;
             BuildingSwaps = ArrayHelper.DeepClone(other.BuildingSwaps);
             InvisibilitySettings = ArrayHelper.DeepClone(other.InvisibilitySettings);
             UsingAMultiScriptFile = other.UsingAMultiScriptFile;
+            PlayerHasMetDebbieHarry = other.PlayerHasMetDebbieHarry;
             MainScriptSize = other.MainScriptSize;
             LargestMissionScriptSize = other.LargestMissionScriptSize;
             NumberOfMissionScripts = other.NumberOfMissionScripts;
-            ActiveScripts = ArrayHelper.DeepClone(other.ActiveScripts);
+            Threads = ArrayHelper.DeepClone(other.Threads);
         }
 
         public int GetGlobal(int index)
@@ -252,7 +255,7 @@ namespace GTASaveData.GTA3
 
         public RunningScript GetRunningScript(string name)
         {
-            return ActiveScripts.Where(x => x.Name == name).FirstOrDefault();
+            return Threads.Where(x => x.Name == name).FirstOrDefault();
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -265,20 +268,20 @@ namespace GTASaveData.GTA3
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
             OnAMissionFlag = buf.ReadInt32();
-            Contacts = buf.Read<Contact>(NumContacts);
+            LastMissionPassedTime = buf.ReadUInt32();
             Collectives = buf.Read<Collective>(NumCollectives);
             NextFreeCollectiveIndex = buf.ReadInt32();
             BuildingSwaps = buf.Read<BuildingSwap>(NumBuildingSwaps);
             InvisibilitySettings = buf.Read<InvisibleObject>(NumInvisibilitySettings);
             UsingAMultiScriptFile = buf.ReadBool();
-            buf.ReadByte();
+            PlayerHasMetDebbieHarry = buf.ReadBool();
             buf.ReadUInt16();
             MainScriptSize = buf.ReadInt32();
             LargestMissionScriptSize = buf.ReadInt32();
             NumberOfMissionScripts = buf.ReadInt16();
             buf.ReadUInt16();
             int runningScripts = buf.ReadInt32();
-            ActiveScripts = buf.Read<RunningScript>(runningScripts, fmt);
+            Threads = buf.Read<RunningScript>(runningScripts, fmt);
 
             Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
             Debug.Assert(size == SizeOfObject(this, fmt) - GTA3VCSave.BlockHeaderSize);
@@ -292,31 +295,31 @@ namespace GTASaveData.GTA3
             buf.Write(ScriptSpace.Count);
             buf.Write(ScriptSpace);
             buf.Align4();
-            buf.Write(ScriptDataSize);
+            buf.Write(ScriptDataSize);      // wrong value in save, actually is +0x104
             buf.Write(OnAMissionFlag);
-            buf.Write(Contacts, NumContacts);
+            buf.Write(LastMissionPassedTime);
             buf.Write(Collectives, NumCollectives);
             buf.Write(NextFreeCollectiveIndex);
             buf.Write(BuildingSwaps, NumBuildingSwaps);
             buf.Write(InvisibilitySettings, NumInvisibilitySettings);
             buf.Write(UsingAMultiScriptFile);
-            buf.Write((byte) 0);
+            buf.Write(PlayerHasMetDebbieHarry);
             buf.Write((short) 0);
             buf.Write(MainScriptSize);
             buf.Write(LargestMissionScriptSize);
             buf.Write(NumberOfMissionScripts);
             buf.Write((short) 0);
-            buf.Write(ActiveScripts.Count);
-            buf.Write(ActiveScripts, fmt);
+            buf.Write(Threads.Count);
+            buf.Write(Threads, fmt);
 
             Debug.Assert(buf.Offset == size);
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            return SizeOfType<RunningScript>(fmt) * ActiveScripts.Count
+            return SizeOfType<RunningScript>(fmt) * Threads.Count
                 + StreamBuffer.Align4(ScriptSpace.Count)
-                + ScriptDataSize
+                + ScriptDataSize + 0x104
                 + GTA3VCSave.BlockHeaderSize
                 + 3 * sizeof(int);
         }
@@ -335,16 +338,17 @@ namespace GTASaveData.GTA3
 
             return ScriptSpace.SequenceEqual(other.ScriptSpace)
                 && OnAMissionFlag.Equals(other.OnAMissionFlag)
-                && Contacts.SequenceEqual(other.Contacts)
+                && LastMissionPassedTime.Equals(other.LastMissionPassedTime)
                 && Collectives.SequenceEqual(other.Collectives)
                 && NextFreeCollectiveIndex.Equals(other.NextFreeCollectiveIndex)
                 && BuildingSwaps.SequenceEqual(other.BuildingSwaps)
                 && InvisibilitySettings.SequenceEqual(other.InvisibilitySettings)
                 && UsingAMultiScriptFile.Equals(other.UsingAMultiScriptFile)
+                && PlayerHasMetDebbieHarry.Equals(other.PlayerHasMetDebbieHarry)
                 && MainScriptSize.Equals(other.MainScriptSize)
                 && LargestMissionScriptSize.Equals(other.LargestMissionScriptSize)
                 && NumberOfMissionScripts.Equals(other.NumberOfMissionScripts)
-                && ActiveScripts.SequenceEqual(other.ActiveScripts);
+                && Threads.SequenceEqual(other.Threads);
         }
 
         public ScriptData DeepClone()
@@ -352,5 +356,13 @@ namespace GTASaveData.GTA3
             return new ScriptData(this);
         }
     }
+
+    public enum PoolType
+    {
+        None,
+        Treadable,
+        Building,
+        Object,
+        Dummy
+    }
 }
-#pragma warning restore CS0618 // Type or member is obsolete

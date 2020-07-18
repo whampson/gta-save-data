@@ -3,7 +3,7 @@ using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Core.Tests.Types
+namespace GTASaveData.Core.Tests
 {
     public class TestDate : TestBase<Date>
     {
@@ -24,6 +24,5 @@ namespace GTASaveData.Core.Tests.Types
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
-
     }
 }

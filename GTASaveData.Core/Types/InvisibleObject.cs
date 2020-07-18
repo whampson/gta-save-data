@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GTASaveData.GTA3
+namespace GTASaveData.Core.Types
 {
     public class InvisibleObject : SaveDataObject,
         IEquatable<InvisibleObject>, IDeepClonable<InvisibleObject>

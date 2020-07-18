@@ -176,13 +176,4 @@ namespace GTASaveData.GTA3
         DistanceFade = (1L << 40),
         UnknownFlag = (1L << 41)
     }
-
-    public enum PoolType
-    {
-        None,
-        Treadable,
-        Building,
-        Object,
-        Dummy
-    }
 }

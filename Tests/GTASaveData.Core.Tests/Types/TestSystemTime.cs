@@ -3,7 +3,7 @@ using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Core.Tests.Types
+namespace GTASaveData.Core.Tests
 {
     public class TestSystemTime : TestBase<SystemTime>
     {
