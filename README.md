@@ -1,6 +1,7 @@
 # GTASaveData
 [![Build Status](https://github.com/whampson/gta-save-data/workflows/CoreLib/badge.svg)](https://github.com/whampson/gta-save-data/actions)
 [![Build Status](https://github.com/whampson/gta-save-data/workflows/GTA3/badge.svg)](https://github.com/whampson/gta-save-data/actions)
+[![Build Status](https://github.com/whampson/gta-save-data/workflows/LCS/badge.svg)](https://github.com/whampson/gta-save-data/actions)
 
 A .NET library for reading and writing save files from various
 *Grand Theft Auto* games.
@@ -14,8 +15,6 @@ fires a `PropertyChanged` event when modified, making this API WPF-friendly.
 ## Support
 Fully supported:
   * *Grand Theft Auto III*
-
-In-Progress:
   * *Grand Theft Auto: Liberty City Stories*
 
 The following games are planned:
