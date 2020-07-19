@@ -13,6 +13,7 @@ namespace GTASaveData.GTA3
     {
         public const int CarsPerSafeHouse = 6;
         public const int NumberOfSafeHouses = 3;
+        public const int NumStoredCars = NumberOfSafeHouses * CarsPerSafeHouse;
         public const int MaxNumGarages = 32;
 
         private int m_numGarages;
@@ -21,8 +22,8 @@ namespace GTASaveData.GTA3
         private int m_carsCollected;        // not used
         private int m_bankVansCollected;
         private int m_policeCarsCollected;  // not used
-        private CollectCars1 m_carTypesCollected1;
-        private CollectCars2 m_carTypesCollected2;
+        private PortlandImportExportCars m_carTypesCollected1;
+        private ShoresideImportExportCars m_carTypesCollected2;
         private int m_carTypesCollected3;   // not used
         private int m_lastTimeHelpMessage;
         private Array<StoredCar> m_carsInSafeHouse;
@@ -66,13 +67,13 @@ namespace GTASaveData.GTA3
             set { m_policeCarsCollected = value; OnPropertyChanged(); }
         }
 
-        public CollectCars1 CarTypesCollected1
+        public PortlandImportExportCars CarTypesCollected1
         { 
             get { return m_carTypesCollected1; }
             set { m_carTypesCollected1 = value; OnPropertyChanged(); }
         }
 
-        public CollectCars2 CarTypesCollected2
+        public ShoresideImportExportCars CarTypesCollected2
         { 
             get { return m_carTypesCollected2; }
             set { m_carTypesCollected2 = value; OnPropertyChanged(); }
@@ -109,9 +110,42 @@ namespace GTASaveData.GTA3
             set { Garages[i] = value; OnPropertyChanged(); }
         }
 
+        public IEnumerable<StoredCar> StoredCarsPortland
+        {
+            get
+            {
+                for (int i = 0; i < NumStoredCars; i++)
+                {
+                    if ((i % 3) == 0) yield return CarsInSafeHouse[i];
+                }
+            }
+        }
+
+        public IEnumerable<StoredCar> StoredCarsStaunton
+        {
+            get
+            {
+                for (int i = 0; i < NumStoredCars; i++)
+                {
+                    if ((i % 3) == 1) yield return CarsInSafeHouse[i];
+                }
+            }
+        }
+
+        public IEnumerable<StoredCar> StoredCarsShoreside
+        {
+            get
+            {
+                for (int i = 0; i < NumStoredCars; i++)
+                {
+                    if ((i % 3) == 2) yield return CarsInSafeHouse[i];
+                }
+            }
+        }
+
         public GarageData()
         {
-            CarsInSafeHouse = ArrayHelper.CreateArray<StoredCar>(CarsPerSafeHouse * NumberOfSafeHouses);
+            CarsInSafeHouse = ArrayHelper.CreateArray<StoredCar>(NumStoredCars);
             Garages = ArrayHelper.CreateArray<Garage>(MaxNumGarages);
         }
 
@@ -139,11 +173,11 @@ namespace GTASaveData.GTA3
             CarsCollected = buf.ReadInt32();
             BankVansCollected = buf.ReadInt32();
             PoliceCarsCollected = buf.ReadInt32();
-            CarTypesCollected1 = (CollectCars1) buf.ReadInt32();
-            CarTypesCollected2 = (CollectCars2) buf.ReadInt32();
+            CarTypesCollected1 = (PortlandImportExportCars) buf.ReadInt32();
+            CarTypesCollected2 = (ShoresideImportExportCars) buf.ReadInt32();
             CarTypesCollected3 = buf.ReadInt32();
             LastTimeHelpMessage = buf.ReadInt32();
-            CarsInSafeHouse = buf.Read<StoredCar>(CarsPerSafeHouse * NumberOfSafeHouses);
+            CarsInSafeHouse = buf.Read<StoredCar>(NumStoredCars);
             Garages = buf.Read<Garage>(MaxNumGarages);
             buf.Skip(244);
 
@@ -219,7 +253,7 @@ namespace GTASaveData.GTA3
     }
 
     [Flags]
-    public enum CollectCars1
+    public enum PortlandImportExportCars
     {
         Securicar = (1 << 0),
         Moonbeam = (1 << 1),
@@ -240,7 +274,7 @@ namespace GTASaveData.GTA3
     }
 
     [Flags]
-    public enum CollectCars2
+    public enum ShoresideImportExportCars
     {
         Sentinel = (1 << 0),
         Cheetah = (1 << 1),

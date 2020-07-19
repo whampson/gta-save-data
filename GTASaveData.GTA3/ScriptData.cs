@@ -1,5 +1,4 @@
-﻿using GTASaveData.Core.Types;
-using GTASaveData.JsonConverters;
+﻿using GTASaveData.JsonConverters;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
@@ -351,6 +350,15 @@ namespace GTASaveData.GTA3
         {
             return new ScriptData(this);
         }
+    }
+
+    public enum PoolType
+    {
+        None,
+        Treadable,
+        Building,
+        Object,
+        Dummy
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

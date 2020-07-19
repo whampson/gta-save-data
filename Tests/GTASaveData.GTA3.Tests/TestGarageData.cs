@@ -16,11 +16,11 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.CarsCollected, f => f.Random.Int())
                 .RuleFor(x => x.BankVansCollected, f => f.Random.Int())
                 .RuleFor(x => x.PoliceCarsCollected, f => f.Random.Int())
-                .RuleFor(x => x.CarTypesCollected1, f => f.PickRandom<CollectCars1>())
-                .RuleFor(x => x.CarTypesCollected2, f => f.PickRandom<CollectCars2>())
+                .RuleFor(x => x.CarTypesCollected1, f => f.PickRandom<PortlandImportExportCars>())
+                .RuleFor(x => x.CarTypesCollected2, f => f.PickRandom<ShoresideImportExportCars>())
                 .RuleFor(x => x.CarTypesCollected3, f => f.Random.Int())
                 .RuleFor(x => x.LastTimeHelpMessage, f => f.Random.Int())
-                .RuleFor(x => x.CarsInSafeHouse, f => Generator.Array(GarageData.CarsPerSafeHouse * GarageData.NumberOfSafeHouses, g => Generator.Generate<StoredCar, TestStoredCar>()))
+                .RuleFor(x => x.CarsInSafeHouse, f => Generator.Array(GarageData.NumStoredCars, g => Generator.Generate<StoredCar, TestStoredCar>()))
                 .RuleFor(x => x.Garages, f => Generator.Array(GarageData.MaxNumGarages, g => Generator.Generate<Garage, TestGarage>()));
 
             return model.Generate();
