@@ -17,7 +17,7 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 .RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
                 .RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData>(format))
-                //.RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))
+                .RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))
                 .RuleFor(x => x.Stats, Generator.Generate<Stats, TestStats>(format))
                 ;
 

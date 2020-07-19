@@ -17,7 +17,7 @@ namespace GTASaveData.LCS
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
         private GarageData m_garages;
-        private Dummy m_playerInfo;
+        private PlayerInfo m_playerInfo;
         private Stats m_stats;
 
         public SimpleVariables SimpleVars
@@ -38,7 +38,7 @@ namespace GTASaveData.LCS
             set { m_garages = value; OnPropertyChanged(); }
         }
 
-        public Dummy PlayerInfo
+        public PlayerInfo PlayerInfo
         {
             get { return m_playerInfo; }
             set { m_playerInfo = value; OnPropertyChanged(); }
@@ -84,7 +84,7 @@ namespace GTASaveData.LCS
             SimpleVars = new SimpleVariables();
             Scripts = new ScriptData();
             Garages = new GarageData();
-            PlayerInfo = new Dummy();
+            PlayerInfo = new PlayerInfo();
             Stats = new Stats();
         }
 
@@ -93,7 +93,7 @@ namespace GTASaveData.LCS
             SimpleVars = new SimpleVariables(other.SimpleVars);
             Scripts = new ScriptData(other.Scripts);
             Garages = new GarageData(other.Garages);
-            PlayerInfo = new Dummy(other.PlayerInfo);
+            PlayerInfo = new PlayerInfo(other.PlayerInfo);
             Stats = new Stats(other.Stats);
         }
 
@@ -114,22 +114,22 @@ namespace GTASaveData.LCS
             return file.Offset;
         }
 
-        private int ReadDummyBlock(StreamBuffer file, string tag, out Dummy obj)
-        {
-            file.Mark();
+        //private int ReadDummyBlock(StreamBuffer file, string tag, out Dummy obj)
+        //{
+        //    file.Mark();
 
-            string savedTag = file.ReadString(4);
-            Debug.Assert(savedTag == tag);
+        //    string savedTag = file.ReadString(4);
+        //    Debug.Assert(savedTag == tag);
 
-            int size = file.ReadInt32();
-            Debug.Assert(file.Position + size <= file.Length);
+        //    int size = file.ReadInt32();
+        //    Debug.Assert(file.Position + size <= file.Length);
 
-            obj = new Dummy(size);
-            Serializer.Read(obj, file, FileFormat);
-            file.Align4();
+        //    obj = new Dummy(size);
+        //    Serializer.Read(obj, file, FileFormat);
+        //    file.Align4();
 
-            return file.Offset;
-        }
+        //    return file.Offset;
+        //}
 
         private int WriteDataBlock<T>(StreamBuffer file, string tag, T obj)
             where T : SaveDataObject
@@ -159,7 +159,7 @@ namespace GTASaveData.LCS
             Scripts = srpt;
             totalSize += Align4(ReadDataBlock(file, "GRGE", out GarageData grge));
             Garages = grge;
-            totalSize += Align4(ReadDummyBlock(file, "PLYR", out Dummy plyr));
+            totalSize += Align4(ReadDataBlock(file, "PLYR", out PlayerInfo plyr));
             PlayerInfo = plyr;
             totalSize += Align4(ReadDataBlock(file, "STAT", out Stats stat));
             Stats = stat;
