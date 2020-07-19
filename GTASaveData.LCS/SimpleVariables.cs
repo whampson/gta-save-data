@@ -655,23 +655,6 @@ namespace GTASaveData.LCS
         Snowy       // PSP only :(
     }
 
-    public enum RadioStation
-    {
-        // TOOD: confirm
-        HeadRadio,
-        DoubleClefFM,
-        KJah,
-        RiseFM,
-        Lips106,
-        RadioDelMundo,
-        Msx98,
-        FlashbackFM,
-        TheLibertyJam,
-        LCFR,
-        UserTrackPlayer,
-        None
-    }
-
     public enum RadarMode
     {
         // TOOD: confirm

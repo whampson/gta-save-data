@@ -1,9 +1,8 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests;
-using GTASaveData.Core.Types;
 using TestFramework;
 using Xunit;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.LCS.Tests
 {
     public class TestScriptData : Base<ScriptData>
@@ -28,7 +27,7 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.MainScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.LargestMissionScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.NumberOfMissionScripts, f => f.Random.Short())
-                .RuleFor(x => x.Threads, f => Generator.Array(runningScripts, g => Generator.Generate<RunningScript, TestRunningScript>(format)));
+                .RuleFor(x => x.ActiveScripts, f => Generator.Array(runningScripts, g => Generator.Generate<RunningScript, TestRunningScript>(format)));
 
             return model.Generate();
         }
@@ -52,7 +51,7 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0.MainScriptSize, x1.MainScriptSize);
             Assert.Equal(x0.LargestMissionScriptSize, x1.LargestMissionScriptSize);
             Assert.Equal(x0.NumberOfMissionScripts, x1.NumberOfMissionScripts);
-            Assert.Equal(x0.Threads, x1.Threads);
+            Assert.Equal(x0.ActiveScripts, x1.ActiveScripts);
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
@@ -67,8 +66,8 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0, x1);
 
             // Prove that deep copy actually happened
-            x0.Threads[0].IP = 6969;
-            Assert.NotEqual(x0.Threads[0], x1.Threads[0]);
+            x0.ActiveScripts[0].IP = 6969;
+            Assert.NotEqual(x0.ActiveScripts[0], x1.ActiveScripts[0]);
         }
 
         [Fact]
@@ -128,3 +127,4 @@ namespace GTASaveData.LCS.Tests
         }
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete
