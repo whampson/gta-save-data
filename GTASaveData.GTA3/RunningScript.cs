@@ -1,11 +1,13 @@
-﻿using System;
+﻿using GTASaveData.Types.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class RunningScript : SaveDataObject,
+    public class RunningScript : SaveDataObject, IRunningScript,
         IEquatable<RunningScript>, IDeepClonable<RunningScript>
     {
         public const int MaxNameLength = 8;
@@ -64,7 +66,7 @@ namespace GTASaveData.GTA3
             set { m_stack = value; OnPropertyChanged(); }
         }
 
-        public ushort StackCount
+        public ushort StackPosition
         {
             get { return m_stackPointer; }
             set { m_stackPointer = value; OnPropertyChanged(); }
@@ -142,6 +144,10 @@ namespace GTASaveData.GTA3
             set { m_missionFlag = value; OnPropertyChanged(); }
         }
 
+        IEnumerable<int> IRunningScript.Stack => m_stack;
+
+        IEnumerable<int> IRunningScript.LocalVariables => m_localVariables;
+
         public RunningScript()
         {
             m_name = "noname";
@@ -156,7 +162,7 @@ namespace GTASaveData.GTA3
             Name = other.Name;
             IP = other.IP;
             Stack = ArrayHelper.DeepClone(other.Stack);
-            StackCount = other.StackCount;
+            StackPosition = other.StackPosition;
             LocalVariables = ArrayHelper.DeepClone(other.LocalVariables);
             TimerA = other.TimerA;
             TimerB = other.TimerB;
@@ -173,33 +179,38 @@ namespace GTASaveData.GTA3
 
         public void PushStack(int value)
         {
-            if (StackCount + 1 >= Stack.Count)
+            if (StackPosition + 1 >= Stack.Count)
             {
                 Stack.Add(value);
-                StackCount++;
+                StackPosition++;
             }
             else
             {
-                Stack[StackCount++] = value;
+                Stack[StackPosition++] = value;
             }
         }
 
         public int PopStack()
         {
-            if (StackCount == 0)
+            if (StackPosition == 0)
             {
                 throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
             }
-            return Stack[--StackCount];
+            return Stack[--StackPosition];
         }
 
         public int PeekStack()
         {
-            if (StackCount == 0)
+            if (StackPosition == 0)
             {
                 throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
             }
-            return Stack[StackCount - 1];
+            return Stack[StackPosition - 1];
+        }
+
+        public void SetLocal(int index, int value)
+        {
+            LocalVariables[index] = value;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -209,7 +220,7 @@ namespace GTASaveData.GTA3
             Name = buf.ReadString(MaxNameLength);
             IP = buf.ReadUInt32();
             Stack = buf.Read<int>(GetMaxStackDepth(fmt));
-            StackCount = buf.ReadUInt16();
+            StackPosition = buf.ReadUInt16();
             buf.Align4();
             LocalVariables = buf.Read<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
@@ -236,7 +247,7 @@ namespace GTASaveData.GTA3
             buf.Write(Name, MaxNameLength);
             buf.Write(IP);
             buf.Write(Stack, GetMaxStackDepth(fmt));
-            buf.Write(StackCount);
+            buf.Write(StackPosition);
             buf.Align4();
             buf.Write(LocalVariables, NumLocalVariables);
             buf.Write(TimerA);
@@ -283,7 +294,7 @@ namespace GTASaveData.GTA3
                 && Name.Equals(other.Name)
                 && IP.Equals(other.IP)
                 && Stack.SequenceEqual(other.Stack)
-                && StackCount.Equals(other.StackCount)
+                && StackPosition.Equals(other.StackPosition)
                 && LocalVariables.SequenceEqual(other.LocalVariables)
                 && TimerA.Equals(other.TimerA)
                 && TimerB.Equals(other.TimerB)

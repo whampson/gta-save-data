@@ -1,9 +1,10 @@
-﻿using System;
+﻿using GTASaveData.Types.Interfaces;
+using System;
 using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class PlayerInfo : SaveDataObject,
+    public class PlayerInfo : SaveDataObject, IPlayerInfo,
         IEquatable<PlayerInfo>, IDeepClonable<PlayerInfo>
     {
         public const int MaxPlayerNameLength = 70;

@@ -182,13 +182,17 @@ namespace GTASaveData.GTA3
             set { SimpleVars.TimeStamp = new SystemTime(value); OnPropertyChanged(); }
         }
 
+        bool ISaveData.HasSimpleVariables => true;
+        bool ISaveData.HasScriptData => true;
+        bool ISaveData.HasGarageData => true;
         bool ISaveData.HasCarGenerators => true;
+        bool ISaveData.HasPlayerInfo => true;
 
-        ICarGeneratorData ISaveData.CarGenerators
-        {
-            get { return CarGenerators; }
-            set { CarGenerators = (CarGeneratorData) value; OnPropertyChanged(); }
-        }
+        ISimpleVariables ISaveData.SimpleVars => SimpleVars;
+        IScriptData ISaveData.ScriptData => Scripts;
+        IGarageData ISaveData.GarageData => Garages;
+        ICarGeneratorData ISaveData.CarGenerators => CarGenerators;
+        IPlayerInfo ISaveData.PlayerInfo => PlayerInfo;
 
         IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
         {

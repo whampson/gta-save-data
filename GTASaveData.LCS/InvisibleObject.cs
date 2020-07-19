@@ -1,12 +1,19 @@
-﻿using System;
+﻿using GTASaveData.Types.Interfaces;
+using System;
 
 namespace GTASaveData.LCS
 {
-    public class InvisibleObject : SaveDataObject,
+    public class InvisibleObject : SaveDataObject, IInvisibleObject,
         IEquatable<InvisibleObject>, IDeepClonable<InvisibleObject>
     {
         private PoolType m_type;
         private int m_handle;
+
+        int IInvisibleObject.Type
+        {
+            get { return (int) Type; }
+            set { Type = (PoolType) Type; }
+        }
 
         public PoolType Type
         {

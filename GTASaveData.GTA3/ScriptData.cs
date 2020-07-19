@@ -1,13 +1,15 @@
 ﻿using GTASaveData.JsonConverters;
+using GTASaveData.Types.Interfaces;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class ScriptData : SaveDataObject,
+    public class ScriptData : SaveDataObject, IScriptData,
         IEquatable<ScriptData>, IDeepClonable<ScriptData>
     {
         public const int NumContacts = 16;
@@ -29,9 +31,6 @@ namespace GTASaveData.GTA3
         private int m_largestMissionScriptSize;
         private short m_numberOfMissionScripts;
         private Array<RunningScript> m_activeScripts;
-
-        [JsonIgnore]
-        public int NumGlobalVariables => ScriptSpace.Count / 4;
 
         [JsonConverter(typeof(ByteArrayConverter))]
         public Array<byte> ScriptSpace
@@ -108,6 +107,20 @@ namespace GTASaveData.GTA3
             set { m_activeScripts = value; OnPropertyChanged(); }
         }
 
+        public IEnumerable<int> GlobalVariables
+        {
+            get
+            {
+                for (int i = 0; i < ScriptSpace.Count / 4; i++) yield return GetGlobal(i);
+            }
+        }
+
+        IEnumerable<IBuildingSwap> IScriptData.BuildingSwaps => m_buildingSwapArray;
+
+        IEnumerable<IInvisibleObject> IScriptData.InvisibilitySettings => m_invisibilitySettingArray;
+
+        IEnumerable<IRunningScript> IScriptData.ActiveScripts => m_activeScripts;
+
         public ScriptData()
         {
             ScriptSpace = new Array<byte>();
@@ -133,6 +146,13 @@ namespace GTASaveData.GTA3
             NumberOfMissionScripts = other.NumberOfMissionScripts;
             ActiveScripts = ArrayHelper.DeepClone(other.ActiveScripts);
         }
+
+        public RunningScript GetScript(string name)
+        {
+            return ActiveScripts.Where(x => x.Name == name).FirstOrDefault();
+        }
+
+        IRunningScript IScriptData.GetScript(string name) => GetScript(name);
 
         public int GetGlobal(int index)
         {
@@ -247,11 +267,6 @@ namespace GTASaveData.GTA3
                 ScriptSpace[offset + i] = data[i];
             }
             return sizeof(float);
-        }
-
-        public RunningScript GetRunningScript(string name)
-        {
-            return ActiveScripts.Where(x => x.Name == name).FirstOrDefault();
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)

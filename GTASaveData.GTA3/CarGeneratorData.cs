@@ -64,10 +64,7 @@ namespace GTASaveData.GTA3
             set { CarGenerators[i] = (CarGenerator) value; OnPropertyChanged(); }
         }
 
-        IEnumerable<ICarGenerator> ICarGeneratorData.CarGenerators
-        {
-            get { return m_carGeneratorArray; }
-        }
+        IEnumerable<ICarGenerator> ICarGeneratorData.CarGenerators => m_carGeneratorArray;
 
         public CarGeneratorData()
         {

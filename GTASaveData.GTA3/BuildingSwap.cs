@@ -1,15 +1,22 @@
-﻿using System;
+﻿using GTASaveData.Types.Interfaces;
+using System;
 using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class BuildingSwap : SaveDataObject,
+    public class BuildingSwap : SaveDataObject, IBuildingSwap,
         IEquatable<BuildingSwap>, IDeepClonable<BuildingSwap>
     {
         private PoolType m_type;
         private int m_handle;
         private int m_newModel;
         private int m_oldModel;
+
+        int IBuildingSwap.Type
+        {
+            get { return (int) Type; }
+            set { Type = (PoolType) value; OnPropertyChanged(); }
+        }
 
         public PoolType Type
         {

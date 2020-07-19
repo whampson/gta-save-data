@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Types.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ using System.Linq;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class GarageData : SaveDataObject,
+    public class GarageData : SaveDataObject, IGarageData,
         IEquatable<GarageData>, IDeepClonable<GarageData>,
         IEnumerable<Garage>
     {
@@ -35,13 +36,13 @@ namespace GTASaveData.GTA3
             set { m_numGarages = value; OnPropertyChanged(); }
         }
 
-        public bool BombsAreFree
+        public bool FreeBombs
         { 
             get { return m_bombsAreFree; }
             set { m_bombsAreFree = value; OnPropertyChanged(); }
         }
 
-        public bool RespraysAreFree
+        public bool FreeResprays
         { 
             get { return m_respraysAreFree; }
             set { m_respraysAreFree = value; OnPropertyChanged(); }
@@ -143,6 +144,10 @@ namespace GTASaveData.GTA3
             }
         }
 
+        IEnumerable<IStoredCar> IGarageData.CarsInSafeHouse => m_carsInSafeHouse;
+
+        IEnumerable<IGarage> IGarageData.Garages => m_garages;
+
         public GarageData()
         {
             CarsInSafeHouse = ArrayHelper.CreateArray<StoredCar>(NumStoredCars);
@@ -152,8 +157,8 @@ namespace GTASaveData.GTA3
         public GarageData(GarageData other)
         {
             NumGarages = other.NumGarages;
-            BombsAreFree = other.BombsAreFree;
-            RespraysAreFree = other.RespraysAreFree;
+            FreeBombs = other.FreeBombs;
+            FreeResprays = other.FreeResprays;
             CarsCollected = other.CarsCollected;
             BankVansCollected = other.BankVansCollected;
             PoliceCarsCollected = other.PoliceCarsCollected;
@@ -168,8 +173,8 @@ namespace GTASaveData.GTA3
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             NumGarages = buf.ReadInt32();
-            BombsAreFree = buf.ReadBool(4);
-            RespraysAreFree = buf.ReadBool(4);
+            FreeBombs = buf.ReadBool(4);
+            FreeResprays = buf.ReadBool(4);
             CarsCollected = buf.ReadInt32();
             BankVansCollected = buf.ReadInt32();
             PoliceCarsCollected = buf.ReadInt32();
@@ -187,8 +192,8 @@ namespace GTASaveData.GTA3
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(NumGarages);
-            buf.Write(BombsAreFree, 4);
-            buf.Write(RespraysAreFree, 4);
+            buf.Write(FreeBombs, 4);
+            buf.Write(FreeResprays, 4);
             buf.Write(CarsCollected);
             buf.Write(BankVansCollected);
             buf.Write(PoliceCarsCollected);
@@ -223,8 +228,8 @@ namespace GTASaveData.GTA3
             }
 
             return NumGarages.Equals(other.NumGarages)
-                && BombsAreFree.Equals(other.BombsAreFree)
-                && RespraysAreFree.Equals(other.RespraysAreFree)
+                && FreeBombs.Equals(other.FreeBombs)
+                && FreeResprays.Equals(other.FreeResprays)
                 && CarsCollected.Equals(other.CarsCollected)
                 && BankVansCollected.Equals(other.BankVansCollected)
                 && PoliceCarsCollected.Equals(other.PoliceCarsCollected)

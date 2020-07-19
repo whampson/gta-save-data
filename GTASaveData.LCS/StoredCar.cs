@@ -1,10 +1,11 @@
 ﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
 using System.Diagnostics;
 
 namespace GTASaveData.LCS
 {
-    public class StoredCar : SaveDataObject,
+    public class StoredCar : SaveDataObject, IStoredCar,
         IEquatable<StoredCar>, IDeepClonable<StoredCar>
     {
         private int m_model;
@@ -76,6 +77,42 @@ namespace GTASaveData.LCS
         {
             get { return m_extra2; }
             set { m_extra2 = value; OnPropertyChanged(); }
+        }
+
+        int IStoredCar.Flags
+        {
+            get { return (int) Flags; }
+            set { Flags = (StoredCarFlags) value; OnPropertyChanged(); }
+        }
+
+        int IStoredCar.Color1
+        {
+            get { return Color1; }
+            set { Color1 = (byte) value; OnPropertyChanged(); }
+        }
+
+        int IStoredCar.Color2
+        {
+            get { return Color2; }
+            set { Color2 = (byte) value; OnPropertyChanged(); }
+        }
+
+        int IStoredCar.Radio
+        {
+            get { return (int) Radio; }
+            set { Radio = (RadioStation) value; OnPropertyChanged(); }
+        }
+
+        int IStoredCar.Extra1
+        {
+            get { return Extra1; }
+            set { Extra1 = (sbyte) value; OnPropertyChanged(); }
+        }
+
+        int IStoredCar.Extra2
+        {
+            get { return Extra2; }
+            set { Extra2 = (sbyte) value; OnPropertyChanged(); }
         }
 
         public StoredCar()

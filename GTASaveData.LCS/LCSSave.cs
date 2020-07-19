@@ -50,23 +50,6 @@ namespace GTASaveData.LCS
             set { m_stats = value; OnPropertyChanged(); }
         }
 
-        bool ISaveData.HasCarGenerators => false;
-
-        ICarGeneratorData ISaveData.CarGenerators
-        {
-            get => throw new NotSupportedException();
-            set => throw new NotSupportedException();
-        }
-
-        IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
-        {
-            SimpleVars,
-            Scripts,
-            Garages,
-            PlayerInfo,
-            Stats
-        };
-
         public override string Name
         {
             get { return SimpleVars.LastMissionPassedName; }
@@ -78,6 +61,27 @@ namespace GTASaveData.LCS
             get { return (DateTime) SimpleVars.TimeStamp; }
             set { SimpleVars.TimeStamp = new Date(value); OnPropertyChanged(); }
         }
+
+        bool ISaveData.HasSimpleVariables => true;
+        bool ISaveData.HasScriptData => true;
+        bool ISaveData.HasGarageData => true;
+        bool ISaveData.HasCarGenerators => false;
+        bool ISaveData.HasPlayerInfo => true;
+
+        ISimpleVariables ISaveData.SimpleVars => SimpleVars;
+        IScriptData ISaveData.ScriptData => Scripts;
+        IGarageData ISaveData.GarageData => Garages;
+        ICarGeneratorData ISaveData.CarGenerators => throw new NotSupportedException();
+        IPlayerInfo ISaveData.PlayerInfo => PlayerInfo;
+
+        IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
+        {
+            SimpleVars,
+            Scripts,
+            Garages,
+            PlayerInfo,
+            Stats
+        };
 
         public LCSSave()
         {

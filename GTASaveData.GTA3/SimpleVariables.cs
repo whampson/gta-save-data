@@ -1,11 +1,12 @@
 ﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
 using System.Diagnostics;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class SimpleVariables : SaveDataObject,
+    public class SimpleVariables : SaveDataObject, ISimpleVariables,
         IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
         public const int MaxMissionPassedNameLength = 24;

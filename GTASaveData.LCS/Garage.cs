@@ -1,10 +1,11 @@
 ﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
 using System.Diagnostics;
 
 namespace GTASaveData.LCS
 {
-    public class Garage : SaveDataObject,
+    public class Garage : SaveDataObject, IGarage,
         IEquatable<Garage>, IDeepClonable<Garage>
     {
         // This class is still largely unconfirmed,
@@ -255,6 +256,42 @@ namespace GTASaveData.LCS
         //    get { return m_collectedCarsState; }
         //    set { m_collectedCarsState = value; OnPropertyChanged(); }
         //}
+
+        int IGarage.Type
+        {
+            get { return (int) Type; }
+            set { Type = (GarageType) value; OnPropertyChanged(); }
+        }
+
+        int IGarage.State
+        {
+            get { return (int) State; }
+            set { State = (GarageState) value; OnPropertyChanged(); }
+        }
+
+        public Vector3D PositionMin
+        {
+            get { return new Vector3D(X1, Y1, Position.Z); }    // TODO: confirm Z
+            set { X1 = value.X; Y1 = value.Y; OnPropertyChanged(); }
+        }
+
+        public Vector3D PositionMax
+        {
+            get { return new Vector3D(X2, Y2, CeilingZ); }      // TODO: confirm Z
+            set { X2 = value.X; Y2 = value.Y; OnPropertyChanged(); }
+        }
+
+        public Vector3D Door1Position
+        {
+            get { return new Vector3D(Door1X, Door1Y, Door1Z); }
+            set { Door1X = value.X; Door1Y = value.Y; Door1Z = value.Z; OnPropertyChanged(); }
+        }
+
+        public Vector3D Door2Position
+        {
+            get { return new Vector3D(Door2X, Door2Y, Door2Z); }
+            set { Door2X = value.X; Door2Y = value.Y; Door2Z = value.Z; OnPropertyChanged(); }
+        }
 
         public Garage()
         { }

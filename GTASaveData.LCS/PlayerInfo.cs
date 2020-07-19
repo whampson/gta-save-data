@@ -1,9 +1,10 @@
-﻿using System;
+﻿using GTASaveData.Types.Interfaces;
+using System;
 using System.Diagnostics;
 
 namespace GTASaveData.LCS
 {
-    public class PlayerInfo : SaveDataObject,
+    public class PlayerInfo : SaveDataObject, IPlayerInfo,
         IEquatable<PlayerInfo>, IDeepClonable<PlayerInfo>
     {
         private int m_money;

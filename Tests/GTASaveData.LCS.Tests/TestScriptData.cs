@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using System.Linq;
 using TestFramework;
 using Xunit;
 
@@ -77,10 +78,9 @@ namespace GTASaveData.LCS.Tests
             string path = TestData.GetTestDataPath(Game.LCS, LCSSave.FileFormats.PS2, "NEDS4");
             LCSSave x = SaveData.Load<LCSSave>(path, LCSSave.FileFormats.PS2);
 
-            // TODO: fix for LCS
             Assert.Equal(272.1489f, x.Scripts.GetGlobalAsFloat(7));
 
-            int numGlobals = x.Scripts.NumGlobalVariables;
+            int numGlobals = x.Scripts.GlobalVariables.Count();
             int i0 = f.Random.Int(0, numGlobals - 1);
             int i1 = f.Random.Int(0, numGlobals - 1);
             int v0 = f.Random.Int();

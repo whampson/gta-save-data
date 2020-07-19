@@ -16,7 +16,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Name, f => Generator.Words(f, RunningScript.MaxNameLength - 1))
                 .RuleFor(x => x.IP, f => f.Random.UInt())
                 .RuleFor(x => x.Stack, f => Generator.Array(RunningScript.GetMaxStackDepth(format), g => f.Random.Int()))
-                .RuleFor(x => x.StackCount, f => f.Random.UShort())
+                .RuleFor(x => x.StackPosition, f => f.Random.UShort())
                 .RuleFor(x => x.LocalVariables, f => Generator.Array(RunningScript.NumLocalVariables, g => f.Random.Int()))
                 .RuleFor(x => x.TimerA, f => f.Random.UInt())
                 .RuleFor(x => x.TimerB, f => f.Random.UInt())
@@ -45,7 +45,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Name, x1.Name);
             Assert.Equal(x0.IP, x1.IP);
             Assert.Equal(x0.Stack, x1.Stack);
-            Assert.Equal(x0.StackCount, x1.StackCount);
+            Assert.Equal(x0.StackPosition, x1.StackPosition);
             Assert.Equal(x0.LocalVariables, x1.LocalVariables);
             Assert.Equal(x0.TimerA, x1.TimerA);
             Assert.Equal(x0.TimerB, x1.TimerB);
@@ -85,7 +85,7 @@ namespace GTASaveData.GTA3.Tests
 
             x0.PushStack(i0);
             x0.PushStack(i1);
-            Assert.Equal(2, x0.StackCount);
+            Assert.Equal(2, x0.StackPosition);
 
             Assert.Equal(i1, x0.PeekStack());
 
@@ -93,7 +93,7 @@ namespace GTASaveData.GTA3.Tests
             int j1 = x0.PopStack();
             Assert.Equal(i1, j0);
             Assert.Equal(i0, j1);
-            Assert.Equal(0, x0.StackCount);
+            Assert.Equal(0, x0.StackPosition);
 
             Assert.Throws<InvalidOperationException>(() => x0.PopStack());
 

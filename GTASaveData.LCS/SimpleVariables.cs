@@ -1,10 +1,11 @@
 ﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
 using System.Diagnostics;
 
 namespace GTASaveData.LCS
 {
-    public class SimpleVariables : SaveDataObject,
+    public class SimpleVariables : SaveDataObject, ISimpleVariables,
         IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
         public const int MaxMissionPassedNameLength = 60;

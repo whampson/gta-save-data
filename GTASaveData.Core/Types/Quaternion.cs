@@ -7,7 +7,7 @@ namespace GTASaveData.Types
     [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 16)]
     public struct Quaternion : ISaveDataObject, IEquatable<Quaternion>
     {
-        private const int Size = 8;
+        private const int Size = 16;
 
         public float X { get; set; }
         public float Y { get; set; }

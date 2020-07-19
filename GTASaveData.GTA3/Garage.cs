@@ -1,11 +1,12 @@
 ﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
 using System.Diagnostics;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class Garage : SaveDataObject,
+    public class Garage : SaveDataObject, IGarage,
         IEquatable<Garage>, IDeepClonable<Garage>
     {
         private GarageType m_type;
@@ -258,6 +259,42 @@ namespace GTASaveData.GTA3
         {
             get { return m_storedCar; }
             set { m_storedCar = value; OnPropertyChanged(); }
+        }
+
+        int IGarage.Type
+        {
+            get { return (int) Type; }
+            set { Type = (GarageType) value; OnPropertyChanged(); }
+        }
+
+        int IGarage.State
+        {
+            get { return (int) State; }
+            set { State = (GarageState) value; OnPropertyChanged(); }
+        }
+
+        public Vector3D PositionMin
+        {
+            get { return new Vector3D(X1, Y1, Z1); }
+            set { X1 = value.X; Y1 = value.Y; Z1 = value.Z; OnPropertyChanged(); }
+        }
+
+        public Vector3D PositionMax
+        {
+            get { return new Vector3D(X2, Y2, Z2); }
+            set { X2 = value.X; Y2 = value.Y; Z2 = value.Z; OnPropertyChanged(); }
+        }
+
+        public Vector3D Door1Position
+        {
+            get { return new Vector3D(Door1X, Door1Y, Door1Z); }
+            set { Door1X = value.X; Door1Y = value.Y; Door1Z = value.Z; OnPropertyChanged(); }
+        }
+
+        public Vector3D Door2Position
+        {
+            get { return new Vector3D(Door2X, Door2Y, Door2Z); }
+            set { Door2X = value.X; Door2Y = value.Y; Door2Z = value.Z; OnPropertyChanged(); }
         }
 
         public Garage()

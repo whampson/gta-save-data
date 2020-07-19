@@ -11,7 +11,17 @@ namespace GTASaveData.Types.Interfaces
 
         IReadOnlyList<ISaveDataObject> Blocks { get; }
 
+        bool HasSimpleVariables { get; }
+        bool HasScriptData { get; }
+        bool HasGarageData { get; }
         bool HasCarGenerators { get; }
-        ICarGeneratorData CarGenerators { get; set; }
+        bool HasPlayerInfo { get; }
+
+        ISimpleVariables SimpleVars {get;}
+        IScriptData ScriptData { get; }
+        IGarageData GarageData { get; }
+        ICarGeneratorData CarGenerators { get; }
+        IPlayerInfo PlayerInfo { get; }
+        //IStats Stats { get; }
     }
 }

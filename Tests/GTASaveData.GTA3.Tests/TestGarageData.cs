@@ -11,8 +11,8 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<GarageData> model = new Faker<GarageData>()
                 .RuleFor(x => x.NumGarages, f => f.Random.Int())
-                .RuleFor(x => x.BombsAreFree, f => f.Random.Bool())
-                .RuleFor(x => x.RespraysAreFree, f => f.Random.Bool())
+                .RuleFor(x => x.FreeBombs, f => f.Random.Bool())
+                .RuleFor(x => x.FreeResprays, f => f.Random.Bool())
                 .RuleFor(x => x.CarsCollected, f => f.Random.Int())
                 .RuleFor(x => x.BankVansCollected, f => f.Random.Int())
                 .RuleFor(x => x.PoliceCarsCollected, f => f.Random.Int())
@@ -34,8 +34,8 @@ namespace GTASaveData.GTA3.Tests
             GarageData x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             Assert.Equal(x0.NumGarages, x1.NumGarages);
-            Assert.Equal(x0.BombsAreFree, x1.BombsAreFree);
-            Assert.Equal(x0.RespraysAreFree, x1.RespraysAreFree);
+            Assert.Equal(x0.FreeBombs, x1.FreeBombs);
+            Assert.Equal(x0.FreeResprays, x1.FreeResprays);
             Assert.Equal(x0.CarsCollected, x1.CarsCollected);
             Assert.Equal(x0.BankVansCollected, x1.BankVansCollected);
             Assert.Equal(x0.PoliceCarsCollected, x1.PoliceCarsCollected);
