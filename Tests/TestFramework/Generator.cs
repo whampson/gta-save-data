@@ -24,6 +24,11 @@ namespace TestFramework
             return new Vector3D(f.Random.Float(), f.Random.Float(), f.Random.Float());
         }
 
+        public static Quaternion Quaternion(Faker f)
+        {
+            return new Quaternion(f.Random.Float(), f.Random.Float(), f.Random.Float(), f.Random.Float());
+        }
+
         public static DateTime Date(Faker f)
         {
             return f.Date.Between(new DateTime(1970, 1, 1), DateTime.Now);
