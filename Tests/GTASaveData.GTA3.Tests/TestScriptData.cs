@@ -101,8 +101,8 @@ namespace GTASaveData.GTA3.Tests
             using GTA3Save x = SaveData.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
 
             byte b = 0xA5;
-            ushort s = 0xCCEE;
-            uint i = 0xCAFEBABE;
+            short s = unchecked((short) 0xCCEE);
+            int i = unchecked((int) 0xCAFEBABE);
             float f = 133.7f;
             int offset = 420;
 
@@ -114,8 +114,8 @@ namespace GTASaveData.GTA3.Tests
 
             offset = 420;
             offset += x.Scripts.Read1ByteFromScript(offset, out byte b2);
-            offset += x.Scripts.Read2BytesFromScript(offset, out ushort s2);
-            offset += x.Scripts.Read4BytesFromScript(offset, out uint i2);
+            offset += x.Scripts.Read2BytesFromScript(offset, out short s2);
+            offset += x.Scripts.Read4BytesFromScript(offset, out int i2);
             offset += x.Scripts.ReadFloatFromScript(offset, out float f2);
             Assert.Equal(431, offset);
             Assert.Equal(b, b2);

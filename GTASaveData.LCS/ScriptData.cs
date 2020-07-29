@@ -18,7 +18,7 @@ namespace GTASaveData.LCS
 
         private const int ScriptDataSize = 0x6B8;
 
-        // Only the global variables (script space) are editable :(
+        // Only the global variables are editable :(
 
         private Array<byte> m_scriptSpace;
         private int m_onAMissionFlag;
@@ -210,81 +210,6 @@ namespace GTASaveData.LCS
             {
                 ScriptSpace[(index * sizeof(float)) + i] = floatBits[i];
             }
-        }
-
-        public int Read1ByteFromScript(int offset, out byte value)
-        {
-            value = ScriptSpace[offset];
-            return sizeof(byte);
-        }
-
-        public int Read2BytesFromScript(int offset, out ushort value)
-        {
-            byte[] data = new byte[sizeof(ushort)];
-            for (int i = 0; i < sizeof(ushort); i++)
-            {
-                data[i] = ScriptSpace[offset + i];
-            }
-            value = BitConverter.ToUInt16(data, 0);
-            return sizeof(ushort);
-        }
-
-        public int Read4BytesFromScript(int offset, out uint value)
-        {
-            byte[] data = new byte[sizeof(uint)];
-            for (int i = 0; i < sizeof(uint); i++)
-            {
-                data[i] = ScriptSpace[offset + i];
-            }
-            value = BitConverter.ToUInt32(data, 0);
-            return sizeof(uint);
-        }
-
-        public int ReadFloatFromScript(int offset, out float value)
-        {
-            byte[] data = new byte[sizeof(float)];
-            for (int i = 0; i < sizeof(float); i++)
-            {
-                data[i] = ScriptSpace[offset + i];
-            }
-            value = BitConverter.ToSingle(data, 0);
-            return sizeof(float);
-        }
-
-        public int Write1ByteToScript(int offset, byte value)
-        {
-            ScriptSpace[offset] = value;
-            return sizeof(byte);
-        }
-
-        public int Write2BytesToScript(int offset, ushort value)
-        {
-            byte[] data = BitConverter.GetBytes(value);
-            for (int i = 0; i < sizeof(ushort); i++)
-            {
-                ScriptSpace[offset + i] = data[i];
-            }
-            return sizeof(ushort);
-        }
-
-        public int Write4BytesToScript(int offset, uint value)
-        {
-            byte[] data = BitConverter.GetBytes(value);
-            for (int i = 0; i < sizeof(uint); i++)
-            {
-                ScriptSpace[offset + i] = data[i];
-            }
-            return sizeof(uint);
-        }
-
-        public int WriteFloatToScript(int offset, float value)
-        {
-            byte[] data = BitConverter.GetBytes(value);
-            for (int i = 0; i < sizeof(float); i++)
-            {
-                ScriptSpace[offset + i] = data[i];
-            }
-            return sizeof(float);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)

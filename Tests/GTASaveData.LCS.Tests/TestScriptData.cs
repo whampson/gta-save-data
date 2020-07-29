@@ -95,36 +95,6 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(v0, r0);
             Assert.Equal(v1, r1);
         }
-
-        [Fact]
-        public void ScriptSpace()
-        {
-            string path = TestData.GetTestDataPath(Game.LCS, LCSSave.FileFormats.PS2, "NEDS4");
-            LCSSave x = SaveData.Load<LCSSave>(path, LCSSave.FileFormats.PS2);
-
-            byte b = 0xA5;
-            ushort s = 0xCCEE;
-            uint i = 0xCAFEBABE;
-            float f = 133.7f;
-            int offset = 420;
-
-            offset += x.Scripts.Write1ByteToScript(offset, b);
-            offset += x.Scripts.Write2BytesToScript(offset, s);
-            offset += x.Scripts.Write4BytesToScript(offset, i);
-            offset += x.Scripts.WriteFloatToScript(offset, f);
-            Assert.Equal(431, offset);
-
-            offset = 420;
-            offset += x.Scripts.Read1ByteFromScript(offset, out byte b2);
-            offset += x.Scripts.Read2BytesFromScript(offset, out ushort s2);
-            offset += x.Scripts.Read4BytesFromScript(offset, out uint i2);
-            offset += x.Scripts.ReadFloatFromScript(offset, out float f2);
-            Assert.Equal(431, offset);
-            Assert.Equal(b, b2);
-            Assert.Equal(s, s2);
-            Assert.Equal(i, i2);
-            Assert.Equal(f, f2);
-        }
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

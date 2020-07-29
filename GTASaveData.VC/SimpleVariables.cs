@@ -1,11 +1,13 @@
 ﻿using GTASaveData.Types;
+using GTASaveData.Types.Interfaces;
 using System;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.VC
 {
-    public class SimpleVariables : SaveDataObject, IEquatable<SimpleVariables>
+    public class SimpleVariables : SaveDataObject, ISimpleVariables,
+        IEquatable<SimpleVariables>
     {
         public const int MaxMissionPassedNameLength = 24;
         public const int RadioStationListCount = 10;

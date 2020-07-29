@@ -197,12 +197,17 @@ namespace GTASaveData.VC
             set { SimpleVars.TimeStamp = new SystemTime(value); OnPropertyChanged(); }
         }
 
-        bool ISaveData.HasCarGenerators => true;
-        ICarGeneratorData ISaveData.CarGenerators
-        {
-            get { return CarGenerators; }
-            set { CarGenerators = (CarGeneratorData) value; OnPropertyChanged(); }
-        }
+        bool ISaveData.HasSimpleVariables => true;
+        bool ISaveData.HasScriptData => false;      // TODO
+        bool ISaveData.HasGarageData => false;      // TODO
+        bool ISaveData.HasCarGenerators => true;    // TODO
+        bool ISaveData.HasPlayerInfo => false;      // TODO
+
+        ISimpleVariables ISaveData.SimpleVars => SimpleVars;
+        IScriptData ISaveData.ScriptData => throw new NotImplementedException();
+        IGarageData ISaveData.GarageData => throw new NotImplementedException();
+        ICarGeneratorData ISaveData.CarGenerators => CarGenerators;
+        IPlayerInfo ISaveData.PlayerInfo => throw new NotImplementedException();
 
         IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
         {
