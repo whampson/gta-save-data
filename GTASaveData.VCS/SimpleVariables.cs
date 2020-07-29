@@ -3,14 +3,11 @@ using GTASaveData.Types.Interfaces;
 using System;
 using System.Diagnostics;
 
-namespace GTASaveData.LCS
+namespace GTASaveData.VCS
 {
     public class SimpleVariables : SaveDataObject, ISimpleVariables,
         IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
-        public const int MaxMissionPassedNameLength = 60;
-
-        private string m_lastMissionPassedName;
         private int m_currentLevel;
         private int m_currentArea;
         private int m_prefsLanguage;
@@ -54,12 +51,21 @@ namespace GTASaveData.LCS
         private bool m_allTaxisHaveNitro;
         private bool m_targetIsOn;
         private Vector2D m_targetPosition;
+        private Vector3D m_playerPosition;
+        private bool m_trailsOn;
         private Date m_timeStamp;
 
-        public string LastMissionPassedName
+        private int m_unknown78hPS2;
+        private int m_unknown7ChPS2;
+        private int m_unknown90hPS2;
+        private int m_unknownB8hPSP;
+        private byte m_unknownD8hPS2;
+        private byte m_unknownD9hPS2;
+
+        public string LastMissionPassedName         // TODO: hmmmm
         {
-            get { return m_lastMissionPassedName; }
-            set { m_lastMissionPassedName = value; OnPropertyChanged(); }
+            get { return ""; }
+            set { ; OnPropertyChanged(); }
         }
 
         public int CurrentLevel
@@ -320,10 +326,58 @@ namespace GTASaveData.LCS
             set { m_targetPosition = value; OnPropertyChanged(); }
         }
 
+        public Vector3D PlayerPosition
+        {
+            get { return m_playerPosition; }
+            set { m_playerPosition = value; OnPropertyChanged(); }
+        }
+
+        public bool TrailsOn
+        {
+            get { return m_trailsOn; }
+            set { m_trailsOn = value; OnPropertyChanged(); }
+        }
+
         public Date TimeStamp
         {
             get { return m_timeStamp; }
             set { m_timeStamp = value; OnPropertyChanged(); }
+        }
+
+        public int Unknown78hPS2
+        {
+            get { return m_unknown78hPS2; }
+            set { m_unknown78hPS2 = value; OnPropertyChanged(); }
+        }
+
+        public int Unknown7ChPS2
+        {
+            get { return m_unknown7ChPS2; }
+            set { m_unknown7ChPS2 = value; OnPropertyChanged(); }
+        }
+
+        public int Unknown90hPS2
+        {
+            get { return m_unknown90hPS2; }
+            set { m_unknown90hPS2 = value; OnPropertyChanged(); }
+        }
+
+        public int UnknownB8hPSP
+        {
+            get { return m_unknownB8hPSP; }
+            set { m_unknownB8hPSP = value; OnPropertyChanged(); }
+        }
+
+        public byte UnknownD8hPS2
+        {
+            get { return m_unknownD8hPS2; }
+            set { m_unknownD8hPS2 = value; OnPropertyChanged(); }
+        }
+
+        public byte UnknownD9hPS2
+        {
+            get { return m_unknownD9hPS2; }
+            set { m_unknownD9hPS2 = value; OnPropertyChanged(); }
         }
 
         public SimpleVariables()
@@ -378,17 +432,20 @@ namespace GTASaveData.LCS
             AllTaxisHaveNitro = other.AllTaxisHaveNitro;
             TargetIsOn = other.TargetIsOn;
             TargetPosition = other.TargetPosition;
+            PlayerPosition = other.PlayerPosition;
+            TrailsOn = other.TrailsOn;
             TimeStamp = other.TimeStamp;
+            Unknown78hPS2 = other.Unknown78hPS2;
+            Unknown7ChPS2 = other.Unknown7ChPS2;
+            Unknown90hPS2 = other.Unknown90hPS2;
+            UnknownB8hPSP = other.UnknownB8hPSP;
+            UnknownD8hPS2 = other.UnknownD8hPS2;
+            UnknownD9hPS2 = other.UnknownD9hPS2;
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Skip(8); // unused
-            if (fmt.IsMobile)
-            {
-                buf.Skip(4); // unused
-                LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
-            }
             CurrentLevel = buf.ReadInt32();
             CurrentArea = buf.ReadInt32();
             Language = buf.ReadInt32();
@@ -423,24 +480,17 @@ namespace GTASaveData.LCS
             if (fmt.IsPS2)
             {
                 BlurOn = buf.ReadBool(4);
-                buf.Skip(8); // possibly 2 unused settings
+                Unknown78hPS2 = buf.ReadInt32();    // possibly unused setting
+                Unknown7ChPS2 = buf.ReadInt32();    // possibly unused setting
                 UseWideScreen = buf.ReadBool(4);
-            }
-            else
-            {
-                BlurOn = buf.ReadBool();
-                buf.Skip(3);
-            }
-            MusicVolume = buf.ReadInt32();
-            SfxVolume = buf.ReadInt32();
-            RadioStation = (RadioStation) buf.ReadByte();
-            StereoOutput = buf.ReadBool();
-            buf.Skip(2);
-            buf.Skip(10 * 4); // unused
-            if (!fmt.IsPSP) buf.Skip(4); // unused
-            PadMode = buf.ReadInt16();
-            if (fmt.IsPS2)
-            {
+                MusicVolume = buf.ReadInt32();
+                SfxVolume = buf.ReadInt32();
+                RadioStation = (RadioStation) buf.ReadByte();
+                StereoOutput = buf.ReadBool();
+                buf.Skip(2);
+                Unknown90hPS2 = buf.ReadInt32();
+                buf.Skip(9 * 4);    // unused
+                PadMode = buf.ReadInt16();
                 buf.Skip(2);
                 InvertLook = !buf.ReadBool(4);  // negated
                 UseVibration = buf.ReadBool();
@@ -449,22 +499,34 @@ namespace GTASaveData.LCS
                 AllTaxisHaveNitro = buf.ReadBool(4);
                 TargetIsOn = buf.ReadBool();
                 buf.Skip(3);
+                TargetPosition = buf.Read<Vector2D>();
+                UnknownD8hPS2 = buf.ReadByte();
+                UnknownD9hPS2 = buf.ReadByte();
+                buf.Skip(2);
+                PlayerPosition = buf.Read<Vector3D>();
+                TrailsOn = buf.ReadBool(4);
+                TimeStamp = buf.Read<Date>();
             }
-            else
+            else if (fmt.IsPSP)
             {
-                InvertLook = buf.ReadBool();
-                if (fmt.IsPSP) InvertLook = !InvertLook;
+                BlurOn = buf.ReadBool();
+                buf.Skip(3);
+                MusicVolume = buf.ReadInt32();
+                SfxVolume = buf.ReadInt32();
+                RadioStation = (RadioStation) buf.ReadByte();
+                StereoOutput = buf.ReadBool();
+                buf.Skip(2);
+                buf.Skip(9 * 4);    // unused
+                PadMode = buf.ReadInt16();
+                InvertLook = !buf.ReadBool();  // negated
                 SwapNippleAndDPad = buf.ReadBool();
                 HasPlayerCheated = buf.ReadBool();
                 AllTaxisHaveNitro = buf.ReadBool();
                 TargetIsOn = buf.ReadBool();
                 buf.Skip(1);
-            }
-            TargetPosition = buf.Read<Vector2D>();
-            if (fmt.IsPS2)
-            {
-                buf.Skip(4);    // unused
-                TimeStamp = buf.Read<Date>();
+                TargetPosition = buf.Read<Vector2D>();
+                UnknownB8hPSP = buf.ReadInt32();
+                PlayerPosition = buf.Read<Vector3D>();
             }
 
             Debug.Assert(buf.Offset == GetSize(fmt));
@@ -472,14 +534,8 @@ namespace GTASaveData.LCS
 
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
-            buf.Skip(4); // unused
-            if (fmt.IsPS2 || fmt.IsPSP) buf.Write(3);
-            else buf.Write(8);
-            if (fmt.IsMobile)
-            {
-                buf.Skip(4); // unused
-                buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
-            }
+            buf.Skip(4);    // unused
+            buf.Write(3);   // always 3
             buf.Write(CurrentLevel);
             buf.Write(CurrentArea);
             buf.Write(Language);
@@ -513,50 +569,54 @@ namespace GTASaveData.LCS
             buf.Write((int) RadarMode);
             if (fmt.IsPS2)
             {
-                buf.Write(BlurOn, 4);
-                buf.Skip(8); // possibly 2 unused settings
-                buf.Write(UseWideScreen, 4);
+                buf.Write(BlurOn);
+                buf.Write(Unknown78hPS2);
+                buf.Write(Unknown7ChPS2);
+                buf.Write(UseWideScreen);
+                buf.Write(MusicVolume);
+                buf.Write(SfxVolume);
+                buf.Write((byte) RadioStation);
+                buf.Write(StereoOutput);
+                buf.Skip(2);
+                buf.Write(Unknown90hPS2);
+                buf.Skip(9 * 4);    // unused
+                buf.Write(PadMode);
+                buf.Skip(2);
+                buf.Write(InvertLook);
+                buf.Write(UseVibration);
+                buf.Skip(3);
+                buf.Write(HasPlayerCheated);
+                buf.Write(AllTaxisHaveNitro);
+                buf.Write(TargetIsOn);
+                buf.Skip(3);
+                buf.Write(TargetPosition);
+                buf.Write(UnknownD8hPS2);
+                buf.Write(UnknownD9hPS2);
+                buf.Skip(2);
+                buf.Write(PlayerPosition);
+                buf.Write(TrailsOn);
+                buf.Write(TimeStamp);
             }
-            else
+            else if (fmt.IsPSP)
             {
                 buf.Write(BlurOn);
                 buf.Skip(3);
-            }
-            buf.Write(MusicVolume);
-            buf.Write(SfxVolume);
-            buf.Write((byte) RadioStation);
-            buf.Write(StereoOutput);
-            buf.Skip(2);
-            buf.Skip(10 * 4); // unused
-            if (!fmt.IsPSP) buf.Skip(4); // unused
-            buf.Write(PadMode);
-            if (fmt.IsPS2)
-            {
+                buf.Write(MusicVolume);
+                buf.Write(SfxVolume);
+                buf.Write((byte) RadioStation);
+                buf.Write(StereoOutput);
                 buf.Skip(2);
-                buf.Write(!InvertLook, 4);  // negated
-                buf.Write(UseVibration);
-                buf.Skip(3);
-                buf.Write(HasPlayerCheated, 4);
-                buf.Write(AllTaxisHaveNitro, 4);
-                buf.Write(TargetIsOn);
-                buf.Skip(3);
-            }
-            else
-            {
-                bool invertLook = InvertLook;
-                if (fmt.IsPSP) invertLook = !invertLook;
-                buf.Write(invertLook);
+                buf.Skip(9 * 4);    // unused
+                buf.Write(PadMode);
+                buf.Write(InvertLook);
                 buf.Write(SwapNippleAndDPad);
                 buf.Write(HasPlayerCheated);
                 buf.Write(AllTaxisHaveNitro);
                 buf.Write(TargetIsOn);
                 buf.Skip(1);
-            }
-            buf.Write(TargetPosition);
-            if (fmt.IsPS2)
-            {
-                buf.Skip(4);    // unused
-                buf.Write(TimeStamp);
+                buf.Write(TargetPosition);
+                buf.Write(UnknownB8hPSP);
+                buf.Write(PlayerPosition);
             }
 
             Debug.Assert(buf.Offset == GetSize(fmt));
@@ -564,9 +624,8 @@ namespace GTASaveData.LCS
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPSP) return 0xBC;
-            if (fmt.IsPS2) return 0xF8;
-            if (fmt.IsMobile) return 0x13C;
+            if (fmt.IsPSP) return 0xC8;
+            if (fmt.IsPS2) return 0x104;
             throw SizeNotDefined(fmt);
         }
 
@@ -626,7 +685,15 @@ namespace GTASaveData.LCS
                 && AllTaxisHaveNitro.Equals(other.AllTaxisHaveNitro)
                 && TargetIsOn.Equals(other.TargetIsOn)
                 && TargetPosition.Equals(other.TargetPosition)
-                && TimeStamp.Equals(other.TimeStamp);
+                && PlayerPosition.Equals(other.PlayerPosition)
+                && TrailsOn.Equals(other.TrailsOn)
+                && TimeStamp.Equals(other.TimeStamp)
+                && Unknown78hPS2.Equals(other.Unknown78hPS2)
+                && Unknown7ChPS2.Equals(other.Unknown7ChPS2)
+                && Unknown90hPS2.Equals(other.Unknown90hPS2)
+                && UnknownB8hPSP.Equals(other.UnknownB8hPSP)
+                && UnknownD8hPS2.Equals(other.UnknownD8hPS2)
+                && UnknownD9hPS2.Equals(other.UnknownD9hPS2);
         }
 
         public SimpleVariables DeepClone()
@@ -653,5 +720,18 @@ namespace GTASaveData.LCS
         MapAndBlips,
         BlipsOnly,
         RadarOff,
+    }
+
+    public enum RadioStation
+    {
+        FlashFM,
+        VRock,
+        Paradise,
+        VCPR,
+        VCFL,
+        Wave103,
+        Fresh105,
+        Espantoso,
+        Emotion,
     }
 }

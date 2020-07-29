@@ -19,8 +19,8 @@ namespace GTASaveData
         [Description("Liberty City Stories")]
         LCS,
 
-        //[Description("Vice City Stories")]
-        //VCS,
+        [Description("Vice City Stories")]
+        VCS,
 
         //[Description("GTA IV")]
         //IV

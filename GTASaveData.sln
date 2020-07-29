@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GTASaveData.LCS", "GTASaveD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GTASaveData.LCS.Tests", "Tests\GTASaveData.LCS.Tests\GTASaveData.LCS.Tests.csproj", "{00E822B9-812B-433D-9779-192C1D151098}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTASaveData.VCS", "GTASaveData.VCS\GTASaveData.VCS.csproj", "{5512424F-9EA2-4B70-9DB9-1059BFEF7373}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GTASaveData.GTA4", "GTASaveData.GTA4\GTASaveData.GTA4.csproj", "{DF927FB7-6A89-442E-B1E6-289EEDCAA3FE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "Tests\TestApp\TestApp.csproj", "{F492A697-1B83-4562-9C9E-3579272EDDDA}"
@@ -86,6 +88,10 @@ Global
 		{A66EF29A-3F17-4B30-B9DB-D44CCDA08F40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A66EF29A-3F17-4B30-B9DB-D44CCDA08F40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A66EF29A-3F17-4B30-B9DB-D44CCDA08F40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5512424F-9EA2-4B70-9DB9-1059BFEF7373}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5512424F-9EA2-4B70-9DB9-1059BFEF7373}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5512424F-9EA2-4B70-9DB9-1059BFEF7373}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5512424F-9EA2-4B70-9DB9-1059BFEF7373}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

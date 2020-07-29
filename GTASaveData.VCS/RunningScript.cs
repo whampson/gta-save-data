@@ -4,36 +4,45 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace GTASaveData.LCS
+namespace GTASaveData.VCS
 {
     public class RunningScript : SaveDataObject, IRunningScript,
         IEquatable<RunningScript>, IDeepClonable<RunningScript>
     {
         public const int MaxNameLength = 8;
         public const int MaxStackDepth = 16;
-        public const int NumLocalVariables = 104;
+        public const int NumLocalVariables = 103;       // maybe... 103 is a weird number
 
         private uint m_pNextScript; // not loaded
         private uint m_pPrevScript; // not loaded
         private int m_id;
-        private string m_name;
+        private int m_unknown10h;
         private uint m_ip;
         private Array<int> m_stack;
         private ushort m_stackPointer;
         private Array<int> m_localVariables;
         private uint m_timerA;
         private uint m_timerB;
-        private int m_field210h;
-        private byte m_field214h;
-        private bool m_condResult;
-        private bool m_isMissionScript;
-        private bool m_clearMessages;
+        private int m_unknown1FCh;
         private uint m_wakeTime;
-        private ushort m_andOrState;
-        private bool m_notFlag;
-        private bool m_deathArrestEnabled;
-        private bool m_deathArrestExecuted;
-        private bool m_missionFlag;
+        private int m_unknown204h;
+        private int m_unknown208h;
+        private byte m_unknown20Ch;
+        private byte m_unknown20Dh;
+        private byte m_unknown20Eh;
+        //private int m_field210h;
+        //private byte m_field214h;
+        //private bool m_condResult;
+        //private bool m_isMissionScript;
+        //private bool m_clearMessages;
+        //private uint m_wakeTime;
+        //private ushort m_andOrState;
+        //private bool m_notFlag;
+        //private bool m_deathArrestEnabled;
+        //private bool m_deathArrestExecuted;
+        //private bool m_missionFlag;
+        private string m_name;
+        private byte m_unknown217h;
 
         public uint NextScriptPointer
         {
@@ -53,10 +62,10 @@ namespace GTASaveData.LCS
             set { m_id = value; OnPropertyChanged(); }
         }
 
-        public string Name
+        public int Field10h
         {
-            get { return m_name; }
-            set { m_name = value; OnPropertyChanged(); }
+            get { return m_unknown10h; }
+            set { m_unknown10h = value; OnPropertyChanged(); }
         }
 
         public uint IP
@@ -95,34 +104,10 @@ namespace GTASaveData.LCS
             set { m_timerB = value; OnPropertyChanged(); }
         }
 
-        public int Field210h
+        public int Field1FCh
         {
-            get { return m_field210h; }
-            set { m_field210h = value; OnPropertyChanged(); }
-        }
-
-        public byte Field214h
-        {
-            get { return m_field214h; }
-            set { m_field214h = value; OnPropertyChanged(); }
-        }
-
-        public bool ConditionResult
-        {
-            get { return m_condResult; }
-            set { m_condResult = value; OnPropertyChanged(); }
-        }
-
-        public bool IsMissionScript
-        {
-            get { return m_isMissionScript; }
-            set { m_isMissionScript = value; OnPropertyChanged(); }
-        }
-
-        public bool ClearMessages
-        {
-            get { return m_clearMessages; }
-            set { m_clearMessages = value; OnPropertyChanged(); }
+            get { return m_unknown1FCh; }
+            set { m_unknown1FCh = value; OnPropertyChanged(); }
         }
 
         public uint WakeTime
@@ -131,34 +116,46 @@ namespace GTASaveData.LCS
             set { m_wakeTime = value; OnPropertyChanged(); }
         }
 
-        public ushort AndOrState
+        public int Field204h
         {
-            get { return m_andOrState; }
-            set { m_andOrState = value; OnPropertyChanged(); }
+            get { return m_unknown204h; }
+            set { m_unknown204h = value; OnPropertyChanged(); }
         }
 
-        public bool NotFlag
+        public int Field208h
         {
-            get { return m_notFlag; }
-            set { m_notFlag = value; OnPropertyChanged(); }
+            get { return m_unknown208h; }
+            set { m_unknown208h = value; OnPropertyChanged(); }
         }
 
-        public bool WastedBustedCheckEnabled
+        public byte Field20Ch
         {
-            get { return m_deathArrestEnabled; }
-            set { m_deathArrestEnabled = value; OnPropertyChanged(); }
+            get { return m_unknown20Ch; }
+            set { m_unknown20Ch = value; OnPropertyChanged(); }
         }
 
-        public bool WastedBustedCheckResult
+        public byte Field20Dh
         {
-            get { return m_deathArrestExecuted; }
-            set { m_deathArrestExecuted = value; OnPropertyChanged(); }
+            get { return m_unknown20Dh; }
+            set { m_unknown20Dh = value; OnPropertyChanged(); }
         }
 
-        public bool MissionFlag
+        public byte Field20Eh
         {
-            get { return m_missionFlag; }
-            set { m_missionFlag = value; OnPropertyChanged(); }
+            get { return m_unknown20Eh; }
+            set { m_unknown20Eh = value; OnPropertyChanged(); }
+        }
+
+        public string Name
+        {
+            get { return m_name; }
+            set { m_name = value; OnPropertyChanged(); }
+        }
+
+        public byte Field217h
+        {
+            get { return m_unknown217h; }
+            set { m_unknown217h = value; OnPropertyChanged(); }
         }
 
         IEnumerable<int> IRunningScript.Stack => m_stack;
@@ -177,24 +174,22 @@ namespace GTASaveData.LCS
             NextScriptPointer = other.NextScriptPointer;
             PrevScriptPointer = other.PrevScriptPointer;
             Id = other.Id;
-            Name = other.Name;
+            Field10h = other.Field10h;
             IP = other.IP;
             Stack = ArrayHelper.DeepClone(other.Stack);
             StackPosition = other.StackPosition;
             LocalVariables = ArrayHelper.DeepClone(other.LocalVariables);
             TimerA = other.TimerA;
             TimerB = other.TimerB;
-            Field210h = other.Field210h;
-            Field214h = other.Field214h;
-            ConditionResult = other.ConditionResult;
-            IsMissionScript = other.IsMissionScript;
-            ClearMessages = other.ClearMessages;
+            Field1FCh = other.Field1FCh;
             WakeTime = other.WakeTime;
-            AndOrState = other.AndOrState;
-            NotFlag = other.NotFlag;
-            WastedBustedCheckEnabled = other.WastedBustedCheckEnabled;
-            WastedBustedCheckResult = other.WastedBustedCheckResult;
-            MissionFlag = other.MissionFlag;
+            Field204h = other.Field204h;
+            Field208h = other.Field208h;
+            Field20Ch = other.Field20Ch;
+            Field20Dh = other.Field20Dh;
+            Field20Eh = other.Field20Eh;
+            Name = other.Name;
+            Field217h = other.Field217h;
         }
 
         public void PushStack(int value)
@@ -236,12 +231,9 @@ namespace GTASaveData.LCS
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             NextScriptPointer = buf.ReadUInt32();
-            if (fmt.IsiOS) buf.ReadInt32();
             PrevScriptPointer = buf.ReadUInt32();
-            if (fmt.IsiOS) buf.ReadInt32();
             Id = buf.ReadInt32();
-            buf.ReadInt32();
-            Name = buf.ReadString(MaxNameLength);
+            Field10h = buf.ReadInt32();
             IP = buf.ReadUInt32();
             Stack = buf.Read<int>(MaxStackDepth);
             StackPosition = buf.ReadUInt16();
@@ -249,19 +241,15 @@ namespace GTASaveData.LCS
             LocalVariables = buf.Read<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
-            Field210h = buf.ReadInt32();
-            Field214h = buf.ReadByte();
-            ConditionResult = buf.ReadBool();
-            IsMissionScript = buf.ReadBool();
-            ClearMessages = buf.ReadBool();
+            Field1FCh = buf.ReadInt32();
             WakeTime = buf.ReadUInt32();
-            AndOrState = buf.ReadUInt16();
-            NotFlag = buf.ReadBool();
-            WastedBustedCheckEnabled = buf.ReadBool();
-            WastedBustedCheckResult = buf.ReadBool();
-            MissionFlag = buf.ReadBool();
-            buf.Skip(2);
-            if (fmt.IsiOS) buf.ReadInt32();
+            Field204h = buf.ReadInt32();
+            Field208h = buf.ReadInt32();
+            Field20Ch = buf.ReadByte();
+            Field20Dh = buf.ReadByte();
+            Field20Eh = buf.ReadByte();
+            Name = buf.ReadString(MaxNameLength);
+            Field217h = buf.ReadByte();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
@@ -269,12 +257,9 @@ namespace GTASaveData.LCS
         protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(NextScriptPointer);
-            if (fmt.IsiOS) buf.Write(0);
             buf.Write(PrevScriptPointer);
-            if (fmt.IsiOS) buf.Write(0);
             buf.Write(Id);
-            buf.Write(0);
-            buf.Write(Name, MaxNameLength);
+            buf.Write(Field10h);
             buf.Write(IP);
             buf.Write(Stack, MaxStackDepth);
             buf.Write(StackPosition);
@@ -282,26 +267,22 @@ namespace GTASaveData.LCS
             buf.Write(LocalVariables, NumLocalVariables);
             buf.Write(TimerA);
             buf.Write(TimerB);
-            buf.Write(Field210h);
-            buf.Write(Field214h);
-            buf.Write(ConditionResult);
-            buf.Write(IsMissionScript);
-            buf.Write(ClearMessages);
+            buf.Write(Field1FCh);
             buf.Write(WakeTime);
-            buf.Write(AndOrState);
-            buf.Write(NotFlag);
-            buf.Write(WastedBustedCheckEnabled);
-            buf.Write(WastedBustedCheckResult);
-            buf.Write(MissionFlag);
-            buf.Skip(2);
-            if (fmt.IsiOS) buf.Write(0);
+            buf.Write(Field204h);
+            buf.Write(Field208h);
+            buf.Write(Field20Ch);
+            buf.Write(Field20Dh);
+            buf.Write(Field20Eh);
+            buf.Write(Name, MaxNameLength);
+            buf.Write(Field217h);
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            return (fmt.IsiOS) ? 0x228 : 0x21C;
+            return 0x218;
         }
 
         public override bool Equals(object obj)
@@ -319,22 +300,22 @@ namespace GTASaveData.LCS
             return NextScriptPointer.Equals(other.NextScriptPointer)
                 && PrevScriptPointer.Equals(other.PrevScriptPointer)
                 && Id.Equals(other.Id)
-                && Name.Equals(other.Name)
+                && Field10h.Equals(other.Field10h)
                 && IP.Equals(other.IP)
                 && Stack.SequenceEqual(other.Stack)
                 && StackPosition.Equals(other.StackPosition)
                 && LocalVariables.SequenceEqual(other.LocalVariables)
                 && TimerA.Equals(other.TimerA)
                 && TimerB.Equals(other.TimerB)
-                && ConditionResult.Equals(other.ConditionResult)
-                && IsMissionScript.Equals(other.IsMissionScript)
-                && ClearMessages.Equals(other.ClearMessages)
+                && Field1FCh.Equals(other.Field1FCh)
                 && WakeTime.Equals(other.WakeTime)
-                && AndOrState.Equals(other.AndOrState)
-                && NotFlag.Equals(other.NotFlag)
-                && WastedBustedCheckEnabled.Equals(other.WastedBustedCheckEnabled)
-                && WastedBustedCheckResult.Equals(other.WastedBustedCheckResult)
-                && MissionFlag.Equals(other.MissionFlag);
+                && Field204h.Equals(other.Field204h)
+                && Field208h.Equals(other.Field208h)
+                && Field20Ch.Equals(other.Field20Ch)
+                && Field20Dh.Equals(other.Field20Dh)
+                && Field20Eh.Equals(other.Field20Eh)
+                && Name.Equals(other.Name)
+                && Field217h.Equals(other.Field217h);
         }
 
         public RunningScript DeepClone()

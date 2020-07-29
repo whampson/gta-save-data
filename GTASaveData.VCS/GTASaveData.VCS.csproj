@@ -1,20 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>GTASaveData.Core</AssemblyName>
-    <RootNamespace>GTASaveData</RootNamespace>
+    <AssemblyName>GTASaveData.VCS</AssemblyName>
+    <RootNamespace>GTASaveData.VCS</RootNamespace>
     <Authors>Wes Hampson</Authors>
     <Company>Wes Hampson</Company>
     <Product>GTASaveData</Product>
-    <Description>GTASaveData core framework library.</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
-    <AssemblyVersion>1.2.0.899</AssemblyVersion>
-    <FileVersion>1.2.0.899</FileVersion>
+    <Description>A .NET library for manipulating Grand Theft Auto: Vice City Stories save files.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <AssemblyVersion>1.0.0.83</AssemblyVersion>
+    <FileVersion>1.0.0.83</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.2.0</Version>
+    <Version>1.0.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageTags>gtavcs save data; gtavcs save file; gtavcs save; gtavcs; gta; vcs; gta vcs; save data; gta save data; vcs save data;</PackageTags>
     <RepositoryUrl>https://github.com/whampson/gta-save-data</RepositoryUrl>
   </PropertyGroup>
 
@@ -43,11 +44,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="WpfEssentials" Version="1.2.0" />
+    <ProjectReference Include="..\GTASaveData.Core\GTASaveData.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Strings.Designer.cs">
+      <DependentUpon>Strings.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Strings.resx">
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!--<ItemGroup>
     <Compile Update="Strings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -60,6 +75,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
+  </ItemGroup>-->
 
 </Project>

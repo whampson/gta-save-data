@@ -43,6 +43,7 @@
     <ProjectReference Include="..\..\GTASaveData.GTA3\GTASaveData.GTA3.csproj" />
     <ProjectReference Include="..\..\GTASaveData.LCS\GTASaveData.LCS.csproj" />
     <ProjectReference Include="..\..\GTASaveData.VC\GTASaveData.VC.csproj" />
+    <ProjectReference Include="..\..\GTASaveData.VCS\GTASaveData.VCS.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@
 using GTASaveData.GTA3;
 using GTASaveData.LCS;
 using GTASaveData.VC;
+using GTASaveData.VCS;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +16,8 @@ using WpfEssentials.Win32;
 using IIIBlock = GTASaveData.GTA3.DataBlock;
 using VCBlock = GTASaveData.VC.DataBlock;
 using LCSBlock = GTASaveData.LCS.DataBlock;
+using VCSBlock = GTASaveData.VCS.DataBlock;
+
 
 namespace TestApp
 {
@@ -83,6 +86,7 @@ namespace TestApp
                     Game.GTA3 => GTA3Save.FileFormats.GetAll(),
                     Game.VC => VCSave.FileFormats.GetAll(),
                     Game.LCS => LCSSave.FileFormats.GetAll(),
+                    Game.VCS => VCSSave.FileFormats.GetAll(),
                     _ => new FileFormat[0],
                 };
             }
@@ -93,6 +97,7 @@ namespace TestApp
             { Game.GTA3, Enum.GetNames(typeof(IIIBlock)) },
             { Game.VC, Enum.GetNames(typeof(VCBlock)) },
             { Game.LCS, Enum.GetNames(typeof(LCSBlock)) },
+            { Game.VCS, Enum.GetNames(typeof(VCSBlock)) },
         };
 
         public string[] BlockNameForCurrentGame
@@ -109,7 +114,6 @@ namespace TestApp
         public void Initialize()
         {
             PopulateTabs();
-            //OnPopulateFileTypeList();
         }
         #endregion
 
@@ -181,7 +185,7 @@ namespace TestApp
                 case Game.VC: DoLoad<VCSave>(path); break;
                 //case GameType.SA: DoLoad<SanAndreasSave>(path); break;
                 case Game.LCS: DoLoad<LCSSave>(path); break;
-                //case GameType.VCS: DoLoad<ViceCityStoriesSave>(path); break;
+                case Game.VCS: DoLoad<VCSSave>(path); break;
                 //case GameType.IV: DoLoad<GTA4Save>(path); break;
                 default: RequestMessageBoxError("Selected game not yet supported!"); return;
             }
@@ -256,7 +260,6 @@ namespace TestApp
             }
 
             CurrentSaveFile.FileFormat = CurrentFileFormat;
-            //CurrentSaveFile.TimeStamp = DateTime.Now;
             CurrentSaveFile.Save(path);
             StatusText = "File saved.";
         }
@@ -296,19 +299,9 @@ namespace TestApp
                 text, "Error", icon: MessageBoxImage.Error));
         }
 
-        //private void OnPopulateFileTypeList()
-        //{
-        //    PopulateFileTypeList?.Invoke(this, new FileTypeListEventArgs(FileFormats));
-        //}
-
         private void OnTabRefresh(TabRefreshTrigger trigger, int desiredTabIndex = 0)
         {
             TabRefresh?.Invoke(this, new TabRefreshEventArgs(trigger));
-
-            //if (desiredTabIndex != -1 && desiredTabIndex == SelectedTabIndex)
-            //{
-            //    SelectedTabIndex = -1;
-            //}
             SelectedTabIndex = desiredTabIndex;
         }
         #endregion
