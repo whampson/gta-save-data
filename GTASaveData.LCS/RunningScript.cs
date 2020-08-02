@@ -214,7 +214,7 @@ namespace GTASaveData.LCS
         {
             if (StackPosition == 0)
             {
-                throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
+                throw new InvalidOperationException("The stack is empty.");
             }
             return Stack[--StackPosition];
         }
@@ -223,7 +223,7 @@ namespace GTASaveData.LCS
         {
             if (StackPosition == 0)
             {
-                throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
+                throw new InvalidOperationException("The stack is full.");
             }
             return Stack[StackPosition - 1];
         }

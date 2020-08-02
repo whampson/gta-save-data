@@ -1,4 +1,6 @@
 ﻿using Bogus;
+using GTASaveData.Core.Tests;
+using GTASaveData.Types;
 using System.Linq;
 using TestFramework;
 using Xunit;

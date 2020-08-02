@@ -1,4 +1,5 @@
 ﻿using GTASaveData.JsonConverters;
+using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
 using Newtonsoft.Json;
 using System;
@@ -129,14 +130,15 @@ namespace GTASaveData.LCS
         {
             get
             {
-                for (int i = 0; i < ScriptSpace.Count / 4; i++) yield return GetGlobal(i);
+                for (int i = 0; i < ScriptSpace.Count / 4; i++)
+                {
+                    yield return GetGlobal(i);
+                }
             }
         }
 
         IEnumerable<IBuildingSwap> IScriptData.BuildingSwaps => m_buildingSwapArray;
-
         IEnumerable<IInvisibleObject> IScriptData.InvisibilitySettings => m_invisibilitySettingArray;
-
         IEnumerable<IRunningScript> IScriptData.ActiveScripts => m_activeScripts;
 
         public ScriptData()
@@ -309,15 +311,6 @@ namespace GTASaveData.LCS
         {
             return new ScriptData(this);
         }
-    }
-
-    public enum PoolType
-    {
-        None,
-        Treadable,
-        Building,
-        Object,
-        Dummy
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

@@ -153,7 +153,6 @@ namespace GTASaveData.LCS
         }
 
         IEnumerable<IStoredCar> IGarageData.CarsInSafeHouse => m_carsInSafeHouse;
-
         IEnumerable<IGarage> IGarageData.Garages => m_garages;
 
         public GarageData()

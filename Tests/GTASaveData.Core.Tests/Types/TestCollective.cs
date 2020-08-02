@@ -1,8 +1,9 @@
 ﻿using Bogus;
+using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.LCS.Tests
+namespace GTASaveData.Core.Tests
 {
     public class TestCollective : SaveDataObjectTestBase<Collective>
     {

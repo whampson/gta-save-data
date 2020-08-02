@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 
-namespace GTASaveData.LCS
+namespace GTASaveData.Types
 {
     public class BuildingSwap : SaveDataObject, IBuildingSwap,
         IEquatable<BuildingSwap>, IDeepClonable<BuildingSwap>

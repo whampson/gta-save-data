@@ -1,7 +1,7 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
 
-namespace GTASaveData.LCS
+namespace GTASaveData.Types
 {
     public class InvisibleObject : SaveDataObject, IInvisibleObject,
         IEquatable<InvisibleObject>, IDeepClonable<InvisibleObject>

@@ -118,23 +118,6 @@ namespace GTASaveData.LCS
             return file.Offset;
         }
 
-        //private int ReadDummyBlock(StreamBuffer file, string tag, out Dummy obj)
-        //{
-        //    file.Mark();
-
-        //    string savedTag = file.ReadString(4);
-        //    Debug.Assert(savedTag == tag);
-
-        //    int size = file.ReadInt32();
-        //    Debug.Assert(file.Position + size <= file.Length);
-
-        //    obj = new Dummy(size);
-        //    Serializer.Read(obj, file, FileFormat);
-        //    file.Align4();
-
-        //    return file.Offset;
-        //}
-
         private int WriteDataBlock<T>(StreamBuffer file, string tag, T obj)
             where T : SaveDataObject
         {
@@ -210,7 +193,7 @@ namespace GTASaveData.LCS
 
             using (StreamBuffer buf = new StreamBuffer(data))
             {
-                if (buf.Length < 8) goto DetectionFailed;
+                if (buf.Length < 0x1000) goto DetectionFailed;
                 buf.Skip(4);
 
                 int simpSize = buf.ReadInt32();

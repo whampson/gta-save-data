@@ -649,7 +649,6 @@ namespace GTASaveData.LCS
 
     public enum RadarMode
     {
-        // TOOD: confirm
         MapAndBlips,
         BlipsOnly,
         RadarOff,

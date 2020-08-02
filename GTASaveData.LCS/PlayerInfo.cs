@@ -101,13 +101,13 @@ namespace GTASaveData.LCS
             Money = buf.ReadInt32();
             buf.ReadInt32();
             if (fmt.IsPS2 || fmt.IsPSP) buf.Skip(3);        // weird
-            if (fmt.IsPS2 || fmt.IsPSP) buf.ReadFloat();    // 1
+            if (fmt.IsPS2 || fmt.IsPSP) buf.ReadFloat();
             MoneyOnScreen = buf.ReadInt32();
             PackagesCollected = buf.ReadInt32();
             buf.ReadInt32();                                // total hidden packages? 3?
             if (fmt.IsMobile)
             {
-                buf.ReadFloat();    // 1
+                buf.ReadFloat();
                 buf.ReadInt32();
                 MaxHealth = buf.ReadByte();
                 MaxArmor = buf.ReadByte();

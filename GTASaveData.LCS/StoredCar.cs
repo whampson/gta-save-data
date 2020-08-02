@@ -204,18 +204,18 @@ namespace GTASaveData.LCS
     [Flags]
     public enum StoredCarFlags
     {
-        BulletProof     = 0b_00000000_00000001,
-        FireProof       = 0b_00000000_00000010,
-        ExplosionProof  = 0b_00000000_00000100,
-        CollisionProof  = 0b_00000000_00001000,
-        MeleeProof      = 0b_00000000_00010000,     // Doesn't work in-game
-        PopProof        = 0b_00000000_00100000,
-        Strong          = 0b_00000000_01000000,
-        Heavy           = 0b_00000000_10000000,
-        PermanentColor  = 0b_00000001_00000000,
-        TimeBomb        = 0b_00000010_00000000,
-        TipProof        = 0b_00000100_00000000,
-        Unknown         = 0b_10000000_00000000,     // Doesn't do anything from what I can tell
+        BulletProof     = 0b_00000000_00000001,     // Won't take bullet damage
+        FireProof       = 0b_00000000_00000010,     // Won't take fire damage
+        ExplosionProof  = 0b_00000000_00000100,     // Won't take explosion damage
+        CollisionProof  = 0b_00000000_00001000,     // Won't take collision damage
+        MeleeProof      = 0b_00000000_00010000,     // Won't take melee damage (doesn't work in-game)
+        PopProof        = 0b_00000000_00100000,     // Tires won't pop
+        Strong          = 0b_00000000_01000000,     // Car can take about 4x more collision damage
+        Heavy           = 0b_00000000_10000000,     // Car has higher mass
+        PermanentColor  = 0b_00000001_00000000,     // Can't be painted a different color
+        TimeBomb        = 0b_00000010_00000000,     // Fitted with a time bomb
+        TipProof        = 0b_00000100_00000000,     // Won't explode if tipped over
+        Marked          = 0b_10000000_00000000,     // Marked for mission; game won't delete if left stranded
     }
 
     public enum BombType

@@ -1,8 +1,9 @@
 ﻿using Bogus;
+using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.GTA3.Tests
+namespace GTASaveData.Core.Tests
 {
     public class TestBuildingSwap : SaveDataObjectTestBase<BuildingSwap>
     {

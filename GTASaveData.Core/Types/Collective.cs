@@ -1,10 +1,12 @@
 ﻿using System;
 
-namespace GTASaveData.GTA3
+namespace GTASaveData.Types
 {
     public class Collective : SaveDataObject,
         IEquatable<Collective>, IDeepClonable<Collective>
     {
+        // No idea what this is but it's in some saves so ¯\_(ツ)_/¯
+
         private int m_index;
         private int m_field04h;
 
