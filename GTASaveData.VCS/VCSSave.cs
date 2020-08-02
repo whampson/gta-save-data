@@ -3,6 +3,7 @@ using GTASaveData.Types.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace GTASaveData.VCS
@@ -11,8 +12,10 @@ namespace GTASaveData.VCS
         IEquatable<VCSSave>, IDeepClonable<VCSSave>
     {
         private const int SizeOfGameInBytes = 0x18000;
+        private const int OverSize = 2400;
 
         private int m_checkSum;
+        private string m_name;
 
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
@@ -53,8 +56,8 @@ namespace GTASaveData.VCS
 
         public override string Name
         {
-            get { return SimpleVars.LastMissionPassedName; }
-            set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
+            get { return m_name; }
+            set { m_name = value; OnPropertyChanged(); }
         }
 
         public override DateTime TimeStamp
@@ -104,6 +107,7 @@ namespace GTASaveData.VCS
             m_over = new Dummy(other.m_over);
         }
 
+
         private int ReadDataBlock<T>(StreamBuffer file, string tag, out T obj)
             where T : SaveDataObject, new()
         {
@@ -138,6 +142,22 @@ namespace GTASaveData.VCS
             return file.Offset;
         }
 
+        //private int ReadOverBlock(StreamBuffer file)
+        //{
+        //    file.Mark();
+
+        //    string savedTag = file.ReadString(4);
+        //    Debug.Assert(savedTag == "OVER");
+
+        //    Debug.Assert(file.Position + OverSize < file.Length);
+
+        //    m_over = new Dummy(OverSize);
+        //    Serializer.Read(m_over, file, FileFormat);
+        //    file.Align4();
+
+        //    return file.Offset;
+        //}
+
         private int WriteDataBlock<T>(StreamBuffer file, string tag, T obj)
             where T : SaveDataObject
         {
@@ -147,7 +167,7 @@ namespace GTASaveData.VCS
             file.Mark();
             file.Write(tag, length: 4, zeroTerminate: false);
             file.Write(size);
-            file.Write(data);
+            file.Write(data, FileFormat);
             file.Align4();
 
             Debug.Assert(file.Offset == sizeAligned + 8);
@@ -155,6 +175,21 @@ namespace GTASaveData.VCS
 
             return size + 8;
         }
+
+        //private int WriteOverBlock(StreamBuffer file)
+        //{
+        //    Debug.Assert(m_over.Data.Count == OverSize);
+
+        //    file.Mark();
+        //    file.Write("OVER", length: 4, zeroTerminate: false);
+        //    file.Write(m_over.Data);
+        //    file.Align4();
+
+        //    Debug.Assert(file.Offset == OverSize + 4);
+        //    m_checkSum += file.GetBytesFromMark().Sum(x => x);
+
+        //    return OverSize + 4;
+        //}
 
         protected override void LoadAllData(StreamBuffer file)
         {
@@ -170,7 +205,8 @@ namespace GTASaveData.VCS
             PlayerInfo = plyr;
             totalSize += Align4(ReadDummyBlock(file, "STAT", out Dummy stat));
             Stats = stat;
-            totalSize += Align4(ReadDummyBlock(file, "OVER", out Dummy m_over));
+            totalSize += Align4(ReadDummyBlock(file, "OVER", out Dummy over));
+            m_over = over;
 
             if (FileFormat.IsPS2)
             {
@@ -213,7 +249,7 @@ namespace GTASaveData.VCS
 
             using (StreamBuffer buf = new StreamBuffer(data))
             {
-                if (buf.Length < 8) goto DetectionFailed;
+                if (buf.Length < 0x1000) goto DetectionFailed;
                 buf.Skip(4);
 
                 // TODO: more rigorous file verification
@@ -252,6 +288,7 @@ namespace GTASaveData.VCS
             size += Align4(SizeOfObject(Garages, fmt)) + 8;
             size += Align4(SizeOfObject(PlayerInfo, fmt)) + 8;
             size += Align4(SizeOfObject(Stats, fmt)) + 8;
+            size += Align4(SizeOfObject(m_over, fmt)) + 8;
 
             if (fmt.IsPS2) size += (SizeOfGameInBytes - size);
 

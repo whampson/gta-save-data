@@ -17,8 +17,10 @@ Fully supported:
   * *Grand Theft Auto III*
   * *Grand Theft Auto: Liberty City Stories*
 
-The following games are planned:
+In progress:
+  * *Grand Theft Auto: Vice City Stories*
+
+Planned:
   * *Grand Theft Auto: Vice City*
   * *Grand Theft Auto: San Andreas*
-  * *Grand Theft Auto: Vice City Stories*
   * *Grand Theft Auto IV & Episodes*

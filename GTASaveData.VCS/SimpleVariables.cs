@@ -62,12 +62,6 @@ namespace GTASaveData.VCS
         private byte m_unknownD8hPS2;
         private byte m_unknownD9hPS2;
 
-        public string LastMissionPassedName         // TODO: hmmmm
-        {
-            get { return ""; }
-            set { ; OnPropertyChanged(); }
-        }
-
         public int CurrentLevel
         {
             get { return m_currentLevel; }
@@ -382,13 +376,11 @@ namespace GTASaveData.VCS
 
         public SimpleVariables()
         {
-            LastMissionPassedName = "";
             TimeStamp = DateTime.MinValue;
         }
 
         public SimpleVariables(SimpleVariables other)
         {
-            LastMissionPassedName = other.LastMissionPassedName;
             CurrentLevel = other.CurrentLevel;
             CurrentArea = other.CurrentArea;
             Language = other.Language;
@@ -569,24 +561,24 @@ namespace GTASaveData.VCS
             buf.Write((int) RadarMode);
             if (fmt.IsPS2)
             {
-                buf.Write(BlurOn);
+                buf.Write(BlurOn, 4);
                 buf.Write(Unknown78hPS2);
                 buf.Write(Unknown7ChPS2);
-                buf.Write(UseWideScreen);
+                buf.Write(UseWideScreen, 4);
                 buf.Write(MusicVolume);
                 buf.Write(SfxVolume);
                 buf.Write((byte) RadioStation);
                 buf.Write(StereoOutput);
                 buf.Skip(2);
                 buf.Write(Unknown90hPS2);
-                buf.Skip(9 * 4);    // unused
+                buf.Skip(9 * 4);            // unused
                 buf.Write(PadMode);
                 buf.Skip(2);
-                buf.Write(InvertLook);
+                buf.Write(!InvertLook, 4);  // negated
                 buf.Write(UseVibration);
                 buf.Skip(3);
-                buf.Write(HasPlayerCheated);
-                buf.Write(AllTaxisHaveNitro);
+                buf.Write(HasPlayerCheated, 4);
+                buf.Write(AllTaxisHaveNitro, 4);
                 buf.Write(TargetIsOn);
                 buf.Skip(3);
                 buf.Write(TargetPosition);
@@ -594,7 +586,7 @@ namespace GTASaveData.VCS
                 buf.Write(UnknownD9hPS2);
                 buf.Skip(2);
                 buf.Write(PlayerPosition);
-                buf.Write(TrailsOn);
+                buf.Write(TrailsOn, 4);
                 buf.Write(TimeStamp);
             }
             else if (fmt.IsPSP)
@@ -608,7 +600,7 @@ namespace GTASaveData.VCS
                 buf.Skip(2);
                 buf.Skip(9 * 4);    // unused
                 buf.Write(PadMode);
-                buf.Write(InvertLook);
+                buf.Write(!InvertLook); // negated
                 buf.Write(SwapNippleAndDPad);
                 buf.Write(HasPlayerCheated);
                 buf.Write(AllTaxisHaveNitro);
@@ -641,8 +633,7 @@ namespace GTASaveData.VCS
                 return false;
             }
 
-            return LastMissionPassedName.Equals(other.LastMissionPassedName)
-                && CurrentLevel.Equals(other.CurrentLevel)
+            return CurrentLevel.Equals(other.CurrentLevel)
                 && CurrentArea.Equals(other.CurrentArea)
                 && Language.Equals(other.Language)
                 && MillisecondsPerGameMinute.Equals(other.MillisecondsPerGameMinute)
@@ -711,12 +702,11 @@ namespace GTASaveData.VCS
         ExtraSunny,
         Hurricane,
         ExtraColours,
-        Snowy       // PSP only :(
+        ExtraSunny2
     }
 
     public enum RadarMode
     {
-        // TOOD: confirm
         MapAndBlips,
         BlipsOnly,
         RadarOff,
@@ -724,6 +714,7 @@ namespace GTASaveData.VCS
 
     public enum RadioStation
     {
+        // TODO: confirm these
         FlashFM,
         VRock,
         Paradise,
@@ -733,5 +724,6 @@ namespace GTASaveData.VCS
         Fresh105,
         Espantoso,
         Emotion,
+        None
     }
 }

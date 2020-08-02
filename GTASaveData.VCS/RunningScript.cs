@@ -11,10 +11,10 @@ namespace GTASaveData.VCS
     {
         public const int MaxNameLength = 8;
         public const int MaxStackDepth = 16;
-        public const int NumLocalVariables = 103;       // maybe... 103 is a weird number
+        public const int NumLocalVariables = 103;       // hmmm... 103 is a weird number
 
-        private uint m_pNextScript; // not loaded
-        private uint m_pPrevScript; // not loaded
+        private uint m_pNextScript;
+        private uint m_pPrevScript;
         private int m_id;
         private int m_unknown10h;
         private uint m_ip;
@@ -30,17 +30,6 @@ namespace GTASaveData.VCS
         private byte m_unknown20Ch;
         private byte m_unknown20Dh;
         private byte m_unknown20Eh;
-        //private int m_field210h;
-        //private byte m_field214h;
-        //private bool m_condResult;
-        //private bool m_isMissionScript;
-        //private bool m_clearMessages;
-        //private uint m_wakeTime;
-        //private ushort m_andOrState;
-        //private bool m_notFlag;
-        //private bool m_deathArrestEnabled;
-        //private bool m_deathArrestExecuted;
-        //private bool m_missionFlag;
         private string m_name;
         private byte m_unknown217h;
 
@@ -159,7 +148,6 @@ namespace GTASaveData.VCS
         }
 
         IEnumerable<int> IRunningScript.Stack => m_stack;
-
         IEnumerable<int> IRunningScript.LocalVariables => m_localVariables;
 
         public RunningScript()
@@ -209,7 +197,7 @@ namespace GTASaveData.VCS
         {
             if (StackPosition == 0)
             {
-                throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
+                throw new InvalidOperationException("The stack is empty.");
             }
             return Stack[--StackPosition];
         }
@@ -218,7 +206,7 @@ namespace GTASaveData.VCS
         {
             if (StackPosition == 0)
             {
-                throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
+                throw new InvalidOperationException("The stack is full.");
             }
             return Stack[StackPosition - 1];
         }
