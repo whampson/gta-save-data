@@ -173,6 +173,7 @@ namespace TestApp
         public void PopulateTabs()
         {
             m_tabs.Add(new JsonViewModel(this));
+            m_tabs.Add(new EmpireEditorViewModel(this));
 
             OnTabRefresh(TabRefreshTrigger.WindowLoaded);
         }

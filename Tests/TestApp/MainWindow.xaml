@@ -24,6 +24,10 @@
             <local:JsonView/>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type local:EmpireEditorViewModel}">
+            <local:EmpireEditor/>
+        </DataTemplate>
+
         <Style TargetType="{x:Type local:TabControlEx}" x:Key="TabControlStyle">
             <Setter Property="Template">
                 <Setter.Value>

@@ -5,29 +5,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:TestApp"
-    xmlns:econv="clr-namespace:WpfEssentials.Win32.Converters;assembly=WpfEssentials.Win32"
     mc:Ignorable="d" 
     d:DesignHeight="450" d:DesignWidth="800">
-
-    <UserControl.Resources>
-        <econv:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
-        <local:EnumBooleanConverter x:Key="EnumBooleanConverter"/>
-        <local:NullBooleanConverter x:Key="NullBooleanConverter"/>
-
-        <Style TargetType="ComboBox" x:Key="ComboBoxStyle">
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
-        <Style TargetType="ComboBox" x:Key="EnumComboBoxStyle" BasedOn="{StaticResource ComboBoxStyle}">
-            <Setter Property="ItemTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"/>
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
