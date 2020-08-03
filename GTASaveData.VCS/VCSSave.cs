@@ -3,7 +3,6 @@ using GTASaveData.Types.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 namespace GTASaveData.VCS
@@ -12,7 +11,6 @@ namespace GTASaveData.VCS
         IEquatable<VCSSave>, IDeepClonable<VCSSave>
     {
         private const int SizeOfGameInBytes = 0x18000;
-        private const int OverSize = 2400;
 
         private int m_checkSum;
         private string m_name;
@@ -87,6 +85,11 @@ namespace GTASaveData.VCS
             Stats
         };
 
+        public static VCSSave Load(string path)
+        {
+            return Load<VCSSave>(path);
+        }
+
         public VCSSave()
         {
             SimpleVars = new SimpleVariables();
@@ -142,22 +145,6 @@ namespace GTASaveData.VCS
             return file.Offset;
         }
 
-        //private int ReadOverBlock(StreamBuffer file)
-        //{
-        //    file.Mark();
-
-        //    string savedTag = file.ReadString(4);
-        //    Debug.Assert(savedTag == "OVER");
-
-        //    Debug.Assert(file.Position + OverSize < file.Length);
-
-        //    m_over = new Dummy(OverSize);
-        //    Serializer.Read(m_over, file, FileFormat);
-        //    file.Align4();
-
-        //    return file.Offset;
-        //}
-
         private int WriteDataBlock<T>(StreamBuffer file, string tag, T obj)
             where T : SaveDataObject
         {
@@ -175,21 +162,6 @@ namespace GTASaveData.VCS
 
             return size + 8;
         }
-
-        //private int WriteOverBlock(StreamBuffer file)
-        //{
-        //    Debug.Assert(m_over.Data.Count == OverSize);
-
-        //    file.Mark();
-        //    file.Write("OVER", length: 4, zeroTerminate: false);
-        //    file.Write(m_over.Data);
-        //    file.Align4();
-
-        //    Debug.Assert(file.Offset == OverSize + 4);
-        //    m_checkSum += file.GetBytesFromMark().Sum(x => x);
-
-        //    return OverSize + 4;
-        //}
 
         protected override void LoadAllData(StreamBuffer file)
         {
@@ -250,12 +222,18 @@ namespace GTASaveData.VCS
             using (StreamBuffer buf = new StreamBuffer(data))
             {
                 if (buf.Length < 0x1000) goto DetectionFailed;
-                buf.Skip(4);
 
-                // TODO: more rigorous file verification
-
+                string simp = buf.ReadString(4);
+                if (simp != "SIMP") goto DetectionFailed;
                 int simpSize = buf.ReadInt32();
-                int skip = simpSize + 4;
+                int skip = simpSize;
+                if (buf.Position + skip > buf.Length) goto DetectionFailed;
+
+                buf.Skip(skip);
+                string srpt = buf.ReadString(4);
+                if (srpt != "SRPT") goto DetectionFailed;
+                int srptSize = buf.ReadInt32();
+                skip = srptSize;
                 if (buf.Position + skip > buf.Length) goto DetectionFailed;
 
                 if (simpSize == SimpSizePS2)

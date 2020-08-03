@@ -219,6 +219,11 @@ namespace GTASaveData.GTA3
             PedTypeInfo
         };
 
+        public static GTA3Save Load(string path)
+        {
+            return Load<GTA3Save>(path);
+        }
+
         public GTA3Save()
         {
             SimpleVars = new SimpleVariables();

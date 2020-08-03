@@ -83,6 +83,11 @@ namespace GTASaveData.LCS
             Stats
         };
 
+        public static LCSSave Load(string path)
+        {
+            return Load<LCSSave>(path);
+        }
+
         public LCSSave()
         {
             SimpleVars = new SimpleVariables();

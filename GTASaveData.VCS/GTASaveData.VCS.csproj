@@ -10,10 +10,10 @@
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
     <Description>A .NET library for manipulating Grand Theft Auto: Vice City Stories save files.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>1.0.0.102</AssemblyVersion>
-    <FileVersion>0.1.0.102</FileVersion>
+    <AssemblyVersion>1.0.0.104</AssemblyVersion>
+    <FileVersion>0.1.0.104</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.0</Version>
+    <Version>0.1.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>gtavcs save data; gtavcs save file; gtavcs save; gtavcs; gta; vcs; gta vcs; save data; gta save data; vcs save data;</PackageTags>
     <RepositoryUrl>https://github.com/whampson/gta-save-data</RepositoryUrl>
