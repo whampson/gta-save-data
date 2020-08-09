@@ -264,7 +264,7 @@ namespace GTASaveData.GTA3
             set { m_cameraCarZoomIndicator = value; OnPropertyChanged(); }
         }
 
-        public float CameraModeInOnFoot
+        public float CameraModeOnFoot
         {
             get { return m_cameraPedZoomIndicator; }
             set { m_cameraPedZoomIndicator = value; OnPropertyChanged(); }
@@ -320,7 +320,7 @@ namespace GTASaveData.GTA3
             CompileDateAndTime = other.CompileDateAndTime;
             WeatherTypeInList = other.WeatherTypeInList;
             CameraModeInCar = other.CameraModeInCar;
-            CameraModeInOnFoot = other.CameraModeInOnFoot;
+            CameraModeOnFoot = other.CameraModeOnFoot;
             IsQuickSave = other.IsQuickSave;
         }
 
@@ -388,7 +388,7 @@ namespace GTASaveData.GTA3
             CompileDateAndTime = buf.Read<Date>();
             WeatherTypeInList = buf.ReadInt32();
             CameraModeInCar = buf.ReadFloat();
-            CameraModeInOnFoot = buf.ReadFloat();
+            CameraModeOnFoot = buf.ReadFloat();
             if (fmt.IsMobile) IsQuickSave = (QuickSaveState) buf.ReadInt32();
 
             Debug.Assert(buf.Offset == GetSize(fmt));
@@ -458,7 +458,7 @@ namespace GTASaveData.GTA3
             buf.Write(CompileDateAndTime);
             buf.Write(WeatherTypeInList);
             buf.Write(CameraModeInCar);
-            buf.Write(CameraModeInOnFoot);
+            buf.Write(CameraModeOnFoot);
             if (fmt.IsMobile) buf.Write((int) IsQuickSave);
 
             Debug.Assert(buf.Offset == GetSize(fmt));
@@ -520,7 +520,7 @@ namespace GTASaveData.GTA3
                 && CompileDateAndTime.Equals(other.CompileDateAndTime)
                 && WeatherTypeInList.Equals(other.WeatherTypeInList)
                 && CameraModeInCar.Equals(other.CameraModeInCar)
-                && CameraModeInOnFoot.Equals(other.CameraModeInOnFoot)
+                && CameraModeOnFoot.Equals(other.CameraModeOnFoot)
                 && IsQuickSave.Equals(other.IsQuickSave);
         }
 
