@@ -81,6 +81,11 @@ namespace GTASaveData.Types
             return Size;
         }
 
+        public bool IsValidDateTime(out DateTime dt)
+        {
+            return DateTime.TryParse($"{Year}-{Month}-{Day} {Hour}:{Minute}:{Second},{Millisecond}", out dt);
+        }
+
         public DateTime ToDateTime()
         {
             return new DateTime(
@@ -132,7 +137,12 @@ namespace GTASaveData.Types
 
         public override string ToString()
         {
-            return ToDateTime().ToString("dd MMM yyyy HH:mm:ss");
+            if (IsValidDateTime(out DateTime dt))
+            {
+                return dt.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            }
+
+            return "(invalid date)";
         }
 
         public static bool operator ==(SystemTime d1, SystemTime d2)
@@ -147,7 +157,12 @@ namespace GTASaveData.Types
 
         public static explicit operator DateTime(SystemTime t)
         {
-            return t.ToDateTime();
+            if (t.IsValidDateTime(out DateTime dt))
+            {
+                return dt;
+            }
+
+            return DateTime.MinValue;
         }
 
         public static implicit operator SystemTime(DateTime t)
