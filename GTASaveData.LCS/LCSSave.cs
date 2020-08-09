@@ -203,19 +203,21 @@ namespace GTASaveData.LCS
 
                 int simpSize = buf.ReadInt32();
                 int skip = simpSize + 4;
-                if (buf.Position + skip > buf.Length) goto DetectionFailed;
+                if (skip < 0 || buf.Position + skip > buf.Length) goto DetectionFailed;
                 buf.Skip(skip);
 
                 int srptSize = buf.ReadInt32();
                 int srptOffset = buf.Position;
+                if (buf.Position + 8 > buf.Length) goto DetectionFailed;
                 buf.Skip(8);
 
                 int globalsSize = buf.ReadInt32();
                 skip = globalsSize + 0x7C0;
-                if (buf.Position + skip > buf.Length) goto DetectionFailed;
+                if (skip < 0 || buf.Position + skip > buf.Length) goto DetectionFailed;
                 buf.Skip(skip);
 
                 int numRunningScripts = buf.ReadInt32();
+                if (numRunningScripts <= 0) goto DetectionFailed;
                 int runningScriptSize = (srptOffset + srptSize - buf.Position) / numRunningScripts;
 
                 if (simpSize == SimpSizePS2)
