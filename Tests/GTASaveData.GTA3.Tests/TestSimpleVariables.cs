@@ -46,7 +46,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.CompileDateAndTime, f => Generator.Date(f))
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
                 .RuleFor(x => x.CameraModeInCar, f => f.Random.Float())
-                .RuleFor(x => x.CameraModeInOnFoot, f => f.Random.Float())
+                .RuleFor(x => x.CameraModeOnFoot, f => f.Random.Float())
                 .RuleFor(x => x.IsQuickSave, f => (format.IsMobile) ? f.PickRandom<QuickSaveState>() : default);
 
             return model.Generate();
@@ -94,7 +94,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.CompileDateAndTime, x1.CompileDateAndTime);
             Assert.Equal(x0.WeatherTypeInList, x1.WeatherTypeInList);
             Assert.Equal(x0.CameraModeInCar, x1.CameraModeInCar);
-            Assert.Equal(x0.CameraModeInOnFoot, x1.CameraModeInOnFoot);
+            Assert.Equal(x0.CameraModeOnFoot, x1.CameraModeOnFoot);
             Assert.Equal(x0.IsQuickSave, x1.IsQuickSave);
 
             Assert.Equal(x0, x1);
