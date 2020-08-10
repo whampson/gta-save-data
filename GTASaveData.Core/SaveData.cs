@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 
@@ -78,8 +79,21 @@ namespace GTASaveData
         /// <returns>A value indicating whether file format detection was successful.</returns>
         public static bool GetFileFormat<T>(string path, out FileFormat fmt) where T : SaveData, new()
         {
-            byte[] data = File.ReadAllBytes(path);
-            return GetFileFormat<T>(data, out fmt);
+            if (File.Exists(path))
+            {
+                FileInfo info = new FileInfo(path);
+                if (info.Length > 0x40000)
+                {
+                    goto Fail;
+                }
+
+                byte[] data = File.ReadAllBytes(path);
+                return GetFileFormat<T>(data, out fmt);
+            }
+
+        Fail:
+            fmt = FileFormat.Default;
+            return false;
         }
 
         /// <summary>
@@ -175,13 +189,24 @@ namespace GTASaveData
         /// <returns>The number of bytes read.</returns>
         private int Load(string path)
         {
-            OnFileLoading(path);
-            byte[] data = File.ReadAllBytes(path);
-            Name = Path.GetFileNameWithoutExtension(path);
-            TimeStamp = File.GetLastWriteTime(path);
-            OnFileLoad(path);
+            if (File.Exists(path))
+            {
+                FileInfo info = new FileInfo(path);
+                if (info.Length > 0x40000)
+                {
+                    throw new InvalidDataException("File is too large to be a GTA save file.");
+                }
 
-            return Load(data);
+                OnFileLoading(path);
+                byte[] data = File.ReadAllBytes(path);
+                Name = Path.GetFileNameWithoutExtension(path);
+                TimeStamp = File.GetLastWriteTime(path);
+                OnFileLoad(path);
+
+                return Load(data);
+            }
+
+            throw new DirectoryNotFoundException($"The path does not exist: {path}");
         }
 
         /// <summary>

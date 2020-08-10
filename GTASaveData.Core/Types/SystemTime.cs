@@ -1,6 +1,7 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -83,7 +84,12 @@ namespace GTASaveData.Types
 
         public bool IsValidDateTime(out DateTime dt)
         {
-            return DateTime.TryParse($"{Year}-{Month}-{Day} {Hour}:{Minute}:{Second},{Millisecond}", out dt);
+            return DateTime.TryParseExact(
+                $"{Year:04}-{Month:02}-{Day:02} {Hour:02}:{Minute:02}:{Second:02}.{Millisecond}",
+                "yyyy-MM-dd HH:mm:ss.fff",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out dt);
         }
 
         public DateTime ToDateTime()
@@ -139,7 +145,7 @@ namespace GTASaveData.Types
         {
             if (IsValidDateTime(out DateTime dt))
             {
-                return dt.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                return dt.ToString("dd MMM yyyy HH:mm:ss.fff");
             }
 
             return "(invalid date)";
