@@ -1,6 +1,7 @@
 ﻿using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace GTASaveData.LCS
@@ -34,7 +35,7 @@ namespace GTASaveData.LCS
         private float m_cameraModeInCar;
         private float m_cameraModeOnFoot;
         private int m_extraColor;
-        private bool m_isExtraColorOn;
+        private bool m_extraColorIsOn;
         private float m_extraColorInterpolation;
         private int m_prefsBrightness;
         private bool m_prefsDisplayHud;
@@ -200,10 +201,10 @@ namespace GTASaveData.LCS
             set { m_extraColor = value; OnPropertyChanged(); }
         }
 
-        public bool IsExtraColorOn
+        public bool ExtraColorIsOn
         {
-            get { return m_isExtraColorOn; }
-            set { m_isExtraColorOn = value; OnPropertyChanged(); }
+            get { return m_extraColorIsOn; }
+            set { m_extraColorIsOn = value; OnPropertyChanged(); }
         }
 
         public float ExtraColorInterpolation
@@ -358,7 +359,7 @@ namespace GTASaveData.LCS
             CameraModeInCar = other.CameraModeInCar;
             CameraModeOnFoot = other.CameraModeOnFoot;
             ExtraColor = other.ExtraColor;
-            IsExtraColorOn = other.IsExtraColorOn;
+            ExtraColorIsOn = other.ExtraColorIsOn;
             ExtraColorInterpolation = other.ExtraColorInterpolation;
             Brightness = other.Brightness;
             DisplayHud = other.DisplayHud;
@@ -413,7 +414,7 @@ namespace GTASaveData.LCS
             CameraModeInCar = buf.ReadFloat();
             CameraModeOnFoot = buf.ReadFloat();
             ExtraColor = buf.ReadInt32();       // for interiors, I think
-            IsExtraColorOn = buf.ReadBool(4);
+            ExtraColorIsOn = buf.ReadBool(4);
             ExtraColorInterpolation = buf.ReadFloat();
             Brightness = buf.ReadInt32();
             DisplayHud = buf.ReadBool();
@@ -504,7 +505,7 @@ namespace GTASaveData.LCS
             buf.Write(CameraModeInCar);
             buf.Write(CameraModeOnFoot);
             buf.Write(ExtraColor);
-            buf.Write(IsExtraColorOn, 4);
+            buf.Write(ExtraColorIsOn, 4);
             buf.Write(ExtraColorInterpolation);
             buf.Write(Brightness);
             buf.Write(DisplayHud);
@@ -606,7 +607,7 @@ namespace GTASaveData.LCS
                 && CameraModeInCar.Equals(other.CameraModeInCar)
                 && CameraModeOnFoot.Equals(other.CameraModeOnFoot)
                 && ExtraColor.Equals(other.ExtraColor)
-                && IsExtraColorOn.Equals(other.IsExtraColorOn)
+                && ExtraColorIsOn.Equals(other.ExtraColorIsOn)
                 && ExtraColorInterpolation.Equals(other.ExtraColorInterpolation)
                 && Brightness.Equals(other.Brightness)
                 && DisplayHud.Equals(other.DisplayHud)
@@ -637,20 +638,43 @@ namespace GTASaveData.LCS
 
     public enum WeatherType
     {
+        [Description("(none)")]
+        None = -1,
+
+        [Description("Sunny")]
         Sunny,
+
+        [Description("Cloudy")]
         Cloudy,
+
+        [Description("Rainy")]
         Rainy,
+
+        [Description("Foggy")]
         Foggy,
+
+        [Description("Extra Sunny")]
         ExtraSunny,
+
+        [Description("Hurricane")]
         Hurricane,
+
+        [Description("EXTRACOLOURS")]
         ExtraColours,
-        Snowy       // PSP only :(
+
+        [Description("Snow")]
+        Snow       // PSP only :(
     }
 
     public enum RadarMode
     {
+        [Description("Map & Blips")]
         MapAndBlips,
+
+        [Description("Blips Only")]
         BlipsOnly,
+
+        [Description("Radar Off")]
         RadarOff,
     }
 }

@@ -1,6 +1,7 @@
 ﻿using GTASaveData.Types;
 using GTASaveData.Types.Interfaces;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace GTASaveData.LCS
@@ -204,44 +205,100 @@ namespace GTASaveData.LCS
     [Flags]
     public enum StoredCarFlags
     {
+        [Description("Bullet Proof")]
         BulletProof     = 0b_00000000_00000001,     // Won't take bullet damage
+
+        [Description("Fire Proof")]
         FireProof       = 0b_00000000_00000010,     // Won't take fire damage
+
+        [Description("Explosion Proof")]
         ExplosionProof  = 0b_00000000_00000100,     // Won't take explosion damage
+
+        [Description("Collision Proof")]
         CollisionProof  = 0b_00000000_00001000,     // Won't take collision damage
-        MeleeProof      = 0b_00000000_00010000,     // Won't take melee damage (doesn't work in-game)
+
+        [Description("Melee Proof (broken)")]
+        MeleeProof      = 0b_00000000_00010000,     // Won't take melee damage (doesn't work)
+
+        [Description("Pop Proof")]
         PopProof        = 0b_00000000_00100000,     // Tires won't pop
+
+        [Description("Strong")]
         Strong          = 0b_00000000_01000000,     // Car can take about 4x more collision damage
+
+        [Description("Heavy")]
         Heavy           = 0b_00000000_10000000,     // Car has higher mass
+
+        [Description("Permanent Color")]
         PermanentColor  = 0b_00000001_00000000,     // Can't be painted a different color
+
+        [Description("Time Bomb")]
         TimeBomb        = 0b_00000010_00000000,     // Fitted with a time bomb
+
+        [Description("Tip Proof")]
         TipProof        = 0b_00000100_00000000,     // Won't explode if tipped over
+
+        [Description("Marked")]
         Marked          = 0b_10000000_00000000,     // Marked for mission; game won't delete if left stranded
     }
 
     public enum BombType
     {
+        [Description("(none)")]
         None,
+
+        [Description("Timer")]
         Timer,
+
+        [Description("Ignition")]
         Ignition,
+
+        [Description("Remote")]
         Remote,
+
+        [Description("Timer (armed)")]
         TimerArmed,
+
+        [Description("Ignition (armed)")]
         IgnitionArmed
     }
 
     public enum RadioStation
     {
-        // TOOD: confirm
+        [Description("Head Radio")]
         HeadRadio,
+
+        [Description("Double Clef FM")]
         DoubleClefFM,
+
+        [Description("K-Jah")]
         KJah,
+
+        [Description("Rise FM")]
         RiseFM,
+
+        [Description("Lips 106")]
         Lips106,
+
+        [Description("Radio Del Mundo")]
         RadioDelMundo,
+
+        [Description("MSX 98")]
         Msx98,
+
+        [Description("Flashback FM")]
         FlashbackFM,
+
+        [Description("The Liberty Jam")]
         TheLibertyJam,
+
+        [Description("LCFR")]
         LCFR,
+
+        [Description("User Track Player")]
         UserTrackPlayer,
+
+        [Description("(none)")]
         None
     }
 }

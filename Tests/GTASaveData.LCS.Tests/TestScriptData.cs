@@ -18,9 +18,9 @@ namespace GTASaveData.LCS.Tests
             int runningScripts = faker.Random.Int(1, 20);
 
             Faker<ScriptData> model = new Faker<ScriptData>()
-                .RuleFor(x => x.ScriptSpace, f => Generator.Array(varSpace, g => f.Random.Byte()))
+                .RuleFor(x => x.GlobalVariables, f => Generator.Array(varSpace, g => f.Random.Int()))
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
-                .RuleFor(x => x.LastMissionPassedTime, f => f.Random.UInt())
+                .RuleFor(x => x.LastMissionPassedTime, f => f.Random.Int())
                 .RuleFor(x => x.Collectives, f => Generator.Array(ScriptData.NumCollectives, g => Generator.Generate<Collective, TestCollective>()))
                 .RuleFor(x => x.NextFreeCollectiveIndex, f => f.Random.Int())
                 .RuleFor(x => x.BuildingSwaps, f => Generator.Array(ScriptData.NumBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
@@ -42,7 +42,7 @@ namespace GTASaveData.LCS.Tests
             ScriptData x0 = GenerateTestObject(format);
             ScriptData x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
-            Assert.Equal(x0.ScriptSpace, x1.ScriptSpace);
+            Assert.Equal(x0.GlobalVariables, x1.GlobalVariables);
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
             Assert.Equal(x0.LastMissionPassedTime, x1.LastMissionPassedTime);
             Assert.Equal(x0.Collectives, x1.Collectives);

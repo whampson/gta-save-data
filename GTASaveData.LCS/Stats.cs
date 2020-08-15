@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -1479,22 +1480,55 @@ namespace GTASaveData.LCS
     [Flags]
     public enum UnlockedCostumes : ushort
     {
+        [Description("(none)")]
         None,
-        CasualClothes = (1 << 0),
-        LeoneSuit = (1 << 1),
+
+        [Description("Casual")]
+        Casual = (1 << 0),
+
+        [Description("Leone Suit")]
+        Leone = (1 << 1),
+
+        [Description("Overalls")]
         Overalls = (1 << 2),
-        AvengingAngelsFatigues = (1 << 3),
-        ChaufferClothes = (1 << 4),
-        LawyerSuit = (1 << 5),
+
+        [Description("Avenging Angels")]
+        AvengingAngels = (1 << 3),
+
+        [Description("Chauffeur")]
+        Chauffer = (1 << 4),
+
+        [Description("Lawyer Suit")]
+        Lawyer = (1 << 5),
+
+        [Description("Tuxedo")]
         Tuxedo = (1 << 6),
-        TheKingJumpsuit = (1 << 7),
-        CoxMasotSuit = (1 << 8),
+
+        [Description("'The King' Jumpsuit")]
+        TheKing = (1 << 7),
+
+        [Description("Cox Mascot")]
+        Cox = (1 << 8),
+
+        [Description("Underwear")]
         Underwear = (1 << 9),
-        HeroGarb = (1 << 10),
-        DragonJumpsuit = (1 << 11),
+
+        [Description("Hero Garb")]
+        Hero = (1 << 10),
+
+        [Description("'Dragon' Jumpsuit")]
+        Dragon = (1 << 11),
+
+        [Description("Antonio")]
         Antonio = (1 << 12),
+
+        [Description("Sweats")]
         Sweats = (1 << 13),
+
+        [Description("Goodfella")]
         Goodfella = (1 << 14),
+
+        [Description("Wiseguy")]
         Wiseguy = (1 << 15),
     }
 }

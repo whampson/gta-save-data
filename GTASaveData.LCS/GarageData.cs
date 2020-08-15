@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -25,7 +26,7 @@ namespace GTASaveData.LCS
         private int m_carTypesCollected2;   // not used
         private int m_carTypesCollected3;   // not used
         private int m_carTypesCollected4;   // not used
-        private int m_lastTimeHelpMessage;
+        private uint m_lastTimeHelpMessage;
         private Array<StoredCar> m_carsInSafeHouse;
         private Array<Garage> m_garages;
 
@@ -95,7 +96,7 @@ namespace GTASaveData.LCS
             set { m_carTypesCollected4 = value; OnPropertyChanged(); }
         }
 
-        public int LastTimeHelpMessage
+        public uint TimeHelpMessageLastShown
         {
             get { return m_lastTimeHelpMessage; }
             set { m_lastTimeHelpMessage = value; OnPropertyChanged(); }
@@ -173,7 +174,7 @@ namespace GTASaveData.LCS
             CarTypesCollected2 = other.CarTypesCollected2;
             CarTypesCollected3 = other.CarTypesCollected3;
             CarTypesCollected4 = other.CarTypesCollected4;
-            LastTimeHelpMessage = other.LastTimeHelpMessage;
+            TimeHelpMessageLastShown = other.TimeHelpMessageLastShown;
             CarsInSafeHouse = ArrayHelper.DeepClone(other.CarsInSafeHouse);
             Garages = ArrayHelper.DeepClone(other.Garages);
         }
@@ -190,7 +191,7 @@ namespace GTASaveData.LCS
             CarTypesCollected2 = buf.ReadInt32();
             CarTypesCollected3 = buf.ReadInt32();
             CarTypesCollected4 = buf.ReadInt32();
-            LastTimeHelpMessage = buf.ReadInt32();
+            TimeHelpMessageLastShown = buf.ReadUInt32();
             CarsInSafeHouse = buf.Read<StoredCar>(NumStoredCars);
             Garages = buf.Read<Garage>(MaxNumGarages, fmt);
             buf.Skip(344);
@@ -210,7 +211,7 @@ namespace GTASaveData.LCS
             buf.Write(CarTypesCollected2);
             buf.Write(CarTypesCollected3);
             buf.Write(CarTypesCollected4);
-            buf.Write(LastTimeHelpMessage);
+            buf.Write(TimeHelpMessageLastShown);
             buf.Write(CarsInSafeHouse, NumStoredCars);
             buf.Write(Garages, fmt, MaxNumGarages);
 
@@ -249,7 +250,7 @@ namespace GTASaveData.LCS
                 && CarTypesCollected2.Equals(other.CarTypesCollected2)
                 && CarTypesCollected3.Equals(other.CarTypesCollected3)
                 && CarTypesCollected4.Equals(other.CarTypesCollected4)
-                && LastTimeHelpMessage.Equals(other.LastTimeHelpMessage)
+                && TimeHelpMessageLastShown.Equals(other.TimeHelpMessageLastShown)
                 && CarsInSafeHouse.SequenceEqual(other.CarsInSafeHouse)
                 && Garages.SequenceEqual(other.Garages);
         }
@@ -273,21 +274,52 @@ namespace GTASaveData.LCS
     [Flags]
     public enum LoveMediaCars : int
     {
+        [Description("Hearse")]
         Hearse = 1 << 0,
+
+        [Description("Faggio")]
         Faggio = 1 << 1,
+
+        [Description("Freeway")]
         Freeway = 1 << 2,
+
+        [Description("Deimos SP")]
         DeimosSP = 1 << 3,
+
+        [Description("Manana")]
         Manana = 1 << 4,
+
+        [Description("Hellenbach GT")]
         HellenbachGT = 1 << 5,
+
+        [Description("Phobos VT")]
         PhobosVT = 1 << 6,
+
+        [Description("V8 Ghost")]
         V8Ghost = 1 << 7,
+
+        [Description("Thunder Rodd")]
         ThunderRodd = 1 << 8,
+
+        [Description("PCJ-600")]
         PCJ600 = 1 << 9,
+
+        [Description("Sentinel")]
         Sentinel = 1 << 10,
+
+        [Description("Infernus")]
         Infernus = 1 << 11,
+
+        [Description("Banshee")]
         Banshee = 1 << 12,
+
+        [Description("Patriot")]
         Patriot = 1 << 13,
+
+        [Description("BF Injection")]
         BFInjection = 1 << 14,
+
+        [Description("Landstalker")]
         Landstalker = 1 << 15,
     }
 }

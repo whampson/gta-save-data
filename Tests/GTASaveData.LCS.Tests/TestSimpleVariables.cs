@@ -34,7 +34,7 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.CameraModeInCar, f => f.Random.Float())
                 .RuleFor(x => x.CameraModeOnFoot, f => f.Random.Float())
                 .RuleFor(x => x.ExtraColor, f => f.Random.Int())
-                .RuleFor(x => x.IsExtraColorOn, f => f.Random.Bool())
+                .RuleFor(x => x.ExtraColorIsOn, f => f.Random.Bool())
                 .RuleFor(x => x.ExtraColorInterpolation, f => f.Random.Float())
                 .RuleFor(x => x.Brightness, f => f.Random.Int())
                 .RuleFor(x => x.DisplayHud, f => f.Random.Bool())
@@ -90,7 +90,7 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0.CameraModeInCar, x1.CameraModeInCar);
             Assert.Equal(x0.CameraModeOnFoot, x1.CameraModeOnFoot);
             Assert.Equal(x0.ExtraColor, x1.ExtraColor);
-            Assert.Equal(x0.IsExtraColorOn, x1.IsExtraColorOn);
+            Assert.Equal(x0.ExtraColorIsOn, x1.ExtraColorIsOn);
             Assert.Equal(x0.ExtraColorInterpolation, x1.ExtraColorInterpolation);
             Assert.Equal(x0.Brightness, x1.Brightness);
             Assert.Equal(x0.DisplayHud, x1.DisplayHud);

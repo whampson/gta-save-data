@@ -21,9 +21,9 @@ namespace GTASaveData.LCS
 
         // Only the global variables are editable :(
 
-        private Array<byte> m_scriptSpace;
+        private Array<int> m_globals;
         private int m_onAMissionFlag;
-        private uint m_lastMissionPassedTime;
+        private int m_lastMissionPassedTime;
         private Array<Collective> m_collectives;    // not used
         private int m_nextFreeCollectiveIndex;      // not used
         private Array<BuildingSwap> m_buildingSwapArray;
@@ -35,11 +35,11 @@ namespace GTASaveData.LCS
         private short m_numberOfMissionScripts;
         private Array<RunningScript> m_activeScripts;
 
-        [JsonConverter(typeof(ByteArrayConverter))]
-        public Array<byte> ScriptSpace
+        [JsonConverter(typeof(IntArrayConverter))]
+        public Array<int> GlobalVariables
         {
-            get { return m_scriptSpace; }
-            set { m_scriptSpace = value; OnPropertyChanged(); }
+            get { return m_globals; }
+            set { m_globals = value; OnPropertyChanged(); }
         }
 
         [Obsolete("Not loaded by the game.")]
@@ -50,7 +50,7 @@ namespace GTASaveData.LCS
         }
 
         [Obsolete("Not loaded by the game.")]
-        public uint LastMissionPassedTime
+        public int LastMissionPassedTime
         {
             get { return m_lastMissionPassedTime; }
             set { m_lastMissionPassedTime = value; OnPropertyChanged(); }
@@ -126,24 +126,14 @@ namespace GTASaveData.LCS
             set { m_activeScripts = value; OnPropertyChanged(); }
         }
 
-        public IEnumerable<int> GlobalVariables
-        {
-            get
-            {
-                for (int i = 0; i < ScriptSpace.Count / 4; i++)
-                {
-                    yield return GetGlobal(i);
-                }
-            }
-        }
-
+        IEnumerable<int> IScriptData.GlobalVariables => m_globals;
         IEnumerable<IBuildingSwap> IScriptData.BuildingSwaps => m_buildingSwapArray;
         IEnumerable<IInvisibleObject> IScriptData.InvisibilitySettings => m_invisibilitySettingArray;
         IEnumerable<IRunningScript> IScriptData.ActiveScripts => m_activeScripts;
 
         public ScriptData()
         {
-            ScriptSpace = new Array<byte>();
+            GlobalVariables = new Array<int>();
             Collectives = ArrayHelper.CreateArray<Collective>(NumCollectives);
             BuildingSwaps = ArrayHelper.CreateArray<BuildingSwap>(NumBuildingSwaps);
             InvisibilitySettings = ArrayHelper.CreateArray<InvisibleObject>(NumInvisibilitySettings);
@@ -152,7 +142,7 @@ namespace GTASaveData.LCS
 
         public ScriptData(ScriptData other)
         {
-            ScriptSpace = ArrayHelper.DeepClone(other.ScriptSpace);
+            GlobalVariables = ArrayHelper.DeepClone(other.GlobalVariables);
             OnAMissionFlag = other.OnAMissionFlag;
             LastMissionPassedTime = other.LastMissionPassedTime;
             Collectives = ArrayHelper.DeepClone(other.Collectives);
@@ -176,42 +166,24 @@ namespace GTASaveData.LCS
 
         public int GetGlobal(int index)
         {
-            byte[] intBits = new byte[4];
-            for (int i = 0; i < 4; i++)
-            {
-                intBits[i] = ScriptSpace[(index * 4) + i];
-            }
-
-            return BitConverter.ToInt32(intBits, 0);
+            return GlobalVariables[index];
         }
 
         public float GetGlobalAsFloat(int index)
         {
-            byte[] floatBits = new byte[4];
-            for (int i = 0; i < 4; i++)
-            {
-                floatBits[i] = ScriptSpace[(index * 4) + i];
-            }
-
+            byte[] floatBits = BitConverter.GetBytes(GetGlobal(index));
             return BitConverter.ToSingle(floatBits, 0);
         }
 
         public void SetGlobal(int index, int value)
         {
-            byte[] intBits = BitConverter.GetBytes(value);
-            for (int i = 0; i < sizeof(int); i++)
-            {
-                ScriptSpace[(index * sizeof(int)) + i] = intBits[i];
-            }
+            GlobalVariables[index] = value;
         }
 
         public void SetGlobal(int index, float value)
         {
             byte[] floatBits = BitConverter.GetBytes(value);
-            for (int i = 0; i < sizeof(float); i++)
-            {
-                ScriptSpace[(index * sizeof(float)) + i] = floatBits[i];
-            }
+            GlobalVariables[index] = BitConverter.ToInt32(floatBits, 0);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
@@ -219,12 +191,12 @@ namespace GTASaveData.LCS
             int size = GTA3VCSave.ReadBlockHeader(buf, "SCR");
 
             int varSpace = buf.ReadInt32();
-            ScriptSpace = buf.Read<byte>(varSpace);
+            GlobalVariables = buf.Read<int>(varSpace / sizeof(int));
             buf.Align4();
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
             OnAMissionFlag = buf.ReadInt32();
-            LastMissionPassedTime = buf.ReadUInt32();
+            LastMissionPassedTime = buf.ReadInt32();
             Collectives = buf.Read<Collective>(NumCollectives);
             NextFreeCollectiveIndex = buf.ReadInt32();
             BuildingSwaps = buf.Read<BuildingSwap>(NumBuildingSwaps);
@@ -248,8 +220,8 @@ namespace GTASaveData.LCS
             int size = SizeOfObject(this, fmt);
             GTA3VCSave.WriteBlockHeader(buf, "SCR", size - GTA3VCSave.BlockHeaderSize);
 
-            buf.Write(ScriptSpace.Count);
-            buf.Write(ScriptSpace);
+            buf.Write(GlobalVariables.Count * sizeof(int));
+            buf.Write(GlobalVariables);
             buf.Align4();
             buf.Write(ScriptDataSize);      // wrong value in save, actually is +0x104
             buf.Write(OnAMissionFlag);
@@ -274,7 +246,7 @@ namespace GTASaveData.LCS
         protected override int GetSize(FileFormat fmt)
         {
             return SizeOfType<RunningScript>(fmt) * ActiveScripts.Count
-                + StreamBuffer.Align4(ScriptSpace.Count)
+                + GlobalVariables.Count * sizeof(int)
                 + ScriptDataSize + 0x104
                 + GTA3VCSave.BlockHeaderSize
                 + 3 * sizeof(int);
@@ -292,7 +264,7 @@ namespace GTASaveData.LCS
                 return false;
             }
 
-            return ScriptSpace.SequenceEqual(other.ScriptSpace)
+            return GlobalVariables.SequenceEqual(other.GlobalVariables)
                 && OnAMissionFlag.Equals(other.OnAMissionFlag)
                 && LastMissionPassedTime.Equals(other.LastMissionPassedTime)
                 && Collectives.SequenceEqual(other.Collectives)

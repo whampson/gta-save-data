@@ -30,6 +30,7 @@ namespace GTASaveData.LCS.Tests
             new object[] { LCSSave.FileFormats.PS2, "VIC1" },
             new object[] { LCSSave.FileFormats.PSP, "MAR3" },
             new object[] { LCSSave.FileFormats.PSP, "VIC1" },
+            new object[] { LCSSave.FileFormats.PSP, "SALH5" },
         };
     }
 }

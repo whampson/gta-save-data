@@ -1,4 +1,6 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.JsonConverters;
+using GTASaveData.Types.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,9 +19,9 @@ namespace GTASaveData.LCS
         private uint m_pPrevScript; // not loaded
         private int m_id;
         private string m_name;
-        private uint m_ip;
+        private int m_ip;
         private Array<int> m_stack;
-        private ushort m_stackPointer;
+        private short m_stackPointer;
         private Array<int> m_localVariables;
         private uint m_timerA;
         private uint m_timerB;
@@ -29,7 +31,7 @@ namespace GTASaveData.LCS
         private bool m_isMissionScript;
         private bool m_clearMessages;
         private uint m_wakeTime;
-        private ushort m_andOrState;
+        private short m_andOrState;
         private bool m_notFlag;
         private bool m_deathArrestEnabled;
         private bool m_deathArrestExecuted;
@@ -59,7 +61,7 @@ namespace GTASaveData.LCS
             set { m_name = value; OnPropertyChanged(); }
         }
 
-        public uint IP
+        public int IP
         {
             get { return m_ip; }
             set { m_ip = value; OnPropertyChanged(); }
@@ -71,12 +73,13 @@ namespace GTASaveData.LCS
             set { m_stack = value; OnPropertyChanged(); }
         }
 
-        public ushort StackPosition
+        public short StackPosition
         {
             get { return m_stackPointer; }
             set { m_stackPointer = value; OnPropertyChanged(); }
         }
 
+        [JsonConverter(typeof(IntArrayConverter))]
         public Array<int> LocalVariables
         {
             get { return m_localVariables; }
@@ -131,7 +134,7 @@ namespace GTASaveData.LCS
             set { m_wakeTime = value; OnPropertyChanged(); }
         }
 
-        public ushort AndOrState
+        public short AndOrState
         {
             get { return m_andOrState; }
             set { m_andOrState = value; OnPropertyChanged(); }
@@ -242,9 +245,9 @@ namespace GTASaveData.LCS
             Id = buf.ReadInt32();
             buf.ReadInt32();
             Name = buf.ReadString(MaxNameLength);
-            IP = buf.ReadUInt32();
+            IP = buf.ReadInt32();
             Stack = buf.Read<int>(MaxStackDepth);
-            StackPosition = buf.ReadUInt16();
+            StackPosition = buf.ReadInt16();
             buf.Skip(2);
             LocalVariables = buf.Read<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
@@ -255,7 +258,7 @@ namespace GTASaveData.LCS
             IsMissionScript = buf.ReadBool();
             ClearMessages = buf.ReadBool();
             WakeTime = buf.ReadUInt32();
-            AndOrState = buf.ReadUInt16();
+            AndOrState = buf.ReadInt16();
             NotFlag = buf.ReadBool();
             WastedBustedCheckEnabled = buf.ReadBool();
             WastedBustedCheckResult = buf.ReadBool();
