@@ -12,6 +12,11 @@ namespace GTASaveData.JsonConverters
     {
         public const int DefaultThreshold = 32;
 
+        static ByteArrayConverter()
+        {
+            Threshold = DefaultThreshold;
+        }
+
         /// <summary>
         /// The maximum array length at which bytes will be encoded as a regular JSON array.
         /// After the threshold is surpassed, the byte array will be encoded as a base64 string.
