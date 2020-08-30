@@ -65,12 +65,12 @@ namespace GTASaveData.GTA3
 
         public void SetHeading(float angle)
         {
-            Matrix = ViewMatrix.RotateZ(Matrix, angle);
+            Matrix.RotateZ(angle);
         }
 
         public void SetOrientation(float xAngle, float yAngle, float zAngle)
         {
-            Matrix = ViewMatrix.Rotate(Matrix, xAngle, yAngle, zAngle);
+            Matrix.Rotate(xAngle, yAngle, zAngle);
         }
 
         public void ResetOrientation()
