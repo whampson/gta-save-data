@@ -14,6 +14,7 @@ namespace GTASaveData.LCS
 
         private int m_checkSum;
 
+        private string m_name;
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
         private GarageData m_garages;
@@ -52,8 +53,8 @@ namespace GTASaveData.LCS
 
         public override string Name
         {
-            get { return SimpleVars.LastMissionPassedName; }
-            set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
+            get { return m_name; }
+            set { m_name = value; OnPropertyChanged(); }
         }
 
         public override DateTime TimeStamp
