@@ -219,7 +219,12 @@ namespace GTASaveData.GTA3
         }
 
         public Crane()
-        { }
+        {
+            DropoffTarget = new Vector3D();
+            HookInitialPosition = new Vector3D();
+            HookCurrentPosition = new Vector3D();
+            HookVelocity = new Vector2D();
+        }
 
         public Crane(Crane other)
         {

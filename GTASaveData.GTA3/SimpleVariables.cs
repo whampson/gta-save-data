@@ -281,6 +281,7 @@ namespace GTASaveData.GTA3
             LastMissionPassedName = "";
             TimeStamp = DateTime.MinValue;
             CompileDateAndTime = DateTime.MinValue;
+            CameraPosition = new Vector3D();
         }
 
         public SimpleVariables(SimpleVariables other)

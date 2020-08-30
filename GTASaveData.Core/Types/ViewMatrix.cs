@@ -201,6 +201,5 @@ namespace GTASaveData.Types
         {
             return !m1.Equals(m2);
         }
-
     }
 }

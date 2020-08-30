@@ -127,6 +127,7 @@ namespace GTASaveData.GTA3
             MaxStamina = 150;
             Weapons = ArrayHelper.CreateArray<Weapon>(NumWeapons);
             TargetableObjects = ArrayHelper.CreateArray<int>(NumTargetableObjects);
+            Position = new Vector3D();
         }
 
         public PlayerPed(PlayerPed other)

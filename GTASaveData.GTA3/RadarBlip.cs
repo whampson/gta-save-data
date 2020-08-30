@@ -133,6 +133,8 @@ namespace GTASaveData.GTA3
         public RadarBlip()
         {
             Index = 1;
+            RadarPosition = new Vector2D();
+            MarkerPosition = new Vector3D();
         }
 
         public RadarBlip(RadarBlip other)

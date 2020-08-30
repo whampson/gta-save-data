@@ -153,7 +153,11 @@ namespace GTASaveData.GTA3
         }
 
         public CarGenerator()
-        { }
+        {
+            Position = new Vector3D();
+            CollisionBoundingMin = new Vector3D();
+            CollisionBoundingMax = new Vector3D();
+        }
 
         public CarGenerator(CarGenerator other)
         {

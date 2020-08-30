@@ -116,7 +116,10 @@ namespace GTASaveData.GTA3
         }
 
         public StoredCar()
-        { }
+        {
+            Position = new Vector3D();
+            Angle = new Vector3D();
+        }
 
         public StoredCar(StoredCar other)
         {

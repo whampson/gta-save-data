@@ -377,6 +377,8 @@ namespace GTASaveData.VCS
         public SimpleVariables()
         {
             TimeStamp = DateTime.MinValue;
+            TargetPosition = new Vector2D();
+            PlayerPosition = new Vector3D();
         }
 
         public SimpleVariables(SimpleVariables other)

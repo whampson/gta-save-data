@@ -37,7 +37,9 @@ namespace GTASaveData.GTA3
         }
 
         public AudioScriptObject()
-        { }
+        {
+            Position = new Vector3D();
+        }
 
         public AudioScriptObject(AudioScriptObject other)
         {

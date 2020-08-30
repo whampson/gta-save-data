@@ -55,6 +55,7 @@ namespace GTASaveData.GTA3
 
         public Phone()
         {
+            Position = new Vector3D();
             Messages = ArrayHelper.CreateArray<uint>(MaxNumMessages);
         }
 

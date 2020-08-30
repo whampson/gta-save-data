@@ -141,7 +141,10 @@ namespace GTASaveData.GTA3
         }
 
         public ParticleObject()
-        { }
+        {
+            Position = new Vector3D();
+            Target = new Vector3D();
+        }
 
         public ParticleObject(ParticleObject other)
         {

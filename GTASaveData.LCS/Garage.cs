@@ -294,7 +294,10 @@ namespace GTASaveData.LCS
         }
 
         public Garage()
-        { }
+        {
+            Position = new Vector3D();
+            Rotation = new Quaternion();
+        }
 
         public Garage(Garage other)
         {

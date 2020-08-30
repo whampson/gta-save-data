@@ -211,6 +211,7 @@ namespace GTASaveData.GTA3
             NextDirection = 1;
             CruiseSpeed = 10;
             MaxTrafficSpeed = 10;
+            Destination = new Vector3D();
         }
 
         public AutoPilot(AutoPilot other)

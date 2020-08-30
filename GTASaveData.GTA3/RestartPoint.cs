@@ -23,7 +23,9 @@ namespace GTASaveData.GTA3
         }
 
         public RestartPoint()
-        { }
+        {
+            Position = new Vector3D();
+        }
 
         public RestartPoint(RestartPoint other)
         {

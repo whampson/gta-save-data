@@ -83,6 +83,8 @@ namespace GTASaveData.GTA3
         public Zone()
         {
             Name = "";
+            Min = new Vector3D();
+            Max = new Vector3D();
         }
 
         public Zone(Zone other)

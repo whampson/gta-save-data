@@ -331,6 +331,8 @@ namespace GTASaveData.LCS
         {
             LastMissionPassedName = "";
             TimeStamp = DateTime.MinValue;
+            CameraPosition = new Vector3D();
+            TargetPosition = new Vector2D();
         }
 
         public SimpleVariables(SimpleVariables other)

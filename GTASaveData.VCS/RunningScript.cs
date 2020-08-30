@@ -17,9 +17,9 @@ namespace GTASaveData.VCS
         private uint m_pPrevScript;
         private int m_id;
         private int m_unknown10h;
-        private uint m_ip;
+        private int m_ip;
         private Array<int> m_stack;
-        private ushort m_stackPointer;
+        private short m_stackPointer;
         private Array<int> m_localVariables;
         private uint m_timerA;
         private uint m_timerB;
@@ -57,7 +57,7 @@ namespace GTASaveData.VCS
             set { m_unknown10h = value; OnPropertyChanged(); }
         }
 
-        public uint IP
+        public int IP
         {
             get { return m_ip; }
             set { m_ip = value; OnPropertyChanged(); }
@@ -69,7 +69,7 @@ namespace GTASaveData.VCS
             set { m_stack = value; OnPropertyChanged(); }
         }
 
-        public ushort StackPosition
+        public short StackPosition
         {
             get { return m_stackPointer; }
             set { m_stackPointer = value; OnPropertyChanged(); }
@@ -222,9 +222,9 @@ namespace GTASaveData.VCS
             PrevScriptPointer = buf.ReadUInt32();
             Id = buf.ReadInt32();
             Field10h = buf.ReadInt32();
-            IP = buf.ReadUInt32();
+            IP = buf.ReadInt32();
             Stack = buf.Read<int>(MaxStackDepth);
-            StackPosition = buf.ReadUInt16();
+            StackPosition = buf.ReadInt16();
             buf.Skip(2);
             LocalVariables = buf.Read<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();

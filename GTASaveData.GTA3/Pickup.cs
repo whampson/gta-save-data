@@ -67,6 +67,7 @@ namespace GTASaveData.GTA3
         public Pickup()
         {
             PoolIndex = 1;
+            Position = new Vector3D();
         }
 
         public Pickup(Pickup other)
