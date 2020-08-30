@@ -126,7 +126,7 @@ namespace GTASaveData.LCS
             {
                 for (int i = 0; i < NumStoredCars; i++)
                 {
-                    if ((i % 3) == 0) yield return CarsInSafeHouse[i];
+                    if ((i % 12) == 0) yield return CarsInSafeHouse[i];
                 }
             }
         }
@@ -137,7 +137,7 @@ namespace GTASaveData.LCS
             {
                 for (int i = 0; i < NumStoredCars; i++)
                 {
-                    if ((i % 3) == 1) yield return CarsInSafeHouse[i];
+                    if ((i % 12) == 1) yield return CarsInSafeHouse[i];
                 }
             }
         }
@@ -148,7 +148,7 @@ namespace GTASaveData.LCS
             {
                 for (int i = 0; i < NumStoredCars; i++)
                 {
-                    if ((i % 3) == 2) yield return CarsInSafeHouse[i];
+                    if ((i % 12) == 2) yield return CarsInSafeHouse[i];
                 }
             }
         }
