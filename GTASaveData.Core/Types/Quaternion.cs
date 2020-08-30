@@ -1,18 +1,43 @@
-﻿using GTASaveData.Types.Interfaces;
-using System;
-using System.Runtime.InteropServices;
+﻿using System;
 
 namespace GTASaveData.Types
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 16)]
-    public struct Quaternion : ISaveDataObject, IEquatable<Quaternion>
+    public class Quaternion : SaveDataObject,
+        IEquatable<Quaternion>, IDeepClonable<Quaternion>
     {
         private const int Size = 16;
 
-        public float X { get; set; }
-        public float Y { get; set; }
-        public float Z { get; set; }
-        public float W { get; set; }
+        private float m_x;
+        private float m_y;
+        private float m_z;
+        private float m_w;
+
+        public float X
+        {
+            get { return m_x; }
+            set { m_x = value; OnPropertyChanged(); }
+        }
+
+        public float Y
+        {
+            get { return m_y; }
+            set { m_y = value; OnPropertyChanged(); }
+        }
+
+        public float Z
+        {
+            get { return m_z; }
+            set { m_z = value; OnPropertyChanged(); }
+        }
+
+        public float W
+        {
+            get { return m_w; }
+            set { m_w = value; OnPropertyChanged(); }
+        }
+        public Quaternion()
+            : this(0, 0, 0, 0)
+        { }
 
         public Quaternion(float x, float y, float z, float w)
         {
@@ -40,27 +65,23 @@ namespace GTASaveData.Types
             return !q1.Equals(q2);
         }
 
-        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             X = buf.ReadFloat();
             Y = buf.ReadFloat();
             Z = buf.ReadFloat();
             W = buf.ReadFloat();
-
-            return Size;
         }
 
-        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(X);
             buf.Write(Y);
             buf.Write(Z);
             buf.Write(W);
-
-            return Size;
         }
 
-        int ISaveDataObject.GetSize(FileFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             return Size;
         }
@@ -92,6 +113,11 @@ namespace GTASaveData.Types
                 && Y.Equals(other.Y)
                 && Z.Equals(other.Z)
                 && W.Equals(other.W);
+        }
+
+        public Quaternion DeepClone()
+        {
+            return new Quaternion(this);
         }
     }
 }

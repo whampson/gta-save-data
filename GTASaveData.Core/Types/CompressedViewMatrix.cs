@@ -1,27 +1,86 @@
-﻿using GTASaveData.Types.Interfaces;
-using System;
-using System.ComponentModel;
-using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using System;
 
 namespace GTASaveData.Types
 {
     /// <summary>
     /// A compressed form of the <see cref="ViewMatrix"/> data structure.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 20)]
-    public struct CompressedViewMatrix : ISaveDataObject, IEquatable<CompressedViewMatrix>
+    public class CompressedViewMatrix : SaveDataObject,
+        IEquatable<CompressedViewMatrix>, IDeepClonable<CompressedViewMatrix>
     {
         private const int Size = 20;
 
-        public Vector3D Position { get; set; }
-        public byte RightX { get; set; }
-        public byte RightY { get; set; }
-        public byte RightZ { get; set; }
-        public byte ForwardX { get; set; }
-        public byte ForwardY { get; set; }
-        public byte ForwardZ { get; set; }
+        private Vector3D m_position;
+        private byte m_rightX;
+        private byte m_rightY;
+        private byte m_rightZ;
+        private byte m_forwardX;
+        private byte m_forwardY;
+        private byte m_forwardZ;
+
+        public Vector3D Position
+        {
+            get { return m_position; }
+            set { m_position = value; OnPropertyChanged(); }
+        }
+
+        public byte RightX
+        {
+            get { return m_rightX; }
+            set { m_rightX = value; OnPropertyChanged(); }
+        }
+
+        public byte RightY
+        {
+            get { return m_rightY; }
+            set { m_rightY = value; OnPropertyChanged(); }
+        }
+
+        public byte RightZ
+        {
+            get { return m_rightZ; }
+            set { m_rightZ = value; OnPropertyChanged(); }
+        }
+
+        public byte ForwardX
+        {
+            get { return m_forwardX; }
+            set { m_forwardX = value; OnPropertyChanged(); }
+        }
+
+        public byte ForwardY
+        {
+            get { return m_forwardY; }
+            set { m_forwardY = value; OnPropertyChanged(); }
+        }
+
+        public byte ForwardZ
+        {
+            get { return m_forwardZ; }
+            set { m_forwardZ = value; OnPropertyChanged(); }
+        }
+
+        public CompressedViewMatrix()
+        {
+            Position = new Vector3D();
+            RightX = 127;
+            RightY = 0;
+            RightZ = 0;
+            ForwardX = 0;
+            ForwardY = 127;
+            ForwardZ = 0;
+        }
+
+        public CompressedViewMatrix(CompressedViewMatrix other)
+        {
+            Position = other.Position;
+            RightX = other.RightX;
+            RightY = other.RightY;
+            RightZ = other.RightZ;
+            ForwardX = other.ForwardX;
+            ForwardY = other.ForwardY;
+            ForwardZ = other.ForwardZ;
+        }
 
         public ViewMatrix Decompress()
         {
@@ -48,7 +107,7 @@ namespace GTASaveData.Types
             };
         }
 
-        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             Position = buf.Read<Vector3D>();
             RightX = buf.ReadByte();
@@ -58,11 +117,9 @@ namespace GTASaveData.Types
             ForwardY = buf.ReadByte();
             ForwardZ = buf.ReadByte();
             buf.ReadInt16();
-
-            return Size;
         }
 
-        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(Position);
             buf.Write(RightX);
@@ -72,11 +129,9 @@ namespace GTASaveData.Types
             buf.Write(ForwardY);
             buf.Write(ForwardZ);
             buf.Write((short) 0);
-
-            return Size;
         }
 
-        int ISaveDataObject.GetSize(FileFormat fmt)
+        protected override int GetSize(FileFormat fmt)
         {
             return Size;
         }
@@ -114,6 +169,11 @@ namespace GTASaveData.Types
                 && ForwardX.Equals(other.ForwardX)
                 && ForwardY.Equals(other.ForwardY)
                 && ForwardZ.Equals(other.ForwardZ);
+        }
+
+        public CompressedViewMatrix DeepClone()
+        {
+            return new CompressedViewMatrix(this);
         }
 
         public static bool operator ==(CompressedViewMatrix m1, CompressedViewMatrix m2)

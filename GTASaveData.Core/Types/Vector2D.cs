@@ -1,21 +1,33 @@
-﻿using GTASaveData.Types.Interfaces;
-using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using System;
 
 namespace GTASaveData.Types
 {
     /// <summary>
     /// A 2-dimensional vector.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 8)]
-    public struct Vector2D : ISaveDataObject, IEquatable<Vector2D>
+    public class Vector2D : SaveDataObject,
+        IEquatable<Vector2D>, IDeepClonable<Vector2D>
     {
         private const int Size = 8;
 
-        public float X { get; set; }
-        public float Y { get; set; }
+        private float m_x;
+        private float m_y;
+
+        public float X
+        {
+            get { return m_x; }
+            set { m_x = value; OnPropertyChanged(); }
+        }
+
+        public float Y
+        {
+            get { return m_y; }
+            set { m_y = value; OnPropertyChanged(); }
+        }
+
+        public Vector2D()
+            : this(0, 0)
+        { }
 
         public Vector2D(float x, float y)
         {
@@ -44,22 +56,22 @@ namespace GTASaveData.Types
             return (X * X) + (Y * Y);
         }
 
-        public static Vector2D Normalize(Vector2D v)
+        public Vector2D Normalize()
         {
-            return Normalize(v);
+            return Normalize(1.0f);
         }
 
-        public static Vector2D Normalize(Vector2D v, float norm)
+        public Vector2D Normalize(float norm)
         {
-            float mag = v.GetMagnitude();
+            float mag = GetMagnitude();
             if (mag > 0)
             {
                 float invSq = norm / mag;
-                v.X *= invSq;
-                v.Y *= invSq;
+                X *= invSq;
+                Y *= invSq;
             }
 
-            return v;
+            return this;
         }
 
         public static float Dot(Vector2D v1, Vector2D v2)
@@ -112,25 +124,26 @@ namespace GTASaveData.Types
             return !v1.Equals(v2);
         }
 
-        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             X = buf.ReadFloat();
             Y = buf.ReadFloat();
-
-            return Size;
         }
 
-        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(X);
             buf.Write(Y);
+        }
 
+        protected override int GetSize(FileFormat fmt)
+        {
             return Size;
         }
 
-        int ISaveDataObject.GetSize(FileFormat fmt)
+        public override string ToString()
         {
-            return Size;
+            return $"{X:0.###},{Y:0.###}";
         }
 
         public override int GetHashCode()
@@ -158,9 +171,9 @@ namespace GTASaveData.Types
                 && Y.Equals(other.Y);
         }
 
-        public override string ToString()
+        public Vector2D DeepClone()
         {
-            return $"{X:0.###},{Y:0.###}";
+            return new Vector2D(this);
         }
     }
 }
