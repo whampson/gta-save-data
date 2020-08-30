@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.LCS
 {
     public class ScriptData : SaveDataObject, IScriptData,
@@ -42,84 +41,72 @@ namespace GTASaveData.LCS
             set { m_globals = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public int OnAMissionFlag
         {
             get { return m_onAMissionFlag; }
             set { m_onAMissionFlag = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public int LastMissionPassedTime
         {
             get { return m_lastMissionPassedTime; }
             set { m_lastMissionPassedTime = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public Array<Collective> Collectives
         {
             get { return m_collectives; }
             set { m_collectives = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public int NextFreeCollectiveIndex
         {
             get { return m_nextFreeCollectiveIndex; }
             set { m_nextFreeCollectiveIndex = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public Array<BuildingSwap> BuildingSwaps
         {
             get { return m_buildingSwapArray; }
             set { m_buildingSwapArray = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public Array<InvisibleObject> InvisibilitySettings
         {
             get { return m_invisibilitySettingArray; }
             set { m_invisibilitySettingArray = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public bool UsingAMultiScriptFile
         {
             get { return m_usingAMultiScriptFile; }
             set { m_usingAMultiScriptFile = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public bool PlayerHasMetDebbieHarry
         {
             get { return m_playerHasMetDebbieHarry; }
             set { m_playerHasMetDebbieHarry = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public int MainScriptSize
         {
             get { return m_mainScriptSize; }
             set { m_mainScriptSize = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public int LargestMissionScriptSize
         {
             get { return m_largestMissionScriptSize; }
             set { m_largestMissionScriptSize = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public short NumberOfMissionScripts
         {
             get { return m_numberOfMissionScripts; }
             set { m_numberOfMissionScripts = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Not loaded by the game.")]
         public Array<RunningScript> ActiveScripts
         {
             get { return m_activeScripts; }
@@ -285,4 +272,3 @@ namespace GTASaveData.LCS
         }
     }
 }
-#pragma warning restore CS0618 // Type or member is obsolete
