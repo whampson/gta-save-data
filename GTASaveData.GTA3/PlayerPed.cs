@@ -135,7 +135,7 @@ namespace GTASaveData.GTA3
             Type = other.Type;
             ModelIndex = other.ModelIndex;
             Handle = other.Handle;
-            Position = other.Position;
+            Position = new Vector3D(other.Position);
             CreatedBy = other.CreatedBy;
             Health = other.Health;
             Armor = other.Armor;

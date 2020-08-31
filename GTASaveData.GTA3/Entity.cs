@@ -47,7 +47,7 @@ namespace GTASaveData.GTA3
             EntityType = other.EntityType;
             EntityStatus = other.EntityStatus;
             EntityFlags = other.EntityFlags;
-            Matrix = other.Matrix;
+            Matrix = new ViewMatrix(other.Matrix);
         }
 
         public Vector3D GetPosition()

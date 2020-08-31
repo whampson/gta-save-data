@@ -45,7 +45,7 @@ namespace GTASaveData.GTA3
         {
             Index = other.Index;
             AudioId = other.AudioId;
-            Position = other.Position;
+            Position = new Vector3D(other.Position);
             AudioEntity = other.AudioEntity;
         }
 

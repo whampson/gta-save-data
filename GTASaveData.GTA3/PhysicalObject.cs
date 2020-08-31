@@ -132,7 +132,7 @@ namespace GTASaveData.GTA3
             ModelIndex = other.ModelIndex;
             Handle = other.Handle;
             UprootLimit = other.UprootLimit;
-            ObjectMatrix = other.ObjectMatrix;
+            ObjectMatrix = new ViewMatrix(other.ObjectMatrix);
             CreatedBy = other.CreatedBy;
             IsPickup = other.IsPickup;
             IsPickupInShop = other.IsPickupInShop;

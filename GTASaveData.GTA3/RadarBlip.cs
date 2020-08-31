@@ -142,8 +142,8 @@ namespace GTASaveData.GTA3
             Color = other.Color;
             Type = other.Type;
             EntityHandle = other.EntityHandle;
-            RadarPosition = other.RadarPosition;
-            MarkerPosition = other.MarkerPosition;
+            RadarPosition = new Vector2D(other.RadarPosition);
+            MarkerPosition = new Vector3D(other.MarkerPosition);
             Index = other.Index;
             IsBright = other.IsBright;
             IsInUse = other.IsInUse;

@@ -316,8 +316,8 @@ namespace GTASaveData.LCS
             RecreateDoorOnNextRefresh = other.RecreateDoorOnNextRefresh;
             RotatingDoor = other.RotatingDoor;
             CameraFollowsPlayer = other.CameraFollowsPlayer;
-            Position = other.Position;
-            Rotation = other.Rotation;
+            Position = new Vector3D(other.Position);
+            Rotation = new Quaternion(other.Rotation);
             CeilingZ = other.CeilingZ;
             DoorRelated1 = other.DoorRelated1;
             DoorRelated2 = other.DoorRelated2;

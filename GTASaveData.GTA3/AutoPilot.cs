@@ -242,7 +242,7 @@ namespace GTASaveData.GTA3
             StayInCurrentLevel = other.StayInCurrentLevel;
             StayInFastLane = other.StayInFastLane;
             IgnorePathFinding = other.IgnorePathFinding;
-            Destination = other.Destination;
+            Destination = new Vector3D(other.Destination);
             PathFindNodesCount = other.PathFindNodesCount;
         }
 

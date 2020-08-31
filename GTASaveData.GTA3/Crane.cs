@@ -235,7 +235,7 @@ namespace GTASaveData.GTA3
             PickupX2 = other.PickupX2;
             PickupY1 = other.PickupY1;
             PickupY2 = other.PickupY2;
-            DropoffTarget = other.DropoffTarget;
+            DropoffTarget = new Vector3D(other.DropoffTarget);
             DropoffHeading = other.DropoffHeading;
             PickupAngle = other.PickupAngle;
             DropoffAngle = other.DropoffAngle;
@@ -246,9 +246,9 @@ namespace GTASaveData.GTA3
             HookAngle = other.HookAngle;
             HookDistance = other.HookDistance;
             HookHeight = other.HookHeight;
-            HookInitialPosition = other.HookInitialPosition;
-            HookCurrentPosition = other.HookCurrentPosition;
-            HookVelocity = other.HookVelocity;
+            HookInitialPosition = new Vector3D(other.HookInitialPosition);
+            HookCurrentPosition = new Vector3D(other.HookCurrentPosition);
+            HookVelocity = new Vector2D(other.HookVelocity);
             VehiclePickedUpHandle = other.VehiclePickedUpHandle;
             TimeForNextCheck = other.TimeForNextCheck;
             Status = other.Status;

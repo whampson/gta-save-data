@@ -29,7 +29,7 @@ namespace GTASaveData.GTA3
 
         public RestartPoint(RestartPoint other)
         {
-            Position = other.Position;
+            Position = new Vector3D(other.Position);
             Angle = other.Angle;
         }
 

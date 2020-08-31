@@ -10,10 +10,10 @@ namespace GTASaveData.Types
     public class ViewMatrix : ObservableObject,     // TODO: SaveDataObject?
         IEquatable<ViewMatrix>, IDeepClonable<ViewMatrix>
     {
-        public static readonly Vector3D UnitX = new Vector3D(1, 0, 0);
-        public static readonly Vector3D UnitY = new Vector3D(0, 1, 0);
-        public static readonly Vector3D UnitZ = new Vector3D(0, 0, 1);
-        public static readonly ViewMatrix Identity = new ViewMatrix() { Right = UnitX, Forward = UnitY, Up = UnitZ };
+        public static Vector3D UnitX => new Vector3D(1, 0, 0);
+        public static Vector3D UnitY => new Vector3D(0, 1, 0);
+        public static Vector3D UnitZ => new Vector3D(0, 0, 1);
+        public static ViewMatrix Identity => new ViewMatrix() { Right = UnitX, Forward = UnitY, Up = UnitZ };
 
         private Vector3D m_right;
         private Vector3D m_forward;
@@ -50,7 +50,7 @@ namespace GTASaveData.Types
 
         public ViewMatrix(Vector3D position)
         {
-            Position = position;
+            Position = new Vector3D(position);
             Right = UnitX;
             Forward = UnitY;
             Up = UnitZ;
@@ -58,17 +58,17 @@ namespace GTASaveData.Types
 
         public ViewMatrix(ViewMatrix other)
         {
-            Right = other.Right;
-            Forward = other.Forward;
-            Up = other.Up;
-            Position = other.Position;
+            Right = new Vector3D(other.Right);
+            Forward = new Vector3D(other.Forward);
+            Up = new Vector3D(other.Up);
+            Position = new Vector3D(other.Position);
         }
 
         public CompressedViewMatrix Compress()
         {
             return new CompressedViewMatrix
             {
-                Position = Position,
+                Position = Position.DeepClone(),
                 RightX = (byte) (127 * Right.X),
                 RightY = (byte) (127 * Right.Y),
                 RightZ = (byte) (127 * Right.Z),

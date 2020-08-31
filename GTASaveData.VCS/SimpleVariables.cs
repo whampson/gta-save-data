@@ -425,8 +425,8 @@ namespace GTASaveData.VCS
             HasPlayerCheated = other.HasPlayerCheated;
             AllTaxisHaveNitro = other.AllTaxisHaveNitro;
             TargetIsOn = other.TargetIsOn;
-            TargetPosition = other.TargetPosition;
-            PlayerPosition = other.PlayerPosition;
+            TargetPosition = new Vector2D(other.TargetPosition);
+            PlayerPosition = new Vector3D(other.PlayerPosition);
             TrailsOn = other.TrailsOn;
             TimeStamp = other.TimeStamp;
             Unknown78hPS2 = other.Unknown78hPS2;

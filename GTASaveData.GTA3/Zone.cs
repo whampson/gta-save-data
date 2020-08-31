@@ -90,8 +90,8 @@ namespace GTASaveData.GTA3
         public Zone(Zone other)
         {
             Name = other.Name;
-            Min = other.Min;
-            Max = other.Max;
+            Min = new Vector3D(other.Min);
+            Max = new Vector3D(other.Max);
             Type = other.Type;
             Level = other.Level;
             ZoneInfoDay = other.ZoneInfoDay;

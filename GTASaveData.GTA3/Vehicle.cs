@@ -253,16 +253,14 @@ namespace GTASaveData.GTA3
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
-            ViewMatrix m = new ViewMatrix();
-            m.Right = buf.Read<Vector3D>();
+            Matrix.Right = buf.Read<Vector3D>();
             buf.Skip(4);
-            m.Forward = buf.Read<Vector3D>();
+            Matrix.Forward = buf.Read<Vector3D>();
             buf.Skip(4);
-            m.Up = buf.Read<Vector3D>();
+            Matrix.Up = buf.Read<Vector3D>();
             buf.Skip(4);
-            m.Position = buf.Read<Vector3D>();
+            Matrix.Position = buf.Read<Vector3D>();
             buf.Skip(4);
-            Matrix = m;
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(12);
             if (fmt.IsiOS) buf.Skip(15);
             if (fmt.IsAndroid) buf.Skip(16);

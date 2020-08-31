@@ -79,7 +79,7 @@ namespace GTASaveData.GTA3
             RegenerationTime = other.RegenerationTime;
             ModelIndex = other.ModelIndex;
             PoolIndex = other.PoolIndex;
-            Position = other.Position;
+            Position = new Vector3D(other.Position);
         }
 
         protected override void ReadData(StreamBuffer buf, FileFormat fmt)

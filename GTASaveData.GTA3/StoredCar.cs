@@ -124,8 +124,8 @@ namespace GTASaveData.GTA3
         public StoredCar(StoredCar other)
         {
             Model = other.Model;
-            Position = other.Position;
-            Angle = other.Angle;
+            Position = new Vector3D(other.Position);
+            Angle = new Vector3D(other.Angle);
             Flags = other.Flags;
             Color1 = other.Color1;
             Color2 = other.Color2;

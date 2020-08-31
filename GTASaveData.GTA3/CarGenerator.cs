@@ -162,7 +162,7 @@ namespace GTASaveData.GTA3
         public CarGenerator(CarGenerator other)
         {
             Model = other.Model;
-            Position = other.Position;
+            Position = new Vector3D(other.Position);
             Heading = other.Heading;
             Color1 = other.Color1;
             Color2 = other.Color2;
@@ -175,8 +175,8 @@ namespace GTASaveData.GTA3
             Handle = other.Handle;
             Enabled = other.Enabled;
             IsBlocking = other.IsBlocking;
-            CollisionBoundingMin = other.CollisionBoundingMin;
-            CollisionBoundingMax = other.CollisionBoundingMax;
+            CollisionBoundingMin = new Vector3D(other.CollisionBoundingMin);
+            CollisionBoundingMax = new Vector3D(other.CollisionBoundingMax);
             CollisionSize = other.CollisionSize;
         }
 

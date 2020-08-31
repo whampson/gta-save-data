@@ -73,7 +73,7 @@ namespace GTASaveData.Types
 
         public CompressedViewMatrix(CompressedViewMatrix other)
         {
-            Position = other.Position;
+            Position = new Vector3D(other.Position);
             RightX = other.RightX;
             RightY = other.RightY;
             RightZ = other.RightZ;
@@ -103,7 +103,7 @@ namespace GTASaveData.Types
                 Right = r,
                 Forward = f,
                 Up = u,
-                Position = Position
+                Position = Position.DeepClone()
             };
         }
 

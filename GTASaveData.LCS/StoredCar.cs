@@ -125,8 +125,8 @@ namespace GTASaveData.LCS
         public StoredCar(StoredCar other)
         {
             Model = other.Model;
-            Position = other.Position;
-            Angle = other.Angle;
+            Position = new Vector3D(other.Position);
+            Angle = new Vector3D(other.Angle);
             HandlingMultiplier = other.HandlingMultiplier;
             Flags = other.Flags;
             Color1 = other.Color1;

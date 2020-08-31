@@ -10,8 +10,8 @@
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
     <Description>A .NET library for manipulating Grand Theft Auto: Liberty City Stories save files.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>1.1.1.136</AssemblyVersion>
-    <FileVersion>1.1.1.136</FileVersion>
+    <AssemblyVersion>1.1.1.137</AssemblyVersion>
+    <FileVersion>1.1.1.137</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.1.1</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

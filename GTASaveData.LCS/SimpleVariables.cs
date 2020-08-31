@@ -380,7 +380,7 @@ namespace GTASaveData.LCS
             HasPlayerCheated = other.HasPlayerCheated;
             AllTaxisHaveNitro = other.AllTaxisHaveNitro;
             TargetIsOn = other.TargetIsOn;
-            TargetPosition = other.TargetPosition;
+            TargetPosition = new Vector2D(other.TargetPosition);
             TimeStamp = other.TimeStamp;
         }
 

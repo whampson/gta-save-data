@@ -4,7 +4,7 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestGameObject : Base<PhysicalObject>
+    public class TestPhysicalObject : Base<PhysicalObject>
     {
         public override PhysicalObject GenerateTestObject(FileFormat format)
         {

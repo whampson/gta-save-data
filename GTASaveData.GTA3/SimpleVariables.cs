@@ -290,7 +290,7 @@ namespace GTASaveData.GTA3
             TimeStamp = other.TimeStamp;
             SizeOfGameInBytes = other.SizeOfGameInBytes;
             CurrentLevel = other.CurrentLevel;
-            CameraPosition = other.CameraPosition;
+            CameraPosition = new Vector3D(other.CameraPosition);
             MillisecondsPerGameMinute = other.MillisecondsPerGameMinute;
             LastClockTick = other.LastClockTick;
             GameClockHours = other.GameClockHours;

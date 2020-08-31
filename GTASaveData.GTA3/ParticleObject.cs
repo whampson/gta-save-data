@@ -148,7 +148,7 @@ namespace GTASaveData.GTA3
 
         public ParticleObject(ParticleObject other)
         {
-            Position = other.Position;
+            Position = new Vector3D(other.Position);
             NextParticleObjectPointer = other.NextParticleObjectPointer;
             PrevParticleObjectPointer = other.PrevParticleObjectPointer;
             ParticlePointer = other.ParticlePointer;
@@ -159,7 +159,7 @@ namespace GTASaveData.GTA3
             SkipFrames = other.SkipFrames;
             FrameCounter = other.FrameCounter;
             State = other.State;
-            Target = other.Target;
+            Target = new Vector3D(other.Target);
             Spread = other.Spread;
             Size = other.Size;
             Color = other.Color;

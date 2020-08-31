@@ -61,7 +61,7 @@ namespace GTASaveData.GTA3
 
         public Phone(Phone other)
         {
-            Position = other.Position;
+            Position = new Vector3D(other.Position);
             Messages = ArrayHelper.DeepClone(other.Messages);
             RepeatedMessageStartTime = other.RepeatedMessageStartTime;
             Handle = other.Handle;
