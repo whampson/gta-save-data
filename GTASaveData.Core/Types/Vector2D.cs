@@ -1,33 +1,18 @@
 ﻿using System;
+using GTASaveData.Types.Interfaces;
 
 namespace GTASaveData.Types
 {
     /// <summary>
     /// A 2-dimensional vector.
     /// </summary>
-    public class Vector2D : SaveDataObject,
+    public struct Vector2D : ISaveDataObject,
         IEquatable<Vector2D>, IDeepClonable<Vector2D>
     {
         private const int Size = 8;
 
-        private float m_x;
-        private float m_y;
-
-        public float X
-        {
-            get { return m_x; }
-            set { m_x = value; OnPropertyChanged(); }
-        }
-
-        public float Y
-        {
-            get { return m_y; }
-            set { m_y = value; OnPropertyChanged(); }
-        }
-
-        public Vector2D()
-            : this(0, 0)
-        { }
+        public float X { get; set; }
+        public float Y { get; set; }
 
         public Vector2D(float x, float y)
         {
@@ -56,22 +41,22 @@ namespace GTASaveData.Types
             return (X * X) + (Y * Y);
         }
 
-        public Vector2D Normalize()
+        public static Vector2D Normalize(Vector2D v)
         {
-            return Normalize(1.0f);
+            return Normalize(v, 1.0f);
         }
 
-        public Vector2D Normalize(float norm)
+        public static Vector2D Normalize(Vector2D v, float norm)
         {
-            float mag = GetMagnitude();
+            float mag = v.GetMagnitude();
             if (mag > 0)
             {
                 float invSq = norm / mag;
-                X *= invSq;
-                Y *= invSq;
+                v.X *= invSq;
+                v.Y *= invSq;
             }
 
-            return this;
+            return v;
         }
 
         public static float Dot(Vector2D v1, Vector2D v2)
@@ -124,19 +109,23 @@ namespace GTASaveData.Types
             return !v1.Equals(v2);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
         {
             X = buf.ReadFloat();
             Y = buf.ReadFloat();
+
+            return Size;
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(X);
             buf.Write(Y);
+
+            return Size;
         }
 
-        protected override int GetSize(FileFormat fmt)
+        int ISaveDataObject.GetSize(FileFormat fmt)
         {
             return Size;
         }

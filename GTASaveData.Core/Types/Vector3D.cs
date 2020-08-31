@@ -1,40 +1,19 @@
 ﻿using System;
+using GTASaveData.Types.Interfaces;
 
 namespace GTASaveData.Types
 {
     /// <summary>
     /// A 3-dimensional vector.
     /// </summary>
-    public class Vector3D : SaveDataObject,
+    public struct Vector3D : ISaveDataObject,
         IEquatable<Vector3D>, IDeepClonable<Vector3D>
     {
         private const int Size = 12;
 
-        private float m_x;
-        private float m_y;
-        private float m_z;
-
-        public float X
-        {
-            get { return m_x; }
-            set { m_x = value; OnPropertyChanged(); }
-        }
-
-        public float Y
-        {
-            get { return m_y; }
-            set { m_y = value; OnPropertyChanged(); }
-        }
-
-        public float Z
-        {
-            get { return m_z; }
-            set { m_z = value; OnPropertyChanged(); }
-        }
-
-        public Vector3D()
-            : this(0, 0, 0)
-        { }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
 
         public Vector3D(float x, float y, float z)
         {
@@ -70,23 +49,23 @@ namespace GTASaveData.Types
             return new Vector2D(X, Y);
         }
 
-        public Vector3D Normalize()
+        public static Vector3D Normalize(Vector3D v)
         {
-            return Normalize(1.0f);
+            return Normalize(v, 1.0f);
         }
 
-        public Vector3D Normalize(float norm)
+        public static Vector3D Normalize(Vector3D v, float norm)
         {
-            float magSq = GetMagnitudeSquared();
+            float magSq = v.GetMagnitudeSquared();
             if (magSq > 0)
             {
                 float invSq = (float) (norm / Math.Sqrt(magSq));
-                X *= invSq;
-                Y *= invSq;
-                Z *= invSq;
+                v.X *= invSq;
+                v.Y *= invSq;
+                v.Z *= invSq;
             }
 
-            return this;
+            return v;
         }
 
         public static float Dot(Vector3D v1, Vector3D v2)
@@ -147,21 +126,25 @@ namespace GTASaveData.Types
             return !left.Equals(right);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
         {
             X = buf.ReadFloat();
             Y = buf.ReadFloat();
             Z = buf.ReadFloat();
+
+            return Size;
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
         {
             buf.Write(X);
             buf.Write(Y);
             buf.Write(Z);
+
+            return Size;
         }
 
-        protected override int GetSize(FileFormat fmt)
+        int ISaveDataObject.GetSize(FileFormat fmt)
         {
             return Size;
         }

@@ -151,9 +151,9 @@ namespace GTASaveData.Types
             Vector3D f = Forward.DeepClone();
             Vector3D u = Up.DeepClone();
 
-            Up = Vector3D.Cross(r, f).Normalize();
-            Right = Vector3D.Cross(f, u).Normalize();
-            Forward = Vector3D.Cross(u, r).Normalize();
+            Up = Vector3D.Normalize(Vector3D.Cross(r, f));
+            Right = Vector3D.Normalize(Vector3D.Cross(f, u));
+            Forward = Vector3D.Normalize(Vector3D.Cross(u, r));
 
             return this;
         }
