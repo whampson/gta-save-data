@@ -1,5 +1,6 @@
 ﻿using GTASaveData.Types.Interfaces;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace GTASaveData.LCS
@@ -235,5 +236,78 @@ namespace GTASaveData.LCS
         {
             return new PlayerInfo(this);
         }
+    }
+
+    public enum PlayerOutfit
+    {
+        [Description("Casual")]
+        Casual,
+
+        [Description("Leone's Suit")]
+        Leone,
+
+        [Description("Overalls")]
+        Overalls,
+
+        [Description("Avenging Angels")]
+        AvengingAngels,
+
+        [Description("Chauffeur")]
+        Chauffer,
+
+        [Description("Lawyer")]
+        Lawyer,
+
+        [Description("Tuxedo")]
+        Tuxedo,
+
+        [Description("'The King' Jumpsuit")]
+        TheKing,
+
+        [Description("Cox Mascot Suit")]
+        Cox,
+
+        [Description("Underwear")]
+        Underwear,
+
+        [Description("Hero Garb")]
+        Hero,
+
+        [Description("'Dragon' Jumpsuit")]
+        Dragon,
+
+        [Description("Antonio")]
+        Antonio,
+
+        [Description("Sweats")]
+        Sweats,
+
+        [Description("Goodfella")]
+        Goodfella,
+
+        [Description("Wiseguy")]
+        Wiseguy,
+    }
+
+    [Flags]
+    public enum PlayerOutfitFlags : ushort
+    {
+        None,
+        Casual = (1 << 0),
+        Leone = (1 << 1),
+        Overalls = (1 << 2),
+        AvengingAngels = (1 << 3),
+        Chauffer = (1 << 4),
+        Lawyer = (1 << 5),
+        Tuxedo = (1 << 6),
+        TheKing = (1 << 7),
+        Cox = (1 << 8),
+        Underwear = (1 << 9),
+        Hero = (1 << 10),
+        Dragon = (1 << 11),
+        Antonio = (1 << 12),
+        Sweats = (1 << 13),
+        Goodfella = (1 << 14),
+        Wiseguy = (1 << 15),
     }
 }

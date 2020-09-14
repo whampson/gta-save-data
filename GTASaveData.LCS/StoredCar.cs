@@ -298,10 +298,10 @@ namespace GTASaveData.LCS
         [Description("LCFR")]
         LCFR,
 
-        [Description("User Track Player")]
-        UserTrackPlayer,
+        [Description("Mix Tape")]
+        MixTape,
 
-        [Description("(none)")]
+        [Description("(radio off)")]
         None
     }
 }

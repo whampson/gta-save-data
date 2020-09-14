@@ -10,13 +10,14 @@
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
     <Description>A .NET library for manipulating Grand Theft Auto: Liberty City Stories save files.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>1.1.1.143</AssemblyVersion>
-    <FileVersion>1.1.1.143</FileVersion>
+    <AssemblyVersion>1.1.1.169</AssemblyVersion>
+    <FileVersion>1.1.1.169</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.1.1</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>gtalcs save data; gtalcs save file; gtalcs save; gtalcs; gta; lcs; gta lcs; save data; gta save data; lcs save data;</PackageTags>
     <RepositoryUrl>https://github.com/whampson/gta-save-data</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/whampson/gta-save-data</PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

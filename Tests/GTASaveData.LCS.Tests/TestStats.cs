@@ -90,7 +90,7 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.AutoPaintingBudget, f => f.Random.Float())
                 .RuleFor(x => x.PropertyDestroyed, f => f.Random.Int())
                 .RuleFor(x => x.NumPropertyOwned, f => f.Random.Int())
-                .RuleFor(x => x.UnlockedCostumes, f => f.PickRandom<UnlockedCostumes>())
+                .RuleFor(x => x.UnlockedCostumes, f => f.PickRandom<PlayerOutfitFlags>())
                 .RuleFor(x => x.BloodringKills, f => f.Random.Int())
                 .RuleFor(x => x.BloodringTime, f => f.Random.Int())
                 .RuleFor(x => x.PropertyOwned, f => Generator.Array(Stats.NumProperties, g => f.Random.Byte()))

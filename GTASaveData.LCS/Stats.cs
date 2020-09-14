@@ -54,7 +54,7 @@ namespace GTASaveData.LCS
         private bool m_commercialPassed;
         private bool m_suburbanPassed;
         private bool m_pamphletMissionPassed; // vc leftover
-        private bool m_noMoreHurricanes; // vc leftover
+        private bool m_noMoreHurricanes; // vc leftover; no effect?
         private float m_distanceTravelledOnFoot;
         private float m_distanceTravelledByCar;
         private float m_distanceTravelledByBike;
@@ -73,15 +73,15 @@ namespace GTASaveData.LCS
         private int m_totalNumberKillFrenzies;
         private int m_totalNumberMissions;
         private int m_timesDrowned;
-        private int m_seagullsKilled; // vc leftover
+        private int m_seagullsKilled;
         private float m_weaponBudget;
-        private int m_loanSharks; // vc leftover?
-        private int m_movieStunts; // vc leftover?
+        private int m_loanSharks; // vc leftover
+        private int m_movieStunts; // vc leftover
         private float m_pizzasDelivered;
         private float m_noodlesDelivered;
         private float m_moneyMadeFromTourist;
         private float m_touristsTakenToSpots;
-        private int m_garbagePickups; // vc leftover? no relation to Trash Dash
+        private int m_garbagePickups; // vc leftover; no relation to Trash Dash
         private int m_iceCreamSold; // vc leftover?
         private int m_topShootingRangeScore; // vc leftover
         private int m_shootingRank; // vc leftover
@@ -99,16 +99,16 @@ namespace GTASaveData.LCS
         private float m_autoPaintingBudget;
         private int m_propertyDestroyed;
         private int m_numPropertyOwned; // vc leftover
-        private UnlockedCostumes m_unlockedCostumes; // doesn't actually unlock outfits, just shows them in stats
+        private PlayerOutfitFlags m_unlockedCostumes; // doesn't actually unlock outfits, just shows them in stats
         private int m_bloodringKills; // vc leftover
         private int m_bloodringTime; // vc leftover
         private Array<byte> m_propertyOwned; // vc leftover
-        private float m_highestChaseValue; // same as VC, still works
+        private float m_highestChaseValue;
         private Array<int> m_fastestTimes; // vc leftover
         private Array<int> m_highestScores; // vc leftover
         private int m_bestPositions; // vc leftover
         private int m_killsSinceLastCheckpoint; // always 0 on save
-        private int m_totalLegitimateKills; // not shown in stats, used for criminal rating?
+        private int m_totalLegitimateKills;
         private string m_lastMissionPassedName;
         private int m_cheatedCount;
         private int m_carsSold;
@@ -120,10 +120,10 @@ namespace GTASaveData.LCS
         private int m_highestLevelSlashTv;
         private int m_moneyMadeWithSlashTv;
         private int m_totalKillsOnSlashTv;
-        private int m_packagesSmuggled; // vc leftover?
-        private int m_smugglersWasted; // vc leftover?
-        private int m_fastestSmugglingTime; // vc leftover?
-        private int m_moneyMadeInCoach; // vc leftover
+        private int m_packagesSmuggled; // beta/multiplayer?
+        private int m_smugglersWasted; // beta/multiplayer?
+        private int m_fastestSmugglingTime; // beta/multiplayer?
+        private int m_moneyMadeInCoach; // beta/multiplayer?
         private int m_cashMadeCollectingTrash;
         private int m_hitmenKilled;
         private int m_highestGuardianAngelJusticeDished;
@@ -133,10 +133,10 @@ namespace GTASaveData.LCS
         private int m_guardianAngelHighestLevelSub;
         private int m_mostTimeLeftTrainRace;
         private int m_bestTimeGoGoFaggio;
-        private int m_highestTrainCashEarned; // shows up in stats as 'Most Air Achieved', game bug? (swapped with dirtBikeMostAir?)
-        private int m_dirtBikeMostAir; // not used?
-        private int m_fastestHeliRaceTime; // vc leftover?
-        private int m_bestHeliRacePosition; // vc leftover?
+        private int m_dirtBikeMostAir;
+        private int m_highestTrainCashEarned; // bugged, doesn't show up in stats
+        private int m_fastestHeliRaceTime; // beta/multiplayer?
+        private int m_bestHeliRacePosition; // beta/multiplayer?
         private int m_numberOutfitChanges;
         private Array<int> m_bestBanditLapTimes;
         private Array<int> m_bestBanditPositions;
@@ -627,7 +627,7 @@ namespace GTASaveData.LCS
             set { m_numPropertyOwned = value; OnPropertyChanged(); }
         }
 
-        public UnlockedCostumes UnlockedCostumes
+        public PlayerOutfitFlags UnlockedCostumes
         {
             get { return m_unlockedCostumes; }
             set { m_unlockedCostumes = value; OnPropertyChanged(); }
@@ -831,16 +831,16 @@ namespace GTASaveData.LCS
             set { m_bestTimeGoGoFaggio = value; OnPropertyChanged(); }
         }
 
-        public int HighestTrainCashEarned
-        {
-            get { return m_highestTrainCashEarned; }
-            set { m_highestTrainCashEarned = value; OnPropertyChanged(); }
-        }
-
         public int DirtBikeMostAir
         {
             get { return m_dirtBikeMostAir; }
             set { m_dirtBikeMostAir = value; OnPropertyChanged(); }
+        }
+
+        public int HighestTrainCashEarned
+        {
+            get { return m_highestTrainCashEarned; }
+            set { m_highestTrainCashEarned = value; OnPropertyChanged(); }
         }
 
         public int FastestHeliRaceTime
@@ -1139,7 +1139,7 @@ namespace GTASaveData.LCS
             AutoPaintingBudget = buf.ReadFloat();
             PropertyDestroyed = buf.ReadInt32();
             NumPropertyOwned = buf.ReadInt32();
-            UnlockedCostumes = (UnlockedCostumes) buf.ReadUInt16();
+            UnlockedCostumes = (PlayerOutfitFlags) buf.ReadUInt16();
             BloodringKills = buf.ReadInt32();
             BloodringTime = buf.ReadInt32();
             PropertyOwned = buf.Read<byte>(NumProperties);
@@ -1173,8 +1173,8 @@ namespace GTASaveData.LCS
             GuardianAngelHighestLevelSub = buf.ReadInt32();
             MostTimeLeftTrainRace = buf.ReadInt32();
             BestTimeGoGoFaggio = buf.ReadInt32();
-            HighestTrainCashEarned = buf.ReadInt32();
             DirtBikeMostAir = buf.ReadInt32();
+            HighestTrainCashEarned = buf.ReadInt32();
             FastestHeliRaceTime = buf.ReadInt32();
             BestHeliRacePosition = buf.ReadInt32();
             NumberOutfitChanges = buf.ReadInt32();
@@ -1306,8 +1306,8 @@ namespace GTASaveData.LCS
             buf.Write(GuardianAngelHighestLevelSub);
             buf.Write(MostTimeLeftTrainRace);
             buf.Write(BestTimeGoGoFaggio);
-            buf.Write(HighestTrainCashEarned);
             buf.Write(DirtBikeMostAir);
+            buf.Write(HighestTrainCashEarned);
             buf.Write(FastestHeliRaceTime);
             buf.Write(BestHeliRacePosition);
             buf.Write(NumberOutfitChanges);
@@ -1475,60 +1475,5 @@ namespace GTASaveData.LCS
         {
             return new Stats(this);
         }
-    }
-
-    [Flags]
-    public enum UnlockedCostumes : ushort
-    {
-        [Description("(none)")]
-        None,
-
-        [Description("Casual")]
-        Casual = (1 << 0),
-
-        [Description("Leone Suit")]
-        Leone = (1 << 1),
-
-        [Description("Overalls")]
-        Overalls = (1 << 2),
-
-        [Description("Avenging Angels")]
-        AvengingAngels = (1 << 3),
-
-        [Description("Chauffeur")]
-        Chauffer = (1 << 4),
-
-        [Description("Lawyer Suit")]
-        Lawyer = (1 << 5),
-
-        [Description("Tuxedo")]
-        Tuxedo = (1 << 6),
-
-        [Description("'The King' Jumpsuit")]
-        TheKing = (1 << 7),
-
-        [Description("Cox Mascot")]
-        Cox = (1 << 8),
-
-        [Description("Underwear")]
-        Underwear = (1 << 9),
-
-        [Description("Hero Garb")]
-        Hero = (1 << 10),
-
-        [Description("'Dragon' Jumpsuit")]
-        Dragon = (1 << 11),
-
-        [Description("Antonio")]
-        Antonio = (1 << 12),
-
-        [Description("Sweats")]
-        Sweats = (1 << 13),
-
-        [Description("Goodfella")]
-        Goodfella = (1 << 14),
-
-        [Description("Wiseguy")]
-        Wiseguy = (1 << 15),
     }
 }
