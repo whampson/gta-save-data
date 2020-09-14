@@ -12,7 +12,7 @@ namespace GTASaveData.Core.Tests
 {
     public class TestArray : TestBase
     {
-        private const string IndexerPropertyName = "Items[]";
+        private const string IndexerPropertyName = "Item";
         private const string CountPropertyName = "Count";
 
         [Fact]
@@ -50,9 +50,8 @@ namespace GTASaveData.Core.Tests
             Assert.Single(raisedCollectionEvents);
             Assert.Equal(NotifyCollectionChangedAction.Add, raisedCollectionEvents[0].Action);
             Assert.Equal(1234, raisedCollectionEvents[0].NewItems[0]);
-            Assert.Equal(2, raisedPropertyEvents.Count);
+            Assert.Single(raisedPropertyEvents);
             Assert.Single(raisedPropertyEvents.Where(x => x.PropertyName == CountPropertyName));
-            Assert.Single(raisedPropertyEvents.Where(x => x.PropertyName == IndexerPropertyName));
         }
 
 
@@ -77,9 +76,8 @@ namespace GTASaveData.Core.Tests
             Assert.Empty(a);
             Assert.Single(raisedCollectionEvents);
             Assert.Equal(NotifyCollectionChangedAction.Reset, raisedCollectionEvents[0].Action);
-            Assert.Equal(2, raisedPropertyEvents.Count);
+            Assert.Single(raisedPropertyEvents);
             Assert.Single(raisedPropertyEvents.Where(x => x.PropertyName == CountPropertyName));
-            Assert.Single(raisedPropertyEvents.Where(x => x.PropertyName == IndexerPropertyName));
         }
 
         [Fact]
@@ -106,9 +104,8 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(NotifyCollectionChangedAction.Add, raisedCollectionEvents[0].Action);
             Assert.Equal(1234, raisedCollectionEvents[0].NewItems[0]);
             Assert.Equal(5, raisedCollectionEvents[0].NewStartingIndex);
-            Assert.Equal(2, raisedPropertyEvents.Count);
+            Assert.Single(raisedPropertyEvents);
             Assert.Single(raisedPropertyEvents.Where(x => x.PropertyName == CountPropertyName));
-            Assert.Single(raisedPropertyEvents.Where(x => x.PropertyName == IndexerPropertyName));
         }
 
         [Fact]
@@ -162,8 +159,7 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(1234, raisedCollectionEvents[0].NewItems[0]);
             Assert.Equal(5, raisedCollectionEvents[0].OldStartingIndex);
             Assert.Equal(6, raisedCollectionEvents[0].NewStartingIndex);
-            Assert.Single(raisedPropertyEvents);
-            Assert.Equal(IndexerPropertyName, raisedPropertyEvents[0].PropertyName);
+            Assert.Empty(raisedPropertyEvents);
         }
 
         [Fact]
@@ -191,9 +187,8 @@ namespace GTASaveData.Core.Tests
             Assert.Single(raisedCollectionEvents);
             Assert.Equal(NotifyCollectionChangedAction.Remove, raisedCollectionEvents[0].Action);
             Assert.Equal(1234, raisedCollectionEvents[0].OldItems[0]);
-            Assert.Equal(2, raisedPropertyEvents.Count);
+            Assert.Single(raisedPropertyEvents);
             Assert.Single(raisedPropertyEvents.Where(x => x.PropertyName == CountPropertyName));
-            Assert.Single(raisedPropertyEvents.Where(x => x.PropertyName == IndexerPropertyName));
         }
 
         [Fact]
@@ -221,13 +216,40 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(NotifyCollectionChangedAction.Remove, raisedCollectionEvents[0].Action);
             Assert.Equal(1234, raisedCollectionEvents[0].OldItems[0]);
             Assert.Equal(5, raisedCollectionEvents[0].OldStartingIndex);
-            Assert.Equal(2, raisedPropertyEvents.Count);
+            Assert.Single(raisedPropertyEvents);
             Assert.Single(raisedPropertyEvents.Where(x => x.PropertyName == CountPropertyName));
-            Assert.Single(raisedPropertyEvents.Where(x => x.PropertyName == IndexerPropertyName));
         }
 
         [Fact]
         public void Replace()
+        {
+            var raisedCollectionEvents = new List<NotifyCollectionChangedEventArgs>();
+            var raisedPropertyEvents = new List<PropertyChangedEventArgs>();
+
+            Array<int> a = ArrayHelper.CreateArray<int>(10);
+
+            a.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            {
+                raisedCollectionEvents.Add(e);
+            };
+            a.PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+            {
+                raisedPropertyEvents.Add(e);
+            };
+
+            a.Replace(1234, 5);
+
+            Assert.Equal(10, a.Count);
+            Assert.Single(raisedCollectionEvents);
+            Assert.Equal(NotifyCollectionChangedAction.Replace, raisedCollectionEvents[0].Action);
+            Assert.Equal(0, raisedCollectionEvents[0].OldItems[0]);
+            Assert.Equal(1234, raisedCollectionEvents[0].NewItems[0]);
+            Assert.Equal(5, raisedCollectionEvents[0].NewStartingIndex);
+            Assert.Empty(raisedPropertyEvents);
+        }
+
+        [Fact]
+        public void ReplaceIndexer()
         {
             var raisedCollectionEvents = new List<NotifyCollectionChangedEventArgs>();
             var raisedPropertyEvents = new List<PropertyChangedEventArgs>();

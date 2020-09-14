@@ -38,8 +38,6 @@ namespace GTASaveData
         /// </summary>
         public event NotifyItemStateChangedEventHandler ItemStateChanged;
 
-        private const string IndexerName = "Items[]";
-
         private readonly BusyMonitor m_monitor;
         private readonly List<T> m_items;
         private readonly bool m_itemsAreObservable;
@@ -58,7 +56,7 @@ namespace GTASaveData
         object IList.this[int index]
         {
             get { return this[index]; }
-            set { this[index] = (T) value; }
+            set { this[index] = (T) value; OnPropertyChanged(); }
         }
 
         /// <summary>
@@ -69,7 +67,7 @@ namespace GTASaveData
         public T this[int index]
         {
             get { return ItemAt(index); }
-            set { Replace(value, index); }
+            set { Replace(value, index); OnPropertyChanged(); }
         }
         
         /// <summary>
@@ -129,7 +127,6 @@ namespace GTASaveData
             RegisterStateChangedHandler(item);
 
             OnPropertyChanged(nameof(Count));
-            OnPropertyChanged(IndexerName);
             OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
         }
 
@@ -144,7 +141,6 @@ namespace GTASaveData
             m_items.Clear();
 
             OnPropertyChanged(nameof(Count));
-            OnPropertyChanged(IndexerName);
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
@@ -251,7 +247,6 @@ namespace GTASaveData
             RegisterStateChangedHandler(item);
 
             OnPropertyChanged(nameof(Count));
-            OnPropertyChanged(IndexerName);
             OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
         }
 
@@ -279,7 +274,6 @@ namespace GTASaveData
             m_items.RemoveAt(oldIndex);
             m_items.Insert(newIndex, oldItem);
 
-            OnPropertyChanged(IndexerName);
             OnCollectionChanged(NotifyCollectionChangedAction.Move, oldItem, newIndex, oldIndex);
         }
 
@@ -310,7 +304,6 @@ namespace GTASaveData
             UnregisterStateChangedHandler(item);
 
             OnPropertyChanged(nameof(Count));
-            OnPropertyChanged(IndexerName);
             OnCollectionChanged(NotifyCollectionChangedAction.Remove, item);
 
             return true;
@@ -330,7 +323,6 @@ namespace GTASaveData
             UnregisterStateChangedHandler(item);
 
             OnPropertyChanged(nameof(Count));
-            OnPropertyChanged(IndexerName);
             OnCollectionChanged(NotifyCollectionChangedAction.Remove, item, index);
         }
 
@@ -349,7 +341,6 @@ namespace GTASaveData
             UnregisterStateChangedHandler(oldItem);
             RegisterStateChangedHandler(item);
 
-            OnPropertyChanged(IndexerName);
             OnCollectionChanged(NotifyCollectionChangedAction.Replace, item, oldItem, index);
         }
 
