@@ -11,8 +11,9 @@ namespace GTASaveData.LCS
     {
         private int m_model;
         private Vector3D m_position;
-        private Vector3D m_angle;
-        private float m_handlingMultiplier;
+        private float m_heading;
+        private float m_pitch;
+        private float m_traction;
         private StoredCarFlags m_flags;
         private byte m_color1;
         private byte m_color2;
@@ -32,16 +33,22 @@ namespace GTASaveData.LCS
             set { m_position = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Angle
+        public float Heading
         {
-            get { return m_angle; }
-            set { m_angle = value; OnPropertyChanged(); }
+            get { return m_heading; }
+            set { m_heading = value; OnPropertyChanged(); }
         }
 
-        public float HandlingMultiplier
+        public float Pitch
         {
-            get { return m_handlingMultiplier; }
-            set { m_handlingMultiplier = value; OnPropertyChanged(); }
+            get { return m_pitch; }
+            set { m_pitch = value; OnPropertyChanged(); }
+        }
+
+        public float Traction
+        {
+            get { return m_traction; }
+            set { m_traction = value; OnPropertyChanged(); }
         }
 
         public StoredCarFlags Flags
@@ -119,15 +126,15 @@ namespace GTASaveData.LCS
         public StoredCar()
         {
             Position = new Vector3D();
-            Angle = new Vector3D();
         }
 
         public StoredCar(StoredCar other)
         {
             Model = other.Model;
             Position = new Vector3D(other.Position);
-            Angle = new Vector3D(other.Angle);
-            HandlingMultiplier = other.HandlingMultiplier;
+            Heading = other.Heading;
+            Pitch = other.Pitch;
+            Traction = other.Traction;
             Flags = other.Flags;
             Color1 = other.Color1;
             Color2 = other.Color2;
@@ -140,8 +147,13 @@ namespace GTASaveData.LCS
         {
             Model = buf.ReadInt32();
             Position = buf.Read<Vector3D>();
-            Angle = buf.Read<Vector3D>();
-            HandlingMultiplier = buf.ReadFloat();
+            float headingX = buf.ReadFloat();
+            float headingY = buf.ReadFloat();
+            float heading = (float) RadToDeg(Math.Atan2(headingY, headingX)) - 90;
+            if (heading < 0) heading += 360;
+            Heading = heading;
+            Pitch = (float) RadToDeg(Math.Atan(buf.ReadFloat()));
+            Traction = buf.ReadFloat();
             Flags = (StoredCarFlags) buf.ReadInt32();
             Color1 = buf.ReadByte();
             Color2 = buf.ReadByte();
@@ -157,8 +169,10 @@ namespace GTASaveData.LCS
         {
             buf.Write(Model);
             buf.Write(Position);
-            buf.Write(Angle);
-            buf.Write(HandlingMultiplier);
+            buf.Write((float) Math.Cos(DegToRad(Heading + 90)));
+            buf.Write((float) Math.Sin(DegToRad(Heading + 90)));
+            buf.Write((float) Math.Tan(DegToRad(Pitch)));
+            buf.Write(Traction);
             buf.Write((int) Flags);
             buf.Write(Color1);
             buf.Write(Color2);
@@ -189,8 +203,9 @@ namespace GTASaveData.LCS
 
             return Model.Equals(other.Model)
                 && Position.Equals(other.Position)
-                && Angle.Equals(other.Angle)
-                && HandlingMultiplier.Equals(other.HandlingMultiplier)
+                && Math.Abs(Heading - other.Heading) < 0.001
+                && Math.Abs(Pitch - other.Pitch) < 0.001
+                && Traction.Equals(other.Traction)
                 && Flags.Equals(other.Flags)
                 && Color1.Equals(other.Color1)
                 && Color2.Equals(other.Color2)
@@ -202,6 +217,16 @@ namespace GTASaveData.LCS
         public StoredCar DeepClone()
         {
             return new StoredCar(this);
+        }
+
+        private static double RadToDeg(double r)
+        {
+            return r * (180 / Math.PI);
+        }
+
+        private static double DegToRad(double deg)
+        {
+            return deg * (Math.PI / 180);
         }
     }
 
