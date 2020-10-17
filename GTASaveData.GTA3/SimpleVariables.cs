@@ -397,7 +397,7 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            if (!fmt.IsPS2) buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
+            if (!fmt.IsPS2) buf.Write($"{LastMissionPassedName}\0", MaxMissionPassedNameLength, unicode: true, zeroTerminate: false);
             if (fmt.IsPC || fmt.IsXbox) buf.Write(TimeStamp);
             buf.Write(SizeOfGameInBytes);
             buf.Write((int) CurrentLevel);
