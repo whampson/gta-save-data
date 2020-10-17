@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.IO;
 
 namespace GTASaveData
@@ -105,12 +106,7 @@ namespace GTASaveData
         /// <returns>A <see cref="SaveData"/> object containing the deserialized data.</returns>
         public static T Load<T>(byte[] data) where T : SaveData, new()
         {
-            if (GetFileFormat<T>(data, out FileFormat fmt))
-            {
-                return Load<T>(data, fmt);
-            }
-
-            return null;
+            return Load<T>(data, FileFormat.Default);
         }
 
         /// <summary>
@@ -122,12 +118,7 @@ namespace GTASaveData
         /// <returns>A <see cref="SaveData"/> object containing the deserialized data.</returns>
         public static T Load<T>(string path) where T : SaveData, new()
         {
-            if (GetFileFormat<T>(path, out FileFormat fmt))
-            {
-                return Load<T>(path, fmt);
-            }
-
-            return null;
+            return Load<T>(path, FileFormat.Default); ;
         }
 
         /// <summary>
@@ -140,9 +131,16 @@ namespace GTASaveData
         /// <returns>A <see cref="SaveData"/> object containing the deserialized data.</returns>
         public static T Load<T>(byte[] data, FileFormat fmt) where T : SaveData, new()
         {
+            if (fmt == FileFormat.Default)
+            {
+                if (!GetFileFormat<T>(data, out fmt))
+                {
+                    return null;
+                }
+            }
+
             T obj = new T() { FileFormat = fmt };
             obj.Load(data);
-
             return obj;
         }
 
@@ -156,9 +154,16 @@ namespace GTASaveData
         /// <returns>A <see cref="SaveData"/> object containing the deserialized data.</returns>
         public static T Load<T>(string path, FileFormat fmt) where T : SaveData, new()
         {
+            if (fmt == FileFormat.Default)
+            {
+                if (!GetFileFormat<T>(path, out fmt))
+                {
+                    return null;
+                }
+            }
+
             T obj = new T() { FileFormat = fmt };
             obj.Load(path);
-
             return obj;
         }
 
@@ -305,13 +310,13 @@ namespace GTASaveData
         /// Loads all of this object's data from the buffer.
         /// </summary>
         /// <param name="file">The buffer to read.</param>
-        protected abstract void LoadAllData(StreamBuffer file);
+        protected abstract void LoadAllData(DataBuffer file);
 
         /// <summary>
         /// Saves all of this object's data to the buffer.
         /// </summary>
         /// <param name="file">The buffer to write.</param>
-        protected abstract void SaveAllData(StreamBuffer file);
+        protected abstract void SaveAllData(DataBuffer file);
 
         /// <summary>
         /// Parses the data and determines the file format.
@@ -321,13 +326,13 @@ namespace GTASaveData
         /// <returns>A value indicating whether the format detection was successful.</returns>
         protected abstract bool DetectFileFormat(byte[] data, out FileFormat fmt);
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             FileFormat = fmt;
             LoadAllData(buf);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             FileFormat = fmt;
             SaveAllData(buf);
