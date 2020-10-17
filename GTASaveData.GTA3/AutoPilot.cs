@@ -246,7 +246,7 @@ namespace GTASaveData.GTA3
             PathFindNodesCount = other.PathFindNodesCount;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             CurrRouteNode = buf.ReadInt32();
             NextRouteNode = buf.ReadInt32();
@@ -284,7 +284,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<AutoPilot>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(CurrRouteNode);
             buf.Write(NextRouteNode);

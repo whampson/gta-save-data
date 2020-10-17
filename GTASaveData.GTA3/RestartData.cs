@@ -102,7 +102,7 @@ namespace GTASaveData.GTA3
             OverridePoliceStationLevel = other.OverridePoliceStationLevel;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             int size = GTA3VCSave.ReadBlockHeader(buf, "RST");
 
@@ -122,7 +122,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOfType<RestartData>() - GTA3VCSave.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             GTA3VCSave.WriteBlockHeader(buf, "RST", SizeOfType<RestartData>() - GTA3VCSave.BlockHeaderSize);
 

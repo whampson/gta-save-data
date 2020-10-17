@@ -69,7 +69,7 @@ namespace GTASaveData.GTA3
             VisibleToCam = other.VisibleToCam;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Position = buf.Read<Vector3D>();
             Messages = buf.Read<uint>(MaxNumMessages);
@@ -82,7 +82,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<Phone>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Position);
             buf.Write(Messages, MaxNumMessages);

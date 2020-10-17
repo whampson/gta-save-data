@@ -123,7 +123,7 @@ namespace GTASaveData.GTA3
             Panels[(int) panel] = status;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             WheelDamageEffect = buf.ReadFloat();
             Engine = buf.ReadByte();
@@ -151,7 +151,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<DamageManager>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             int lightStatus = 0;
             int panelStatus = 0;

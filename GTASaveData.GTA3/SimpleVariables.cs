@@ -325,7 +325,7 @@ namespace GTASaveData.GTA3
             IsQuickSave = other.IsQuickSave;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
             if (fmt.IsPC || fmt.IsXbox) TimeStamp = buf.Read<SystemTime>();
@@ -395,7 +395,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
             if (fmt.IsPC || fmt.IsXbox) buf.Write(TimeStamp);

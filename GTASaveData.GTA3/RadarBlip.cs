@@ -162,7 +162,7 @@ namespace GTASaveData.GTA3
             Scale = 0;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Color = buf.ReadInt32();
             Type = (RadarBlipType) buf.ReadInt32();
@@ -181,7 +181,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<RadarBlip>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Color);
             buf.Write((int) Type);

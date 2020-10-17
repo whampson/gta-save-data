@@ -46,7 +46,7 @@ namespace GTASaveData.Types
             PropertyChanged = null;
         }
 
-        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.ReadData(DataBuffer buf, FileFormat fmt)
         {
             Second = buf.ReadInt32();
             Minute = buf.ReadInt32();
@@ -58,7 +58,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Second);
             buf.Write(Minute);

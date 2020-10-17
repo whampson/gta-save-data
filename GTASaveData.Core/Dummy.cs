@@ -34,13 +34,13 @@ namespace GTASaveData
             Data = other.Data;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             int count = Data.Count;
             Data = buf.ReadBytes(count);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Data.ToArray());
         }

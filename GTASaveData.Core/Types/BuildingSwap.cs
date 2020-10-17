@@ -56,7 +56,7 @@ namespace GTASaveData.Types
             OldModel = other.OldModel;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Type = (PoolType) buf.ReadInt32();
             Handle = buf.ReadInt32();
@@ -66,7 +66,7 @@ namespace GTASaveData.Types
             Debug.Assert(buf.Offset == SizeOfType<BuildingSwap>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write((int) Type);
             buf.Write(Handle);

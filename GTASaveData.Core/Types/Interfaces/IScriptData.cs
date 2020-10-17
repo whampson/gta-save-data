@@ -7,9 +7,9 @@ namespace GTASaveData.Types.Interfaces
         IEnumerable<int> GlobalVariables { get; }
         IEnumerable<IBuildingSwap> BuildingSwaps { get; }
         IEnumerable<IInvisibleObject> InvisibilitySettings { get; }
-        IEnumerable<IRunningScript> ActiveScripts { get; }
+        IEnumerable<IRunningScript> Threads { get; }
 
-        IRunningScript GetScript(string name);
+        IRunningScript GetThread(string name);
         int GetGlobal(int index);
         float GetGlobalAsFloat(int index);
         void SetGlobal(int index, int value);

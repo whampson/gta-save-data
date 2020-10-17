@@ -115,7 +115,7 @@ namespace GTASaveData.GTA3
             NumberOfAudioZones = other.NumberOfAudioZones;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             int size = GTA3VCSave.ReadBlockHeader(buf, "ZNS");
 
@@ -136,7 +136,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOfType<ZoneData>() - GTA3VCSave.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             GTA3VCSave.WriteBlockHeader(buf, "ZNS", SizeOfType<ZoneData>() - GTA3VCSave.BlockHeaderSize);
 

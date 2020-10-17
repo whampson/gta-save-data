@@ -147,7 +147,7 @@ namespace GTASaveData.GTA3
             EndOfLifeTime = other.EndOfLifeTime;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
@@ -173,7 +173,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<PhysicalObject>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(ModelIndex);
             buf.Write(Handle);

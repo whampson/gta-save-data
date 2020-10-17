@@ -82,7 +82,7 @@ namespace GTASaveData.GTA3
             Position = new Vector3D(other.Position);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Type = (PickupType) buf.ReadByte();
             HasBeenPickedUp = buf.ReadBool();
@@ -96,7 +96,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<Pickup>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write((byte) Type);
             buf.Write(HasBeenPickedUp);

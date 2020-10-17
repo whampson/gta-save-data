@@ -101,7 +101,7 @@ namespace GTASaveData.GTA3
             NextZoneIndex = other.NextZoneIndex;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Name = buf.ReadString(MaxNameLength);
             Min = buf.Read<Vector3D>();
@@ -117,7 +117,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<Zone>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Name.PadRight(MaxNameLength, '\0'), MaxNameLength);
             buf.Write(Min);

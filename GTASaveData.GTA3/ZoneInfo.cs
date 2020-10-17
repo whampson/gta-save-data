@@ -86,7 +86,7 @@ namespace GTASaveData.GTA3
             PedGroup = other.PedGroup;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             CarDensity = buf.ReadInt16();
             CarThreshold = buf.Read<short>(CarThresholdCapacity);
@@ -100,7 +100,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<ZoneInfo>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(CarDensity);
             buf.Write(CarThreshold, CarThresholdCapacity);

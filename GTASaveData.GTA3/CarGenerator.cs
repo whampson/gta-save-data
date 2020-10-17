@@ -180,7 +180,7 @@ namespace GTASaveData.GTA3
             CollisionSize = other.CollisionSize;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Model = buf.ReadInt32();
             Position = buf.Read<Vector3D>();
@@ -205,7 +205,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Model);
             buf.Write(Position);

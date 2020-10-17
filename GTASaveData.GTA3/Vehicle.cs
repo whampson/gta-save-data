@@ -250,7 +250,7 @@ namespace GTASaveData.GTA3
             DoorLock = other.DoorLock;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             Matrix.Right = buf.Read<Vector3D>();
@@ -308,7 +308,7 @@ namespace GTASaveData.GTA3
             else buf.Skip(96);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             buf.Write(Matrix.Right);

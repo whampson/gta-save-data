@@ -274,7 +274,7 @@ namespace GTASaveData.GTA3
             PedTypeInfo = new PedTypeData(other.PedTypeInfo);
         }
 
-        protected override void LoadAllData(StreamBuffer file)
+        protected override void LoadAllData(DataBuffer file)
         {
             int totalSize = 0;
 
@@ -344,7 +344,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(totalSize == ((SimpleVars.SizeOfGameInBytes - 1) & 0x7FFFFFFC));
         }
 
-        protected override void SaveAllData(StreamBuffer file)
+        protected override void SaveAllData(DataBuffer file)
         {
             int totalSize = 0;
             int size;
@@ -482,7 +482,7 @@ namespace GTASaveData.GTA3
             }
 
             int sizeOfPlayerPed;
-            using (StreamBuffer s = new StreamBuffer(data))
+            using (DataBuffer s = new DataBuffer(data))
             {
                 int block0Size = s.ReadInt32();
                 if (block0Size > s.Length) goto DetectionFailed;

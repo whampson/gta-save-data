@@ -17,7 +17,7 @@ namespace GTASaveData
         /// <remarks>
         /// Buffer size varies by file format.
         /// </remarks>
-        protected StreamBuffer WorkBuff { get; private set; }
+        protected DataBuffer WorkBuff { get; private set; }
 
         /// <summary>
         /// The data checksum.
@@ -41,7 +41,7 @@ namespace GTASaveData
         /// <param name="buf">The buffer to read.</param>
         /// <param name="tag">The block tag.</param>
         /// <returns>The size of the block data in bytes.</returns>
-        public static int ReadBlockHeader(StreamBuffer buf, string tag)
+        public static int ReadBlockHeader(DataBuffer buf, string tag)
         {
             string readTag = buf.ReadString(4);
             int size = buf.ReadInt32();
@@ -56,7 +56,7 @@ namespace GTASaveData
         /// <param name="buf">The buffer to write.</param>
         /// <param name="tag">The block tag.</param>
         /// <param name="size">The block data size in bytes.</param>
-        public static void WriteBlockHeader(StreamBuffer buf, string tag, int size)
+        public static void WriteBlockHeader(DataBuffer buf, string tag, int size)
         {
             buf.Write(tag, 4, zeroTerminate: true);
             buf.Write(size);
@@ -72,7 +72,7 @@ namespace GTASaveData
             WorkBuff.Align4();
 
             Debug.WriteLine($"{typeof(T).Name}: {bytesRead} bytes read.");
-            Debug.Assert(bytesRead <= StreamBuffer.Align4(size));
+            Debug.Assert(bytesRead <= DataBuffer.Align4(size));
 
             return bytesRead;
         }
@@ -105,7 +105,7 @@ namespace GTASaveData
             WorkBuff.Align4();
 
             Debug.WriteLine($"{typeof(T).Name}: {bytesRead} bytes read.");
-            Debug.Assert(bytesRead <= StreamBuffer.Align4(size));
+            Debug.Assert(bytesRead <= DataBuffer.Align4(size));
 
             return obj;
         }
@@ -135,7 +135,7 @@ namespace GTASaveData
         /// <summary>
         /// Reads a block of data from the file into the work buffer.
         /// </summary>
-        protected int ReadBlock(StreamBuffer file)
+        protected int ReadBlock(DataBuffer file)
         {
             file.Mark();
             WorkBuff.Reset();
@@ -155,7 +155,7 @@ namespace GTASaveData
         /// <summary>
         /// Writes a block of data from the work buffer into the file.
         /// </summary>
-        protected int WriteBlock(StreamBuffer file)
+        protected int WriteBlock(DataBuffer file)
         {
             file.Mark();
 
@@ -196,7 +196,7 @@ namespace GTASaveData
                 WorkBuff.Dispose();
             }
 
-            WorkBuff = new StreamBuffer(GetBufferSize())
+            WorkBuff = new DataBuffer(GetBufferSize())
             {
                 BigEndian = false,
                 PaddingType = PaddingType,

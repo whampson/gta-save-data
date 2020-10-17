@@ -33,7 +33,7 @@ namespace GTASaveData.GTA3
             Angle = other.Angle;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Position = buf.Read<Vector3D>();
             Angle = buf.ReadFloat();
@@ -41,7 +41,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<RestartPoint>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Position);
             buf.Write(Angle);

@@ -34,13 +34,13 @@ namespace GTASaveData.Types
             Field04h = other.Field04h;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Index = buf.ReadInt32();
             Field04h = buf.ReadInt32();
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Index);
             buf.Write(Field04h);

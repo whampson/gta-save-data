@@ -126,7 +126,7 @@ namespace GTASaveData.Types
             return !left.Equals(right);
         }
 
-        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.ReadData(DataBuffer buf, FileFormat fmt)
         {
             X = buf.ReadFloat();
             Y = buf.ReadFloat();
@@ -135,7 +135,7 @@ namespace GTASaveData.Types
             return Size;
         }
 
-        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(X);
             buf.Write(Y);

@@ -36,9 +36,9 @@ namespace GTASaveData
     };
 
     /// <summary>
-    /// A byte buffer that can be read from and written to like a data stream.
+    /// A random-access byte buffer.
     /// </summary>
-    public sealed class StreamBuffer : IDisposable
+    public sealed class DataBuffer : IDisposable
     {
         #region Fields & Properties
         private static readonly byte[] DefaultPaddingBytes = new byte[1] { 0 };
@@ -89,29 +89,29 @@ namespace GTASaveData
 
         #region Constructors
         /// <summary>
-        /// Creates a new expandable <see cref="StreamBuffer"/>.
+        /// Creates a new expandable <see cref="DataBuffer"/>.
         /// </summary>
-        public StreamBuffer()
+        public DataBuffer()
             : this(new MemoryStream())
         { }
 
         /// <summary>
-        /// Creates a new fixed-size <see cref="StreamBuffer"/> with the specified data.
+        /// Creates a new fixed-size <see cref="DataBuffer"/> with the specified data.
         /// </summary>
         /// <param name="data">The data to contain within the buffer.</param>
-        public StreamBuffer(byte[] data)
+        public DataBuffer(byte[] data)
             : this(new MemoryStream(data))
         { }
 
         /// <summary>
-        /// Creates a new fixed-size <see cref="StreamBuffer"/>.
+        /// Creates a new fixed-size <see cref="DataBuffer"/>.
         /// </summary>
         /// <param name="size">The buffer size.</param>
-        public StreamBuffer(int size)
+        public DataBuffer(int size)
             : this(new byte[size])
         { }
 
-        private StreamBuffer(MemoryStream buffer)
+        private DataBuffer(MemoryStream buffer)
         {
             m_buffer = buffer;
             PaddingBytes = DefaultPaddingBytes;

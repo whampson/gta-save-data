@@ -148,7 +148,7 @@ namespace GTASaveData.GTA3
             ModelName = other.ModelName;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             buf.Skip(48);
@@ -181,7 +181,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<PlayerPed>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             buf.Skip(48);

@@ -54,7 +54,7 @@ namespace GTASaveData.GTA3
             PickupsCollected = ArrayHelper.DeepClone(other.PickupsCollected);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Pickups = buf.Read<Pickup>(MaxNumPickups);
             LastCollectedIndex = buf.ReadInt16();
@@ -64,7 +64,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<PickupData>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Pickups, MaxNumPickups);
             buf.Write(LastCollectedIndex);

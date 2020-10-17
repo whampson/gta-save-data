@@ -65,7 +65,7 @@ namespace GTASaveData.Types
             return !q1.Equals(q2);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             X = buf.ReadFloat();
             Y = buf.ReadFloat();
@@ -73,7 +73,7 @@ namespace GTASaveData.Types
             W = buf.ReadFloat();
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(X);
             buf.Write(Y);

@@ -71,7 +71,7 @@ namespace GTASaveData.JsonConverters
 
         private Array<int> ReadIntArray(byte[] value)
         {
-            using (StreamBuffer buf = new StreamBuffer(value))
+            using (DataBuffer buf = new DataBuffer(value))
             {
                 int count = value.Length / sizeof(int);
                 return buf.Read<int>(count);
@@ -80,7 +80,7 @@ namespace GTASaveData.JsonConverters
 
         private byte[] WriteIntArray(Array<int> value)
         {
-            using (StreamBuffer buf = new StreamBuffer(value.Count * sizeof(int)))
+            using (DataBuffer buf = new DataBuffer(value.Count * sizeof(int)))
             {
                 buf.Write(value);
                 return buf.GetBytes();

@@ -55,7 +55,7 @@ namespace GTASaveData.GTA3
             return PlayerPeds[0];
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             int numPeds = buf.ReadInt32();
 
@@ -77,7 +77,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(PlayerPeds.Count);
 

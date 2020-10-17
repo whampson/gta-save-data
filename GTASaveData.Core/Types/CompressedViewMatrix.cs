@@ -107,7 +107,7 @@ namespace GTASaveData.Types
             };
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Position = buf.Read<Vector3D>();
             RightX = buf.ReadByte();
@@ -119,7 +119,7 @@ namespace GTASaveData.Types
             buf.ReadInt16();
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Position);
             buf.Write(RightX);
