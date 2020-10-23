@@ -337,18 +337,5 @@ namespace GTASaveData
             FileFormat = fmt;
             SaveAllData(buf);
         }
-
-        public override string ToString()
-        {
-            var now = TimeStamp.ToString("yyyy-MM-dd HH:mm:ss");
-            int size = GetSize(FileFormat);
-
-            return $"{GetType().Name}: {{ " +
-                $"Name = {Name}; " +
-                $"TimeStamp = {now}; " +
-                $"FileFormat = {FileFormat}; " +
-                $"Size = {size}; " +
-                $"}}";
-        }
     }
 }
