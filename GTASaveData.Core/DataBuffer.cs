@@ -915,7 +915,7 @@ namespace GTASaveData
             if (value == null) throw new ArgumentNullException(nameof(value));
 
             Encoding encoding = (unicode)
-                ? Encoding.Unicode
+                ? (BigEndian) ? Encoding.BigEndianUnicode : Encoding.Unicode
                 : Encoding.ASCII;
 
             // Use whole string if 'length' parameter not specified
