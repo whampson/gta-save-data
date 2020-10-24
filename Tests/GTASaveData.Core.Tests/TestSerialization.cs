@@ -6,14 +6,6 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-
-
-    /*  TODO
-     *      Unicode string endianness
-     *      Object array endianness
-     *      Structure & structure array
-     */
-
     public class TestSerialization : TestBase
     {
         [Fact]
@@ -340,19 +332,6 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(8, data.Length);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Object(bool bigEndian)
-        {
-            TestObject x0 = TestObject.Generate();
-            byte[] data = Serializer.Write(x0, bigEndian);
-            TestObject x1 = Serializer.Read<TestObject>(data, bigEndian);
-
-            Assert.Equal(x0, x1);
-            Assert.Equal(Serializer.SizeOfType<TestObject>(), data.Length);
-        }
-
         [Fact]
         public void AsciiString()
         {
@@ -399,13 +378,15 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(expectedLength, s1.Length);
         }
 
-        [Fact]
-        public void UnicodeString()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void UnicodeString(bool bigEndian)
         {
             Faker f = new Faker();
             string s0 = Generator.UnicodeString(f, f.Random.Int(1, 100));
-            byte[] data = StringToBytes(s0, unicode: true);
-            string s1 = BytesToString(data, unicode: true);
+            byte[] data = StringToBytes(s0, unicode: true, bigEndian: bigEndian);
+            string s1 = BytesToString(data, unicode: true, bigEndian: bigEndian);
 
             Assert.Equal(s0, s1);
             Assert.Equal(s0.Length + 1, data.Length / 2);
@@ -413,15 +394,18 @@ namespace GTASaveData.Core.Tests
         }
 
         [Theory]
-        [InlineData(24, 23, 23)]        // Shorter than buffer length
-        [InlineData(24, 24, 23)]        // Equal to buffer length
-        [InlineData(24, 25, 23)]        // Larger than buffer length
-        public void UnicodeStringFixedLength(int bufferLength, int initialLength, int expectedLength)
+        [InlineData(false, 24, 23, 23)]        // Shorter than buffer length
+        [InlineData(false, 24, 24, 23)]        // Equal to buffer length
+        [InlineData(false, 24, 25, 23)]        // Larger than buffer length
+        [InlineData(true, 24, 23, 23)]
+        [InlineData(true, 24, 24, 23)]
+        [InlineData(true, 24, 25, 23)]
+        public void UnicodeStringFixedLength(bool bigEndian, int bufferLength, int initialLength, int expectedLength)
         {
             Faker f = new Faker();
             string s0 = Generator.UnicodeString(f, initialLength);
-            byte[] data = StringToBytes(s0, bufferLength, true);
-            string s1 = BytesToString(data, bufferLength, true);
+            byte[] data = StringToBytes(s0, bufferLength, unicode: true, bigEndian: bigEndian);
+            string s1 = BytesToString(data, bufferLength, unicode: true, bigEndian: bigEndian);
 
             Assert.Equal(s0.Length, initialLength);
             Assert.Equal(s0.Substring(0, expectedLength), s1);
@@ -431,15 +415,18 @@ namespace GTASaveData.Core.Tests
         }
 
         [Theory]
-        [InlineData(24, 23, 23)]        // Shorter than buffer length
-        [InlineData(24, 24, 24)]        // Equal to buffer length
-        [InlineData(24, 25, 24)]        // Larger than buffer length
-        public void UnicodeStringFixedLengthNoZero(int bufferLength, int initialLength, int expectedLength)
+        [InlineData(false, 24, 23, 23)]        // Shorter than buffer length
+        [InlineData(false, 24, 24, 24)]        // Equal to buffer length
+        [InlineData(false, 24, 25, 24)]        // Larger than buffer length
+        [InlineData(true, 24, 23, 23)]
+        [InlineData(true, 24, 24, 24)]
+        [InlineData(true, 24, 25, 24)]
+        public void UnicodeStringFixedLengthNoZero(bool bigEndian, int bufferLength, int initialLength, int expectedLength)
         {
             Faker f = new Faker();
             string s0 = Generator.UnicodeString(f, initialLength);
-            byte[] data = StringToBytes(s0, bufferLength, true, false);
-            string s1 = BytesToString(data, bufferLength, true);
+            byte[] data = StringToBytes(s0, bufferLength, true, bigEndian: bigEndian, zeroTerminate: false);
+            string s1 = BytesToString(data, bufferLength, true, bigEndian: bigEndian);
 
             Assert.Equal(s0.Length, initialLength);
             Assert.Equal(s0.Substring(0, expectedLength), s1);
@@ -448,15 +435,17 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(expectedLength, s1.Length);
         }
 
-        [Fact]
-        public void ValueArray()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ValueArray(bool bigEndian)
         {
             Faker f = new Faker();
             int count = f.Random.Int(1, 10);
 
             int[] x0 = Generator.Array(count, g => f.Random.Int());
-            byte[] data = ArrayToBytes(x0);
-            int[] x1 = BytesToArray<int>(data, count);
+            byte[] data = ArrayToBytes(x0, bigEndian: bigEndian);
+            int[] x1 = BytesToArray<int>(data, count, bigEndian: bigEndian);
 
             Assert.Equal(count, x1.Length);
             Assert.Equal(x0, x1);
@@ -464,16 +453,19 @@ namespace GTASaveData.Core.Tests
         }
 
         [Theory]
-        [InlineData(8, 7, 8)]       // Shorter than buffer count
-        [InlineData(8, 8, 8)]       // Equal to buffer count
-        [InlineData(8, 9, 8)]       // Larger than buffer count
-        public void ValueArrayFixedLength(int bufferCount, int initialCount, int expectedCount)
+        [InlineData(false, 8, 7, 8)]       // Shorter than buffer count
+        [InlineData(false, 8, 8, 8)]       // Equal to buffer count
+        [InlineData(false, 8, 9, 8)]       // Larger than buffer count
+        [InlineData(true, 8, 7, 8)]
+        [InlineData(true, 8, 8, 8)]
+        [InlineData(true, 8, 9, 8)]
+        public void ValueArrayFixedLength(bool bigEndian, int bufferCount, int initialCount, int expectedCount)
         {
             Faker f = new Faker();
 
             int[] x0 = Generator.Array(initialCount, g => f.Random.Int());
-            byte[] data = ArrayToBytes(x0, bufferCount);
-            int[] x1 = BytesToArray<int>(data, bufferCount);
+            byte[] data = ArrayToBytes(x0, bufferCount, bigEndian: bigEndian);
+            int[] x1 = BytesToArray<int>(data, bufferCount, bigEndian: bigEndian);
 
             Assert.Equal(initialCount, x0.Length);
             Assert.Equal(expectedCount, x1.Length);
@@ -482,14 +474,73 @@ namespace GTASaveData.Core.Tests
         }
 
         [Fact]
-        public void ObjectArray()
+        public void Struct()
+        {
+            SystemTime x0 = new SystemTime(Generator.Date(new Faker()));
+            byte[] data = Serializer.Write(x0);
+            SystemTime x1 = Serializer.Read<SystemTime>(data);
+
+            Assert.Equal(x0, x1);
+            Assert.Equal(Serializer.SizeOfType<SystemTime>(), data.Length);
+        }
+
+        [Fact]
+        public void StructArray()
+        {
+            Faker f = new Faker();
+            int count = f.Random.Int(1, 10);
+
+            SystemTime[] x0 = Generator.Array(count, g => new SystemTime(Generator.Date(f)));
+            byte[] data = ArrayToBytes(x0);
+            SystemTime[] x1 = BytesToArray<SystemTime>(data, count);
+
+            Assert.Equal(count, x1.Length);
+            Assert.Equal(x0, x1);
+            Assert.Equal(Serializer.SizeOfType<SystemTime>() * count, data.Length);
+        }
+
+        [Theory]
+        [InlineData(8, 7, 8)]       // Shorter than buffer count
+        [InlineData(8, 8, 8)]       // Equal to buffer count
+        [InlineData(8, 9, 8)]       // Larger than buffer count
+        public void StructArrayFixedLength(int bufferCount, int initialCount, int expectedCount)
+        {
+            Faker f = new Faker();
+
+            SystemTime[] x0 = Generator.Array(initialCount, g => new SystemTime(Generator.Date(f)));
+            byte[] data = ArrayToBytes(x0, bufferCount);
+            SystemTime[] x1 = BytesToArray<SystemTime>(data, bufferCount);
+
+            Assert.Equal(initialCount, x0.Length);
+            Assert.Equal(expectedCount, x1.Length);
+            Assert.Equal(x0.Take(Math.Min(bufferCount, initialCount)), x1.Take(Math.Min(bufferCount, initialCount)));
+            Assert.Equal(Serializer.SizeOfType<SystemTime>() * bufferCount, data.Length);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void Object(bool bigEndian)
+        {
+            TestObject x0 = TestObject.Generate();
+            byte[] data = Serializer.Write(x0, bigEndian);
+            TestObject x1 = Serializer.Read<TestObject>(data, bigEndian);
+
+            Assert.Equal(x0, x1);
+            Assert.Equal(Serializer.SizeOfType<TestObject>(), data.Length);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ObjectArray(bool bigEndian)
         {
             Faker f = new Faker();
             int count = f.Random.Int(1, 10);
 
             TestObject[] x0 = Generator.Array(count, g => TestObject.Generate());
-            byte[] data = ArrayToBytes(x0);
-            TestObject[] x1 = BytesToArray<TestObject>(data, count);
+            byte[] data = ArrayToBytes(x0, bigEndian: bigEndian);
+            TestObject[] x1 = BytesToArray<TestObject>(data, count, bigEndian: bigEndian);
 
             Assert.Equal(count, x1.Length);
             Assert.Equal(x0, x1);
@@ -497,16 +548,19 @@ namespace GTASaveData.Core.Tests
         }
 
         [Theory]
-        [InlineData(8, 7, 8)]       // Shorter than buffer count
-        [InlineData(8, 8, 8)]       // Equal to buffer count
-        [InlineData(8, 9, 8)]       // Larger than buffer count
-        public void ObjectArrayFixedLength(int bufferCount, int initialCount, int expectedCount)
+        [InlineData(false, 8, 7, 8)]       // Shorter than buffer count
+        [InlineData(false, 8, 8, 8)]       // Equal to buffer count
+        [InlineData(false, 8, 9, 8)]       // Larger than buffer count
+        [InlineData(true, 8, 7, 8)]
+        [InlineData(true, 8, 8, 8)]
+        [InlineData(true, 8, 9, 8)]
+        public void ObjectArrayFixedLength(bool bigEndian, int bufferCount, int initialCount, int expectedCount)
         {
             Faker f = new Faker();
 
             TestObject[] x0 = Generator.Array(initialCount, g => TestObject.Generate());
-            byte[] data = ArrayToBytes(x0, bufferCount);
-            TestObject[] x1 = BytesToArray<TestObject>(data, bufferCount);
+            byte[] data = ArrayToBytes(x0, bufferCount, bigEndian: bigEndian);
+            TestObject[] x1 = BytesToArray<TestObject>(data, bufferCount, bigEndian: bigEndian);
 
             Assert.Equal(initialCount, x0.Length);
             Assert.Equal(expectedCount, x1.Length);
@@ -514,16 +568,18 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(Serializer.SizeOfType<TestObject>() * bufferCount, data.Length);
         }
 
-        [Fact]
-        public void BoolArrayMultiByte()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void BoolArrayMultiByte(bool bigEndian)
         {
             Faker f = new Faker();
             int count = f.Random.Int(10, 100);
             int numBytes = f.Random.Int(1, 8);
 
             bool[] x0 = Generator.Array(count, g => f.Random.Bool());
-            byte[] data = ArrayToBytes(x0, itemLength: numBytes);
-            bool[] x1 = BytesToArray<bool>(data, count, itemLength: numBytes);
+            byte[] data = ArrayToBytes(x0, itemLength: numBytes, bigEndian: bigEndian);
+            bool[] x1 = BytesToArray<bool>(data, count, itemLength: numBytes, bigEndian: bigEndian);
 
             Assert.Equal(count, x1.Length);
             Assert.Equal(x0, x1);
@@ -655,18 +711,22 @@ namespace GTASaveData.Core.Tests
         public static byte[] StringToBytes(string x,
             int? length = null,
             bool unicode = false,
-            bool zeroTerminate = true)
+            bool zeroTerminate = true,
+            bool bigEndian = false)
         {
-            using (DataBuffer wb = new DataBuffer())
+            using (DataBuffer wb = new DataBuffer() { BigEndian = bigEndian })
             {
                 wb.Write(x, length, unicode, zeroTerminate);
                 return wb.GetBuffer();
             }
         }
 
-        public static string BytesToString(byte[] data, int length = 0, bool unicode = false)
+        public static string BytesToString(byte[] data,
+            int length = 0,
+            bool unicode = false,
+            bool bigEndian = false)
         {
-            using (DataBuffer wb = new DataBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data) { BigEndian = bigEndian })
             {
                 return wb.ReadString(length, unicode);
             }
@@ -675,10 +735,11 @@ namespace GTASaveData.Core.Tests
         public static byte[] ArrayToBytes<T>(T[] items,
             int? count = null,
             int itemLength = 0,
-            bool unicode = false)
+            bool unicode = false,
+            bool bigEndian = false)
             where T : new()
         {
-            using (DataBuffer wb = new DataBuffer())
+            using (DataBuffer wb = new DataBuffer() { BigEndian = bigEndian })
             {
                 wb.Write(items, count, itemLength, unicode);
                 return wb.GetBuffer();
@@ -687,9 +748,10 @@ namespace GTASaveData.Core.Tests
 
         public static T[] BytesToArray<T>(byte[] data, int count,
             int itemLength = 0,
-            bool unicode = false)
+            bool unicode = false,
+            bool bigEndian = false)
         {
-            using (DataBuffer wb = new DataBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data) { BigEndian = bigEndian })
             {
                 return wb.ReadArray<T>(count, itemLength, unicode);
             }
