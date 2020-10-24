@@ -1,6 +1,7 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -10,7 +11,7 @@ namespace GTASaveData.GTA3
         private short m_modelIndex;
         private int m_handle;
         private float m_uprootLimit;
-        private ViewMatrix m_objectMatrix;
+        private Matrix m_objectMatrix;
         private ObjectCreatedBy m_createdBy;
         private bool m_isPickup;
         private bool m_isPickupInShop;
@@ -42,7 +43,7 @@ namespace GTASaveData.GTA3
             set { m_uprootLimit = value; OnPropertyChanged(); }
         }
 
-        public ViewMatrix ObjectMatrix
+        private Matrix ObjectMatrix     // Useless
         {
             get { return m_objectMatrix; }
             set { m_objectMatrix = value; OnPropertyChanged(); }
@@ -122,7 +123,7 @@ namespace GTASaveData.GTA3
 
         public PhysicalObject()
         {
-            ObjectMatrix = ViewMatrix.Identity;
+            ObjectMatrix = Matrix.Identity;
             EntityType = EntityType.Object;
         }
 
@@ -132,7 +133,7 @@ namespace GTASaveData.GTA3
             ModelIndex = other.ModelIndex;
             Handle = other.Handle;
             UprootLimit = other.UprootLimit;
-            ObjectMatrix = new ViewMatrix(other.ObjectMatrix);
+            ObjectMatrix = new Matrix(other.ObjectMatrix);
             CreatedBy = other.CreatedBy;
             IsPickup = other.IsPickup;
             IsPickupInShop = other.IsPickupInShop;
@@ -151,10 +152,10 @@ namespace GTASaveData.GTA3
         {
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
-            Matrix = buf.Read<CompressedViewMatrix>(fmt).Decompress();
+            Matrix = buf.ReadStruct<CompressedMatrix>().Decompress();
             if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
             UprootLimit = buf.ReadFloat();
-            ObjectMatrix = buf.Read<CompressedViewMatrix>(fmt).Decompress();
+            ObjectMatrix = buf.ReadStruct<CompressedMatrix>().Decompress();
             if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
             CreatedBy = (ObjectCreatedBy) buf.ReadByte();
             IsPickup = buf.ReadBool();
@@ -177,10 +178,10 @@ namespace GTASaveData.GTA3
         {
             buf.Write(ModelIndex);
             buf.Write(Handle);
-            buf.Write(Matrix.Compress(), fmt);
+            buf.Write(Matrix.Compress());
             if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
             buf.Write(UprootLimit);
-            buf.Write(ObjectMatrix.Compress(), fmt);
+            buf.Write(ObjectMatrix.Compress());
             if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
             buf.Write((byte) CreatedBy);
             buf.Write(IsPickup);
@@ -220,9 +221,8 @@ namespace GTASaveData.GTA3
 
             return ModelIndex.Equals(other.ModelIndex)
                 && Handle.Equals(other.Handle)
-                && Matrix.Equals(other.Matrix)
+                && Position.Equals(other.Position)
                 && UprootLimit.Equals(other.UprootLimit)
-                && ObjectMatrix.Equals(other.ObjectMatrix)
                 && CreatedBy.Equals(other.CreatedBy)
                 && IsPickup.Equals(other.IsPickup)
                 && IsPickupInShop.Equals(other.IsPickupInShop)

@@ -1,7 +1,6 @@
 using GTASaveData.Extensions;
 using GTASaveData.Helpers;
-using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+using GTASaveData.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -178,7 +177,7 @@ namespace GTASaveData.GTA3
 
         public override DateTime TimeStamp
         {
-            get { return (DateTime) SimpleVars.TimeStamp; }
+            get { return SimpleVars.TimeStamp; }
             set { SimpleVars.TimeStamp = new SystemTime(value); OnPropertyChanged(); }
         }
 
@@ -281,7 +280,7 @@ namespace GTASaveData.GTA3
             if (FileFormat.IsPS2)
             {
                 totalSize += ReadBlock(file);
-                SimpleVars = WorkBuff.Read<SimpleVariables>(FileFormat);
+                SimpleVars = WorkBuff.ReadObject<SimpleVariables>(FileFormat);
                 Scripts = LoadType<ScriptData>();
                 PlayerPeds = LoadType<PlayerPedPool>();
                 Garages = LoadType<GarageData>();
@@ -309,7 +308,7 @@ namespace GTASaveData.GTA3
             else
             {
                 totalSize += ReadBlock(file);
-                SimpleVars = WorkBuff.Read<SimpleVariables>(FileFormat);
+                SimpleVars = WorkBuff.ReadObject<SimpleVariables>(FileFormat);
                 Scripts = LoadType<ScriptData>();
                 totalSize += ReadBlock(file); PlayerPeds = LoadType<PlayerPedPool>();
                 totalSize += ReadBlock(file); Garages = LoadType<GarageData>();

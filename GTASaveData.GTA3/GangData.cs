@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -46,7 +47,7 @@ namespace GTASaveData.GTA3
         {
             int size = GTA3VCSave.ReadBlockHeader(buf, "GNG");
 
-            Gangs = buf.Read<Gang>(MaxNumGangs);
+            Gangs = buf.ReadArray<Gang>(MaxNumGangs);
 
             Debug.Assert(buf.Offset == SizeOfType<GangData>());
             Debug.Assert(size == SizeOfType<GangData>() - GTA3VCSave.BlockHeaderSize);

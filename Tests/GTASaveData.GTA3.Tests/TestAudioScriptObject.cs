@@ -11,7 +11,7 @@ namespace GTASaveData.GTA3.Tests
             Faker<AudioScriptObject> model = new Faker<AudioScriptObject>()
                 .RuleFor(x => x.Index, f => f.Random.Int())
                 .RuleFor(x => x.AudioId, f => f.Random.Short())
-                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Position, f => Generator.Vector3(f))
                 .RuleFor(x => x.AudioEntity, f => f.Random.Int());
 
             return model.Generate();

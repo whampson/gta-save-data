@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -28,7 +29,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            ModelFlags = buf.Read<StreamingFlags>(NumModels);
+            ModelFlags = buf.ReadArray<StreamingFlags>(NumModels);
 
             Debug.Assert(buf.Offset == SizeOfType<Streaming>());
         }

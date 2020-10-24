@@ -74,7 +74,7 @@ namespace GTASaveData.JsonConverters
             using (DataBuffer buf = new DataBuffer(value))
             {
                 int count = value.Length / sizeof(int);
-                return buf.Read<int>(count);
+                return buf.ReadArray<int>(count);
             }
         }
 

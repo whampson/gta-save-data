@@ -113,15 +113,15 @@ namespace GTASaveData.Core.Tests
             m_objectArray = new Array<TestObject2>();
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Value = buf.ReadInt32();
-            Object = buf.Read<TestObject2>();
-            ValueArray = buf.Read<int>(ValueArrayCount);
-            ObjectArray = buf.Read<TestObject2>(ObjectArrayCount);
+            Object = buf.ReadObject<TestObject2>();
+            ValueArray = buf.ReadArray<int>(ValueArrayCount);
+            ObjectArray = buf.ReadArray<TestObject2>(ObjectArrayCount);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Value);
             buf.Write(Object);
@@ -170,12 +170,12 @@ namespace GTASaveData.Core.Tests
         public TestObject2()
         { }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Value = buf.ReadInt32();
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Value);
         }

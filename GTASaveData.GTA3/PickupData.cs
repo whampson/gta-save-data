@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -56,10 +57,10 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            Pickups = buf.Read<Pickup>(MaxNumPickups);
+            Pickups = buf.ReadArray<Pickup>(MaxNumPickups);
             LastCollectedIndex = buf.ReadInt16();
             buf.ReadInt16();
-            PickupsCollected = buf.Read<int>(MaxNumCollectedPickups);
+            PickupsCollected = buf.ReadArray<int>(MaxNumCollectedPickups);
 
             Debug.Assert(buf.Offset == SizeOfType<PickupData>());
         }

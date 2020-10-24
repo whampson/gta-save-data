@@ -1,9 +1,9 @@
-﻿using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -93,7 +93,7 @@ namespace GTASaveData.GTA3
             buf.ReadInt16();
             int carGensSize = buf.ReadInt32();
             Debug.Assert(carGensSize == CarGeneratorArraySize);
-            CarGenerators = buf.Read<CarGenerator>(MaxNumCarGenerators);
+            CarGenerators = buf.ReadArray<CarGenerator>(MaxNumCarGenerators);
 
             Debug.Assert(buf.Offset == SizeOfType<CarGeneratorData>());
             Debug.Assert(size == SizeOfType<CarGeneratorData>() - GTA3VCSave.BlockHeaderSize);

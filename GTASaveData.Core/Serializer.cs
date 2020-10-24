@@ -1,5 +1,5 @@
 ﻿using GTASaveData.Extensions;
-using GTASaveData.Types.Interfaces;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData
 {
@@ -132,7 +132,7 @@ namespace GTASaveData
             })
             {
                 int bytesWritten = stream.GenericWrite(obj, fmt);
-                data = stream.GetBufferBytes();
+                data = stream.GetBuffer();
                 return bytesWritten;
             }
         }

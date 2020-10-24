@@ -6,6 +6,14 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
+
+
+    /*  TODO
+     *      Unicode string endianness
+     *      Object array endianness
+     *      Structure & structure array
+     */
+
     public class TestSerialization : TestBase
     {
         [Fact]
@@ -21,16 +29,16 @@ namespace GTASaveData.Core.Tests
             bool b1;
             float f1;
 
-            using (StreamBuffer wb = new StreamBuffer())
+            using (DataBuffer wb = new DataBuffer())
             {
                 wb.Write(b0);
                 wb.Align4();
                 wb.Write(i0);
                 wb.Write(f0);
-                data = wb.GetBufferBytes();
+                data = wb.GetBuffer();
             }
 
-            using (StreamBuffer wb = new StreamBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 b1 = wb.ReadBool();
                 wb.Align4();
@@ -52,10 +60,10 @@ namespace GTASaveData.Core.Tests
         public void Padding(PaddingType mode, byte[] seq)
         {
             byte[] data;
-            using (StreamBuffer wb = new StreamBuffer() { PaddingType = mode, PaddingBytes = seq })
+            using (DataBuffer wb = new DataBuffer() { PaddingType = mode, PaddingBytes = seq })
             {
                 wb.Pad(100);
-                data = wb.GetBufferBytes();
+                data = wb.GetBuffer();
                 Assert.True(data.Length > 0);
             }
 
@@ -111,13 +119,13 @@ namespace GTASaveData.Core.Tests
             byte[] data;
             bool x1;
 
-            using (StreamBuffer wb = new StreamBuffer() { BigEndian = bigEndian })
+            using (DataBuffer wb = new DataBuffer() { BigEndian = bigEndian })
             {
                 wb.Write(x0, numBytes);
-                data = wb.GetBufferBytes();
+                data = wb.GetBuffer();
             }
 
-            using (StreamBuffer wb = new StreamBuffer(data) { BigEndian = bigEndian })
+            using (DataBuffer wb = new DataBuffer(data) { BigEndian = bigEndian })
             {
                 x1 = wb.ReadBool(numBytes);
             }
@@ -162,7 +170,7 @@ namespace GTASaveData.Core.Tests
             byte[] data = Serializer.Write(x0);
             byte[] x1;
 
-            using (StreamBuffer wb = new StreamBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 x1 = wb.ReadBytes(data.Length);
             }
@@ -197,13 +205,13 @@ namespace GTASaveData.Core.Tests
             byte[] data;
             char x1;
 
-            using (StreamBuffer wb = new StreamBuffer() { BigEndian = bigEndian })
+            using (DataBuffer wb = new DataBuffer() { BigEndian = bigEndian })
             {
                 wb.Write(x0, true);
-                data = wb.GetBufferBytes();
+                data = wb.GetBuffer();
             }
 
-            using (StreamBuffer wb = new StreamBuffer(data) { BigEndian = bigEndian })
+            using (DataBuffer wb = new DataBuffer(data) { BigEndian = bigEndian })
             {
                 x1 = wb.ReadChar(true);
             }
@@ -564,37 +572,45 @@ namespace GTASaveData.Core.Tests
         #region Test Objects
         public class TestObject : SaveDataObject, IEquatable<TestObject>
         {
+            public char Ascii { get; set; }
             public int Integer { get; set; }
             public bool Boolean { get; set; }
+            public char Unicode { get; set; }
             public float Single { get; set; }
 
             public TestObject()
             { }
 
-            protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+            protected override void ReadData(DataBuffer buf, FileFormat fmt)
             {
-                Integer = buf.ReadInt32();
-                Boolean = buf.ReadBool();
-                Single = buf.ReadFloat();
+                Ascii = buf.ReadChar();         // 0x00
+                Integer = buf.ReadInt32();      // 0x01
+                Boolean = buf.ReadBool();       // 0x05
+                Unicode = buf.ReadChar(true);   // 0x06
+                Single = buf.ReadFloat();       // 0x08
             }
 
-            protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+            protected override void WriteData(DataBuffer buf, FileFormat fmt)
             {
+                buf.Write(Ascii);
                 buf.Write(Integer);
                 buf.Write(Boolean);
+                buf.Write(Unicode, true);
                 buf.Write(Single);
             }
 
             protected override int GetSize(FileFormat fmt)
             {
-                return sizeof(int) + sizeof(float) + sizeof(bool);
+                return 1 + sizeof(int) + 1 + 2 + sizeof(float);
             }
 
             public override int GetHashCode()
             {
                 int hash = 17;
+                hash += 23 * Ascii.GetHashCode();
                 hash += 23 * Integer.GetHashCode();
                 hash += 23 * Boolean.GetHashCode();
+                hash += 23 * Unicode.GetHashCode();
                 hash += 23 * Single.GetHashCode();
 
                 return hash;
@@ -612,16 +628,20 @@ namespace GTASaveData.Core.Tests
                     return false;
                 }
 
-                return Integer.Equals(other.Integer)
+                return Ascii.Equals(other.Ascii)
+                    && Integer.Equals(other.Integer)
                     && Boolean.Equals(other.Boolean)
+                    && Unicode.Equals(other.Unicode)
                     && Single.Equals(other.Single);
             }
 
             public static TestObject Generate()
             {
                 Faker<TestObject> model = new Faker<TestObject>()
+                    .RuleFor(x => x.Ascii, f => Generator.Ascii(f))
                     .RuleFor(x => x.Integer, f => f.Random.Int())
                     .RuleFor(x => x.Boolean, f => f.Random.Bool())
+                    .RuleFor(x => x.Unicode, f => Generator.Unicode(f))
                     .RuleFor(x => x.Single, f => f.Random.Float());
 
                 return model.Generate();
@@ -637,16 +657,16 @@ namespace GTASaveData.Core.Tests
             bool unicode = false,
             bool zeroTerminate = true)
         {
-            using (StreamBuffer wb = new StreamBuffer())
+            using (DataBuffer wb = new DataBuffer())
             {
                 wb.Write(x, length, unicode, zeroTerminate);
-                return wb.GetBufferBytes();
+                return wb.GetBuffer();
             }
         }
 
         public static string BytesToString(byte[] data, int length = 0, bool unicode = false)
         {
-            using (StreamBuffer wb = new StreamBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 return wb.ReadString(length, unicode);
             }
@@ -658,10 +678,10 @@ namespace GTASaveData.Core.Tests
             bool unicode = false)
             where T : new()
         {
-            using (StreamBuffer wb = new StreamBuffer())
+            using (DataBuffer wb = new DataBuffer())
             {
                 wb.Write(items, count, itemLength, unicode);
-                return wb.GetBufferBytes();
+                return wb.GetBuffer();
             }
         }
 
@@ -669,9 +689,9 @@ namespace GTASaveData.Core.Tests
             int itemLength = 0,
             bool unicode = false)
         {
-            using (StreamBuffer wb = new StreamBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
-                return wb.Read<T>(count, itemLength, unicode);
+                return wb.ReadArray<T>(count, itemLength, unicode);
             }
         }
         #endregion

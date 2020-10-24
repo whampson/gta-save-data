@@ -1,7 +1,7 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Diagnostics;
+using System.Numerics;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
@@ -273,27 +273,27 @@ namespace GTASaveData.GTA3
             set { State = (GarageState) value; OnPropertyChanged(); }
         }
 
-        public Vector3D PositionMin
+        public Vector3 PositionMin
         {
-            get { return new Vector3D(X1, Y1, Z1); }
+            get { return new Vector3(X1, Y1, Z1); }
             set { X1 = value.X; Y1 = value.Y; Z1 = value.Z; OnPropertyChanged(); }
         }
 
-        public Vector3D PositionMax
+        public Vector3 PositionMax
         {
-            get { return new Vector3D(X2, Y2, Z2); }
+            get { return new Vector3(X2, Y2, Z2); }
             set { X2 = value.X; Y2 = value.Y; Z2 = value.Z; OnPropertyChanged(); }
         }
 
-        public Vector3D Door1Position
+        public Vector3 Door1Position
         {
-            get { return new Vector3D(Door1X, Door1Y, Door1Z); }
+            get { return new Vector3(Door1X, Door1Y, Door1Z); }
             set { Door1X = value.X; Door1Y = value.Y; Door1Z = value.Z; OnPropertyChanged(); }
         }
 
-        public Vector3D Door2Position
+        public Vector3 Door2Position
         {
-            get { return new Vector3D(Door2X, Door2Y, Door2Z); }
+            get { return new Vector3(Door2X, Door2Y, Door2Z); }
             set { Door2X = value.X; Door2Y = value.Y; Door2Z = value.Z; OnPropertyChanged(); }
         }
 
@@ -380,7 +380,7 @@ namespace GTASaveData.GTA3
             buf.Skip(3);
             TargetCarPointer = buf.ReadUInt32();
             Field96h = buf.ReadInt32();
-            StoredCar = buf.Read<StoredCar>();
+            StoredCar = buf.ReadObject<StoredCar>();
 
             Debug.Assert(buf.Offset == SizeOfType<Garage>());
         }

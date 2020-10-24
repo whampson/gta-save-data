@@ -1,4 +1,5 @@
 ﻿using System;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {

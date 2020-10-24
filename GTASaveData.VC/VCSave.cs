@@ -265,12 +265,12 @@ namespace GTASaveData.VC
             PedTypeInfo = new Dummy();
         }
 
-        protected override void LoadAllData(StreamBuffer file)
+        protected override void LoadAllData(DataBuffer file)
         {
             int totalSize = 0;
 
             totalSize += ReadBlock(file);
-            SimpleVars = WorkBuff.Read<SimpleVariables>(FileFormat);
+            SimpleVars = WorkBuff.ReadObject<SimpleVariables>(FileFormat);
             Scripts = LoadTypePreAlloc<Dummy>();
             totalSize += ReadBlock(file); PlayerPeds = LoadTypePreAlloc<Dummy>();
             totalSize += ReadBlock(file); Garages = LoadTypePreAlloc<Dummy>();
@@ -305,7 +305,7 @@ namespace GTASaveData.VC
             Debug.Assert(totalSize == SizeOfGameInBytes);
         }
 
-        protected override void SaveAllData(StreamBuffer file)
+        protected override void SaveAllData(DataBuffer file)
         {
             int totalSize = 0;
             int size;
@@ -340,7 +340,7 @@ namespace GTASaveData.VC
 
             for (int i = 0; i < MaxNumPaddingBlocks; i++)
             {
-                size = StreamBuffer.Align4((SizeOfGameInBytes - 3) - totalSize);
+                size = DataBuffer.Align4((SizeOfGameInBytes - 3) - totalSize);
                 if (size > GetBufferSize())
                 {
                     size = GetBufferSize();
@@ -368,7 +368,7 @@ namespace GTASaveData.VC
             int scr = data.FindFirst("SCR\0".GetAsciiBytes());
 
             int blk1Size;
-            using (StreamBuffer wb = new StreamBuffer(data))
+            using (DataBuffer wb = new DataBuffer(data))
             {
                 wb.Skip(wb.ReadInt32());
                 blk1Size = wb.ReadInt32();

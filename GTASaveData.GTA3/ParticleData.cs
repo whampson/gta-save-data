@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -37,7 +38,7 @@ namespace GTASaveData.GTA3
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             int numObjects = buf.ReadInt32();
-            Objects = buf.Read<ParticleObject>(numObjects, fmt);
+            Objects = buf.ReadArray<ParticleObject>(numObjects, fmt);
             buf.Skip(SizeOfType<ParticleObject>(fmt));
 
             Debug.Assert(buf.Offset == SizeOfObject(this, fmt));

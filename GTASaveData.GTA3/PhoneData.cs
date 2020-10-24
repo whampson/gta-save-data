@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -56,7 +57,7 @@ namespace GTASaveData.GTA3
         {
             NumPhones = buf.ReadInt32();
             NumActivePhones = buf.ReadInt32();
-            Phones = buf.Read<Phone>(MaxNumPhones);
+            Phones = buf.ReadArray<Phone>(MaxNumPhones);
 
             Debug.Assert(buf.Offset == SizeOfType<PhoneData>());
         }

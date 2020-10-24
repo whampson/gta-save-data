@@ -1,5 +1,5 @@
-﻿using GTASaveData.JsonConverters;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
+using GTASaveData.JsonConverters;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -61,7 +61,7 @@ namespace GTASaveData.LCS
             set { m_name = value; OnPropertyChanged(); }
         }
 
-        public int IP
+        public int InstructionPointer
         {
             get { return m_ip; }
             set { m_ip = value; OnPropertyChanged(); }
@@ -73,7 +73,7 @@ namespace GTASaveData.LCS
             set { m_stack = value; OnPropertyChanged(); }
         }
 
-        public short StackPosition
+        public short StackPointer
         {
             get { return m_stackPointer; }
             set { m_stackPointer = value; OnPropertyChanged(); }
@@ -166,7 +166,7 @@ namespace GTASaveData.LCS
 
         IEnumerable<int> IRunningScript.Stack => m_stack;
 
-        IEnumerable<int> IRunningScript.LocalVariables => m_localVariables;
+        IEnumerable<int> IRunningScript.Locals => m_localVariables;
 
         public RunningScript()
         {
@@ -181,9 +181,9 @@ namespace GTASaveData.LCS
             PrevScriptPointer = other.PrevScriptPointer;
             Id = other.Id;
             Name = other.Name;
-            IP = other.IP;
+            InstructionPointer = other.InstructionPointer;
             Stack = ArrayHelper.DeepClone(other.Stack);
-            StackPosition = other.StackPosition;
+            StackPointer = other.StackPointer;
             LocalVariables = ArrayHelper.DeepClone(other.LocalVariables);
             TimerA = other.TimerA;
             TimerB = other.TimerB;
@@ -202,33 +202,33 @@ namespace GTASaveData.LCS
 
         public void PushStack(int value)
         {
-            if (StackPosition + 1 >= Stack.Count)
+            if (StackPointer + 1 >= Stack.Count)
             {
                 Stack.Add(value);
-                StackPosition++;
+                StackPointer++;
             }
             else
             {
-                Stack[StackPosition++] = value;
+                Stack[StackPointer++] = value;
             }
         }
 
         public int PopStack()
         {
-            if (StackPosition == 0)
+            if (StackPointer == 0)
             {
                 throw new InvalidOperationException("The stack is empty.");
             }
-            return Stack[--StackPosition];
+            return Stack[--StackPointer];
         }
 
         public int PeekStack()
         {
-            if (StackPosition == 0)
+            if (StackPointer == 0)
             {
                 throw new InvalidOperationException("The stack is full.");
             }
-            return Stack[StackPosition - 1];
+            return Stack[StackPointer - 1];
         }
 
         public void SetLocal(int index, int value)
@@ -236,7 +236,7 @@ namespace GTASaveData.LCS
             LocalVariables[index] = value;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             NextScriptPointer = buf.ReadUInt32();
             if (fmt.IsiOS) buf.ReadInt32();
@@ -245,11 +245,11 @@ namespace GTASaveData.LCS
             Id = buf.ReadInt32();
             buf.ReadInt32();
             Name = buf.ReadString(MaxNameLength);
-            IP = buf.ReadInt32();
-            Stack = buf.Read<int>(MaxStackDepth);
-            StackPosition = buf.ReadInt16();
+            InstructionPointer = buf.ReadInt32();
+            Stack = buf.ReadArray<int>(MaxStackDepth);
+            StackPointer = buf.ReadInt16();
             buf.Skip(2);
-            LocalVariables = buf.Read<int>(NumLocalVariables);
+            LocalVariables = buf.ReadArray<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
             Field210h = buf.ReadInt32();
@@ -269,7 +269,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(NextScriptPointer);
             if (fmt.IsiOS) buf.Write(0);
@@ -278,9 +278,9 @@ namespace GTASaveData.LCS
             buf.Write(Id);
             buf.Write(0);
             buf.Write(Name, MaxNameLength);
-            buf.Write(IP);
+            buf.Write(InstructionPointer);
             buf.Write(Stack, MaxStackDepth);
-            buf.Write(StackPosition);
+            buf.Write(StackPointer);
             buf.Skip(2);
             buf.Write(LocalVariables, NumLocalVariables);
             buf.Write(TimerA);
@@ -323,9 +323,9 @@ namespace GTASaveData.LCS
                 && PrevScriptPointer.Equals(other.PrevScriptPointer)
                 && Id.Equals(other.Id)
                 && Name.Equals(other.Name)
-                && IP.Equals(other.IP)
+                && InstructionPointer.Equals(other.InstructionPointer)
                 && Stack.SequenceEqual(other.Stack)
-                && StackPosition.Equals(other.StackPosition)
+                && StackPointer.Equals(other.StackPointer)
                 && LocalVariables.SequenceEqual(other.LocalVariables)
                 && TimerA.Equals(other.TimerA)
                 && TimerB.Equals(other.TimerB)

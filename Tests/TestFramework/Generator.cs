@@ -1,8 +1,8 @@
 ﻿using Bogus;
 using GTASaveData;
-using GTASaveData.Types;
 using System;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 
 namespace TestFramework
@@ -14,19 +14,24 @@ namespace TestFramework
             return Enumerable.Range(0, count).Select(itemGenerator).ToArray();
         }
 
-        public static Vector2D Vector2D(Faker f)
+        public static Vector2 Vector2(Faker f)
         {
-            return new Vector2D(f.Random.Float(), f.Random.Float());
+            return new Vector2(f.Random.Float(), f.Random.Float());
         }
 
-        public static Vector3D Vector3D(Faker f)
+        public static Vector3 Vector3(Faker f)
         {
-            return new Vector3D(f.Random.Float(), f.Random.Float(), f.Random.Float());
+            return new Vector3(f.Random.Float(), f.Random.Float(), f.Random.Float());
         }
 
         public static Quaternion Quaternion(Faker f)
         {
             return new Quaternion(f.Random.Float(), f.Random.Float(), f.Random.Float(), f.Random.Float());
+        }
+
+        public static Matrix Matrix(Faker f)
+        {
+            return new Matrix(Vector3(f), Vector3(f), Vector3(f), Vector3(f));
         }
 
         public static DateTime Date(Faker f)
@@ -45,6 +50,16 @@ namespace TestFramework
             return s;
         }
 
+        public static char Ascii(Faker f)
+        {
+            return f.Random.Char('\u0020', '\u007E');
+        }
+
+        public static char Unicode(Faker f)
+        {
+            return f.Random.Char('\u0000', '\uD7FF');
+        }
+
         public static string AsciiString(Faker f, int length)
         {
             return new string(f.Random.Chars('\u0020', '\u007E', length));
@@ -52,7 +67,7 @@ namespace TestFramework
 
         public static string UnicodeString(Faker f, int length)
         {
-            return new string(f.Random.Chars('\u0000', '\uD7FF', length));  // exclude surrogates
+            return new string(f.Random.Chars('\u0000', '\uD7FF', length));
         }
 
         public static T Generate<T, U>()

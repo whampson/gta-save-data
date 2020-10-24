@@ -1,5 +1,4 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -107,7 +106,7 @@ namespace GTASaveData.LCS
             Stats = new Stats(other.Stats);
         }
 
-        private int ReadDataBlock<T>(StreamBuffer file, string tag, out T obj)
+        private int ReadDataBlock<T>(DataBuffer file, string tag, out T obj)
             where T : SaveDataObject, new()
         {
             file.Mark();
@@ -118,13 +117,13 @@ namespace GTASaveData.LCS
             int size = file.ReadInt32();
             Debug.Assert(file.Position + size < file.Length);
 
-            obj = file.Read<T>(FileFormat);
+            obj = file.ReadObject<T>(FileFormat);
             file.Align4();
 
             return file.Offset;
         }
 
-        private int WriteDataBlock<T>(StreamBuffer file, string tag, T obj)
+        private int WriteDataBlock<T>(DataBuffer file, string tag, T obj)
             where T : SaveDataObject
         {
             int size = SerializeData(obj, out byte[] data);
@@ -142,7 +141,7 @@ namespace GTASaveData.LCS
             return size + 8;
         }
 
-        protected override void LoadAllData(StreamBuffer file)
+        protected override void LoadAllData(DataBuffer file)
         {
             int totalSize = 0;
 
@@ -165,7 +164,7 @@ namespace GTASaveData.LCS
             Debug.WriteLine("Load successful!");
         }
 
-        protected override void SaveAllData(StreamBuffer file)
+        protected override void SaveAllData(DataBuffer file)
         {
             int totalSize = 0;
             m_checkSum = 0;
@@ -197,7 +196,7 @@ namespace GTASaveData.LCS
             const int RunningScriptSizeAndroid = 0x21C;
             const int RunningScriptSizeiOS = 0x228;
 
-            using (StreamBuffer buf = new StreamBuffer(data))
+            using (DataBuffer buf = new DataBuffer(data))
             {
                 if (buf.Length < 0x1000) goto DetectionFailed;
                 buf.Skip(4);

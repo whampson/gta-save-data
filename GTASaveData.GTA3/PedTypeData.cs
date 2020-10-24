@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -65,7 +66,7 @@ namespace GTASaveData.GTA3
         {
             int size = GTA3VCSave.ReadBlockHeader(buf, "PTP");
 
-            PedTypes = buf.Read<PedType>(NumPedTypes);
+            PedTypes = buf.ReadArray<PedType>(NumPedTypes);
 
             Debug.Assert(buf.Offset == SizeOfType<PedTypeData>());
             Debug.Assert(size == SizeOfType<PedTypeData>() - GTA3VCSave.BlockHeaderSize);

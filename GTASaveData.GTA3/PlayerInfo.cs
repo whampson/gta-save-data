@@ -1,4 +1,4 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Diagnostics;
 

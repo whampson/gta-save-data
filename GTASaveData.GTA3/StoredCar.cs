@@ -1,7 +1,7 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -9,8 +9,8 @@ namespace GTASaveData.GTA3
         IEquatable<StoredCar>, IDeepClonable<StoredCar>
     {
         private int m_model;
-        private Vector3D m_position;
-        private Vector3D m_angle;
+        private Vector3 m_position;
+        private Vector3 m_angle;
         private StoredCarFlags m_flags;
         private byte m_color1;
         private byte m_color2;
@@ -25,13 +25,13 @@ namespace GTASaveData.GTA3
             set { m_model = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Position
+        public Vector3 Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Angle
+        public Vector3 Angle
         {
             get { return m_angle; }
             set { m_angle = value; OnPropertyChanged(); }
@@ -117,15 +117,15 @@ namespace GTASaveData.GTA3
 
         public StoredCar()
         {
-            Position = new Vector3D();
-            Angle = new Vector3D();
+            Position = new Vector3();
+            Angle = new Vector3();
         }
 
         public StoredCar(StoredCar other)
         {
             Model = other.Model;
-            Position = new Vector3D(other.Position);
-            Angle = new Vector3D(other.Angle);
+            Position = other.Position;
+            Angle = other.Angle;
             Flags = other.Flags;
             Color1 = other.Color1;
             Color2 = other.Color2;
@@ -138,8 +138,8 @@ namespace GTASaveData.GTA3
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Model = buf.ReadInt32();
-            Position = buf.Read<Vector3D>();
-            Angle = buf.Read<Vector3D>();
+            Position = buf.ReadStruct<Vector3>();
+            Angle = buf.ReadStruct<Vector3>();
             Flags = (StoredCarFlags) buf.ReadInt32();
             Color1 = buf.ReadByte();
             Color2 = buf.ReadByte();

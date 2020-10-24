@@ -195,19 +195,19 @@ namespace GTASaveData.VCS
             }
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             int size = GTA3VCSave.ReadBlockHeader(buf, "SCR");
 
             int varSpace = buf.ReadInt32();
-            ScriptSpace = buf.Read<byte>(varSpace);
+            ScriptSpace = buf.ReadArray<byte>(varSpace);
             buf.Align4();
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
             OnAMissionFlag = buf.ReadInt32();
             LastMissionPassedTime = buf.ReadUInt32();
-            BuildingSwaps = buf.Read<BuildingSwap>(NumBuildingSwaps);
-            InvisibilitySettings = buf.Read<InvisibleObject>(NumInvisibilitySettings);
+            BuildingSwaps = buf.ReadArray<BuildingSwap>(NumBuildingSwaps);
+            InvisibilitySettings = buf.ReadArray<InvisibleObject>(NumInvisibilitySettings);
             UsingAMultiScriptFile = buf.ReadBool();
             PlayerHasMetDebbieHarry = buf.ReadBool();
             buf.ReadUInt16();
@@ -216,13 +216,13 @@ namespace GTASaveData.VCS
             NumberOfMissionScripts = buf.ReadInt16();
             buf.ReadUInt16();
             int runningScripts = buf.ReadInt32();
-            ActiveScripts = buf.Read<RunningScript>(runningScripts, fmt);
+            ActiveScripts = buf.ReadArray<RunningScript>(runningScripts, fmt);
 
             Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
             Debug.Assert(size == SizeOfObject(this, fmt) - GTA3VCSave.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             int size = SizeOfObject(this, fmt);
             GTA3VCSave.WriteBlockHeader(buf, "SCR", size - GTA3VCSave.BlockHeaderSize);
@@ -251,7 +251,7 @@ namespace GTASaveData.VCS
         protected override int GetSize(FileFormat fmt)
         {
             return SizeOfType<RunningScript>(fmt) * ActiveScripts.Count
-                + StreamBuffer.Align4(ScriptSpace.Count)
+                + DataBuffer.Align4(ScriptSpace.Count)
                 + ScriptDataSize
                 + GTA3VCSave.BlockHeaderSize
                 + 3 * sizeof(int);

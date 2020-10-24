@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using System;
 using TestFramework;
 using Xunit;
 
@@ -13,7 +12,7 @@ namespace GTASaveData.GTA3.Tests
                 //.RuleFor(x => x.Type, f => f.PickRandom<PedTypeId>())
                 //.RuleFor(x => x.ModelIndex, f => f.Random.Short())
                 //.RuleFor(x => x.Handle, f => f.Random.Int())
-                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Position, f => Generator.Vector3(f))
                 .RuleFor(x => x.CreatedBy, f => f.PickRandom<CharCreatedBy>())
                 .RuleFor(x => x.Health, f => f.Random.Float())
                 .RuleFor(x => x.Armor, f => f.Random.Float())

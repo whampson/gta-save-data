@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {

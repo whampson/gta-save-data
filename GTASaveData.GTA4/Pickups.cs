@@ -47,17 +47,17 @@ namespace GTASaveData.GTA4
             PickupsArray = new Array<Pickup>();
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             PickupsCount = buf.ReadInt32();
-            PickupsArray = buf.Read<Pickup>(Limits.MaxPickupsCount);
+            PickupsArray = buf.ReadArray<Pickup>(Limits.MaxPickupsCount);
             WeaponPickupMessagesRemaining = buf.ReadByte();
             Unknown = buf.ReadInt32();
 
             Debug.Assert(buf.Offset == SizeOfType<Pickups>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(PickupsCount);
             buf.Write(PickupsArray, Limits.MaxPickupsCount);

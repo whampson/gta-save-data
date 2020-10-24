@@ -216,17 +216,17 @@ namespace GTASaveData.VCS
             LocalVariables[index] = value;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             NextScriptPointer = buf.ReadUInt32();
             PrevScriptPointer = buf.ReadUInt32();
             Id = buf.ReadInt32();
             Field10h = buf.ReadInt32();
             IP = buf.ReadInt32();
-            Stack = buf.Read<int>(MaxStackDepth);
+            Stack = buf.ReadArray<int>(MaxStackDepth);
             StackPosition = buf.ReadInt16();
             buf.Skip(2);
-            LocalVariables = buf.Read<int>(NumLocalVariables);
+            LocalVariables = buf.ReadArray<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
             Field1FCh = buf.ReadInt32();
@@ -242,7 +242,7 @@ namespace GTASaveData.VCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(NextScriptPointer);
             buf.Write(PrevScriptPointer);

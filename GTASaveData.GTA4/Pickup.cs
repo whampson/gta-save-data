@@ -161,7 +161,7 @@ namespace GTASaveData.GTA4
             Rotation = new Vector3D();
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Index = buf.ReadInt32();
             Unknown04h = buf.ReadInt32();
@@ -171,10 +171,10 @@ namespace GTASaveData.GTA4
             Unknown14h = buf.ReadInt32();
             Blip = buf.ReadInt32();
             Timer = buf.ReadUInt32();
-            Position = buf.Read<Vector3D>();
+            Position = buf.ReadObject<Vector3D>();
             Unknown2Ch = buf.ReadInt32();
             Unknown30h = buf.ReadInt32();
-            Rotation = buf.Read<Vector3D>();
+            Rotation = buf.ReadObject<Vector3D>();
             Unknown40h = buf.ReadInt32();
             ObjectId = buf.ReadInt16();
             RefNum = buf.ReadInt16();
@@ -188,7 +188,7 @@ namespace GTASaveData.GTA4
             Debug.Assert(buf.Offset == SizeOfType<Pickup>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Index);
             buf.Write(Unknown04h);

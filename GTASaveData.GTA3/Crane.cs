@@ -1,6 +1,7 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -14,7 +15,7 @@ namespace GTASaveData.GTA3
         private float m_pickupX2;
         private float m_pickupY1;
         private float m_pickupY2;
-        private Vector3D m_dropoffTarget;
+        private Vector3 m_dropoffTarget;
         private float m_dropoffHeading;
         private float m_pickupAngle;
         private float m_dropoffAngle;
@@ -25,9 +26,9 @@ namespace GTASaveData.GTA3
         private float m_hookAngle;
         private float m_hookDistance;
         private float m_hookHeight;
-        private Vector3D m_hookInitialPosition;
-        private Vector3D m_hookCurrentPosition;
-        private Vector2D m_hookVelocity;
+        private Vector3 m_hookInitialPosition;
+        private Vector3 m_hookCurrentPosition;
+        private Vector2 m_hookVelocity;
         private uint m_vehiclePickedUpHandle;
         private uint m_timeForNextCheck;
         private CraneStatus m_status;
@@ -80,7 +81,7 @@ namespace GTASaveData.GTA3
             set { m_pickupY2 = value; OnPropertyChanged(); }
         }
 
-        public Vector3D DropoffTarget
+        public Vector3 DropoffTarget
         {
             get { return m_dropoffTarget; }
             set { m_dropoffTarget = value; OnPropertyChanged(); }
@@ -146,19 +147,19 @@ namespace GTASaveData.GTA3
             set { m_hookHeight = value; OnPropertyChanged(); }
         }
 
-        public Vector3D HookInitialPosition
+        public Vector3 HookInitialPosition
         {
             get { return m_hookInitialPosition; }
             set { m_hookInitialPosition = value; OnPropertyChanged(); }
         }
 
-        public Vector3D HookCurrentPosition
+        public Vector3 HookCurrentPosition
         {
             get { return m_hookCurrentPosition; }
             set { m_hookCurrentPosition = value; OnPropertyChanged(); }
         }
 
-        public Vector2D HookVelocity
+        public Vector2 HookVelocity
         {
             get { return m_hookVelocity; }
             set { m_hookVelocity = value; OnPropertyChanged(); }
@@ -220,10 +221,10 @@ namespace GTASaveData.GTA3
 
         public Crane()
         {
-            DropoffTarget = new Vector3D();
-            HookInitialPosition = new Vector3D();
-            HookCurrentPosition = new Vector3D();
-            HookVelocity = new Vector2D();
+            DropoffTarget = new Vector3();
+            HookInitialPosition = new Vector3();
+            HookCurrentPosition = new Vector3();
+            HookVelocity = new Vector2();
         }
 
         public Crane(Crane other)
@@ -235,7 +236,7 @@ namespace GTASaveData.GTA3
             PickupX2 = other.PickupX2;
             PickupY1 = other.PickupY1;
             PickupY2 = other.PickupY2;
-            DropoffTarget = new Vector3D(other.DropoffTarget);
+            DropoffTarget = other.DropoffTarget;
             DropoffHeading = other.DropoffHeading;
             PickupAngle = other.PickupAngle;
             DropoffAngle = other.DropoffAngle;
@@ -246,9 +247,9 @@ namespace GTASaveData.GTA3
             HookAngle = other.HookAngle;
             HookDistance = other.HookDistance;
             HookHeight = other.HookHeight;
-            HookInitialPosition = new Vector3D(other.HookInitialPosition);
-            HookCurrentPosition = new Vector3D(other.HookCurrentPosition);
-            HookVelocity = new Vector2D(other.HookVelocity);
+            HookInitialPosition = other.HookInitialPosition;
+            HookCurrentPosition = other.HookCurrentPosition;
+            HookVelocity = other.HookVelocity;
             VehiclePickedUpHandle = other.VehiclePickedUpHandle;
             TimeForNextCheck = other.TimeForNextCheck;
             Status = other.Status;
@@ -269,7 +270,7 @@ namespace GTASaveData.GTA3
             PickupX2 = buf.ReadFloat();
             PickupY1 = buf.ReadFloat();
             PickupY2 = buf.ReadFloat();
-            DropoffTarget = buf.Read<Vector3D>();
+            DropoffTarget = buf.ReadStruct<Vector3>();
             DropoffHeading = buf.ReadFloat();
             PickupAngle = buf.ReadFloat();
             DropoffAngle = buf.ReadFloat();
@@ -280,9 +281,9 @@ namespace GTASaveData.GTA3
             HookAngle = buf.ReadFloat();
             HookDistance = buf.ReadFloat();
             HookHeight = buf.ReadFloat();
-            HookInitialPosition = buf.Read<Vector3D>();
-            HookCurrentPosition = buf.Read<Vector3D>();
-            HookVelocity = buf.Read<Vector2D>();
+            HookInitialPosition = buf.ReadStruct<Vector3>();
+            HookCurrentPosition = buf.ReadStruct<Vector3>();
+            HookVelocity = buf.ReadStruct<Vector2>();
             VehiclePickedUpHandle = buf.ReadUInt32();
             TimeForNextCheck = buf.ReadUInt32();
             Status = (CraneStatus) buf.ReadByte();

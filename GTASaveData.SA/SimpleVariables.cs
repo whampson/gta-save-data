@@ -387,14 +387,14 @@ namespace GTASaveData.SA
             CameraPosition = new Vector3D();
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             VersionId = buf.ReadUInt32();
             LastMissionPassedName = buf.ReadString(Limits.MaxNameLength);
             MissionPackGame = buf.ReadByte();
             buf.Align4();
             CurrLevel = (LevelType) buf.ReadInt32();
-            CameraPosition = buf.Read<Vector3D>();
+            CameraPosition = buf.ReadObject<Vector3D>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockMonths = buf.ReadByte();
@@ -456,7 +456,7 @@ namespace GTASaveData.SA
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(VersionId);
             buf.Write(LastMissionPassedName, Limits.MaxNameLength);

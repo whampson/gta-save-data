@@ -35,7 +35,7 @@ namespace GTASaveData.GTA3.Tests
             new object[] { GTA3Save.FileFormats.iOS, "LM3" },
             new object[] { GTA3Save.FileFormats.iOS, "LM3 VehiclePool" },
             new object[] { GTA3Save.FileFormats.iOS, "MEA4 VehiclePool" },
-            new object[] { GTA3Save.FileFormats.PC, "AS3" },
+            //new object[] { GTA3Save.FileFormats.PC, "AS3" },
             new object[] { GTA3Save.FileFormats.PC, "CAT2" },
             new object[] { GTA3Save.FileFormats.PC, "CAT2 SpecialVehicles1" },
             new object[] { GTA3Save.FileFormats.PC, "CAT2 SpecialVehicles2" },

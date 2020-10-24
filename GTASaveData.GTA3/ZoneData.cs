@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
@@ -123,12 +124,12 @@ namespace GTASaveData.GTA3
             CurrentLevel = (Level) buf.ReadInt32();
             FindIndex = buf.ReadInt16();
             buf.ReadInt16();
-            Zones = buf.Read<Zone>(MaxNumZones);
-            ZoneInfo = buf.Read<ZoneInfo>(MaxNumZoneInfos);
+            Zones = buf.ReadArray<Zone>(MaxNumZones);
+            ZoneInfo = buf.ReadArray<ZoneInfo>(MaxNumZoneInfos);
             NumberOfZones = buf.ReadInt16();
             NumberOfZoneInfos = buf.ReadInt16();
-            MapZones = buf.Read<Zone>(MaxNumMapZones);
-            AudioZones = buf.Read<short>(MaxNumAudioZones);
+            MapZones = buf.ReadArray<Zone>(MaxNumMapZones);
+            AudioZones = buf.ReadArray<short>(MaxNumAudioZones);
             NumberOfMapZones = buf.ReadInt16();
             NumberOfAudioZones = buf.ReadInt16();
 

@@ -437,7 +437,7 @@ namespace GTASaveData.VCS
             UnknownD9hPS2 = other.UnknownD9hPS2;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             buf.Skip(8); // unused
             CurrentLevel = buf.ReadInt32();
@@ -460,7 +460,7 @@ namespace GTASaveData.VCS
             buf.Skip(2);
             WeatherTypeInList = buf.ReadInt32();
             WeatherInterpolationValue = buf.ReadFloat();
-            CameraPosition = buf.Read<Vector3D>();
+            CameraPosition = buf.ReadObject<Vector3D>();
             CameraModeInCar = buf.ReadFloat();
             CameraModeOnFoot = buf.ReadFloat();
             ExtraColor = buf.ReadInt32();       // for interiors, I think
@@ -493,11 +493,11 @@ namespace GTASaveData.VCS
                 AllTaxisHaveNitro = buf.ReadBool(4);
                 TargetIsOn = buf.ReadBool();
                 buf.Skip(3);
-                TargetPosition = buf.Read<Vector2D>();
+                TargetPosition = buf.ReadObject<Vector2D>();
                 UnknownD8hPS2 = buf.ReadByte();
                 UnknownD9hPS2 = buf.ReadByte();
                 buf.Skip(2);
-                PlayerPosition = buf.Read<Vector3D>();
+                PlayerPosition = buf.ReadObject<Vector3D>();
                 TrailsOn = buf.ReadBool(4);
                 TimeStamp = buf.Read<Date>();
             }
@@ -518,15 +518,15 @@ namespace GTASaveData.VCS
                 AllTaxisHaveNitro = buf.ReadBool();
                 TargetIsOn = buf.ReadBool();
                 buf.Skip(1);
-                TargetPosition = buf.Read<Vector2D>();
+                TargetPosition = buf.ReadObject<Vector2D>();
                 UnknownB8hPSP = buf.ReadInt32();
-                PlayerPosition = buf.Read<Vector3D>();
+                PlayerPosition = buf.ReadObject<Vector3D>();
             }
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Skip(4);    // unused
             buf.Write(3);   // always 3

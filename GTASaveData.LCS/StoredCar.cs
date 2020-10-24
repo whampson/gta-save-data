@@ -1,8 +1,8 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace GTASaveData.LCS
 {
@@ -10,8 +10,8 @@ namespace GTASaveData.LCS
         IEquatable<StoredCar>, IDeepClonable<StoredCar>
     {
         private int m_model;
-        private Vector3D m_position;
-        private Vector3D m_angle;
+        private Vector3 m_position;
+        private Vector3 m_angle;
         private float m_handlingMultiplier;
         private StoredCarFlags m_flags;
         private byte m_color1;
@@ -26,13 +26,13 @@ namespace GTASaveData.LCS
             set { m_model = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Position
+        public Vector3 Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Angle
+        public Vector3 Angle
         {
             get { return m_angle; }
             set { m_angle = value; OnPropertyChanged(); }
@@ -118,15 +118,15 @@ namespace GTASaveData.LCS
 
         public StoredCar()
         {
-            Position = new Vector3D();
-            Angle = new Vector3D();
+            Position = new Vector3();
+            Angle = new Vector3();
         }
 
         public StoredCar(StoredCar other)
         {
             Model = other.Model;
-            Position = new Vector3D(other.Position);
-            Angle = new Vector3D(other.Angle);
+            Position = other.Position;
+            Angle = other.Angle;
             HandlingMultiplier = other.HandlingMultiplier;
             Flags = other.Flags;
             Color1 = other.Color1;
@@ -136,11 +136,11 @@ namespace GTASaveData.LCS
             Extra2 = other.Extra2;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Model = buf.ReadInt32();
-            Position = buf.Read<Vector3D>();
-            Angle = buf.Read<Vector3D>();
+            Position = buf.ReadStruct<Vector3>();
+            Angle = buf.ReadStruct<Vector3>();
             HandlingMultiplier = buf.ReadFloat();
             Flags = (StoredCarFlags) buf.ReadInt32();
             Color1 = buf.ReadByte();
@@ -153,7 +153,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Model);
             buf.Write(Position);

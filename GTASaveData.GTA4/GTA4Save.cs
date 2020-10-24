@@ -18,7 +18,7 @@ namespace GTASaveData.GTA4
             public const int MaxNameLength = 128;
         }
 
-        private StreamBuffer m_file;
+        private DataBuffer m_file;
 
         private int m_saveVersion;
         private int m_saveSizeInBytes;
@@ -408,7 +408,7 @@ namespace GTASaveData.GTA4
             Debug.Assert(sig == "BLOCK", "Invalid 'BLOCK' signature!");
 
             m_file.Mark();
-            T obj = m_file.Read<T>();
+            T obj = m_file.ReadObject<T>();
             Debug.Assert(m_file.Offset == size - 9);
 
             return obj;
@@ -432,7 +432,7 @@ namespace GTASaveData.GTA4
             return data;
         }
 
-        protected override void LoadAllData(StreamBuffer file)
+        protected override void LoadAllData(DataBuffer file)
         {
             m_file = file;
             m_file.BigEndian = (FileFormat.IsXbox360 || FileFormat.IsPS3);
@@ -486,14 +486,14 @@ namespace GTASaveData.GTA4
             LoadFileFooter();
         }
 
-        protected override void SaveAllData(StreamBuffer file)
+        protected override void SaveAllData(DataBuffer file)
         {
             throw new NotImplementedException();
         }
 
         protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
         {
-            using (StreamBuffer b = new StreamBuffer(data))
+            using (DataBuffer b = new DataBuffer(data))
             {
                 int version = b.ReadInt32();
                 if (version == 0x39)

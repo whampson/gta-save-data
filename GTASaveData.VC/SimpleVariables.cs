@@ -243,13 +243,13 @@ namespace GTASaveData.VC
             RadioStationPositionList = new Array<int>();
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
             TimeStamp = buf.Read<SystemTime>();
             buf.ReadInt32();
             CurrLevel = (Level) buf.ReadInt32();
-            CameraPosition = buf.Read<Vector3D>();
+            CameraPosition = buf.ReadObject<Vector3D>();
             if (fmt.IsPC && fmt.IsSteam) SteamId = buf.ReadInt32();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
@@ -285,12 +285,12 @@ namespace GTASaveData.VC
             ExtraColour = buf.ReadInt32();
             ExtraColourOn = buf.ReadBool(4);
             ExtraColourInterpolation = buf.ReadFloat();
-            RadioStationPositionList = buf.Read<int>(RadioStationListCount);
+            RadioStationPositionList = buf.ReadArray<int>(RadioStationListCount);
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
             buf.Write(TimeStamp);

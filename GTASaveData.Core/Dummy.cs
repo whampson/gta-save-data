@@ -1,4 +1,5 @@
-﻿using GTASaveData.JsonConverters;
+﻿using GTASaveData.Interfaces;
+using GTASaveData.JsonConverters;
 using Newtonsoft.Json;
 using System;
 using System.Linq;

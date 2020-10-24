@@ -22,12 +22,12 @@ namespace GTASaveData.SA
         private const int BlockCountMobile = 29;
         private const string BlockTagName = "BLOCK";
 
-        private readonly StreamBuffer m_workBuffer;
+        private readonly DataBuffer m_workBuffer;
         private int m_bufferSize => (FileFormat.IsMobile) ? 65000 : 51200;
         private int m_checkSum;
         private bool m_disposed;
 
-        private StreamBuffer m_file;
+        private DataBuffer m_file;
         private SimpleVariables m_simpleVars;
         private Dummy m_scripts;      // TheScripts
         private Dummy m_pools;   // Pools
@@ -283,7 +283,7 @@ namespace GTASaveData.SA
         public SanAndreasSave()
         {
             m_disposed = false;
-            m_workBuffer = new StreamBuffer(new byte[MaxBufferSize]);
+            m_workBuffer = new DataBuffer(new byte[MaxBufferSize]);
 
             SimpleVars = new SimpleVariables();
             Scripts = new Dummy();
@@ -419,7 +419,7 @@ namespace GTASaveData.SA
                 count = m_file.Length - m_file.Position;
             }
 
-            if (count != 0 && count == StreamBuffer.Align4(count))
+            if (count != 0 && count == DataBuffer.Align4(count))
             {
                 m_workBuffer.Reset();
                 m_workBuffer.Write(m_file.ReadBytes(count));
@@ -443,7 +443,7 @@ namespace GTASaveData.SA
             m_workBuffer.Reset();
         }
 
-        protected override void LoadAllData(StreamBuffer file)
+        protected override void LoadAllData(DataBuffer file)
         {
             List<int> blockSizes;
             byte[] fileData;
@@ -452,7 +452,7 @@ namespace GTASaveData.SA
             int mark;
 
             m_file = file;
-            fileData = file.GetBufferBytes();
+            fileData = file.GetBuffer();
             blockSizes = new List<int>();
             
             offset = fileData.FindFirst(BlockTagName.GetAsciiBytes(), 0);
@@ -533,7 +533,7 @@ namespace GTASaveData.SA
             // (mobile) TODO: briefs??
         }
 
-        protected override void SaveAllData(StreamBuffer file)
+        protected override void SaveAllData(DataBuffer file)
         {
             int index;
             int size;

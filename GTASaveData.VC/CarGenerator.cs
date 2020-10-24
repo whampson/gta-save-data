@@ -133,10 +133,10 @@ namespace GTASaveData.VC
         public CarGenerator()
         { }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Model = buf.ReadInt32();
-            Position = buf.Read<Vector3D>();
+            Position = buf.ReadObject<Vector3D>();
             Heading = buf.ReadFloat();
             Color1 = buf.ReadInt16();
             Color2 = buf.ReadInt16();
@@ -155,7 +155,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Model);
             buf.Write(Position);

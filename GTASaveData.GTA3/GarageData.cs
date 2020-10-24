@@ -1,4 +1,4 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -182,8 +182,8 @@ namespace GTASaveData.GTA3
             CarTypesCollected2 = (ShoresideImportExportCars) buf.ReadInt32();
             CarTypesCollected3 = buf.ReadInt32();
             LastTimeHelpMessage = buf.ReadInt32();
-            CarsInSafeHouse = buf.Read<StoredCar>(NumStoredCars);
-            Garages = buf.Read<Garage>(MaxNumGarages);
+            CarsInSafeHouse = buf.ReadArray<StoredCar>(NumStoredCars);
+            Garages = buf.ReadArray<Garage>(MaxNumGarages);
             buf.Skip(244);
 
             Debug.Assert(buf.Offset == SizeOfType<GarageData>());

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -89,12 +90,12 @@ namespace GTASaveData.GTA3
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             CarDensity = buf.ReadInt16();
-            CarThreshold = buf.Read<short>(CarThresholdCapacity);
+            CarThreshold = buf.ReadArray<short>(CarThresholdCapacity);
             CopCarDensity = buf.ReadInt16();
-            GangCarDensity = buf.Read<short>(GangDensityCapacity);
+            GangCarDensity = buf.ReadArray<short>(GangDensityCapacity);
             PedDensity = buf.ReadInt16();
             CopPedDensity = buf.ReadInt16();
-            GangPedDensity = buf.Read<short>(GangDensityCapacity);
+            GangPedDensity = buf.ReadArray<short>(GangDensityCapacity);
             PedGroup = buf.ReadInt16();
 
             Debug.Assert(buf.Offset == SizeOfType<ZoneInfo>());

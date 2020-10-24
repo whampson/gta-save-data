@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -38,7 +39,7 @@ namespace GTASaveData.GTA3
         {
             base.ReadData(buf, fmt);
 
-            Damage = buf.Read<DamageManager>();
+            Damage = buf.ReadObject<DamageManager>();
             buf.Skip(SizeOfType<Automobile>(fmt) - buf.Offset);    // The rest is useless
 
             Debug.Assert(buf.Offset == SizeOfType<Automobile>(fmt));

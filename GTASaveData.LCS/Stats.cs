@@ -1057,7 +1057,7 @@ namespace GTASaveData.LCS
             FavoriteRadioStationList = ArrayHelper.DeepClone(other.FavoriteRadioStationList);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             PeopleKilledByPlayer = buf.ReadInt32();
             PeopleKilledByOthers = buf.ReadInt32();
@@ -1065,7 +1065,7 @@ namespace GTASaveData.LCS
             BoatsExploded = buf.ReadInt32();
             TyresPopped = buf.ReadInt32();
             RoundsFiredByPlayer = buf.ReadInt32();
-            PedsKilledOfThisType = buf.Read<int>(NumPedTypes);
+            PedsKilledOfThisType = buf.ReadArray<int>(NumPedTypes);
             HelisDestroyed = buf.ReadInt32();
             ProgressMade = buf.ReadFloat();
             TotalProgressInGame = buf.ReadFloat();
@@ -1142,10 +1142,10 @@ namespace GTASaveData.LCS
             UnlockedCostumes = (PlayerOutfitFlags) buf.ReadUInt16();
             BloodringKills = buf.ReadInt32();
             BloodringTime = buf.ReadInt32();
-            PropertyOwned = buf.Read<byte>(NumProperties);
+            PropertyOwned = buf.ReadArray<byte>(NumProperties);
             HighestChaseValue = buf.ReadFloat();
-            FastestTimes = buf.Read<int>(NumFastestTimes);
-            HighestScores = buf.Read<int>(NumHighestScores);
+            FastestTimes = buf.ReadArray<int>(NumFastestTimes);
+            HighestScores = buf.ReadArray<int>(NumHighestScores);
             BestPositions = buf.ReadInt32();
             KillsSinceLastCheckpoint = buf.ReadInt32();
             TotalLegitimateKills = buf.ReadInt32();
@@ -1178,19 +1178,19 @@ namespace GTASaveData.LCS
             FastestHeliRaceTime = buf.ReadInt32();
             BestHeliRacePosition = buf.ReadInt32();
             NumberOutfitChanges = buf.ReadInt32();
-            BestBanditLapTimes = buf.Read<int>(NumBanditRaces);
-            BestBanditPositions = buf.Read<int>(NumBanditRaces);
-            BestStreetRacePositions = buf.Read<int>(NumStreetRaces);
-            FastestStreetRaceLapTimes = buf.Read<int>(NumStreetRaces);
-            FastestStreetRaceTimes = buf.Read<int>(NumStreetRaces);
-            FastestDirtBikeLapTimes = buf.Read<int>(NumDirtBikeRaces);
-            FastestDirtBikeTimes = buf.Read<int>(NumDirtBikeRaces);
-            FavoriteRadioStationList = buf.Read<float>((fmt.IsMobile) ? NumRadioStationsMobile : NumRadioStations);
+            BestBanditLapTimes = buf.ReadArray<int>(NumBanditRaces);
+            BestBanditPositions = buf.ReadArray<int>(NumBanditRaces);
+            BestStreetRacePositions = buf.ReadArray<int>(NumStreetRaces);
+            FastestStreetRaceLapTimes = buf.ReadArray<int>(NumStreetRaces);
+            FastestStreetRaceTimes = buf.ReadArray<int>(NumStreetRaces);
+            FastestDirtBikeLapTimes = buf.ReadArray<int>(NumDirtBikeRaces);
+            FastestDirtBikeTimes = buf.ReadArray<int>(NumDirtBikeRaces);
+            FavoriteRadioStationList = buf.ReadArray<float>((fmt.IsMobile) ? NumRadioStationsMobile : NumRadioStations);
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(PeopleKilledByPlayer);
             buf.Write(PeopleKilledByOthers);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -106,13 +107,13 @@ namespace GTASaveData.GTA3
         {
             int size = GTA3VCSave.ReadBlockHeader(buf, "RST");
 
-            WastedRestartPoints = buf.Read<RestartPoint>(MaxNumWastedRestarts);
-            BustedRestartPoints = buf.Read<RestartPoint>(MaxNumBustedRestarts);
+            WastedRestartPoints = buf.ReadArray<RestartPoint>(MaxNumWastedRestarts);
+            BustedRestartPoints = buf.ReadArray<RestartPoint>(MaxNumBustedRestarts);
             NumberOfWastedRestartPoints = buf.ReadInt16();
             NumberOfBustedRestartPoints = buf.ReadInt16();
             OverrideNextRestart = buf.ReadBool();
             buf.ReadBytes(3);
-            OverrideRestartPoint = buf.Read<RestartPoint>();
+            OverrideRestartPoint = buf.ReadObject<RestartPoint>();
             FadeInAfteNextDeath = buf.ReadBool();
             FadeInAfteNextArrest = buf.ReadBool();
             OverrideHospitalLevel = (Level) buf.ReadByte();

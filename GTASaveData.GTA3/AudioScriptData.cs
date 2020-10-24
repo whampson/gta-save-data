@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -39,7 +40,7 @@ namespace GTASaveData.GTA3
             int size = GTA3VCSave.ReadBlockHeader(buf, "AUD");
 
             int count = buf.ReadInt32();
-            AudioScriptObjects = buf.Read<AudioScriptObject>(count);
+            AudioScriptObjects = buf.ReadArray<AudioScriptObject>(count);
 
             Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
             Debug.Assert(size == SizeOfObject(this) - GTA3VCSave.BlockHeaderSize);

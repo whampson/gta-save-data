@@ -1,6 +1,5 @@
-﻿using GTASaveData.JsonConverters;
-using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
+using GTASaveData.JsonConverters;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -108,12 +107,9 @@ namespace GTASaveData.GTA3
             set { m_activeScripts = value; OnPropertyChanged(); }
         }
 
-        public IEnumerable<int> GlobalVariables
+        public IEnumerable<int> Globals
         {
-            get
-            {
-                for (int i = 0; i < ScriptSpace.Count / 4; i++) yield return GetGlobal(i);
-            }
+            get { for (int i = 0; i < ScriptSpace.Count / 4; i++) yield return GetGlobal(i); }
         }
 
         IEnumerable<IBuildingSwap> IScriptData.BuildingSwaps => m_buildingSwapArray;
@@ -275,16 +271,16 @@ namespace GTASaveData.GTA3
             int size = GTA3VCSave.ReadBlockHeader(buf, "SCR");
 
             int varSpace = buf.ReadInt32();
-            ScriptSpace = buf.Read<byte>(varSpace);
+            ScriptSpace = buf.ReadArray<byte>(varSpace);
             buf.Align4();
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
             OnAMissionFlag = buf.ReadInt32();
-            Contacts = buf.Read<Contact>(NumContacts);
-            Collectives = buf.Read<Collective>(NumCollectives);
+            Contacts = buf.ReadArray<Contact>(NumContacts);
+            Collectives = buf.ReadArray<Collective>(NumCollectives);
             NextFreeCollectiveIndex = buf.ReadInt32();
-            BuildingSwaps = buf.Read<BuildingSwap>(NumBuildingSwaps);
-            InvisibilitySettings = buf.Read<InvisibleObject>(NumInvisibilitySettings);
+            BuildingSwaps = buf.ReadArray<BuildingSwap>(NumBuildingSwaps);
+            InvisibilitySettings = buf.ReadArray<InvisibleObject>(NumInvisibilitySettings);
             UsingAMultiScriptFile = buf.ReadBool();
             buf.ReadByte();
             buf.ReadUInt16();
@@ -293,7 +289,7 @@ namespace GTASaveData.GTA3
             NumberOfMissionScripts = buf.ReadInt16();
             buf.ReadUInt16();
             int runningScripts = buf.ReadInt32();
-            Threads = buf.Read<RunningScript>(runningScripts, fmt);
+            Threads = buf.ReadArray<RunningScript>(runningScripts, fmt);
 
             Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
             Debug.Assert(size == SizeOfObject(this, fmt) - GTA3VCSave.BlockHeaderSize);
