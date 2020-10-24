@@ -54,7 +54,7 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.AllTaxisHaveNitro, f => f.Random.Bool())
                 .RuleFor(x => x.TargetIsOn, f => f.Random.Bool())
                 .RuleFor(x => x.TargetPosition, f => Generator.Vector2(f))
-                .RuleFor(x => x.TimeStamp, f => (format.IsPS2) ? Generator.Date(f) : DateTime.MinValue);
+                .RuleFor(x => x.TimeStamp, f => (format.IsPS2) ? new Date(Generator.Date(f)) : Date.MinValue);
 
             return model.Generate();
         }
