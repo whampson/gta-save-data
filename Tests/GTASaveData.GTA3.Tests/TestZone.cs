@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -12,8 +10,8 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<Zone> model = new Faker<Zone>()
                 .RuleFor(x => x.Name, f => Generator.Words(f, Zone.MaxNameLength - 1))
-                .RuleFor(x => x.Min, f => Generator.Vector3D(f))
-                .RuleFor(x => x.Max, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Min, f => Generator.Vector3(f))
+                .RuleFor(x => x.Max, f => Generator.Vector3(f))
                 .RuleFor(x => x.Type, f => f.PickRandom<ZoneType>())
                 .RuleFor(x => x.Level, f => f.PickRandom<Level>())
                 .RuleFor(x => x.ZoneInfoDay, f => f.Random.Short())

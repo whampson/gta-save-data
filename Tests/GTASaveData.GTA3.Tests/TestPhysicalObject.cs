@@ -1,5 +1,6 @@
-﻿using Bogus;
-using GTASaveData.Core.Tests;
+﻿using System.Numerics;
+using Bogus;
+using TestFramework;
 using Xunit;
 
 namespace GTASaveData.GTA3.Tests
@@ -11,9 +12,8 @@ namespace GTASaveData.GTA3.Tests
             Faker<PhysicalObject> model = new Faker<PhysicalObject>()
                 .RuleFor(x => x.ModelIndex, f => f.Random.Short())
                 .RuleFor(x => x.Handle, f => f.Random.Int())
-                .RuleFor(x => x.Matrix, f => TestViewMatrix.GenerateRandom(f))
+                .RuleFor(x => x.Matrix, f => Generator.Matrix(f))
                 .RuleFor(x => x.UprootLimit, f => f.Random.Float())
-                .RuleFor(x => x.ObjectMatrix, f => TestViewMatrix.GenerateRandom(f))
                 .RuleFor(x => x.CreatedBy, f => f.PickRandom<ObjectCreatedBy>())
                 .RuleFor(x => x.IsPickup, f => f.Random.Bool())
                 .RuleFor(x => x.IsPickupInShop, f => f.Random.Bool())
@@ -40,9 +40,8 @@ namespace GTASaveData.GTA3.Tests
 
             Assert.Equal(x0.ModelIndex, x1.ModelIndex);
             Assert.Equal(x0.Handle, x1.Handle);
-            Assert.Equal(x0.Matrix, x1.Matrix);
+            Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0.UprootLimit, x1.UprootLimit);
-            Assert.Equal(x0.ObjectMatrix, x1.ObjectMatrix);
             Assert.Equal(x0.CreatedBy, x1.CreatedBy);
             Assert.Equal(x0.IsPickup, x1.IsPickup);
             Assert.Equal(x0.IsPickupInShop, x1.IsPickupInShop);

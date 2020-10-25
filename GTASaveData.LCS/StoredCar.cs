@@ -1,8 +1,8 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace GTASaveData.LCS
 {
@@ -27,7 +27,7 @@ namespace GTASaveData.LCS
             set { m_model = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Position
+        public Vector3 Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -143,7 +143,7 @@ namespace GTASaveData.LCS
             Extra2 = other.Extra2;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Model = buf.ReadInt32();
             Position = buf.Read<Vector3D>();
@@ -165,7 +165,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Model);
             buf.Write(Position);

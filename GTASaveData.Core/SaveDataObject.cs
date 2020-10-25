@@ -1,4 +1,4 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using Newtonsoft.Json;
 using System;
 using WpfEssentials;
@@ -42,22 +42,22 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Event handler executed before <see cref="ReadData(StreamBuffer, FileFormat)"/> is called.
+        /// Event handler executed before <see cref="ReadData(DataBuffer, FileFormat)"/> is called.
         /// </summary>
         protected virtual void OnReading() { }
 
         /// <summary>
-        /// Event handler executed after <see cref="ReadData(StreamBuffer, FileFormat)"/> is called.
+        /// Event handler executed after <see cref="ReadData(DataBuffer, FileFormat)"/> is called.
         /// </summary>
         protected virtual void OnRead() { }
 
         /// <summary>
-        /// Event handler executed before <see cref="WriteData(StreamBuffer, FileFormat)"/> is called.
+        /// Event handler executed before <see cref="WriteData(DataBuffer, FileFormat)"/> is called.
         /// </summary>
         protected virtual void OnWriting() { }
 
         /// <summary>
-        /// Event handler executed after <see cref="WriteData(StreamBuffer, FileFormat)"/> is called.
+        /// Event handler executed after <see cref="WriteData(DataBuffer, FileFormat)"/> is called.
         /// </summary>
         protected virtual void OnWrite() { }
 
@@ -67,7 +67,7 @@ namespace GTASaveData
         /// </summary>
         /// <param name="buf">The buffer to read from.</param>
         /// <param name="fmt">The data format.</param>
-        protected abstract void ReadData(StreamBuffer buf, FileFormat fmt);
+        protected abstract void ReadData(DataBuffer buf, FileFormat fmt);
 
         /// <summary>
         /// Writes this object's data out to the stream buffer using the
@@ -75,7 +75,7 @@ namespace GTASaveData
         /// </summary>
         /// <param name="buf">The buffer to write to.</param>
         /// <param name="fmt">The data format.</param>
-        protected abstract void WriteData(StreamBuffer buf, FileFormat fmt);
+        protected abstract void WriteData(DataBuffer buf, FileFormat fmt);
 
         /// <summary>
         /// Gets the size of this object's serialized data.
@@ -84,7 +84,7 @@ namespace GTASaveData
         /// <returns>The size of the object in bytes.</returns>
         protected abstract int GetSize(FileFormat fmt);
 
-        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.ReadData(DataBuffer buf, FileFormat fmt)
         {
             int oldMark, start, len;
 
@@ -102,7 +102,7 @@ namespace GTASaveData
             return len;
         }
 
-        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
+        int ISaveDataObject.WriteData(DataBuffer buf, FileFormat fmt)
         {
             int oldMark, start, len;
 

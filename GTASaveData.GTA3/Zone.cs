@@ -1,6 +1,7 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -10,8 +11,8 @@ namespace GTASaveData.GTA3
         public const int MaxNameLength = 8;
 
         private string m_name;
-        private Vector3D m_min;
-        private Vector3D m_max;
+        private Vector3 m_min;
+        private Vector3 m_max;
         private ZoneType m_type;
         private Level m_level;
         private short m_zoneInfoDay;
@@ -26,13 +27,13 @@ namespace GTASaveData.GTA3
             set { m_name = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Min
+        public Vector3 Min
         {
             get { return m_min; }
             set { m_min = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Max
+        public Vector3 Max
         {
             get { return m_max; }
             set { m_max = value; OnPropertyChanged(); }
@@ -83,15 +84,15 @@ namespace GTASaveData.GTA3
         public Zone()
         {
             Name = "";
-            Min = new Vector3D();
-            Max = new Vector3D();
+            Min = new Vector3();
+            Max = new Vector3();
         }
 
         public Zone(Zone other)
         {
             Name = other.Name;
-            Min = new Vector3D(other.Min);
-            Max = new Vector3D(other.Max);
+            Min = other.Min;
+            Max = other.Max;
             Type = other.Type;
             Level = other.Level;
             ZoneInfoDay = other.ZoneInfoDay;
@@ -101,11 +102,11 @@ namespace GTASaveData.GTA3
             NextZoneIndex = other.NextZoneIndex;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Name = buf.ReadString(MaxNameLength);
-            Min = buf.Read<Vector3D>();
-            Max = buf.Read<Vector3D>();
+            Min = buf.ReadStruct<Vector3>();
+            Max = buf.ReadStruct<Vector3>();
             Type = (ZoneType) buf.ReadInt32();
             Level = (Level) buf.ReadInt32();
             ZoneInfoDay = buf.ReadInt16();
@@ -117,7 +118,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<Zone>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Name.PadRight(MaxNameLength, '\0'), MaxNameLength);
             buf.Write(Min);

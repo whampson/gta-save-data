@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3.Tests
         public override Phone GenerateTestObject(FileFormat format)
         {
             Faker<Phone> model = new Faker<Phone>()
-                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Position, f => Generator.Vector3(f))
                 .RuleFor(x => x.Messages, f => Generator.Array(Phone.MaxNumMessages, g => f.Random.UInt()))
                 .RuleFor(x => x.RepeatedMessageStartTime, f => f.Random.UInt())
                 .RuleFor(x => x.Handle, f => f.Random.Int())

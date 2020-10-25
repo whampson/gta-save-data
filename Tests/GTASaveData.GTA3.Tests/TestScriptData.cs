@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using GTASaveData.Core.Tests;
-using GTASaveData.Types;
 using System.Linq;
 using TestFramework;
 using Xunit;
@@ -29,7 +28,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.MainScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.LargestMissionScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.NumberOfMissionScripts, f => f.Random.Short())
-                .RuleFor(x => x.ActiveScripts, f => Generator.Array(runningScripts, g => Generator.Generate<RunningScript, TestRunningScript>(format)));
+                .RuleFor(x => x.Threads, f => Generator.Array(runningScripts, g => Generator.Generate<RunningScript, TestRunningScript>(format)));
 
             return model.Generate();
         }
@@ -52,7 +51,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.MainScriptSize, x1.MainScriptSize);
             Assert.Equal(x0.LargestMissionScriptSize, x1.LargestMissionScriptSize);
             Assert.Equal(x0.NumberOfMissionScripts, x1.NumberOfMissionScripts);
-            Assert.Equal(x0.ActiveScripts, x1.ActiveScripts);
+            Assert.Equal(x0.Threads, x1.Threads);
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
@@ -67,20 +66,20 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0, x1);
 
             // Prove that deep copy actually happened
-            x0.ActiveScripts[0].IP = 6969;
-            Assert.NotEqual(x0.ActiveScripts[0], x1.ActiveScripts[0]);
+            x0.Threads[0].InstructionPointer = 6969;
+            Assert.NotEqual(x0.Threads[0], x1.Threads[0]);
         }
 
         [Fact]
         public void GlobalVariables()
         {
             Faker f = new Faker();
-            string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileFormats.PC, "CAT2");
-            using GTA3Save x = SaveData.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
+            string path = TestData.GetTestDataPath(Game.GTA3, SaveFileGTA3.FileFormats.PC, "CAT2");
+            using SaveFileGTA3 x = SaveFile.Load<SaveFileGTA3>(path, SaveFileGTA3.FileFormats.PC);
 
             Assert.Equal(987.5, x.Scripts.GetGlobalAsFloat(804));
 
-            int numGlobals = x.Scripts.GlobalVariables.Count();
+            int numGlobals = x.Scripts.Globals.Count();
             int i0 = f.Random.Int(0, numGlobals - 1);
             int i1 = f.Random.Int(0, numGlobals - 1);
             int v0 = f.Random.Int();
@@ -99,8 +98,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void ScriptSpace()
         {
-            string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileFormats.PC, "CAT2");
-            using GTA3Save x = SaveData.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
+            string path = TestData.GetTestDataPath(Game.GTA3, SaveFileGTA3.FileFormats.PC, "CAT2");
+            using SaveFileGTA3 x = SaveFile.Load<SaveFileGTA3>(path, SaveFileGTA3.FileFormats.PC);
 
             byte b = 0xA5;
             short s = unchecked((short) 0xCCEE);

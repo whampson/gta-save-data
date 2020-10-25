@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -62,7 +63,7 @@ namespace GTASaveData.GTA3
             Unknown = other.Unknown;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Type = (WeaponType) buf.ReadInt32();
             State = (WeaponState) buf.ReadInt32();
@@ -78,7 +79,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<Weapon>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write((uint) Type);
             buf.Write((uint) State);

@@ -1,6 +1,7 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -33,7 +34,7 @@ namespace GTASaveData.GTA3
         private bool m_stayInCurrentLevel;
         private bool m_stayInFastLane;
         private bool m_ignorePathFinding;
-        private Vector3D m_destination;
+        private Vector3 m_destination;
         private short m_pathFindNodesCount;
 
         public int CurrRouteNode
@@ -192,7 +193,7 @@ namespace GTASaveData.GTA3
             set { m_ignorePathFinding = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Destination
+        public Vector3 Destination
         {
             get { return m_destination; }
             set { m_destination = value; OnPropertyChanged(); }
@@ -211,7 +212,7 @@ namespace GTASaveData.GTA3
             NextDirection = 1;
             CruiseSpeed = 10;
             MaxTrafficSpeed = 10;
-            Destination = new Vector3D();
+            Destination = new Vector3();
         }
 
         public AutoPilot(AutoPilot other)
@@ -242,11 +243,11 @@ namespace GTASaveData.GTA3
             StayInCurrentLevel = other.StayInCurrentLevel;
             StayInFastLane = other.StayInFastLane;
             IgnorePathFinding = other.IgnorePathFinding;
-            Destination = new Vector3D(other.Destination);
+            Destination = other.Destination;
             PathFindNodesCount = other.PathFindNodesCount;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             CurrRouteNode = buf.ReadInt32();
             NextRouteNode = buf.ReadInt32();
@@ -276,7 +277,7 @@ namespace GTASaveData.GTA3
             StayInFastLane = (flags & 0x08) != 0;
             IgnorePathFinding = (flags & 0x10) != 0;
             buf.Skip(2);
-            Destination = buf.Read<Vector3D>();
+            Destination = buf.ReadStruct<Vector3>();
             buf.Skip(32);
             PathFindNodesCount = buf.ReadInt16();
             buf.Skip(6);
@@ -284,7 +285,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<AutoPilot>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(CurrRouteNode);
             buf.Write(NextRouteNode);

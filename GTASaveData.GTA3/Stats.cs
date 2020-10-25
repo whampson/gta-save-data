@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -441,13 +442,13 @@ namespace GTASaveData.GTA3
             LastMissionPassedName = other.LastMissionPassedName;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             PeopleKilledByPlayer = buf.ReadInt32();
             PeopleKilledByOthers = buf.ReadInt32();
             CarsExploded = buf.ReadInt32();
             RoundsFiredByPlayer = buf.ReadInt32();
-            PedsKilledOfThisType = buf.Read<int>(NumPedTypes);
+            PedsKilledOfThisType = buf.ReadArray<int>(NumPedTypes);
             HelisDestroyed = buf.ReadInt32();
             ProgressMade = buf.ReadInt32();
             TotalProgressInGame = buf.ReadInt32();
@@ -490,8 +491,8 @@ namespace GTASaveData.GTA3
             NumberKillFrenziesPassed = buf.ReadInt32();
             TotalNumberKillFrenzies = buf.ReadInt32();
             TotalNumberMissions = buf.ReadInt32();
-            FastestTimes = buf.Read<int>(NumFastestTimes);
-            HighestScores = buf.Read<int>(NumHighestScores);
+            FastestTimes = buf.ReadArray<int>(NumFastestTimes);
+            HighestScores = buf.ReadArray<int>(NumHighestScores);
             KillsSinceLastCheckpoint = buf.ReadInt32();
             TotalLegitimateKills = buf.ReadInt32();
             LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength);
@@ -499,7 +500,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<Stats>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(PeopleKilledByPlayer);
             buf.Write(PeopleKilledByOthers);

@@ -1,5 +1,4 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 
 namespace GTASaveData.GTA3
 {
@@ -250,17 +249,10 @@ namespace GTASaveData.GTA3
             DoorLock = other.DoorLock;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
-            Matrix.Right = buf.Read<Vector3D>();
-            buf.Skip(4);
-            Matrix.Forward = buf.Read<Vector3D>();
-            buf.Skip(4);
-            Matrix.Up = buf.Read<Vector3D>();
-            buf.Skip(4);
-            Matrix.Position = buf.Read<Vector3D>();
-            buf.Skip(4);
+            Matrix = buf.ReadStruct<Matrix>();
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(12);
             if (fmt.IsiOS) buf.Skip(15);
             if (fmt.IsAndroid) buf.Skip(16);
@@ -269,7 +261,7 @@ namespace GTASaveData.GTA3
             if (fmt.IsiOS) buf.Skip(1);
             if (fmt.IsPS2) buf.Skip(236);
             else buf.Skip(212);
-            AutoPilot = buf.Read<AutoPilot>();
+            AutoPilot = buf.ReadObject<AutoPilot>();
             Color1 = buf.ReadByte();
             Color2 = buf.ReadByte();
             buf.Skip(2);
@@ -308,17 +300,10 @@ namespace GTASaveData.GTA3
             else buf.Skip(96);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
-            buf.Write(Matrix.Right);
-            buf.Skip(4);
-            buf.Write(Matrix.Forward);
-            buf.Skip(4);
-            buf.Write(Matrix.Up);
-            buf.Skip(4);
-            buf.Write(Matrix.Position);
-            buf.Skip(4);
+            buf.Write(Matrix);
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(12);
             if (fmt.IsiOS) buf.Skip(15);
             if (fmt.IsAndroid) buf.Skip(16);

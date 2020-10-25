@@ -1,11 +1,14 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
+using GTASaveData.GTA4;
 using GTASaveData.LCS;
+using GTASaveData.SA;
 using GTASaveData.VC;
 using GTASaveData.VCS;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -15,8 +18,10 @@ using WpfEssentials.Win32;
 
 using IIIBlock = GTASaveData.GTA3.DataBlock;
 using VCBlock = GTASaveData.VC.DataBlock;
+using SABlock = GTASaveData.SA.DataBlock;
 using LCSBlock = GTASaveData.LCS.DataBlock;
 using VCSBlock = GTASaveData.VCS.DataBlock;
+using IVBlock = GTASaveData.GTA4.DataBlock;
 
 
 namespace TestApp
@@ -29,7 +34,7 @@ namespace TestApp
         public EventHandler<FileTypeListEventArgs> PopulateFileTypeList;
         public event EventHandler<TabRefreshEventArgs> TabRefresh;
 
-        private SaveData m_currentSaveFile;
+        private SaveFile m_currentSaveFile;
         private FileFormat m_currentFileFormat;
         private Game m_selectedGame;
         private string m_statusText;
@@ -48,7 +53,7 @@ namespace TestApp
             set { m_selectedTabIndex = value; OnPropertyChanged(); }
         }
 
-        public SaveData CurrentSaveFile
+        public SaveFile CurrentSaveFile
         {
             get { return m_currentSaveFile; }
             set { m_currentSaveFile = value; OnPropertyChanged(); }
@@ -83,10 +88,12 @@ namespace TestApp
             {
                 return SelectedGame switch
                 {
-                    Game.GTA3 => GTA3Save.FileFormats.GetAll(),
-                    Game.VC => VCSave.FileFormats.GetAll(),
-                    Game.LCS => LCSSave.FileFormats.GetAll(),
-                    Game.VCS => VCSSave.FileFormats.GetAll(),
+                    Game.GTA3 => SaveFileGTA3.FileFormats.GetAll(),
+                    Game.VC => SaveFileVC.FileFormats.GetAll(),
+                    Game.SA => SaveFileSA.FileFormats.GetAll(),
+                    Game.LCS => SaveFileLCS.FileFormats.GetAll(),
+                    Game.VCS => SaveFileVCS.FileFormats.GetAll(),
+                    Game.IV => SaveFileIV.FileFormats.GetAll(),
                     _ => new FileFormat[0],
                 };
             }
@@ -96,8 +103,10 @@ namespace TestApp
         {
             { Game.GTA3, Enum.GetNames(typeof(IIIBlock)) },
             { Game.VC, Enum.GetNames(typeof(VCBlock)) },
+            { Game.SA, Enum.GetNames(typeof(SABlock)) },
             { Game.LCS, Enum.GetNames(typeof(LCSBlock)) },
             { Game.VCS, Enum.GetNames(typeof(VCSBlock)) },
+            { Game.IV, Enum.GetNames(typeof(IVBlock)) },
         };
 
         public string[] BlockNameForCurrentGame
@@ -182,12 +191,12 @@ namespace TestApp
         {
             switch (SelectedGame)
             {
-                case Game.GTA3: DoLoad<GTA3Save>(path); break;
-                case Game.VC: DoLoad<VCSave>(path); break;
-                //case GameType.SA: DoLoad<SanAndreasSave>(path); break;
-                case Game.LCS: DoLoad<LCSSave>(path); break;
-                case Game.VCS: DoLoad<VCSSave>(path); break;
-                //case GameType.IV: DoLoad<GTA4Save>(path); break;
+                case Game.GTA3: DoLoad<SaveFileGTA3>(path); break;
+                case Game.VC: DoLoad<SaveFileVC>(path); break;
+                case Game.SA: DoLoad<SaveFileSA>(path); break;
+                case Game.LCS: DoLoad<SaveFileLCS>(path); break;
+                case Game.VCS: DoLoad<SaveFileVCS>(path); break;
+                case Game.IV: DoLoad<SaveFileIV>(path); break;
                 default: RequestMessageBoxError("Selected game not yet supported!"); return;
             }
 
@@ -197,15 +206,14 @@ namespace TestApp
                 StatusText = "Loaded " + path + ".";
 
                 OnLoadingFile();
-                //OnPropertyChanged(nameof(BlockNameForCurrentGame));
             }
         }
 
-        private bool DoLoad<T>(string path) where T : GTASaveData.SaveData, new()
+        private bool DoLoad<T>(string path) where T : GTASaveData.SaveFile, new()
         {
             try
             {
-                bool detected = SaveData.GetFileFormat<T>(path, out FileFormat fmt);
+                bool detected = SaveFile.GetFileFormat<T>(path, out FileFormat fmt);
                 if (!detected)
                 {
                     RequestMessageBoxError(string.Format("Unable to detect file type!"));
@@ -214,7 +222,7 @@ namespace TestApp
                 CurrentFileFormat = fmt;
                 
                 CleanupOldSaveData();
-                CurrentSaveFile = SaveData.Load<T>(path, CurrentFileFormat);
+                CurrentSaveFile = SaveFile.Load<T>(path, CurrentFileFormat);
 
                 return true;
             }
@@ -232,13 +240,17 @@ namespace TestApp
 
         private void CleanupOldSaveData()
         {
-            if (CurrentSaveFile is GTA3Save)
+            if (CurrentSaveFile is SaveFileGTA3)
             {
-                (CurrentSaveFile as GTA3Save).Dispose();
+                (CurrentSaveFile as SaveFileGTA3).Dispose();
             }
-            else if (CurrentSaveFile is VCSave)
+            else if (CurrentSaveFile is SaveFileVC)
             {
-                (CurrentSaveFile as VCSave).Dispose();
+                (CurrentSaveFile as SaveFileVC).Dispose();
+            }
+            else if (CurrentSaveFile is SaveFileSA)
+            {
+                (CurrentSaveFile as SaveFileSA).Dispose();
             }
         }
 
@@ -340,5 +352,26 @@ namespace TestApp
         {
             get;
         }
+    }
+
+    public enum Game
+    {
+        [Description("GTA III")]
+        GTA3,
+
+        [Description("Vice City")]
+        VC,
+
+        [Description("San Andreas")]
+        SA,
+
+        [Description("Liberty City Stories")]
+        LCS,
+
+        [Description("Vice City Stories")]
+        VCS,
+
+        [Description("GTA IV")]
+        IV
     }
 }

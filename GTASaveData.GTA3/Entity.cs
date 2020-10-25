@@ -1,11 +1,11 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
+using System.Numerics;
 
 namespace GTASaveData.GTA3
 {
     public abstract class Entity : SaveDataObject
     {
-        private ViewMatrix m_matrix;
+        private Matrix m_matrix;
         private EntityType m_entityType;
         private EntityStatus m_entityStatus;
         private EntityFlags m_entityFlags;
@@ -28,7 +28,7 @@ namespace GTASaveData.GTA3
             set { m_entityFlags = value; OnPropertyChanged(); }
         }
 
-        public ViewMatrix Matrix
+        public Matrix Matrix
         {
             get { return m_matrix; }
             set { m_matrix = value; OnPropertyChanged(); }
@@ -39,7 +39,7 @@ namespace GTASaveData.GTA3
             EntityType = EntityType.None;
             EntityStatus = EntityStatus.Abandoned;
             EntityFlags = EntityFlags.IsVisible;
-            Matrix = ViewMatrix.Identity;
+            Matrix = Matrix.Identity;
         }
 
         public Entity(Entity other)
@@ -47,20 +47,19 @@ namespace GTASaveData.GTA3
             EntityType = other.EntityType;
             EntityStatus = other.EntityStatus;
             EntityFlags = other.EntityFlags;
-            Matrix = new ViewMatrix(other.Matrix);
+            Matrix = new Matrix(other.Matrix);
         }
 
-        public Vector3D GetPosition()
+        public Vector3 Position
         {
-            return Matrix.Position;
-        }
-
-        public void SetPosition(Vector3D pos)
-        {
-            ViewMatrix m = Matrix;
-            m.Position = pos;
-
-            Matrix = m;
+            get { return Matrix.Position; }
+            set
+            {
+                Matrix m = Matrix;
+                m.Position = value;
+                Matrix = m;
+                OnPropertyChanged();
+            }
         }
 
         public void SetHeading(float angle)
@@ -75,13 +74,13 @@ namespace GTASaveData.GTA3
 
         public void ResetOrientation()
         {
-            ViewMatrix m = ViewMatrix.Identity;
+            Matrix m = Matrix.Identity;
             m.Position = Matrix.Position;
 
             Matrix = m;
         }
 
-        protected void LoadEntityFlags(StreamBuffer buf, FileFormat fmt)
+        protected void LoadEntityFlags(DataBuffer buf, FileFormat fmt)
         {
             long eFlags = buf.ReadUInt32();
             eFlags |= (fmt.IsiOS)
@@ -93,7 +92,7 @@ namespace GTASaveData.GTA3
             EntityStatus = (EntityStatus) ((eFlags & 0xF8) >> 3);
         }
 
-        protected void SaveEntityFlags(StreamBuffer buf, FileFormat fmt)
+        protected void SaveEntityFlags(DataBuffer buf, FileFormat fmt)
         {
             long eFlags = (long) EntityFlags;
             eFlags |= ((long) EntityType) & 0x07;

@@ -1,4 +1,4 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -179,7 +179,7 @@ namespace GTASaveData.LCS
             Garages = ArrayHelper.DeepClone(other.Garages);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             NumGarages = buf.ReadInt32();
             FreeBombs = buf.ReadBool(4);
@@ -192,14 +192,14 @@ namespace GTASaveData.LCS
             CarTypesCollected3 = buf.ReadInt32();
             CarTypesCollected4 = buf.ReadInt32();
             TimeHelpMessageLastShown = buf.ReadUInt32();
-            CarsInSafeHouse = buf.Read<StoredCar>(NumStoredCars);
-            Garages = buf.Read<Garage>(MaxNumGarages, fmt);
+            CarsInSafeHouse = buf.ReadArray<StoredCar>(NumStoredCars);
+            Garages = buf.ReadArray<Garage>(MaxNumGarages, fmt);
             buf.Skip(344);
 
             Debug.Assert(buf.Offset == SizeOfType<GarageData>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(NumGarages);
             buf.Write(FreeBombs, 4);

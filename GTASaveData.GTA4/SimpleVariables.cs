@@ -1,17 +1,18 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA4
 {
-    [Size(0xB0)]
-    public class SimpleVariables : SaveDataObject, IEquatable<SimpleVariables>
+    public class SimpleVariables : SaveDataObject, ISimpleVariables,
+        IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
         private int m_closestSafehouseIndex;
         private bool m_fadeInAfterLoad;
         private int m_unknown04h;
         private int m_unknown08h;
-        private Vector3D m_cameraPosition;
+        private Vector3 m_cameraPosition;
         private int m_unknown1Ch;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
@@ -74,7 +75,7 @@ namespace GTASaveData.GTA4
             set { m_unknown08h = value; OnPropertyChanged(); }
         }
 
-        public Vector3D CameraPosition
+        public Vector3 CameraPosition
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
@@ -304,17 +305,67 @@ namespace GTASaveData.GTA4
 
         public SimpleVariables()
         {
-            CameraPosition = new Vector3D();
+            CameraPosition = new Vector3();
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        public SimpleVariables(SimpleVariables other)
+        {
+            ClosestSafehouseIndex = other.ClosestSafehouseIndex;
+            FadeInAfterLoad = other.FadeInAfterLoad;
+            Unknown04h = other.Unknown04h;
+            Unknown08h = other.Unknown08h;
+            CameraPosition = other.CameraPosition;
+            MillisecondsPerGameMinute = other.MillisecondsPerGameMinute;
+            LastClockTick = other.LastClockTick;
+            GameClockMonths = other.GameClockMonths;
+            GameClockDays = other.GameClockDays;
+            GameClockHours = other.GameClockHours;
+            GameClockMinutes = other.GameClockMinutes;
+            GameClockDayOfWeek = other.GameClockDayOfWeek;
+            HasPlayerCheated = other.HasPlayerCheated;
+            TimeInMilliseconds = other.TimeInMilliseconds;
+            FrameCounter = other.FrameCounter;
+            OldWeatherType = other.OldWeatherType;
+            NewWeatherType = other.NewWeatherType;
+            ForcedWeatherType = other.ForcedWeatherType;
+            WeatherInterpolation = other.WeatherInterpolation;
+            WeatherTypeInList = other.WeatherTypeInList;
+            Rain = other.Rain;
+            CameraCarZoomIndicator = other.CameraCarZoomIndicator;
+            CameraPedZoomIndicator = other.CameraPedZoomIndicator;
+            CameraGunZoomIndicator = other.CameraGunZoomIndicator;
+            Unknown6Ch = other.Unknown6Ch;
+            Unknown70h = other.Unknown70h;
+            Unknown74h = other.Unknown74h;
+            Unknown78h = other.Unknown78h;
+            Unknown7Ch = other.Unknown7Ch;
+            MaximumWantedLevel = other.MaximumWantedLevel;
+            MaximumChaos = other.MaximumChaos;
+            Unknown88h = other.Unknown88h;
+            Unknown8Ch = other.Unknown8Ch;
+            Unknown90h = other.Unknown90h;
+            TargetMarkerHandle = other.TargetMarkerHandle;
+            Unknown98h = other.Unknown98h;
+            Unknown9Ch = other.Unknown9Ch;
+            UnknownA0h = other.UnknownA0h;
+            UnknownA4h = other.UnknownA4h;
+            UnknownA8h = other.UnknownA8h;
+            UnknownACh = other.UnknownACh;
+        }
+
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             ClosestSafehouseIndex = buf.ReadInt32();
             FadeInAfterLoad = buf.ReadBool();
             buf.Skip(3);
             Unknown04h = buf.ReadInt32();
             Unknown08h = buf.ReadInt32();
-            CameraPosition = buf.Read<Vector3D>();
+            CameraPosition = new Vector3()
+            {
+                X = buf.ReadFloat(),
+                Y = buf.ReadFloat(),
+                Z = buf.ReadFloat(),
+            };
             Unknown1Ch = buf.ReadInt32();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
@@ -359,13 +410,15 @@ namespace GTASaveData.GTA4
             Debug.Assert(buf.Offset == SizeOfType<SimpleVariables>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(ClosestSafehouseIndex);
             buf.Write(FadeInAfterLoad);
             buf.Write(Unknown04h);
             buf.Write(Unknown08h);
-            buf.Write(CameraPosition);
+            buf.Write(CameraPosition.X);
+            buf.Write(CameraPosition.Y);
+            buf.Write(CameraPosition.Z);
             buf.Write(Unknown1Ch);
             buf.Write(MillisecondsPerGameMinute);
             buf.Write(LastClockTick);
@@ -405,6 +458,11 @@ namespace GTASaveData.GTA4
             buf.Write(UnknownACh);
 
             Debug.Assert(buf.Offset == SizeOfType<SimpleVariables>());
+        }
+
+        protected override int GetSize(FileFormat fmt)
+        {
+            return 0xB0;
         }
 
         public override bool Equals(object obj)
@@ -461,5 +519,23 @@ namespace GTASaveData.GTA4
                 && UnknownA8h.Equals(other.UnknownA8h)
                 && UnknownACh.Equals(other.UnknownACh);
         }
+
+        public SimpleVariables DeepClone()
+        {
+            return new SimpleVariables(this);
+        }
+    }
+
+    // TODO: Copied from VC. Fix for GTA IV
+    public enum WeatherType
+    {
+        None = -1,
+        Sunny,
+        Cloudy,
+        Rainy,
+        Foggy,
+        ExtraSunny,
+        Hurricane,
+        ExtraColours
     }
 }

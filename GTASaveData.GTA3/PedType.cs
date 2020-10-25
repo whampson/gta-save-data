@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -78,7 +79,7 @@ namespace GTASaveData.GTA3
             Avoid = other.Avoid;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Flag = (PedTypeFlags) buf.ReadInt32();
             Unknown0 = buf.ReadFloat();
@@ -92,7 +93,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<PedType>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write((int) Flag);
             buf.Write(Unknown0);

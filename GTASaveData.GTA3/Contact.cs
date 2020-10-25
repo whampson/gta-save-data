@@ -1,4 +1,5 @@
 ﻿using System;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -29,13 +30,13 @@ namespace GTASaveData.GTA3
             BaseBriefId = other.BaseBriefId;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             OnAMissionFlag = buf.ReadInt32();
             BaseBriefId = buf.ReadInt32();
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(OnAMissionFlag);
             buf.Write(BaseBriefId);

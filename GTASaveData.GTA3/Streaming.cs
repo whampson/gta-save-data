@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -26,14 +27,14 @@ namespace GTASaveData.GTA3
             ModelFlags = ArrayHelper.DeepClone(other.ModelFlags);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            ModelFlags = buf.Read<StreamingFlags>(NumModels);
+            ModelFlags = buf.ReadArray<StreamingFlags>(NumModels);
 
             Debug.Assert(buf.Offset == SizeOfType<Streaming>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(ModelFlags, NumModels);
 

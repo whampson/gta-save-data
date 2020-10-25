@@ -1,6 +1,5 @@
-﻿using GTASaveData.JsonConverters;
-using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
+using GTASaveData.JsonConverters;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -102,25 +101,22 @@ namespace GTASaveData.GTA3
             set { m_numberOfMissionScripts = value; OnPropertyChanged(); }
         }
 
-        public Array<RunningScript> ActiveScripts
+        public Array<RunningScript> Threads
         {
             get { return m_activeScripts; }
             set { m_activeScripts = value; OnPropertyChanged(); }
         }
 
-        public IEnumerable<int> GlobalVariables
+        public IEnumerable<int> Globals
         {
-            get
-            {
-                for (int i = 0; i < ScriptSpace.Count / 4; i++) yield return GetGlobal(i);
-            }
+            get { for (int i = 0; i < ScriptSpace.Count / 4; i++) yield return GetGlobal(i); }
         }
 
         IEnumerable<IBuildingSwap> IScriptData.BuildingSwaps => m_buildingSwapArray;
 
         IEnumerable<IInvisibleObject> IScriptData.InvisibilitySettings => m_invisibilitySettingArray;
 
-        IEnumerable<IRunningScript> IScriptData.ActiveScripts => m_activeScripts;
+        IEnumerable<IRunningScript> IScriptData.Threads => m_activeScripts;
 
         public ScriptData()
         {
@@ -129,7 +125,7 @@ namespace GTASaveData.GTA3
             Collectives = ArrayHelper.CreateArray<Collective>(NumCollectives);
             BuildingSwaps = ArrayHelper.CreateArray<BuildingSwap>(NumBuildingSwaps);
             InvisibilitySettings = ArrayHelper.CreateArray<InvisibleObject>(NumInvisibilitySettings);
-            ActiveScripts = new Array<RunningScript>();
+            Threads = new Array<RunningScript>();
         }
 
         public ScriptData(ScriptData other)
@@ -145,15 +141,15 @@ namespace GTASaveData.GTA3
             MainScriptSize = other.MainScriptSize;
             LargestMissionScriptSize = other.LargestMissionScriptSize;
             NumberOfMissionScripts = other.NumberOfMissionScripts;
-            ActiveScripts = ArrayHelper.DeepClone(other.ActiveScripts);
+            Threads = ArrayHelper.DeepClone(other.Threads);
         }
 
-        public RunningScript GetScript(string name)
+        public RunningScript GetThread(string name)
         {
-            return ActiveScripts.Where(x => x.Name == name).FirstOrDefault();
+            return Threads.Where(x => x.Name == name).FirstOrDefault();
         }
 
-        IRunningScript IScriptData.GetScript(string name) => GetScript(name);
+        IRunningScript IScriptData.GetThread(string name) => GetThread(name);
 
         public int GetGlobal(int index)
         {
@@ -270,21 +266,21 @@ namespace GTASaveData.GTA3
             return sizeof(float);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "SCR");
+            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "SCR");
 
             int varSpace = buf.ReadInt32();
-            ScriptSpace = buf.Read<byte>(varSpace);
+            ScriptSpace = buf.ReadArray<byte>(varSpace);
             buf.Align4();
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
             OnAMissionFlag = buf.ReadInt32();
-            Contacts = buf.Read<Contact>(NumContacts);
-            Collectives = buf.Read<Collective>(NumCollectives);
+            Contacts = buf.ReadArray<Contact>(NumContacts);
+            Collectives = buf.ReadArray<Collective>(NumCollectives);
             NextFreeCollectiveIndex = buf.ReadInt32();
-            BuildingSwaps = buf.Read<BuildingSwap>(NumBuildingSwaps);
-            InvisibilitySettings = buf.Read<InvisibleObject>(NumInvisibilitySettings);
+            BuildingSwaps = buf.ReadArray<BuildingSwap>(NumBuildingSwaps);
+            InvisibilitySettings = buf.ReadArray<InvisibleObject>(NumInvisibilitySettings);
             UsingAMultiScriptFile = buf.ReadBool();
             buf.ReadByte();
             buf.ReadUInt16();
@@ -293,16 +289,16 @@ namespace GTASaveData.GTA3
             NumberOfMissionScripts = buf.ReadInt16();
             buf.ReadUInt16();
             int runningScripts = buf.ReadInt32();
-            ActiveScripts = buf.Read<RunningScript>(runningScripts, fmt);
+            Threads = buf.ReadArray<RunningScript>(runningScripts, fmt);
 
-            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
-            Debug.Assert(size == SizeOfObject(this, fmt) - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + SaveFileGTA3VC.BlockHeaderSize);
+            Debug.Assert(size == SizeOfObject(this, fmt) - SaveFileGTA3VC.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             int size = SizeOfObject(this, fmt);
-            GTA3VCSave.WriteBlockHeader(buf, "SCR", size - GTA3VCSave.BlockHeaderSize);
+            SaveFileGTA3VC.WriteBlockHeader(buf, "SCR", size - SaveFileGTA3VC.BlockHeaderSize);
 
             buf.Write(ScriptSpace.Count);
             buf.Write(ScriptSpace);
@@ -321,18 +317,18 @@ namespace GTASaveData.GTA3
             buf.Write(LargestMissionScriptSize);
             buf.Write(NumberOfMissionScripts);
             buf.Write((short) 0);
-            buf.Write(ActiveScripts.Count);
-            buf.Write(ActiveScripts, fmt);
+            buf.Write(Threads.Count);
+            buf.Write(Threads, fmt);
 
             Debug.Assert(buf.Offset == size);
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            return SizeOfType<RunningScript>(fmt) * ActiveScripts.Count
-                + StreamBuffer.Align4(ScriptSpace.Count)
+            return SizeOfType<RunningScript>(fmt) * Threads.Count
+                + DataBuffer.Align4(ScriptSpace.Count)
                 + ScriptDataSize
-                + GTA3VCSave.BlockHeaderSize
+                + SaveFileGTA3VC.BlockHeaderSize
                 + 3 * sizeof(int);
         }
 
@@ -359,7 +355,7 @@ namespace GTASaveData.GTA3
                 && MainScriptSize.Equals(other.MainScriptSize)
                 && LargestMissionScriptSize.Equals(other.LargestMissionScriptSize)
                 && NumberOfMissionScripts.Equals(other.NumberOfMissionScripts)
-                && ActiveScripts.SequenceEqual(other.ActiveScripts);
+                && Threads.SequenceEqual(other.Threads);
         }
 
         public ScriptData DeepClone()

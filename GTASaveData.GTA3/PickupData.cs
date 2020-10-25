@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -54,17 +55,17 @@ namespace GTASaveData.GTA3
             PickupsCollected = ArrayHelper.DeepClone(other.PickupsCollected);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            Pickups = buf.Read<Pickup>(MaxNumPickups);
+            Pickups = buf.ReadArray<Pickup>(MaxNumPickups);
             LastCollectedIndex = buf.ReadInt16();
             buf.ReadInt16();
-            PickupsCollected = buf.Read<int>(MaxNumCollectedPickups);
+            PickupsCollected = buf.ReadArray<int>(MaxNumCollectedPickups);
 
             Debug.Assert(buf.Offset == SizeOfType<PickupData>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Pickups, MaxNumPickups);
             buf.Write(LastCollectedIndex);

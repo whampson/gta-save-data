@@ -10,7 +10,7 @@ namespace GTASaveData.VC.Tests
         {
             Faker<CarGenerator> model = new Faker<CarGenerator>()
                 .RuleFor(x => x.Model, f => f.Random.Int())
-                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Position, f => Generator.Vector3(f))
                 .RuleFor(x => x.Heading, f => f.Random.Float())
                 .RuleFor(x => x.Color1, f => f.Random.Short())
                 .RuleFor(x => x.Color2, f => f.Random.Short())

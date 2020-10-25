@@ -1,7 +1,7 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.LCS
 {
@@ -28,7 +28,7 @@ namespace GTASaveData.LCS
         private bool m_recreateDoorOnNextRefresh;   // set to true on load
         private bool m_rotatedDoor;
         private bool m_cameraFollowsPlayer;
-        private Vector3D m_position;
+        private Vector3 m_position;
         private Quaternion m_rotation;
         private float m_ceilingZ;
         private float m_doorRelated1;
@@ -143,7 +143,7 @@ namespace GTASaveData.LCS
             set { m_cameraFollowsPlayer = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Position
+        public Vector3 Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -269,33 +269,33 @@ namespace GTASaveData.LCS
             set { State = (GarageState) value; OnPropertyChanged(); }
         }
 
-        public Vector3D PositionMin
+        public Vector3 PositionMin
         {
-            get { return new Vector3D(X1, Y1, Position.Z); }    // TODO: confirm Z
+            get { return new Vector3(X1, Y1, Position.Z); }    // TODO: confirm Z
             set { X1 = value.X; Y1 = value.Y; OnPropertyChanged(); }
         }
 
-        public Vector3D PositionMax
+        public Vector3 PositionMax
         {
-            get { return new Vector3D(X2, Y2, CeilingZ); }      // TODO: confirm Z
+            get { return new Vector3(X2, Y2, CeilingZ); }      // TODO: confirm Z
             set { X2 = value.X; Y2 = value.Y; OnPropertyChanged(); }
         }
 
-        public Vector3D Door1Position
+        public Vector3 Door1Position
         {
-            get { return new Vector3D(Door1X, Door1Y, Door1Z); }
+            get { return new Vector3(Door1X, Door1Y, Door1Z); }
             set { Door1X = value.X; Door1Y = value.Y; Door1Z = value.Z; OnPropertyChanged(); }
         }
 
-        public Vector3D Door2Position
+        public Vector3 Door2Position
         {
-            get { return new Vector3D(Door2X, Door2Y, Door2Z); }
+            get { return new Vector3(Door2X, Door2Y, Door2Z); }
             set { Door2X = value.X; Door2Y = value.Y; Door2Z = value.Z; OnPropertyChanged(); }
         }
 
         public Garage()
         {
-            Position = new Vector3D();
+            Position = new Vector3();
             Rotation = new Quaternion();
         }
 
@@ -316,8 +316,8 @@ namespace GTASaveData.LCS
             RecreateDoorOnNextRefresh = other.RecreateDoorOnNextRefresh;
             RotatingDoor = other.RotatingDoor;
             CameraFollowsPlayer = other.CameraFollowsPlayer;
-            Position = new Vector3D(other.Position);
-            Rotation = new Quaternion(other.Rotation);
+            Position = other.Position;
+            Rotation = other.Rotation;
             CeilingZ = other.CeilingZ;
             DoorRelated1 = other.DoorRelated1;
             DoorRelated2 = other.DoorRelated2;
@@ -337,7 +337,7 @@ namespace GTASaveData.LCS
             //CollectedCarsState = other.CollectedCarsState;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             if (fmt.IsPS2)
             {
@@ -358,8 +358,8 @@ namespace GTASaveData.LCS
                 RecreateDoorOnNextRefresh = buf.ReadBool(4);
                 RotatingDoor = buf.ReadBool(4);
                 CameraFollowsPlayer = buf.ReadBool(4);
-                Position = buf.Read<Vector3D>();
-                Rotation = buf.Read<Quaternion>();
+                Position = buf.ReadStruct<Vector3>();
+                Rotation = buf.ReadStruct<Quaternion>();
                 CeilingZ = buf.ReadFloat();
                 buf.Skip(7 * sizeof(int));  // appears unused
                 DoorRelated1 = buf.ReadFloat();     // not sure what this does
@@ -403,8 +403,8 @@ namespace GTASaveData.LCS
                 RotatingDoor = buf.ReadBool();
                 CameraFollowsPlayer = buf.ReadBool();
                 buf.ReadByte();     // collectedCarsState
-                Position = buf.Read<Vector3D>();
-                Rotation = buf.Read<Quaternion>();
+                Position = buf.ReadStruct<Vector3>();
+                Rotation = buf.ReadStruct<Quaternion>();
                 CeilingZ = buf.ReadFloat();
                 buf.Skip(6 * sizeof(int));  // appears unused
                 DoorRelated1 = buf.ReadFloat();     // not sure what this does
@@ -433,8 +433,8 @@ namespace GTASaveData.LCS
                 Door2Pointer = buf.ReadUInt32();
                 buf.ReadInt32();        // appears unused
                 buf.Skip(21 * sizeof(int));  // appears unused
-                Position = buf.Read<Vector3D>();
-                Rotation = buf.Read<Quaternion>();
+                Position = buf.ReadStruct<Vector3>();
+                Rotation = buf.ReadStruct<Quaternion>();
                 CeilingZ = buf.ReadFloat();
                 buf.ReadInt32();  // appears unused
                 DoorRelated1 = buf.ReadFloat();     // not sure what this does
@@ -474,7 +474,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOfType<Garage>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             if (fmt.IsPS2)
             {

@@ -1,4 +1,6 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
+using GTASaveData.JsonConverters;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -57,7 +59,7 @@ namespace GTASaveData.VCS
             set { m_unknown10h = value; OnPropertyChanged(); }
         }
 
-        public int IP
+        public int InstructionPointer
         {
             get { return m_ip; }
             set { m_ip = value; OnPropertyChanged(); }
@@ -69,13 +71,14 @@ namespace GTASaveData.VCS
             set { m_stack = value; OnPropertyChanged(); }
         }
 
-        public short StackPosition
+        public short StackPointer
         {
             get { return m_stackPointer; }
             set { m_stackPointer = value; OnPropertyChanged(); }
         }
 
-        public Array<int> LocalVariables
+        [JsonConverter(typeof(IntArrayConverter))]
+        public Array<int> Locals
         {
             get { return m_localVariables; }
             set { m_localVariables = value; OnPropertyChanged(); }
@@ -148,7 +151,7 @@ namespace GTASaveData.VCS
         }
 
         IEnumerable<int> IRunningScript.Stack => m_stack;
-        IEnumerable<int> IRunningScript.LocalVariables => m_localVariables;
+        IEnumerable<int> IRunningScript.Locals => m_localVariables;
 
         public RunningScript()
         {
@@ -163,10 +166,10 @@ namespace GTASaveData.VCS
             PrevScriptPointer = other.PrevScriptPointer;
             Id = other.Id;
             Field10h = other.Field10h;
-            IP = other.IP;
+            InstructionPointer = other.InstructionPointer;
             Stack = ArrayHelper.DeepClone(other.Stack);
-            StackPosition = other.StackPosition;
-            LocalVariables = ArrayHelper.DeepClone(other.LocalVariables);
+            StackPointer = other.StackPointer;
+            Locals = ArrayHelper.DeepClone(other.Locals);
             TimerA = other.TimerA;
             TimerB = other.TimerB;
             Field1FCh = other.Field1FCh;
@@ -182,51 +185,51 @@ namespace GTASaveData.VCS
 
         public void PushStack(int value)
         {
-            if (StackPosition + 1 >= Stack.Count)
+            if (StackPointer + 1 >= Stack.Count)
             {
                 Stack.Add(value);
-                StackPosition++;
+                StackPointer++;
             }
             else
             {
-                Stack[StackPosition++] = value;
+                Stack[StackPointer++] = value;
             }
         }
 
         public int PopStack()
         {
-            if (StackPosition == 0)
+            if (StackPointer == 0)
             {
                 throw new InvalidOperationException("The stack is empty.");
             }
-            return Stack[--StackPosition];
+            return Stack[--StackPointer];
         }
 
         public int PeekStack()
         {
-            if (StackPosition == 0)
+            if (StackPointer == 0)
             {
                 throw new InvalidOperationException("The stack is full.");
             }
-            return Stack[StackPosition - 1];
+            return Stack[StackPointer - 1];
         }
 
         public void SetLocal(int index, int value)
         {
-            LocalVariables[index] = value;
+            Locals[index] = value;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             NextScriptPointer = buf.ReadUInt32();
             PrevScriptPointer = buf.ReadUInt32();
             Id = buf.ReadInt32();
             Field10h = buf.ReadInt32();
-            IP = buf.ReadInt32();
-            Stack = buf.Read<int>(MaxStackDepth);
-            StackPosition = buf.ReadInt16();
+            InstructionPointer = buf.ReadInt32();
+            Stack = buf.ReadArray<int>(MaxStackDepth);
+            StackPointer = buf.ReadInt16();
             buf.Skip(2);
-            LocalVariables = buf.Read<int>(NumLocalVariables);
+            Locals = buf.ReadArray<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
             Field1FCh = buf.ReadInt32();
@@ -242,17 +245,17 @@ namespace GTASaveData.VCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(NextScriptPointer);
             buf.Write(PrevScriptPointer);
             buf.Write(Id);
             buf.Write(Field10h);
-            buf.Write(IP);
+            buf.Write(InstructionPointer);
             buf.Write(Stack, MaxStackDepth);
-            buf.Write(StackPosition);
+            buf.Write(StackPointer);
             buf.Skip(2);
-            buf.Write(LocalVariables, NumLocalVariables);
+            buf.Write(Locals, NumLocalVariables);
             buf.Write(TimerA);
             buf.Write(TimerB);
             buf.Write(Field1FCh);
@@ -289,10 +292,10 @@ namespace GTASaveData.VCS
                 && PrevScriptPointer.Equals(other.PrevScriptPointer)
                 && Id.Equals(other.Id)
                 && Field10h.Equals(other.Field10h)
-                && IP.Equals(other.IP)
+                && InstructionPointer.Equals(other.InstructionPointer)
                 && Stack.SequenceEqual(other.Stack)
-                && StackPosition.Equals(other.StackPosition)
-                && LocalVariables.SequenceEqual(other.LocalVariables)
+                && StackPointer.Equals(other.StackPointer)
+                && Locals.SequenceEqual(other.Locals)
                 && TimerA.Equals(other.TimerA)
                 && TimerB.Equals(other.TimerB)
                 && Field1FCh.Equals(other.Field1FCh)

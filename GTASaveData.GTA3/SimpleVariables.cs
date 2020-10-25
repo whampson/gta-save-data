@@ -1,7 +1,7 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
@@ -15,7 +15,7 @@ namespace GTASaveData.GTA3
         private SystemTime m_timeStamp;
         private int m_sizeOfGameInBytes;
         private Level m_currLevel;
-        private Vector3D m_cameraPosition;
+        private Vector3 m_cameraPosition;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
         private byte m_gameClockHours;
@@ -73,7 +73,7 @@ namespace GTASaveData.GTA3
             set { m_currLevel = value; OnPropertyChanged(); }
         }
 
-        public Vector3D CameraPosition
+        public Vector3 CameraPosition
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
@@ -244,7 +244,6 @@ namespace GTASaveData.GTA3
             set { m_blurOn = value; OnPropertyChanged(); }
         }
 
-
         [Obsolete("Not used by the game.")]
         public Date CompileDateAndTime
         {
@@ -279,9 +278,9 @@ namespace GTASaveData.GTA3
         public SimpleVariables()
         {
             LastMissionPassedName = "";
-            TimeStamp = DateTime.MinValue;
-            CompileDateAndTime = DateTime.MinValue;
-            CameraPosition = new Vector3D();
+            TimeStamp = SystemTime.MinValue;
+            CompileDateAndTime = Date.MinValue;
+            CameraPosition = new Vector3();
         }
 
         public SimpleVariables(SimpleVariables other)
@@ -290,7 +289,7 @@ namespace GTASaveData.GTA3
             TimeStamp = other.TimeStamp;
             SizeOfGameInBytes = other.SizeOfGameInBytes;
             CurrentLevel = other.CurrentLevel;
-            CameraPosition = new Vector3D(other.CameraPosition);
+            CameraPosition = other.CameraPosition;
             MillisecondsPerGameMinute = other.MillisecondsPerGameMinute;
             LastClockTick = other.LastClockTick;
             GameClockHours = other.GameClockHours;
@@ -325,13 +324,13 @@ namespace GTASaveData.GTA3
             IsQuickSave = other.IsQuickSave;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
-            if (fmt.IsPC || fmt.IsXbox) TimeStamp = buf.Read<SystemTime>();
+            if (fmt.IsPC || fmt.IsXbox) TimeStamp = buf.ReadStruct<SystemTime>();
             SizeOfGameInBytes = buf.ReadInt32();
             CurrentLevel = (Level) buf.ReadInt32();
-            CameraPosition = buf.Read<Vector3D>();
+            CameraPosition = buf.ReadStruct<Vector3>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockHours = (byte) buf.ReadInt32();
@@ -386,7 +385,7 @@ namespace GTASaveData.GTA3
                 BlurOn = buf.ReadBool();
                 buf.Align4();
             }
-            CompileDateAndTime = buf.Read<Date>();
+            CompileDateAndTime = buf.ReadStruct<Date>();
             WeatherTypeInList = buf.ReadInt32();
             CameraModeInCar = buf.ReadFloat();
             CameraModeOnFoot = buf.ReadFloat();
@@ -395,9 +394,9 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            if (!fmt.IsPS2) buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
+            if (!fmt.IsPS2) buf.Write($"{LastMissionPassedName}\0", MaxMissionPassedNameLength, unicode: true, zeroTerminate: false);
             if (fmt.IsPC || fmt.IsXbox) buf.Write(TimeStamp);
             buf.Write(SizeOfGameInBytes);
             buf.Write((int) CurrentLevel);
@@ -456,7 +455,12 @@ namespace GTASaveData.GTA3
                 buf.Write(BlurOn);
                 buf.Align4();
             }
-            buf.Write(CompileDateAndTime);
+            buf.Write(CompileDateAndTime.Second);
+            buf.Write(CompileDateAndTime.Minute);
+            buf.Write(CompileDateAndTime.Hour);
+            buf.Write(CompileDateAndTime.Day);
+            buf.Write(CompileDateAndTime.Month);
+            buf.Write(CompileDateAndTime.Year);
             buf.Write(WeatherTypeInList);
             buf.Write(CameraModeInCar);
             buf.Write(CameraModeOnFoot);

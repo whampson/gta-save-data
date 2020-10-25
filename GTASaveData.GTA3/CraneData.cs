@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -52,16 +53,16 @@ namespace GTASaveData.GTA3
             Cranes = ArrayHelper.DeepClone(other.Cranes);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             NumCranes = buf.ReadInt32();
             CarsCollectedMilitaryCrane = (CollectCarsMilitaryCrane) buf.ReadInt32();
-            Cranes = buf.Read<Crane>(MaxNumCranes);
+            Cranes = buf.ReadArray<Crane>(MaxNumCranes);
 
             Debug.Assert(buf.Offset == SizeOfType<CraneData>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(NumCranes);
             buf.Write((int) CarsCollectedMilitaryCrane);

@@ -23,7 +23,7 @@ namespace TestApp
         private bool m_componentsEditable;
         private EmpireSite m_selectedEmpire;
         private Array<EmpireSite> m_empires;
-        private VCSSave m_save;
+        private SaveFileVCS m_save;
 
         public bool ComponentsEnabled
         {
@@ -93,7 +93,7 @@ namespace TestApp
 
             if (ComponentsEnabled)
             {
-                m_save = (MainViewModel.CurrentSaveFile) as VCSSave;
+                m_save = (MainViewModel.CurrentSaveFile) as SaveFileVCS;
                 for (int i = 0; i < NumEmpireSites; i++)
                 {
                     Empires.Add(LoadEmpire(i));

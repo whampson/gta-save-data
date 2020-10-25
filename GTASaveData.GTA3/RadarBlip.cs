@@ -1,7 +1,8 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -11,8 +12,8 @@ namespace GTASaveData.GTA3
         private int m_colorId;
         private RadarBlipType m_type;
         private int m_handle;
-        private Vector2D m_radarPosition;
-        private Vector3D m_worldPosition;
+        private Vector2 m_radarPosition;
+        private Vector3 m_worldPosition;
         private short m_blipIndex;
         private bool m_isBright;
         private bool m_inUse;
@@ -45,13 +46,13 @@ namespace GTASaveData.GTA3
             set { m_handle = value; OnPropertyChanged(); }
         }
 
-        public Vector2D RadarPosition
+        public Vector2 RadarPosition
         {
             get { return m_radarPosition; }
             set { m_radarPosition = value; OnPropertyChanged(); }
         }
 
-        public Vector3D MarkerPosition
+        public Vector3 MarkerPosition
         {
             get { return m_worldPosition; }
             set { m_worldPosition = value; OnPropertyChanged(); }
@@ -133,8 +134,8 @@ namespace GTASaveData.GTA3
         public RadarBlip()
         {
             Index = 1;
-            RadarPosition = new Vector2D();
-            MarkerPosition = new Vector3D();
+            RadarPosition = new Vector2();
+            MarkerPosition = new Vector3();
         }
 
         public RadarBlip(RadarBlip other)
@@ -142,8 +143,8 @@ namespace GTASaveData.GTA3
             Color = other.Color;
             Type = other.Type;
             EntityHandle = other.EntityHandle;
-            RadarPosition = new Vector2D(other.RadarPosition);
-            MarkerPosition = new Vector3D(other.MarkerPosition);
+            RadarPosition = other.RadarPosition;
+            MarkerPosition = other.MarkerPosition;
             Index = other.Index;
             IsBright = other.IsBright;
             IsInUse = other.IsInUse;
@@ -162,13 +163,13 @@ namespace GTASaveData.GTA3
             Scale = 0;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Color = buf.ReadInt32();
             Type = (RadarBlipType) buf.ReadInt32();
             EntityHandle = buf.ReadInt32();
-            RadarPosition = buf.Read<Vector2D>();
-            MarkerPosition = buf.Read<Vector3D>();
+            RadarPosition = buf.ReadStruct<Vector2>();
+            MarkerPosition = buf.ReadStruct<Vector3>();
             Index = buf.ReadInt16();
             IsBright = buf.ReadBool();
             IsInUse = buf.ReadBool();
@@ -181,7 +182,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<RadarBlip>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Color);
             buf.Write((int) Type);

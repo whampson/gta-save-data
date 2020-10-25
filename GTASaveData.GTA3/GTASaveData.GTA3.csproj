@@ -9,39 +9,44 @@
     <Product>GTASaveData</Product>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
     <Description>A .NET library for manipulating Grand Theft Auto III save files.</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>1.2.2.1192</AssemblyVersion>
-    <FileVersion>1.2.2.1192</FileVersion>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <AssemblyVersion>1.2.2.1244</AssemblyVersion>
+    <FileVersion>1.2.2.1244</FileVersion>
     <Version>1.2.2</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageTags>gta3 save data; gta3 save file; gta3 save; gta3; gta; savedata; savefile; gta3 savedata; gta3 savefile</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageTags>gta3 save data; gta3 save file; gta3 save; gta3; gta; gta iii; iii; savedata; savefile; gta3 savedata; gta3 savefile</PackageTags>
     <RepositoryUrl>https://github.com/whampson/gta-save-data</RepositoryUrl>
     <PackageProjectUrl>https://github.com/whampson/gta-save-data</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
-    <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
-    <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
-    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>True</UpdateAssemblyInfoVersion>
     <UpdatePackageVersion>True</UpdatePackageVersion>
     <PackageVersionSettings>AssemblyVersion.NoneWithAutoReset.None</PackageVersionSettings>
     <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
     <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+    <AssemblyVersionSettings>IncrementOnDemand.IncrementOnDemand.IncrementOnDemand.Increment</AssemblyVersionSettings>
+    <AssemblyFileVersionSettings>IncrementOnDemand.IncrementOnDemand.IncrementOnDemand.Increment</AssemblyFileVersionSettings>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
-    <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
-    <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
-    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>True</UpdateAssemblyInfoVersion>
     <UpdatePackageVersion>True</UpdatePackageVersion>
     <PackageVersionSettings>AssemblyVersion.NoneWithAutoReset.None</PackageVersionSettings>
     <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
     <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+    <AssemblyVersionSettings>IncrementOnDemand.IncrementOnDemand.IncrementOnDemand.Increment</AssemblyVersionSettings>
+    <AssemblyFileVersionSettings>IncrementOnDemand.IncrementOnDemand.IncrementOnDemand.Increment</AssemblyFileVersionSettings>
+    <AssemblyInfoVersionSettings>None.None.None.None</AssemblyInfoVersionSettings>
   </PropertyGroup>
 
   <ItemGroup>

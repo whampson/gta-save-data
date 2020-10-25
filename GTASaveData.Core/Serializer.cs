@@ -1,10 +1,10 @@
 ﻿using GTASaveData.Extensions;
-using GTASaveData.Types.Interfaces;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData
 {
     /// <summary>
-    /// A convenience wrapper for <see cref="StreamBuffer"/> for serializing and deserializing data.
+    /// A convenience wrapper for <see cref="DataBuffer"/> for serializing and deserializing data.
     /// </summary>
     public static class Serializer
     {
@@ -44,7 +44,7 @@ namespace GTASaveData
         public static int Read<T>(byte[] buf, FileFormat fmt, out T obj,
             bool bigEndian = false)
         {
-            using (StreamBuffer stream = new StreamBuffer(buf) { BigEndian = bigEndian })
+            using (DataBuffer stream = new DataBuffer(buf) { BigEndian = bigEndian })
             {
                 return Read(stream, fmt, out obj);
             }
@@ -60,7 +60,7 @@ namespace GTASaveData
         public static int Read<T>(T obj, byte[] buf, FileFormat fmt,
             bool bigEndian = false) where T : ISaveDataObject
         {
-            using (StreamBuffer stream = new StreamBuffer(buf) { BigEndian = bigEndian })
+            using (DataBuffer stream = new DataBuffer(buf) { BigEndian = bigEndian })
             {
                 return Read(obj, stream, fmt);
             }
@@ -73,7 +73,7 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(T obj, StreamBuffer buf, FileFormat fmt) where T : ISaveDataObject
+        public static int Read<T>(T obj, DataBuffer buf, FileFormat fmt) where T : ISaveDataObject
         {
             return obj.ReadData(buf, fmt);
         }
@@ -85,7 +85,7 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(StreamBuffer buf, FileFormat fmt, out T obj)
+        public static int Read<T>(DataBuffer buf, FileFormat fmt, out T obj)
         {
             return buf.GenericRead(fmt, out obj);
         }
@@ -125,14 +125,14 @@ namespace GTASaveData
             bool bigEndian = false,
             PaddingType padding = PaddingType.Default, byte[] paddingBytes = null)
         {
-            using (StreamBuffer stream = new StreamBuffer() {
+            using (DataBuffer stream = new DataBuffer() {
                 BigEndian = bigEndian,
                 PaddingType = padding,
                 PaddingBytes = paddingBytes
             })
             {
                 int bytesWritten = stream.GenericWrite(obj, fmt);
-                data = stream.GetBufferBytes();
+                data = stream.GetBuffer();
                 return bytesWritten;
             }
         }
@@ -144,7 +144,7 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Write<T>(StreamBuffer buf, T obj, FileFormat fmt) where T : ISaveDataObject
+        public static int Write<T>(DataBuffer buf, T obj, FileFormat fmt) where T : ISaveDataObject
         {
             return obj.WriteData(buf, fmt);
         }

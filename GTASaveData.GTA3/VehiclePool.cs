@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -35,7 +36,7 @@ namespace GTASaveData.GTA3
             Boats = ArrayHelper.DeepClone(other.Boats);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             int numCars = buf.ReadInt32();
             int numBoats = buf.ReadInt32();
@@ -65,7 +66,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             List<Vehicle> vehicles = Cars.Select(x => x as Vehicle).Concat(Boats.Select(x => x as Vehicle)).ToList();
 

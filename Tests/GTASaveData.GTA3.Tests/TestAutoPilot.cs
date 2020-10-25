@@ -35,7 +35,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.StayInCurrentLevel, f => f.Random.Bool())
                 .RuleFor(x => x.StayInFastLane, f => f.Random.Bool())
                 .RuleFor(x => x.IgnorePathFinding, f => f.Random.Bool())
-                .RuleFor(x => x.Destination, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Destination, f => Generator.Vector3(f))
                 .RuleFor(x => x.PathFindNodesCount, f => f.Random.Short());
 
             return model.Generate();

@@ -1,4 +1,4 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -54,7 +54,7 @@ namespace GTASaveData.GTA3
             set { m_name = value; OnPropertyChanged(); }
         }
 
-        public int IP
+        public int InstructionPointer
         {
             get { return m_ip; }
             set { m_ip = value; OnPropertyChanged(); }
@@ -66,13 +66,13 @@ namespace GTASaveData.GTA3
             set { m_stack = value; OnPropertyChanged(); }
         }
 
-        public short StackPosition
+        public short StackPointer
         {
             get { return m_stackPointer; }
             set { m_stackPointer = value; OnPropertyChanged(); }
         }
 
-        public Array<int> LocalVariables
+        public Array<int> Locals
         {
             get { return m_localVariables; }
             set { m_localVariables = value; OnPropertyChanged(); }
@@ -146,7 +146,7 @@ namespace GTASaveData.GTA3
 
         IEnumerable<int> IRunningScript.Stack => m_stack;
 
-        IEnumerable<int> IRunningScript.LocalVariables => m_localVariables;
+        IEnumerable<int> IRunningScript.Locals => m_localVariables;
 
         public RunningScript()
         {
@@ -160,10 +160,10 @@ namespace GTASaveData.GTA3
             NextScriptPointer = other.NextScriptPointer;
             PrevScriptPointer = other.PrevScriptPointer;
             Name = other.Name;
-            IP = other.IP;
+            InstructionPointer = other.InstructionPointer;
             Stack = ArrayHelper.DeepClone(other.Stack);
-            StackPosition = other.StackPosition;
-            LocalVariables = ArrayHelper.DeepClone(other.LocalVariables);
+            StackPointer = other.StackPointer;
+            Locals = ArrayHelper.DeepClone(other.Locals);
             TimerA = other.TimerA;
             TimerB = other.TimerB;
             ConditionResult = other.ConditionResult;
@@ -179,50 +179,50 @@ namespace GTASaveData.GTA3
 
         public void PushStack(int value)
         {
-            if (StackPosition + 1 >= Stack.Count)
+            if (StackPointer + 1 >= Stack.Count)
             {
                 Stack.Add(value);
-                StackPosition++;
+                StackPointer++;
             }
             else
             {
-                Stack[StackPosition++] = value;
+                Stack[StackPointer++] = value;
             }
         }
 
         public int PopStack()
         {
-            if (StackPosition == 0)
+            if (StackPointer == 0)
             {
                 throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
             }
-            return Stack[--StackPosition];
+            return Stack[--StackPointer];
         }
 
         public int PeekStack()
         {
-            if (StackPosition == 0)
+            if (StackPointer == 0)
             {
                 throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
             }
-            return Stack[StackPosition - 1];
+            return Stack[StackPointer - 1];
         }
 
         public void SetLocal(int index, int value)
         {
-            LocalVariables[index] = value;
+            Locals[index] = value;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             NextScriptPointer = buf.ReadUInt32();
             PrevScriptPointer = buf.ReadUInt32();
             Name = buf.ReadString(MaxNameLength);
-            IP = buf.ReadInt32();
-            Stack = buf.Read<int>(GetMaxStackDepth(fmt));
-            StackPosition = buf.ReadInt16();
+            InstructionPointer = buf.ReadInt32();
+            Stack = buf.ReadArray<int>(GetMaxStackDepth(fmt));
+            StackPointer = buf.ReadInt16();
             buf.Align4();
-            LocalVariables = buf.Read<int>(NumLocalVariables);
+            Locals = buf.ReadArray<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
             ConditionResult = buf.ReadBool();
@@ -240,16 +240,16 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(NextScriptPointer);
             buf.Write(PrevScriptPointer);
             buf.Write(Name, MaxNameLength);
-            buf.Write(IP);
+            buf.Write(InstructionPointer);
             buf.Write(Stack, GetMaxStackDepth(fmt));
-            buf.Write(StackPosition);
+            buf.Write(StackPointer);
             buf.Align4();
-            buf.Write(LocalVariables, NumLocalVariables);
+            buf.Write(Locals, NumLocalVariables);
             buf.Write(TimerA);
             buf.Write(TimerB);
             buf.Write(ConditionResult);
@@ -292,10 +292,10 @@ namespace GTASaveData.GTA3
             return NextScriptPointer.Equals(other.NextScriptPointer)
                 && PrevScriptPointer.Equals(other.PrevScriptPointer)
                 && Name.Equals(other.Name)
-                && IP.Equals(other.IP)
+                && InstructionPointer.Equals(other.InstructionPointer)
                 && Stack.SequenceEqual(other.Stack)
-                && StackPosition.Equals(other.StackPosition)
-                && LocalVariables.SequenceEqual(other.LocalVariables)
+                && StackPointer.Equals(other.StackPointer)
+                && Locals.SequenceEqual(other.Locals)
                 && TimerA.Equals(other.TimerA)
                 && TimerB.Equals(other.TimerB)
                 && ConditionResult.Equals(other.ConditionResult)

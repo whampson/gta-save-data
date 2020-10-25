@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using System;
 using TestFramework;
 using Xunit;
 
@@ -12,10 +11,10 @@ namespace GTASaveData.GTA3.Tests
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
                 .RuleFor(x => x.LastMissionPassedName, f => (!format.IsPS2) ? Generator.Words(f, SimpleVariables.MaxMissionPassedNameLength - 1) : "")
-                .RuleFor(x => x.TimeStamp, f => (format.IsPC || format.IsXbox) ? Generator.Date(f) : DateTime.MinValue)
+                .RuleFor(x => x.TimeStamp, f => (format.IsPC || format.IsXbox) ? new SystemTime(Generator.Date(f)) : SystemTime.MinValue)
                 .RuleFor(x => x.SizeOfGameInBytes, f => (format.IsPS2 && format.IsJapanese) ? 0x31400 : 0x31401)
                 .RuleFor(x => x.CurrentLevel, f => f.PickRandom<Level>())
-                .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
+                .RuleFor(x => x.CameraPosition, f => Generator.Vector3(f))
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
                 .RuleFor(x => x.GameClockHours, f => f.Random.Byte())
@@ -43,7 +42,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Language, f => (format.IsPS2) ? f.PickRandom<Language>() : default)
                 .RuleFor(x => x.UseWideScreen, f => (format.IsPS2) ? f.Random.Bool() : default)
                 .RuleFor(x => x.BlurOn, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.CompileDateAndTime, f => Generator.Date(f))
+                .RuleFor(x => x.CompileDateAndTime, f => new Date(Generator.Date(f)))
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
                 .RuleFor(x => x.CameraModeInCar, f => f.Random.Float())
                 .RuleFor(x => x.CameraModeOnFoot, f => f.Random.Float())

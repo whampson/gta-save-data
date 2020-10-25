@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -123,12 +124,12 @@ namespace GTASaveData.GTA3
             Panels[(int) panel] = status;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             WheelDamageEffect = buf.ReadFloat();
             Engine = buf.ReadByte();
-            Wheels = buf.Read<WheelStatus>(NumWheels);
-            Doors = buf.Read<DoorStatus>(NumDoors);
+            Wheels = buf.ReadArray<WheelStatus>(NumWheels);
+            Doors = buf.ReadArray<DoorStatus>(NumDoors);
             buf.Skip(1);
             int lightStatus = buf.ReadInt32();
             int panelStatus = buf.ReadInt32();
@@ -151,7 +152,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<DamageManager>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             int lightStatus = 0;
             int panelStatus = 0;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -25,7 +26,7 @@ namespace GTASaveData.GTA3
             : base(other)
         { }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             base.ReadData(buf, fmt);
             buf.Skip(SizeOfType<Boat>(fmt) - buf.Offset);
@@ -33,7 +34,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<Boat>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             base.WriteData(buf, fmt);
             buf.Skip(SizeOfType<Boat>(fmt) - buf.Offset);

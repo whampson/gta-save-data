@@ -1,7 +1,8 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -15,7 +16,7 @@ namespace GTASaveData.GTA3
         private PedTypeId m_type;
         private short m_modelIndex;
         private int m_handle;
-        private Vector3D m_position;
+        private Vector3 m_position;
         private CharCreatedBy m_createdBy;
         private float m_health;
         private float m_armor;
@@ -45,7 +46,7 @@ namespace GTASaveData.GTA3
             set { m_handle = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Position
+        public Vector3 Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -127,7 +128,7 @@ namespace GTASaveData.GTA3
             MaxStamina = 150;
             Weapons = ArrayHelper.CreateArray<Weapon>(NumWeapons);
             TargetableObjects = ArrayHelper.CreateArray<int>(NumTargetableObjects);
-            Position = new Vector3D();
+            Position = new Vector3();
         }
 
         public PlayerPed(PlayerPed other)
@@ -135,7 +136,7 @@ namespace GTASaveData.GTA3
             Type = other.Type;
             ModelIndex = other.ModelIndex;
             Handle = other.Handle;
-            Position = new Vector3D(other.Position);
+            Position = other.Position;
             CreatedBy = other.CreatedBy;
             Health = other.Health;
             Armor = other.Armor;
@@ -148,11 +149,11 @@ namespace GTASaveData.GTA3
             ModelName = other.ModelName;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             buf.Skip(48);
-            Position = buf.Read<Vector3D>();
+            Position = buf.ReadStruct<Vector3>();
             if(fmt.IsPC || fmt.IsXbox) buf.Skip(288);
             if (fmt.IsiOS) buf.Skip(292);
             if (fmt.IsAndroid) buf.Skip(296);
@@ -165,7 +166,7 @@ namespace GTASaveData.GTA3
             Armor = buf.ReadFloat();
             if (fmt.IsPS2) buf.Skip(164);
             else buf.Skip(148);
-            Weapons = buf.Read<Weapon>(NumWeapons, fmt);
+            Weapons = buf.ReadArray<Weapon>(NumWeapons, fmt);
             buf.Skip(5);
             MaxWeaponTypeAllowed = buf.ReadByte();
             buf.Skip(178);
@@ -173,7 +174,7 @@ namespace GTASaveData.GTA3
             if (fmt.IsPS2) buf.Skip(8);
             MaxStamina = buf.ReadFloat();
             buf.Skip(28);
-            TargetableObjects = buf.Read<int>(NumTargetableObjects);
+            TargetableObjects = buf.ReadArray<int>(NumTargetableObjects);
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(116);
             if (fmt.IsMobile) buf.Skip(144);
             if (fmt.IsPS2) buf.Skip(16);
@@ -181,7 +182,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOfType<PlayerPed>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             buf.Skip(48);

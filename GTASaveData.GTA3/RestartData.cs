@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -102,29 +103,29 @@ namespace GTASaveData.GTA3
             OverridePoliceStationLevel = other.OverridePoliceStationLevel;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "RST");
+            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "RST");
 
-            WastedRestartPoints = buf.Read<RestartPoint>(MaxNumWastedRestarts);
-            BustedRestartPoints = buf.Read<RestartPoint>(MaxNumBustedRestarts);
+            WastedRestartPoints = buf.ReadArray<RestartPoint>(MaxNumWastedRestarts);
+            BustedRestartPoints = buf.ReadArray<RestartPoint>(MaxNumBustedRestarts);
             NumberOfWastedRestartPoints = buf.ReadInt16();
             NumberOfBustedRestartPoints = buf.ReadInt16();
             OverrideNextRestart = buf.ReadBool();
             buf.ReadBytes(3);
-            OverrideRestartPoint = buf.Read<RestartPoint>();
+            OverrideRestartPoint = buf.ReadObject<RestartPoint>();
             FadeInAfteNextDeath = buf.ReadBool();
             FadeInAfteNextArrest = buf.ReadBool();
             OverrideHospitalLevel = (Level) buf.ReadByte();
             OverridePoliceStationLevel = (Level) buf.ReadByte();
 
-            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
-            Debug.Assert(size == SizeOfType<RestartData>() - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + SaveFileGTA3VC.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<RestartData>() - SaveFileGTA3VC.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "RST", SizeOfType<RestartData>() - GTA3VCSave.BlockHeaderSize);
+            SaveFileGTA3VC.WriteBlockHeader(buf, "RST", SizeOfType<RestartData>() - SaveFileGTA3VC.BlockHeaderSize);
 
             buf.Write(WastedRestartPoints, MaxNumWastedRestarts);
             buf.Write(BustedRestartPoints, MaxNumBustedRestarts);

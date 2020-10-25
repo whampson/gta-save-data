@@ -10,10 +10,10 @@ namespace GTASaveData.VC.Tests
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
                 .RuleFor(x => x.LastMissionPassedName, f => Generator.UnicodeString(f, SimpleVariables.MaxMissionPassedNameLength - 1))
-                .RuleFor(x => x.TimeStamp, f => Generator.Date(f))
+                .RuleFor(x => x.TimeStamp, f => new SystemTime(Generator.Date(f)))
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
-                .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
-                .RuleFor(x => x.SteamId, (format.IsPC && format.IsSteam) ? VCSave.SteamId : 0)
+                .RuleFor(x => x.CameraPosition, f => Generator.Vector3(f))
+                .RuleFor(x => x.SteamMagic, (format.IsPC && format.IsSteam) ? SimpleVariables.SteamMagicNumber : 0)
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
                 .RuleFor(x => x.GameClockHours, f => f.Random.Byte())
@@ -56,7 +56,7 @@ namespace GTASaveData.VC.Tests
             Assert.Equal(x0.TimeStamp, x1.TimeStamp);
             Assert.Equal(x0.CurrLevel, x1.CurrLevel);
             Assert.Equal(x0.CameraPosition, x1.CameraPosition);
-            Assert.Equal(x0.SteamId, x1.SteamId);
+            Assert.Equal(x0.SteamMagic, x1.SteamMagic);
             Assert.Equal(x0.MillisecondsPerGameMinute, x1.MillisecondsPerGameMinute);
             Assert.Equal(x0.LastClockTick, x1.LastClockTick);
             Assert.Equal(x0.GameClockHours, x1.GameClockHours);

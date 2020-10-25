@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -42,19 +43,19 @@ namespace GTASaveData.GTA3
             Gangs = ArrayHelper.DeepClone(other.Gangs);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "GNG");
+            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "GNG");
 
-            Gangs = buf.Read<Gang>(MaxNumGangs);
+            Gangs = buf.ReadArray<Gang>(MaxNumGangs);
 
             Debug.Assert(buf.Offset == SizeOfType<GangData>());
-            Debug.Assert(size == SizeOfType<GangData>() - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<GangData>() - SaveFileGTA3VC.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "GNG", SizeOfType<GangData>() - GTA3VCSave.BlockHeaderSize);
+            SaveFileGTA3VC.WriteBlockHeader(buf, "GNG", SizeOfType<GangData>() - SaveFileGTA3VC.BlockHeaderSize);
             buf.Write(Gangs, MaxNumGangs);
 
             Debug.Assert(buf.Offset == SizeOfType<GangData>());

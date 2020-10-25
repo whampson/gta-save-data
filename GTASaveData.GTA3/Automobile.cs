@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -34,17 +35,17 @@ namespace GTASaveData.GTA3
             Damage = new DamageManager(other.Damage);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             base.ReadData(buf, fmt);
 
-            Damage = buf.Read<DamageManager>();
+            Damage = buf.ReadObject<DamageManager>();
             buf.Skip(SizeOfType<Automobile>(fmt) - buf.Offset);    // The rest is useless
 
             Debug.Assert(buf.Offset == SizeOfType<Automobile>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             base.WriteData(buf, fmt);
 

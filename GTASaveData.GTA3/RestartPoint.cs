@@ -1,16 +1,17 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
     public class RestartPoint : SaveDataObject,
         IEquatable<RestartPoint>, IDeepClonable<RestartPoint>
     {
-        private Vector3D m_position;
+        private Vector3 m_position;
         private float m_angle;
 
-        public Vector3D Position
+        public Vector3 Position
         { 
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -24,24 +25,24 @@ namespace GTASaveData.GTA3
 
         public RestartPoint()
         {
-            Position = new Vector3D();
+            Position = new Vector3();
         }
 
         public RestartPoint(RestartPoint other)
         {
-            Position = new Vector3D(other.Position);
+            Position = other.Position;
             Angle = other.Angle;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            Position = buf.Read<Vector3D>();
+            Position = buf.ReadStruct<Vector3>();
             Angle = buf.ReadFloat();
 
             Debug.Assert(buf.Offset == SizeOfType<RestartPoint>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Position);
             buf.Write(Angle);

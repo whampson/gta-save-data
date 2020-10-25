@@ -1,6 +1,7 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -14,7 +15,7 @@ namespace GTASaveData.GTA3
         private uint m_timer;
         private short m_modelIndex;
         private short m_poolIndex;
-        private Vector3D m_position;
+        private Vector3 m_position;
 
         public PickupType Type
         {
@@ -58,7 +59,7 @@ namespace GTASaveData.GTA3
             set { m_poolIndex = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Position
+        public Vector3 Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -67,7 +68,7 @@ namespace GTASaveData.GTA3
         public Pickup()
         {
             PoolIndex = 1;
-            Position = new Vector3D();
+            Position = new Vector3();
         }
 
         public Pickup(Pickup other)
@@ -79,10 +80,10 @@ namespace GTASaveData.GTA3
             RegenerationTime = other.RegenerationTime;
             ModelIndex = other.ModelIndex;
             PoolIndex = other.PoolIndex;
-            Position = new Vector3D(other.Position);
+            Position = other.Position;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Type = (PickupType) buf.ReadByte();
             HasBeenPickedUp = buf.ReadBool();
@@ -91,12 +92,12 @@ namespace GTASaveData.GTA3
             RegenerationTime = buf.ReadUInt32();
             ModelIndex = buf.ReadInt16();
             PoolIndex = buf.ReadInt16();
-            Position = buf.Read<Vector3D>();
+            Position = buf.ReadStruct<Vector3>();
 
             Debug.Assert(buf.Offset == SizeOfType<Pickup>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write((byte) Type);
             buf.Write(HasBeenPickedUp);

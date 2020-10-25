@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3.Tests
         public override RestartPoint GenerateTestObject(FileFormat format)
         {
             Faker<RestartPoint> model = new Faker<RestartPoint>()
-                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Position, f => Generator.Vector3(f))
                 .RuleFor(x => x.Angle, f => f.Random.Float());
 
             return model.Generate();

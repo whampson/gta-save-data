@@ -25,7 +25,7 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.RecreateDoorOnNextRefresh, f => f.Random.Bool())
                 .RuleFor(x => x.RotatingDoor, f => f.Random.Bool())
                 .RuleFor(x => x.CameraFollowsPlayer, f => f.Random.Bool())
-                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Position, f => Generator.Vector3(f))
                 .RuleFor(x => x.Rotation, f => Generator.Quaternion(f))
                 .RuleFor(x => x.CeilingZ, f => f.Random.Float())
                 .RuleFor(x => x.DoorRelated1, f => f.Random.Float())

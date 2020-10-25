@@ -1,7 +1,7 @@
-﻿using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.LCS
 {
@@ -96,7 +96,7 @@ namespace GTASaveData.LCS
             GetOutOfHospitalFree = other.GetOutOfHospitalFree;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             if (fmt.IsMobile) buf.Skip(128);
             Money = buf.ReadInt32();
@@ -148,7 +148,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             if (fmt.IsMobile) buf.Write(new byte[128]);
             buf.Write(Money);

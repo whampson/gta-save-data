@@ -1,7 +1,7 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace GTASaveData.VCS
 {
@@ -27,7 +27,7 @@ namespace GTASaveData.VCS
         private WeatherType m_forcedWeatherType;
         private int m_weatherTypeInList;
         private float m_weatherInterpolationValue;
-        private Vector3D m_cameraPosition;
+        private Vector3 m_cameraPosition;
         private float m_cameraModeInCar;
         private float m_cameraModeOnFoot;
         private int m_extraColor;
@@ -50,8 +50,8 @@ namespace GTASaveData.VCS
         private bool m_hasPlayerCheated;
         private bool m_allTaxisHaveNitro;
         private bool m_targetIsOn;
-        private Vector2D m_targetPosition;
-        private Vector3D m_playerPosition;
+        private Vector2 m_targetPosition;
+        private Vector3 m_playerPosition;
         private bool m_trailsOn;
         private Date m_timeStamp;
 
@@ -176,7 +176,7 @@ namespace GTASaveData.VCS
             set { m_weatherInterpolationValue = value; OnPropertyChanged(); }
         }
 
-        public Vector3D CameraPosition
+        public Vector3 CameraPosition
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
@@ -314,13 +314,13 @@ namespace GTASaveData.VCS
             set { m_targetIsOn = value; OnPropertyChanged(); }
         }
 
-        public Vector2D TargetPosition
+        public Vector2 TargetPosition
         {
             get { return m_targetPosition; }
             set { m_targetPosition = value; OnPropertyChanged(); }
         }
 
-        public Vector3D PlayerPosition
+        public Vector3 PlayerPosition
         {
             get { return m_playerPosition; }
             set { m_playerPosition = value; OnPropertyChanged(); }
@@ -376,9 +376,9 @@ namespace GTASaveData.VCS
 
         public SimpleVariables()
         {
-            TimeStamp = DateTime.MinValue;
-            TargetPosition = new Vector2D();
-            PlayerPosition = new Vector3D();
+            TimeStamp = Date.MinValue;
+            TargetPosition = new Vector2();
+            PlayerPosition = new Vector3();
         }
 
         public SimpleVariables(SimpleVariables other)
@@ -425,8 +425,8 @@ namespace GTASaveData.VCS
             HasPlayerCheated = other.HasPlayerCheated;
             AllTaxisHaveNitro = other.AllTaxisHaveNitro;
             TargetIsOn = other.TargetIsOn;
-            TargetPosition = new Vector2D(other.TargetPosition);
-            PlayerPosition = new Vector3D(other.PlayerPosition);
+            TargetPosition = other.TargetPosition;
+            PlayerPosition = other.PlayerPosition;
             TrailsOn = other.TrailsOn;
             TimeStamp = other.TimeStamp;
             Unknown78hPS2 = other.Unknown78hPS2;
@@ -437,7 +437,7 @@ namespace GTASaveData.VCS
             UnknownD9hPS2 = other.UnknownD9hPS2;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             buf.Skip(8); // unused
             CurrentLevel = buf.ReadInt32();
@@ -460,7 +460,7 @@ namespace GTASaveData.VCS
             buf.Skip(2);
             WeatherTypeInList = buf.ReadInt32();
             WeatherInterpolationValue = buf.ReadFloat();
-            CameraPosition = buf.Read<Vector3D>();
+            CameraPosition = buf.ReadStruct<Vector3>();
             CameraModeInCar = buf.ReadFloat();
             CameraModeOnFoot = buf.ReadFloat();
             ExtraColor = buf.ReadInt32();       // for interiors, I think
@@ -493,13 +493,13 @@ namespace GTASaveData.VCS
                 AllTaxisHaveNitro = buf.ReadBool(4);
                 TargetIsOn = buf.ReadBool();
                 buf.Skip(3);
-                TargetPosition = buf.Read<Vector2D>();
+                TargetPosition = buf.ReadStruct<Vector2>();
                 UnknownD8hPS2 = buf.ReadByte();
                 UnknownD9hPS2 = buf.ReadByte();
                 buf.Skip(2);
-                PlayerPosition = buf.Read<Vector3D>();
+                PlayerPosition = buf.ReadStruct<Vector3>();
                 TrailsOn = buf.ReadBool(4);
-                TimeStamp = buf.Read<Date>();
+                TimeStamp = buf.ReadStruct<Date>();
             }
             else if (fmt.IsPSP)
             {
@@ -518,15 +518,15 @@ namespace GTASaveData.VCS
                 AllTaxisHaveNitro = buf.ReadBool();
                 TargetIsOn = buf.ReadBool();
                 buf.Skip(1);
-                TargetPosition = buf.Read<Vector2D>();
+                TargetPosition = buf.ReadStruct<Vector2>();
                 UnknownB8hPSP = buf.ReadInt32();
-                PlayerPosition = buf.Read<Vector3D>();
+                PlayerPosition = buf.ReadStruct<Vector3>();
             }
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Skip(4);    // unused
             buf.Write(3);   // always 3

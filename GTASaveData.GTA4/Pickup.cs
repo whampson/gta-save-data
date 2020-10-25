@@ -1,11 +1,12 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA4
 {
-    [Size(0x54)]
-    public class Pickup : SaveDataObject, IEquatable<Pickup>
+    public class Pickup : SaveDataObject,
+        IEquatable<Pickup>, IDeepClonable<Pickup>
     {
         private int m_index;
         private int m_unknown04h;
@@ -15,10 +16,10 @@ namespace GTASaveData.GTA4
         private int m_unknown14h;
         private int blip;
         private uint timer;
-        private Vector3D m_position;
+        private Vector3 m_position;
         private int m_unknown2Ch;
         private int m_unknown30h;
-        private Vector3D m_rotation;  // maybe
+        private Vector3 m_rotation;  // maybe
         private int m_unknown40h;
         private short m_objectId;
         private short m_refNum;
@@ -77,7 +78,7 @@ namespace GTASaveData.GTA4
             set { timer = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Position
+        public Vector3 Position
         { 
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -95,7 +96,7 @@ namespace GTASaveData.GTA4
             set { m_unknown30h = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Rotation
+        public Vector3 Rotation
         {
             get { return m_rotation; }
             set { m_rotation = value; OnPropertyChanged(); }
@@ -157,11 +158,36 @@ namespace GTASaveData.GTA4
 
         public Pickup()
         {
-            Position = new Vector3D();
-            Rotation = new Vector3D();
+            Position = new Vector3();
+            Rotation = new Vector3();
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        public Pickup(Pickup other)
+        {
+            Index = other.Index;
+            Unknown04h = other.Unknown04h;
+            Unknown08h = other.Unknown08h;
+            Amount = other.Amount;
+            Unknown10h = other.Unknown10h;
+            Unknown14h = other.Unknown14h;
+            Blip = other.Blip;
+            Timer = other.Timer;
+            Position = other.Position;
+            Unknown2Ch = other.Unknown2Ch;
+            Unknown30h = other.Unknown30h;
+            Rotation = other.Rotation;
+            Unknown40h = other.Unknown40h;
+            ObjectId = other.ObjectId;
+            RefNum = other.RefNum;
+            PickupType = other.PickupType;
+            Flags = other.Flags;
+            Flags2 = other.Flags2;
+            Unknown4Bh = other.Unknown4Bh;
+            Unknown4Ch = other.Unknown4Ch;
+            Unknown50h = other.Unknown50h;
+        }
+
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Index = buf.ReadInt32();
             Unknown04h = buf.ReadInt32();
@@ -171,10 +197,20 @@ namespace GTASaveData.GTA4
             Unknown14h = buf.ReadInt32();
             Blip = buf.ReadInt32();
             Timer = buf.ReadUInt32();
-            Position = buf.Read<Vector3D>();
+            Position = new Vector3()
+            {
+                X = buf.ReadFloat(),
+                Y = buf.ReadFloat(),
+                Z = buf.ReadFloat(),
+            };
             Unknown2Ch = buf.ReadInt32();
             Unknown30h = buf.ReadInt32();
-            Rotation = buf.Read<Vector3D>();
+            Rotation = new Vector3()
+            {
+                X = buf.ReadFloat(),
+                Y = buf.ReadFloat(),
+                Z = buf.ReadFloat(),
+            };
             Unknown40h = buf.ReadInt32();
             ObjectId = buf.ReadInt16();
             RefNum = buf.ReadInt16();
@@ -188,7 +224,7 @@ namespace GTASaveData.GTA4
             Debug.Assert(buf.Offset == SizeOfType<Pickup>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Index);
             buf.Write(Unknown04h);
@@ -198,10 +234,14 @@ namespace GTASaveData.GTA4
             buf.Write(Unknown14h);
             buf.Write(Blip);
             buf.Write(Timer);
-            buf.Write(Position);
+            buf.Write(Position.X);
+            buf.Write(Position.Y);
+            buf.Write(Position.Z);
             buf.Write(Unknown2Ch);
             buf.Write(Unknown30h);
-            buf.Write(Rotation);
+            buf.Write(Rotation.X);
+            buf.Write(Rotation.Y);
+            buf.Write(Rotation.Z);
             buf.Write(Unknown40h);
             buf.Write(ObjectId);
             buf.Write(RefNum);
@@ -213,6 +253,11 @@ namespace GTASaveData.GTA4
             buf.Write(Unknown50h);
 
             Debug.Assert(buf.Offset == SizeOfType<Pickup>());
+        }
+
+        protected override int GetSize(FileFormat fmt)
+        {
+            return 0x54;
         }
 
         public override bool Equals(object obj)
@@ -248,6 +293,11 @@ namespace GTASaveData.GTA4
                 && Unknown4Bh.Equals(other.Unknown4Bh)
                 && Unknown4Ch.Equals(other.Unknown4Ch)
                 && Unknown50h.Equals(other.Unknown50h);
+        }
+
+        public Pickup DeepClone()
+        {
+            return new Pickup(this);
         }
     }
 }

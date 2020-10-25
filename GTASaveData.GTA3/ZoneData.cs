@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
@@ -115,30 +116,30 @@ namespace GTASaveData.GTA3
             NumberOfAudioZones = other.NumberOfAudioZones;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "ZNS");
+            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "ZNS");
 
             CurrentZoneIndex = buf.ReadInt32();
             CurrentLevel = (Level) buf.ReadInt32();
             FindIndex = buf.ReadInt16();
             buf.ReadInt16();
-            Zones = buf.Read<Zone>(MaxNumZones);
-            ZoneInfo = buf.Read<ZoneInfo>(MaxNumZoneInfos);
+            Zones = buf.ReadArray<Zone>(MaxNumZones);
+            ZoneInfo = buf.ReadArray<ZoneInfo>(MaxNumZoneInfos);
             NumberOfZones = buf.ReadInt16();
             NumberOfZoneInfos = buf.ReadInt16();
-            MapZones = buf.Read<Zone>(MaxNumMapZones);
-            AudioZones = buf.Read<short>(MaxNumAudioZones);
+            MapZones = buf.ReadArray<Zone>(MaxNumMapZones);
+            AudioZones = buf.ReadArray<short>(MaxNumAudioZones);
             NumberOfMapZones = buf.ReadInt16();
             NumberOfAudioZones = buf.ReadInt16();
 
-            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
-            Debug.Assert(size == SizeOfType<ZoneData>() - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + SaveFileGTA3VC.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<ZoneData>() - SaveFileGTA3VC.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "ZNS", SizeOfType<ZoneData>() - GTA3VCSave.BlockHeaderSize);
+            SaveFileGTA3VC.WriteBlockHeader(buf, "ZNS", SizeOfType<ZoneData>() - SaveFileGTA3VC.BlockHeaderSize);
 
             buf.Write(CurrentZoneIndex);
             buf.Write((int) CurrentLevel);
