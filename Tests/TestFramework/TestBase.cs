@@ -7,7 +7,7 @@ namespace TestFramework
     public enum Game
     {
         [Description("GTA III")]
-        III,
+        GTA3,
 
         [Description("Vice City")]
         VC,

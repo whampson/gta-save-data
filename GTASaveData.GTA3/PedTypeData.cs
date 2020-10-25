@@ -64,17 +64,17 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "PTP");
+            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "PTP");
 
             PedTypes = buf.ReadArray<PedType>(NumPedTypes);
 
             Debug.Assert(buf.Offset == SizeOfType<PedTypeData>());
-            Debug.Assert(size == SizeOfType<PedTypeData>() - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<PedTypeData>() - SaveFileGTA3VC.BlockHeaderSize);
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "PTP", SizeOfType<PedTypeData>() - GTA3VCSave.BlockHeaderSize);
+            SaveFileGTA3VC.WriteBlockHeader(buf, "PTP", SizeOfType<PedTypeData>() - SaveFileGTA3VC.BlockHeaderSize);
 
             buf.Write(PedTypes, NumPedTypes);
 

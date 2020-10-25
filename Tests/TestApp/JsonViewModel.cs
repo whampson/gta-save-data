@@ -41,7 +41,7 @@ namespace TestApp
                 return;
             }
 
-            IReadOnlyList<ISaveDataObject> blocks = (MainViewModel.CurrentSaveFile as ISaveData).Blocks;
+            IReadOnlyList<ISaveDataObject> blocks = (MainViewModel.CurrentSaveFile as ISaveFile).Blocks;
             Text = (blocks[SelectedBlockIndex] as SaveDataObject).ToJsonString();
         }
     }

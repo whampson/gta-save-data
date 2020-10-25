@@ -34,7 +34,7 @@ namespace TestApp
         public EventHandler<FileTypeListEventArgs> PopulateFileTypeList;
         public event EventHandler<TabRefreshEventArgs> TabRefresh;
 
-        private SaveData m_currentSaveFile;
+        private SaveFile m_currentSaveFile;
         private FileFormat m_currentFileFormat;
         private Game m_selectedGame;
         private string m_statusText;
@@ -53,7 +53,7 @@ namespace TestApp
             set { m_selectedTabIndex = value; OnPropertyChanged(); }
         }
 
-        public SaveData CurrentSaveFile
+        public SaveFile CurrentSaveFile
         {
             get { return m_currentSaveFile; }
             set { m_currentSaveFile = value; OnPropertyChanged(); }
@@ -88,12 +88,12 @@ namespace TestApp
             {
                 return SelectedGame switch
                 {
-                    Game.III => GTA3Save.FileFormats.GetAll(),
-                    Game.VC => VCSave.FileFormats.GetAll(),
-                    Game.SA => SASave.FileFormats.GetAll(),
-                    Game.LCS => LCSSave.FileFormats.GetAll(),
-                    Game.VCS => VCSSave.FileFormats.GetAll(),
-                    Game.IV => GTA4Save.FileFormats.GetAll(),
+                    Game.GTA3 => SaveFileGTA3.FileFormats.GetAll(),
+                    Game.VC => SaveFileVC.FileFormats.GetAll(),
+                    Game.SA => SaveFileSA.FileFormats.GetAll(),
+                    Game.LCS => SaveFileLCS.FileFormats.GetAll(),
+                    Game.VCS => SaveFileVCS.FileFormats.GetAll(),
+                    Game.IV => SaveFileIV.FileFormats.GetAll(),
                     _ => new FileFormat[0],
                 };
             }
@@ -101,7 +101,7 @@ namespace TestApp
 
         public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
         {
-            { Game.III, Enum.GetNames(typeof(IIIBlock)) },
+            { Game.GTA3, Enum.GetNames(typeof(IIIBlock)) },
             { Game.VC, Enum.GetNames(typeof(VCBlock)) },
             { Game.SA, Enum.GetNames(typeof(SABlock)) },
             { Game.LCS, Enum.GetNames(typeof(LCSBlock)) },
@@ -191,12 +191,12 @@ namespace TestApp
         {
             switch (SelectedGame)
             {
-                case Game.III: DoLoad<GTA3Save>(path); break;
-                case Game.VC: DoLoad<VCSave>(path); break;
-                case Game.SA: DoLoad<SASave>(path); break;
-                case Game.LCS: DoLoad<LCSSave>(path); break;
-                case Game.VCS: DoLoad<VCSSave>(path); break;
-                case Game.IV: DoLoad<GTA4Save>(path); break;
+                case Game.GTA3: DoLoad<SaveFileGTA3>(path); break;
+                case Game.VC: DoLoad<SaveFileVC>(path); break;
+                case Game.SA: DoLoad<SaveFileSA>(path); break;
+                case Game.LCS: DoLoad<SaveFileLCS>(path); break;
+                case Game.VCS: DoLoad<SaveFileVCS>(path); break;
+                case Game.IV: DoLoad<SaveFileIV>(path); break;
                 default: RequestMessageBoxError("Selected game not yet supported!"); return;
             }
 
@@ -209,11 +209,11 @@ namespace TestApp
             }
         }
 
-        private bool DoLoad<T>(string path) where T : GTASaveData.SaveData, new()
+        private bool DoLoad<T>(string path) where T : GTASaveData.SaveFile, new()
         {
             try
             {
-                bool detected = SaveData.GetFileFormat<T>(path, out FileFormat fmt);
+                bool detected = SaveFile.GetFileFormat<T>(path, out FileFormat fmt);
                 if (!detected)
                 {
                     RequestMessageBoxError(string.Format("Unable to detect file type!"));
@@ -222,7 +222,7 @@ namespace TestApp
                 CurrentFileFormat = fmt;
                 
                 CleanupOldSaveData();
-                CurrentSaveFile = SaveData.Load<T>(path, CurrentFileFormat);
+                CurrentSaveFile = SaveFile.Load<T>(path, CurrentFileFormat);
 
                 return true;
             }
@@ -240,17 +240,17 @@ namespace TestApp
 
         private void CleanupOldSaveData()
         {
-            if (CurrentSaveFile is GTA3Save)
+            if (CurrentSaveFile is SaveFileGTA3)
             {
-                (CurrentSaveFile as GTA3Save).Dispose();
+                (CurrentSaveFile as SaveFileGTA3).Dispose();
             }
-            else if (CurrentSaveFile is VCSave)
+            else if (CurrentSaveFile is SaveFileVC)
             {
-                (CurrentSaveFile as VCSave).Dispose();
+                (CurrentSaveFile as SaveFileVC).Dispose();
             }
-            else if (CurrentSaveFile is SASave)
+            else if (CurrentSaveFile is SaveFileSA)
             {
-                (CurrentSaveFile as SASave).Dispose();
+                (CurrentSaveFile as SaveFileSA).Dispose();
             }
         }
 
@@ -357,7 +357,7 @@ namespace TestApp
     public enum Game
     {
         [Description("GTA III")]
-        III,
+        GTA3,
 
         [Description("Vice City")]
         VC,

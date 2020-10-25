@@ -268,7 +268,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "SCR");
+            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "SCR");
 
             int varSpace = buf.ReadInt32();
             ScriptSpace = buf.ReadArray<byte>(varSpace);
@@ -291,14 +291,14 @@ namespace GTASaveData.GTA3
             int runningScripts = buf.ReadInt32();
             Threads = buf.ReadArray<RunningScript>(runningScripts, fmt);
 
-            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
-            Debug.Assert(size == SizeOfObject(this, fmt) - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + SaveFileGTA3VC.BlockHeaderSize);
+            Debug.Assert(size == SizeOfObject(this, fmt) - SaveFileGTA3VC.BlockHeaderSize);
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             int size = SizeOfObject(this, fmt);
-            GTA3VCSave.WriteBlockHeader(buf, "SCR", size - GTA3VCSave.BlockHeaderSize);
+            SaveFileGTA3VC.WriteBlockHeader(buf, "SCR", size - SaveFileGTA3VC.BlockHeaderSize);
 
             buf.Write(ScriptSpace.Count);
             buf.Write(ScriptSpace);
@@ -328,7 +328,7 @@ namespace GTASaveData.GTA3
             return SizeOfType<RunningScript>(fmt) * Threads.Count
                 + DataBuffer.Align4(ScriptSpace.Count)
                 + ScriptDataSize
-                + GTA3VCSave.BlockHeaderSize
+                + SaveFileGTA3VC.BlockHeaderSize
                 + 3 * sizeof(int);
         }
 

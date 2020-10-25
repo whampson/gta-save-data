@@ -9,8 +9,8 @@ namespace GTASaveData.VC
     /// <summary>
     /// Represents a saved <i>Grand Theft Auto: Vice City</i> game.
     /// </summary>
-    public class VCSave : GTA3VCSave, ISaveData,
-        IEquatable<VCSave>, IDeepClonable<VCSave>
+    public class SaveFileVC : SaveFileGTA3VC, ISaveFile,
+        IEquatable<SaveFileVC>, IDeepClonable<SaveFileVC>
     {
         public const int SizeOfGameInBytes = 201728;
         public const int MaxNumPaddingBlocks = 4;
@@ -196,19 +196,19 @@ namespace GTASaveData.VC
             set { SimpleVars.TimeStamp = new SystemTime(value); OnPropertyChanged(); }
         }
 
-        bool ISaveData.HasSimpleVariables => true;
-        bool ISaveData.HasScriptData => false;      // TODO
-        bool ISaveData.HasGarageData => false;      // TODO
-        bool ISaveData.HasCarGenerators => true;    // TODO
-        bool ISaveData.HasPlayerInfo => false;      // TODO
+        bool ISaveFile.HasSimpleVariables => true;
+        bool ISaveFile.HasScriptData => false;      // TODO
+        bool ISaveFile.HasGarageData => false;      // TODO
+        bool ISaveFile.HasCarGenerators => true;    // TODO
+        bool ISaveFile.HasPlayerInfo => false;      // TODO
 
-        ISimpleVariables ISaveData.SimpleVars => SimpleVars;
-        IScriptData ISaveData.ScriptData => throw new NotImplementedException();
-        IGarageData ISaveData.GarageData => throw new NotImplementedException();
-        ICarGeneratorData ISaveData.CarGenerators => CarGenerators;
-        IPlayerInfo ISaveData.PlayerInfo => throw new NotImplementedException();
+        ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
+        IScriptData ISaveFile.ScriptData => throw new NotImplementedException();
+        IGarageData ISaveFile.GarageData => throw new NotImplementedException();
+        ICarGeneratorData ISaveFile.CarGenerators => CarGenerators;
+        IPlayerInfo ISaveFile.PlayerInfo => throw new NotImplementedException();
 
-        IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
+        IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
             Scripts,
@@ -236,17 +236,17 @@ namespace GTASaveData.VC
             PedTypeInfo
         };
 
-        public static VCSave Load(string path)
+        public static SaveFileVC Load(string path)
         {
-            return Load<VCSave>(path);
+            return Load<SaveFileVC>(path);
         }
 
-        public static VCSave Load(string path, FileFormat fmt)
+        public static SaveFileVC Load(string path, FileFormat fmt)
         {
-            return Load<VCSave>(path, fmt);
+            return Load<SaveFileVC>(path, fmt);
         }
 
-        public VCSave()
+        public SaveFileVC()
         {
             SimpleVars = new SimpleVariables();
             Scripts = new Dummy();
@@ -274,7 +274,7 @@ namespace GTASaveData.VC
             PedTypeInfo = new Dummy();
         }
 
-        public VCSave(VCSave other)
+        public SaveFileVC(SaveFileVC other)
         {
             SimpleVars = new SimpleVariables(other.SimpleVars);
             Scripts = new Dummy(other.Scripts);
@@ -447,10 +447,10 @@ namespace GTASaveData.VC
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as VCSave);
+            return Equals(obj as SaveFileVC);
         }
 
-        public bool Equals(VCSave other)
+        public bool Equals(SaveFileVC other)
         {
             if (other == null)
             {
@@ -483,9 +483,9 @@ namespace GTASaveData.VC
                 && PedTypeInfo.Equals(other.PedTypeInfo);
         }
 
-        public VCSave DeepClone()
+        public SaveFileVC DeepClone()
         {
-            return new VCSave(this);
+            return new SaveFileVC(this);
         }
 
         public static class FileFormats

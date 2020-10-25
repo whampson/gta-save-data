@@ -333,7 +333,7 @@ namespace GTASaveData.VC
         {
             buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
             buf.Write(TimeStamp);
-            buf.Write(VCSave.SizeOfGameInBytes + 1);
+            buf.Write(SaveFileVC.SizeOfGameInBytes + 1);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
             if (fmt.IsPC && fmt.IsSteam) buf.Write(SteamMagic);

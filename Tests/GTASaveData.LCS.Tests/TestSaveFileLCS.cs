@@ -8,11 +8,11 @@ using Xunit;
 
 namespace GTASaveData.LCS.Tests
 {
-    public class TestLCSSave : Base<LCSSave>
+    public class TestSaveFileLCS : Base<SaveFileLCS>
     {
-        public override LCSSave GenerateTestObject(FileFormat format)
+        public override SaveFileLCS GenerateTestObject(FileFormat format)
         {
-            Faker<LCSSave> model = new Faker<LCSSave>()
+            Faker<SaveFileLCS> model = new Faker<SaveFileLCS>()
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 .RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
@@ -29,7 +29,7 @@ namespace GTASaveData.LCS.Tests
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.LCS, expectedFormat, filename);
-            SaveData.GetFileFormat<LCSSave>(path, out FileFormat detectedFormat);
+            SaveFile.GetFileFormat<SaveFileLCS>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -38,8 +38,8 @@ namespace GTASaveData.LCS.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileFormat format)
         {
-            LCSSave x0 = GenerateTestObject(format);
-            LCSSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            SaveFileLCS x0 = GenerateTestObject(format);
+            SaveFileLCS x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
             AssertCheckSumValid(data, format);
@@ -52,8 +52,8 @@ namespace GTASaveData.LCS.Tests
         {
             string path = TestData.GetTestDataPath(Game.LCS, format, filename);
 
-            LCSSave x0 = SaveData.Load<LCSSave>(path, format);
-            LCSSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            SaveFileLCS x0 = SaveFile.Load<SaveFileLCS>(path, format);
+            SaveFileLCS x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
             AssertCheckSumValid(data, format);
@@ -63,13 +63,13 @@ namespace GTASaveData.LCS.Tests
         [Fact]
         public void CopyConstructor()
         {
-            LCSSave x0 = GenerateTestObject();
-            LCSSave x1 = new LCSSave(x0);
+            SaveFileLCS x0 = GenerateTestObject();
+            SaveFileLCS x1 = new SaveFileLCS(x0);
 
             Assert.Equal(x0, x1);
         }
 
-        private void AssertSavesAreEqual(LCSSave x0, LCSSave x1)
+        private void AssertSavesAreEqual(SaveFileLCS x0, SaveFileLCS x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);

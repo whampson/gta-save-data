@@ -74,8 +74,8 @@ namespace GTASaveData.GTA3.Tests
         public void GlobalVariables()
         {
             Faker f = new Faker();
-            string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileFormats.PC, "CAT2");
-            using GTA3Save x = SaveData.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
+            string path = TestData.GetTestDataPath(Game.GTA3, SaveFileGTA3.FileFormats.PC, "CAT2");
+            using SaveFileGTA3 x = SaveFile.Load<SaveFileGTA3>(path, SaveFileGTA3.FileFormats.PC);
 
             Assert.Equal(987.5, x.Scripts.GetGlobalAsFloat(804));
 
@@ -98,8 +98,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void ScriptSpace()
         {
-            string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileFormats.PC, "CAT2");
-            using GTA3Save x = SaveData.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
+            string path = TestData.GetTestDataPath(Game.GTA3, SaveFileGTA3.FileFormats.PC, "CAT2");
+            using SaveFileGTA3 x = SaveFile.Load<SaveFileGTA3>(path, SaveFileGTA3.FileFormats.PC);
 
             byte b = 0xA5;
             short s = unchecked((short) 0xCCEE);

@@ -8,16 +8,16 @@
     <Company>Wes Hampson</Company>
     <Product>GTASaveData</Product>
     <Description>GTASaveData core framework library.</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
-    <AssemblyVersion>1.4.0.1053</AssemblyVersion>
-    <FileVersion>1.4.0.1053</FileVersion>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <AssemblyVersion>1.4.0.1055</AssemblyVersion>
+    <FileVersion>1.4.0.1055</FileVersion>
     <Version>1.4.0</Version>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>gta save data; gta save file; gta save; gta; savedata; savefile; gta savedata; gta savefile</PackageTags>
     <RepositoryUrl>https://github.com/whampson/gta-save-data</RepositoryUrl>
     <PackageProjectUrl>https://github.com/whampson/gta-save-data</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

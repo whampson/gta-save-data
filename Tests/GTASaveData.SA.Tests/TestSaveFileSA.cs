@@ -6,11 +6,11 @@ using System;
 
 namespace GTASaveData.SA.Tests
 {
-    public class TestSASave : Base<SASave>
+    public class TestSaveFileSA : Base<SaveFileSA>
     {
-        public override SASave GenerateTestObject(FileFormat format)
+        public override SaveFileSA GenerateTestObject(FileFormat format)
         {
-            Faker<SASave> model = new Faker<SASave>()
+            Faker<SaveFileSA> model = new Faker<SaveFileSA>()
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format));
             // TODO: the rest of the blocks
@@ -23,7 +23,7 @@ namespace GTASaveData.SA.Tests
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.SA, expectedFormat, filename);
-            SaveData.GetFileFormat<SASave>(path, out FileFormat detectedFormat);
+            SaveFile.GetFileFormat<SaveFileSA>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -32,8 +32,8 @@ namespace GTASaveData.SA.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileFormat format)
         {
-            using SASave x0 = GenerateTestObject(format);
-            using SASave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using SaveFileSA x0 = GenerateTestObject(format);
+            using SaveFileSA x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -48,8 +48,8 @@ namespace GTASaveData.SA.Tests
         {
             string path = TestData.GetTestDataPath(Game.SA, format, filename);
 
-            using SASave x0 = SaveData.Load<SASave>(path, format);
-            using SASave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using SaveFileSA x0 = SaveFile.Load<SaveFileSA>(path, format);
+            using SaveFileSA x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -58,7 +58,7 @@ namespace GTASaveData.SA.Tests
             Assert.Equal(calculatedSum, storedSum);
         }
 
-        private void AssertSavesAreEqual(SASave x0, SASave x1)
+        private void AssertSavesAreEqual(SaveFileSA x0, SaveFileSA x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);

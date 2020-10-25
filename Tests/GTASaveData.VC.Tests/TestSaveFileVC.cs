@@ -8,11 +8,11 @@ using System.IO;
 
 namespace GTASaveData.VC.Tests
 {
-    public class TestViceCitySave : Base<VCSave>
+    public class TestSaveFileVC : Base<SaveFileVC>
     {
-        public override VCSave GenerateTestObject(FileFormat format)
+        public override SaveFileVC GenerateTestObject(FileFormat format)
         {
-            Faker<VCSave> model = new Faker<VCSave>()
+            Faker<SaveFileVC> model = new Faker<SaveFileVC>()
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 //.RuleFor(x => x.Scripts, Generator.Generate<TheScripts, TestTheScripts>(format))
@@ -45,7 +45,7 @@ namespace GTASaveData.VC.Tests
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.VC, expectedFormat, filename);
-            SaveData.GetFileFormat<VCSave>(path, out FileFormat detectedFormat);
+            SaveFile.GetFileFormat<SaveFileVC>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -54,8 +54,8 @@ namespace GTASaveData.VC.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileFormat format)
         {
-            using VCSave x0 = GenerateTestObject(format);
-            using VCSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using SaveFileVC x0 = GenerateTestObject(format);
+            using SaveFileVC x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -70,8 +70,8 @@ namespace GTASaveData.VC.Tests
         {
             string path = TestData.GetTestDataPath(Game.VC, format, filename);
 
-            using VCSave x0 = SaveData.Load<VCSave>(path, format);
-            using VCSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using SaveFileVC x0 = SaveFile.Load<SaveFileVC>(path, format);
+            using SaveFileVC x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -83,7 +83,7 @@ namespace GTASaveData.VC.Tests
         [Fact]
         public void BlockSizeExceeded()
         {
-            string path = TestData.GetTestDataPath(Game.VC, VCSave.FileFormats.PC, "COK_2");
+            string path = TestData.GetTestDataPath(Game.VC, SaveFileVC.FileFormats.PC, "COK_2");
             byte[] data = File.ReadAllBytes(path);
 
             // Fudge the block size
@@ -91,7 +91,7 @@ namespace GTASaveData.VC.Tests
             data[1] = 0xBA;
             data[2] = 0xFE;
             data[3] = 0xCA;
-            Assert.Throws<SerializationException>(() => SaveData.Load<VCSave>(data, VCSave.FileFormats.PC));
+            Assert.Throws<SerializationException>(() => SaveFile.Load<SaveFileVC>(data, SaveFileVC.FileFormats.PC));
 
             // TODO: uncomment when Scripts done
             // Make the script space huge
@@ -100,7 +100,7 @@ namespace GTASaveData.VC.Tests
             //Assert.Throws<SerializationException>(() => x.Save(out byte[] _));
         }
 
-        private void AssertSavesAreEqual(VCSave x0, VCSave x1)
+        private void AssertSavesAreEqual(SaveFileVC x0, SaveFileVC x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);

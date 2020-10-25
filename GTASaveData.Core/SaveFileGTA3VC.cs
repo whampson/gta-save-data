@@ -7,7 +7,7 @@ namespace GTASaveData
     /// <summary>
     /// Commonalities between GTA3 and VC saves.
     /// </summary>
-    public abstract class GTA3VCSave : SaveData, IDisposable
+    public abstract class SaveFileGTA3VC : SaveFile, IDisposable
     {
         public const int BlockHeaderSize = 8;
 
@@ -30,9 +30,9 @@ namespace GTASaveData
         private bool m_disposed;
 
         /// <summary>
-        /// Creates a new <see cref="GTA3VCSave"/> instance.
+        /// Creates a new <see cref="SaveFileGTA3VC"/> instance.
         /// </summary>
-        protected GTA3VCSave()
+        protected SaveFileGTA3VC()
         { }
 
         /// <summary>

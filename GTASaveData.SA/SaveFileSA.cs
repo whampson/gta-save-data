@@ -12,8 +12,8 @@ namespace GTASaveData.SA
     /// <summary>
     /// Represents a <i>Grand Theft Auto: San Andreas</i> save file.
     /// </summary>
-    public class SASave : SaveData, ISaveData,
-        IEquatable<SASave>, IDeepClonable<SASave>,
+    public class SaveFileSA : SaveFile, ISaveFile,
+        IEquatable<SaveFileSA>, IDeepClonable<SaveFileSA>,
         IDisposable
     {
         public const int SizeOfOneGameInBytes = 202752;
@@ -245,19 +245,19 @@ namespace GTASaveData.SA
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
 
-        bool ISaveData.HasSimpleVariables => true;
-        bool ISaveData.HasScriptData => false;      // todo
-        bool ISaveData.HasGarageData => false;      // todo
-        bool ISaveData.HasCarGenerators => false;   // todo
-        bool ISaveData.HasPlayerInfo => false;      // todo
+        bool ISaveFile.HasSimpleVariables => true;
+        bool ISaveFile.HasScriptData => false;      // todo
+        bool ISaveFile.HasGarageData => false;      // todo
+        bool ISaveFile.HasCarGenerators => false;   // todo
+        bool ISaveFile.HasPlayerInfo => false;      // todo
 
-        ISimpleVariables ISaveData.SimpleVars => SimpleVars;
-        IScriptData ISaveData.ScriptData => throw new NotSupportedException();
-        IGarageData ISaveData.GarageData => throw new NotSupportedException();
-        ICarGeneratorData ISaveData.CarGenerators => throw new NotSupportedException();
-        IPlayerInfo ISaveData.PlayerInfo => throw new NotSupportedException();
+        ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
+        IScriptData ISaveFile.ScriptData => throw new NotSupportedException();
+        IGarageData ISaveFile.GarageData => throw new NotSupportedException();
+        ICarGeneratorData ISaveFile.CarGenerators => throw new NotSupportedException();
+        IPlayerInfo ISaveFile.PlayerInfo => throw new NotSupportedException();
 
-        IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
+        IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
             Scripts,
@@ -290,17 +290,17 @@ namespace GTASaveData.SA
             PostEffects
         };
 
-        public static SASave Load(string path)
+        public static SaveFileSA Load(string path)
         {
-            return Load<SASave>(path);
+            return Load<SaveFileSA>(path);
         }
 
-        public static SASave Load(string path, FileFormat fmt)
+        public static SaveFileSA Load(string path, FileFormat fmt)
         {
-            return Load<SASave>(path, fmt);
+            return Load<SaveFileSA>(path, fmt);
         }
 
-        public SASave()
+        public SaveFileSA()
         {
             m_disposed = false;
             m_workBuffer = new DataBuffer(new byte[MaxBufferSize]);
@@ -336,7 +336,7 @@ namespace GTASaveData.SA
             PostEffects = new Dummy(0x160);
         }
 
-        public SASave(SASave other)
+        public SaveFileSA(SaveFileSA other)
         {
             SimpleVars = new SimpleVariables(other.SimpleVars);
             Scripts = new Dummy(other.Scripts);
@@ -722,10 +722,10 @@ namespace GTASaveData.SA
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as SASave);
+            return Equals(obj as SaveFileSA);
         }
 
-        public bool Equals(SASave other)
+        public bool Equals(SaveFileSA other)
         {
             if (other == null)
             {
@@ -772,9 +772,9 @@ namespace GTASaveData.SA
             }
         }
 
-        public SASave DeepClone()
+        public SaveFileSA DeepClone()
         {
-            return new SASave(this);
+            return new SaveFileSA(this);
         }
 
         public static class FileFormats

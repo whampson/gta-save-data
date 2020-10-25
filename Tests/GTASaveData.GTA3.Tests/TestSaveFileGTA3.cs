@@ -7,11 +7,11 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestGTA3Save : Base<GTA3Save>
+    public class TestSaveFileGTA3 : Base<SaveFileGTA3>
     {
-        public override GTA3Save GenerateTestObject(FileFormat format)
+        public override SaveFileGTA3 GenerateTestObject(FileFormat format)
         {
-            Faker<GTA3Save> model = new Faker<GTA3Save>()
+            Faker<SaveFileGTA3> model = new Faker<SaveFileGTA3>()
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 .RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
@@ -44,7 +44,7 @@ namespace GTASaveData.GTA3.Tests
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.GTA3, expectedFormat, filename);
-            SaveData.GetFileFormat<GTA3Save>(path, out FileFormat detectedFormat);
+            SaveFile.GetFileFormat<SaveFileGTA3>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -53,8 +53,8 @@ namespace GTASaveData.GTA3.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileFormat format)
         {
-            using GTA3Save x0 = GenerateTestObject(format);
-            using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using SaveFileGTA3 x0 = GenerateTestObject(format);
+            using SaveFileGTA3 x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
             AssertCheckSumValid(data, format);
@@ -67,8 +67,8 @@ namespace GTASaveData.GTA3.Tests
         {
             string path = TestData.GetTestDataPath(Game.GTA3, format, filename);
 
-            using GTA3Save x0 = SaveData.Load<GTA3Save>(path, format);
-            using GTA3Save x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using SaveFileGTA3 x0 = SaveFile.Load<SaveFileGTA3>(path, format);
+            using SaveFileGTA3 x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
             AssertCheckSumValid(data, format);
@@ -79,8 +79,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void CopyConstructor()
         {
-            GTA3Save x0 = GenerateTestObject();
-            GTA3Save x1 = new GTA3Save(x0);
+            SaveFileGTA3 x0 = GenerateTestObject();
+            SaveFileGTA3 x1 = new SaveFileGTA3(x0);
 
             Assert.Equal(x0, x1);
         }
@@ -88,7 +88,7 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void BlockBounds()
         {
-            string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileFormats.PC, "CAT2");
+            string path = TestData.GetTestDataPath(Game.GTA3, SaveFileGTA3.FileFormats.PC, "CAT2");
             byte[] data = File.ReadAllBytes(path);
 
             // Fudge the block size
@@ -96,15 +96,15 @@ namespace GTASaveData.GTA3.Tests
             data[1] = 0xBA;
             data[2] = 0xFE;
             data[3] = 0xCA;
-            Assert.Throws<SerializationException>(() => SaveData.Load<GTA3Save>(data, GTA3Save.FileFormats.PC));
+            Assert.Throws<SerializationException>(() => SaveFile.Load<SaveFileGTA3>(data, SaveFileGTA3.FileFormats.PC));
 
             // Make the script space huge
-            GTA3Save x = SaveData.Load<GTA3Save>(path, GTA3Save.FileFormats.PC);
+            SaveFileGTA3 x = SaveFile.Load<SaveFileGTA3>(path, SaveFileGTA3.FileFormats.PC);
             x.Scripts.ScriptSpace = ArrayHelper.CreateArray<byte>(100000);
             Assert.Throws<EndOfStreamException>(() => x.Save(out byte[] _));
         }
 
-        private void AssertSavesAreEqual(GTA3Save x0, GTA3Save x1)
+        private void AssertSavesAreEqual(SaveFileGTA3 x0, SaveFileGTA3 x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);

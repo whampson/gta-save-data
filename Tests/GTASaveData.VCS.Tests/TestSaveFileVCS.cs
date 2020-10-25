@@ -6,11 +6,11 @@ using Xunit;
 
 namespace GTASaveData.VCS.Tests
 {
-    public class TestVCSSave : Base<VCSSave>
+    public class TestSaveFileVCS : Base<SaveFileVCS>
     {
-        public override VCSSave GenerateTestObject(FileFormat format)
+        public override SaveFileVCS GenerateTestObject(FileFormat format)
         {
-            Faker<VCSSave> model = new Faker<VCSSave>()
+            Faker<SaveFileVCS> model = new Faker<SaveFileVCS>()
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 .RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
@@ -27,7 +27,7 @@ namespace GTASaveData.VCS.Tests
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.VCS, expectedFormat, filename);
-            SaveData.GetFileFormat<VCSSave>(path, out FileFormat detectedFormat);
+            SaveFile.GetFileFormat<SaveFileVCS>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -36,8 +36,8 @@ namespace GTASaveData.VCS.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileFormat format)
         {
-            VCSSave x0 = GenerateTestObject(format);
-            VCSSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            SaveFileVCS x0 = GenerateTestObject(format);
+            SaveFileVCS x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
             AssertCheckSumValid(data, format);
@@ -50,8 +50,8 @@ namespace GTASaveData.VCS.Tests
         {
             string path = TestData.GetTestDataPath(Game.VCS, format, filename);
 
-            VCSSave x0 = SaveData.Load<VCSSave>(path, format);
-            VCSSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            SaveFileVCS x0 = SaveFile.Load<SaveFileVCS>(path, format);
+            SaveFileVCS x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
             AssertCheckSumValid(data, format);
@@ -61,13 +61,13 @@ namespace GTASaveData.VCS.Tests
         [Fact]
         public void CopyConstructor()
         {
-            VCSSave x0 = GenerateTestObject();
-            VCSSave x1 = new VCSSave(x0);
+            SaveFileVCS x0 = GenerateTestObject();
+            SaveFileVCS x1 = new SaveFileVCS(x0);
 
             Assert.Equal(x0, x1);
         }
 
-        private void AssertSavesAreEqual(VCSSave x0, VCSSave x1)
+        private void AssertSavesAreEqual(SaveFileVCS x0, SaveFileVCS x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);

@@ -118,7 +118,7 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "ZNS");
+            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "ZNS");
 
             CurrentZoneIndex = buf.ReadInt32();
             CurrentLevel = (Level) buf.ReadInt32();
@@ -133,13 +133,13 @@ namespace GTASaveData.GTA3
             NumberOfMapZones = buf.ReadInt16();
             NumberOfAudioZones = buf.ReadInt16();
 
-            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
-            Debug.Assert(size == SizeOfType<ZoneData>() - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + SaveFileGTA3VC.BlockHeaderSize);
+            Debug.Assert(size == SizeOfType<ZoneData>() - SaveFileGTA3VC.BlockHeaderSize);
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "ZNS", SizeOfType<ZoneData>() - GTA3VCSave.BlockHeaderSize);
+            SaveFileGTA3VC.WriteBlockHeader(buf, "ZNS", SizeOfType<ZoneData>() - SaveFileGTA3VC.BlockHeaderSize);
 
             buf.Write(CurrentZoneIndex);
             buf.Write((int) CurrentLevel);

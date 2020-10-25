@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GTASaveData.Interfaces
 {
-    public interface ISaveData
+    public interface ISaveFile
     {
         string Name { get; set; }
         DateTime TimeStamp { get; set; }

@@ -4,21 +4,22 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace GTASaveData.LCS
+namespace GTASaveData.VCS
 {
-    public class LCSSave : SaveData, ISaveData,
-        IEquatable<LCSSave>, IDeepClonable<LCSSave>
+    public class SaveFileVCS : SaveFile, ISaveFile,
+        IEquatable<SaveFileVCS>, IDeepClonable<SaveFileVCS>
     {
-        private const int SizeOfGameInBytes = 0x19000;
+        private const int SizeOfGameInBytes = 0x18000;
 
         private int m_checkSum;
-
         private string m_name;
+
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
-        private GarageData m_garages;
-        private PlayerInfo m_playerInfo;
-        private Stats m_stats;
+        private Dummy m_garages;
+        private Dummy m_playerInfo;
+        private Dummy m_stats;
+        private Dummy m_over;
 
         public SimpleVariables SimpleVars
         {
@@ -32,19 +33,19 @@ namespace GTASaveData.LCS
             set { m_scripts = value; OnPropertyChanged(); }
         }
 
-        public GarageData Garages
+        public Dummy Garages
         {
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
         }
 
-        public PlayerInfo PlayerInfo
+        public Dummy PlayerInfo
         {
             get { return m_playerInfo; }
             set { m_playerInfo = value; OnPropertyChanged(); }
         }
 
-        public Stats Stats
+        public Dummy Stats
         {
             get { return m_stats; }
             set { m_stats = value; OnPropertyChanged(); }
@@ -62,19 +63,19 @@ namespace GTASaveData.LCS
             set { SimpleVars.TimeStamp = new Date(value); OnPropertyChanged(); }
         }
 
-        bool ISaveData.HasSimpleVariables => true;
-        bool ISaveData.HasScriptData => true;
-        bool ISaveData.HasGarageData => true;
-        bool ISaveData.HasCarGenerators => false;
-        bool ISaveData.HasPlayerInfo => true;
+        bool ISaveFile.HasSimpleVariables => true;
+        bool ISaveFile.HasScriptData => true;
+        bool ISaveFile.HasGarageData => false;      // TODO
+        bool ISaveFile.HasCarGenerators => false;
+        bool ISaveFile.HasPlayerInfo => true;       // TODO
 
-        ISimpleVariables ISaveData.SimpleVars => SimpleVars;
-        IScriptData ISaveData.ScriptData => Scripts;
-        IGarageData ISaveData.GarageData => Garages;
-        ICarGeneratorData ISaveData.CarGenerators => throw new NotSupportedException();
-        IPlayerInfo ISaveData.PlayerInfo => PlayerInfo;
+        ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
+        IScriptData ISaveFile.ScriptData => Scripts;
+        IGarageData ISaveFile.GarageData => throw new NotSupportedException();
+        ICarGeneratorData ISaveFile.CarGenerators => throw new NotSupportedException();
+        IPlayerInfo ISaveFile.PlayerInfo => throw new NotSupportedException();
 
-        IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
+        IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
             Scripts,
@@ -83,33 +84,36 @@ namespace GTASaveData.LCS
             Stats
         };
 
-        public static LCSSave Load(string path)
+        public static SaveFileVCS Load(string path)
         {
-            return Load<LCSSave>(path);
+            return Load<SaveFileVCS>(path);
         }
 
-        public static LCSSave Load(string path, FileFormat fmt)
+        public static SaveFileVCS Load(string path, FileFormat fmt)
         {
-            return Load<LCSSave>(path, fmt);
+            return Load<SaveFileVCS>(path, fmt);
         }
 
-        public LCSSave()
+        public SaveFileVCS()
         {
             SimpleVars = new SimpleVariables();
             Scripts = new ScriptData();
-            Garages = new GarageData();
-            PlayerInfo = new PlayerInfo();
-            Stats = new Stats();
+            Garages = new Dummy();
+            PlayerInfo = new Dummy();
+            Stats = new Dummy();
+            m_over = new Dummy();
         }
 
-        public LCSSave(LCSSave other)
+        public SaveFileVCS(SaveFileVCS other)
         {
             SimpleVars = new SimpleVariables(other.SimpleVars);
             Scripts = new ScriptData(other.Scripts);
-            Garages = new GarageData(other.Garages);
-            PlayerInfo = new PlayerInfo(other.PlayerInfo);
-            Stats = new Stats(other.Stats);
+            Garages = new Dummy(other.Garages);
+            PlayerInfo = new Dummy(other.PlayerInfo);
+            Stats = new Dummy(other.Stats);
+            m_over = new Dummy(other.m_over);
         }
+
 
         private int ReadDataBlock<T>(DataBuffer file, string tag, out T obj)
             where T : SaveDataObject, new()
@@ -128,6 +132,23 @@ namespace GTASaveData.LCS
             return file.Offset;
         }
 
+        private int ReadDummyBlock(DataBuffer file, string tag, out Dummy obj)
+        {
+            file.Mark();
+
+            string savedTag = file.ReadString(4);
+            Debug.Assert(savedTag == tag);
+
+            int size = file.ReadInt32();
+            Debug.Assert(file.Position + size <= file.Length);
+
+            obj = new Dummy(size);
+            Serializer.Read(obj, file, FileFormat);
+            file.Align4();
+
+            return file.Offset;
+        }
+
         private int WriteDataBlock<T>(DataBuffer file, string tag, T obj)
             where T : SaveDataObject
         {
@@ -137,7 +158,7 @@ namespace GTASaveData.LCS
             file.Mark();
             file.Write(tag, length: 4, zeroTerminate: false);
             file.Write(size);
-            file.Write(data);
+            file.Write(data, FileFormat);
             file.Align4();
 
             Debug.Assert(file.Offset == sizeAligned + 8);
@@ -154,12 +175,14 @@ namespace GTASaveData.LCS
             SimpleVars = simp;
             totalSize += Align4(ReadDataBlock(file, "SRPT", out ScriptData srpt));
             Scripts = srpt;
-            totalSize += Align4(ReadDataBlock(file, "GRGE", out GarageData grge));
+            totalSize += Align4(ReadDummyBlock(file, "GRGE", out Dummy grge));
             Garages = grge;
-            totalSize += Align4(ReadDataBlock(file, "PLYR", out PlayerInfo plyr));
+            totalSize += Align4(ReadDummyBlock(file, "PLYR", out Dummy plyr));
             PlayerInfo = plyr;
-            totalSize += Align4(ReadDataBlock(file, "STAT", out Stats stat));
+            totalSize += Align4(ReadDummyBlock(file, "STAT", out Dummy stat));
             Stats = stat;
+            totalSize += Align4(ReadDummyBlock(file, "OVER", out Dummy over));
+            m_over = over;
 
             if (FileFormat.IsPS2)
             {
@@ -179,6 +202,7 @@ namespace GTASaveData.LCS
             totalSize += Align4(WriteDataBlock(file, "GRGE", Garages));
             totalSize += Align4(WriteDataBlock(file, "PLYR", PlayerInfo));
             totalSize += Align4(WriteDataBlock(file, "STAT", Stats));
+            totalSize += Align4(WriteDataBlock(file, "OVER", m_over));
 
             if (FileFormat.IsPS2)
             {
@@ -196,34 +220,25 @@ namespace GTASaveData.LCS
 
         protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
         {
-            const int SimpSizePS2 = 0xF8;
-            const int SimpSizePSP = 0xBC;
-            const int RunningScriptSizeAndroid = 0x21C;
-            const int RunningScriptSizeiOS = 0x228;
+            const int SimpSizePS2 = 0x104;
+            const int SimpSizePSP = 0xC8;
 
             using (DataBuffer buf = new DataBuffer(data))
             {
                 if (buf.Length < 0x1000) goto DetectionFailed;
-                buf.Skip(4);
 
+                string simp = buf.ReadString(4);
+                if (simp != "SIMP") goto DetectionFailed;
                 int simpSize = buf.ReadInt32();
-                int skip = simpSize + 4;
-                if (skip < 0 || buf.Position + skip + 4 > buf.Length) goto DetectionFailed;
-                buf.Skip(skip);
+                int skip = simpSize;
+                if (buf.Position + skip > buf.Length) goto DetectionFailed;
 
+                buf.Skip(skip);
+                string srpt = buf.ReadString(4);
+                if (srpt != "SRPT") goto DetectionFailed;
                 int srptSize = buf.ReadInt32();
-                int srptOffset = buf.Position;
-                if (buf.Position + 12 > buf.Length) goto DetectionFailed;
-                buf.Skip(8);
-
-                int globalsSize = buf.ReadInt32();
-                skip = globalsSize + 0x7C0;
-                if (skip < 0 || buf.Position + skip + 4 > buf.Length) goto DetectionFailed;
-                buf.Skip(skip);
-
-                int numRunningScripts = buf.ReadInt32();
-                if (numRunningScripts <= 0) goto DetectionFailed;
-                int runningScriptSize = (srptOffset + srptSize - buf.Position) / numRunningScripts;
+                skip = srptSize;
+                if (buf.Position + skip > buf.Length) goto DetectionFailed;
 
                 if (simpSize == SimpSizePS2)
                 {
@@ -233,16 +248,6 @@ namespace GTASaveData.LCS
                 if (simpSize == SimpSizePSP)
                 {
                     fmt = FileFormats.PSP;
-                    return true;
-                }
-                if (runningScriptSize == RunningScriptSizeAndroid)
-                {
-                    fmt = FileFormats.Android;
-                    return true;
-                }
-                if (runningScriptSize == RunningScriptSizeiOS)
-                {
-                    fmt = FileFormats.iOS;
                     return true;
                 }
             }
@@ -265,6 +270,7 @@ namespace GTASaveData.LCS
             size += Align4(SizeOfObject(Garages, fmt)) + 8;
             size += Align4(SizeOfObject(PlayerInfo, fmt)) + 8;
             size += Align4(SizeOfObject(Stats, fmt)) + 8;
+            size += Align4(SizeOfObject(m_over, fmt)) + 8;
 
             if (fmt.IsPS2) size += (SizeOfGameInBytes - size);
 
@@ -273,10 +279,10 @@ namespace GTASaveData.LCS
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as LCSSave);
+            return Equals(obj as SaveFileVCS);
         }
 
-        public bool Equals(LCSSave other)
+        public bool Equals(SaveFileVCS other)
         {
             if (other == null)
             {
@@ -290,23 +296,13 @@ namespace GTASaveData.LCS
                 && Stats.Equals(other.Stats);
         }
 
-        public LCSSave DeepClone()
+        public SaveFileVCS DeepClone()
         {
-            return new LCSSave(this);
+            return new SaveFileVCS(this);
         }
 
         public static class FileFormats
         {
-            public static readonly FileFormat Android = new FileFormat(
-                "Android", "Android", "Android OS",
-                GameConsole.Android
-            );
-
-            public static readonly FileFormat iOS = new FileFormat(
-                "iOS", "iOS", "Apple iOS",
-                GameConsole.iOS
-            );
-
             public static readonly FileFormat PS2 = new FileFormat(
                 "PS2", "PS2", "PlayStation 2",
                 GameConsole.PS2
@@ -319,7 +315,7 @@ namespace GTASaveData.LCS
 
             public static FileFormat[] GetAll()
             {
-                return new FileFormat[] { Android, iOS, PS2, PSP };
+                return new FileFormat[] { PS2, PSP };
             }
         }
     }

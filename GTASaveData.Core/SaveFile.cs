@@ -7,7 +7,7 @@ namespace GTASaveData
     /// <summary>
     /// Contains the saved state of a <i>Grand Theft Auto</i> game.
     /// </summary>
-    public abstract class SaveData : SaveDataObject
+    public abstract class SaveFile : SaveDataObject
     {
         private const int FileSizeMax = 0x200000;
 
@@ -54,19 +54,19 @@ namespace GTASaveData
         public abstract DateTime TimeStamp { get; set; }
 
         /// <summary>
-        /// Creates a new <see cref="SaveData"/> instance.
+        /// Creates a new <see cref="SaveFile"/> instance.
         /// </summary>
-        public SaveData()
+        public SaveFile()
         { }
 
         /// <summary>
         /// Attempts to determine the file format of the specified save data.
         /// </summary>
-        /// <typeparam name="T">The <see cref="SaveData"/> type.</typeparam>
+        /// <typeparam name="T">The <see cref="SaveFile"/> type.</typeparam>
         /// <param name="data">The data to parse.</param>
         /// <param name="fmt">The detected file format.</param>
         /// <returns>A value indicating whether file format detection was successful.</returns>
-        public static bool GetFileFormat<T>(byte[] data, out FileFormat fmt) where T : SaveData, new()
+        public static bool GetFileFormat<T>(byte[] data, out FileFormat fmt) where T : SaveFile, new()
         {
             return new T().DetectFileFormat(data, out fmt);
         }
@@ -74,11 +74,11 @@ namespace GTASaveData
         /// <summary>
         /// Attempts to determine the file format of the specified save data.
         /// </summary>
-        /// <typeparam name="T">The <see cref="SaveData"/> type.</typeparam>
+        /// <typeparam name="T">The <see cref="SaveFile"/> type.</typeparam>
         /// <param name="path">The path to the file to parse.</param>
         /// <param name="fmt">The detected file format.</param>
         /// <returns>A value indicating whether file format detection was successful.</returns>
-        public static bool GetFileFormat<T>(string path, out FileFormat fmt) where T : SaveData, new()
+        public static bool GetFileFormat<T>(string path, out FileFormat fmt) where T : SaveFile, new()
         {
             if (File.Exists(path))
             {
@@ -98,38 +98,38 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Creates a <see cref="SaveData"/> object from the specified byte array
+        /// Creates a <see cref="SaveFile"/> object from the specified byte array
         /// using the detected file format.
         /// </summary>
-        /// <typeparam name="T">The <see cref="SaveData"/> type to create.</typeparam>
+        /// <typeparam name="T">The <see cref="SaveFile"/> type to create.</typeparam>
         /// <param name="data">The data to deserialize.</param>
-        /// <returns>A <see cref="SaveData"/> object containing the deserialized data.</returns>
-        public static T Load<T>(byte[] data) where T : SaveData, new()
+        /// <returns>A <see cref="SaveFile"/> object containing the deserialized data.</returns>
+        public static T Load<T>(byte[] data) where T : SaveFile, new()
         {
             return Load<T>(data, FileFormat.Default);
         }
 
         /// <summary>
-        /// Creates a <see cref="SaveData"/> object from the specified file
+        /// Creates a <see cref="SaveFile"/> object from the specified file
         /// using the detected file format.
         /// </summary>
-        /// <typeparam name="T">The <see cref="SaveData"/> type to create.</typeparam>
+        /// <typeparam name="T">The <see cref="SaveFile"/> type to create.</typeparam>
         /// <param name="path">The path to the file to deserialize.</param>
-        /// <returns>A <see cref="SaveData"/> object containing the deserialized data.</returns>
-        public static T Load<T>(string path) where T : SaveData, new()
+        /// <returns>A <see cref="SaveFile"/> object containing the deserialized data.</returns>
+        public static T Load<T>(string path) where T : SaveFile, new()
         {
             return Load<T>(path, FileFormat.Default); ;
         }
 
         /// <summary>
-        /// Creates a <see cref="SaveData"/> object from the specified byte array
+        /// Creates a <see cref="SaveFile"/> object from the specified byte array
         /// using the specified file format.
         /// </summary>
-        /// <typeparam name="T">The <see cref="SaveData"/> type to create.</typeparam>
+        /// <typeparam name="T">The <see cref="SaveFile"/> type to create.</typeparam>
         /// <param name="data">The data to deserialize.</param>
         /// <param name="fmt">The file format to use for deserialization.</param>
-        /// <returns>A <see cref="SaveData"/> object containing the deserialized data.</returns>
-        public static T Load<T>(byte[] data, FileFormat fmt) where T : SaveData, new()
+        /// <returns>A <see cref="SaveFile"/> object containing the deserialized data.</returns>
+        public static T Load<T>(byte[] data, FileFormat fmt) where T : SaveFile, new()
         {
             if (fmt == FileFormat.Default)
             {
@@ -145,14 +145,14 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Creates a <see cref="SaveData"/> object from the specified file
+        /// Creates a <see cref="SaveFile"/> object from the specified file
         /// using the specified file format.
         /// </summary>
-        /// <typeparam name="T">The <see cref="SaveData"/> type to create.</typeparam>
+        /// <typeparam name="T">The <see cref="SaveFile"/> type to create.</typeparam>
         /// <param name="path">The data to deserialize.</param>
         /// <param name="fmt">The file format to use for deserialization.</param>
-        /// <returns>A <see cref="SaveData"/> object containing the deserialized data.</returns>
-        public static T Load<T>(string path, FileFormat fmt) where T : SaveData, new()
+        /// <returns>A <see cref="SaveFile"/> object containing the deserialized data.</returns>
+        public static T Load<T>(string path, FileFormat fmt) where T : SaveFile, new()
         {
             if (fmt == FileFormat.Default)
             {

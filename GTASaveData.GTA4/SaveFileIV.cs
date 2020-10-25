@@ -11,8 +11,8 @@ namespace GTASaveData.GTA4
     /// <summary>
     /// Represents a <i>Grand Theft Auto IV</i> save file.
     /// </summary>
-    public class GTA4Save : SaveData, ISaveData,
-        IEquatable<GTA4Save>, IDeepClonable<GTA4Save>
+    public class SaveFileIV : SaveFile, ISaveFile,
+        IEquatable<SaveFileIV>, IDeepClonable<SaveFileIV>
     {
         public const int MaxNameLength = 128;
 
@@ -293,19 +293,19 @@ namespace GTASaveData.GTA4
             set { m_timeLastSaved = value; OnPropertyChanged(); }
         }
 
-        bool ISaveData.HasSimpleVariables => true;
-        bool ISaveData.HasScriptData => false;
-        bool ISaveData.HasGarageData => false;
-        bool ISaveData.HasCarGenerators => false;
-        bool ISaveData.HasPlayerInfo => false;
+        bool ISaveFile.HasSimpleVariables => true;
+        bool ISaveFile.HasScriptData => false;
+        bool ISaveFile.HasGarageData => false;
+        bool ISaveFile.HasCarGenerators => false;
+        bool ISaveFile.HasPlayerInfo => false;
 
-        ISimpleVariables ISaveData.SimpleVars => SimpleVars;
-        IScriptData ISaveData.ScriptData => throw new NotImplementedException();
-        IGarageData ISaveData.GarageData => throw new NotImplementedException();
-        ICarGeneratorData ISaveData.CarGenerators => throw new NotImplementedException();
-        IPlayerInfo ISaveData.PlayerInfo => throw new NotImplementedException();
+        ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
+        IScriptData ISaveFile.ScriptData => throw new NotImplementedException();
+        IGarageData ISaveFile.GarageData => throw new NotImplementedException();
+        ICarGeneratorData ISaveFile.CarGenerators => throw new NotImplementedException();
+        IPlayerInfo ISaveFile.PlayerInfo => throw new NotImplementedException();
 
-        IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
+        IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
             PlayerInfo,
@@ -343,17 +343,17 @@ namespace GTASaveData.GTA4
             GfwlData
         };
 
-        public static GTA4Save Load(string path)
+        public static SaveFileIV Load(string path)
         {
-            return Load<GTA4Save>(path);
+            return Load<SaveFileIV>(path);
         }
 
-        public static GTA4Save Load(string path, FileFormat fmt)
+        public static SaveFileIV Load(string path, FileFormat fmt)
         {
-            return Load<GTA4Save>(path, fmt);
+            return Load<SaveFileIV>(path, fmt);
         }
 
-        public GTA4Save()
+        public SaveFileIV()
         {
             Name = "";
             SimpleVars = new SimpleVariables();
@@ -392,7 +392,7 @@ namespace GTASaveData.GTA4
             GfwlData = new Dummy();
         }
 
-        public GTA4Save(GTA4Save other)
+        public SaveFileIV(SaveFileIV other)
         {
             Name = other.Name;
             TimeStamp = other.TimeStamp;
@@ -600,10 +600,10 @@ namespace GTASaveData.GTA4
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as GTA4Save);
+            return Equals(obj as SaveFileIV);
         }
 
-        public bool Equals(GTA4Save other)
+        public bool Equals(SaveFileIV other)
         {
             if (other == null)
             {
@@ -651,9 +651,9 @@ namespace GTASaveData.GTA4
                 && GfwlData.Equals(other.GfwlData);
         }
 
-        public GTA4Save DeepClone()
+        public SaveFileIV DeepClone()
         {
-            return new GTA4Save(this);
+            return new SaveFileIV(this);
         }
 
         public static class FileFormats

@@ -10,8 +10,8 @@ namespace GTASaveData.GTA3
     /// <summary>
     /// Represents a saved <i>Grand Theft Auto III</i> game.
     /// </summary>
-    public class GTA3Save : GTA3VCSave, ISaveData,
-        IEquatable<GTA3Save>, IDeepClonable<GTA3Save>
+    public class SaveFileGTA3 : SaveFileGTA3VC, ISaveFile,
+        IEquatable<SaveFileGTA3>, IDeepClonable<SaveFileGTA3>
     {
         private const int MaxNumPaddingBlocks = 4;
 
@@ -181,19 +181,19 @@ namespace GTASaveData.GTA3
             set { SimpleVars.TimeStamp = new SystemTime(value); OnPropertyChanged(); }
         }
 
-        bool ISaveData.HasSimpleVariables => true;
-        bool ISaveData.HasScriptData => true;
-        bool ISaveData.HasGarageData => true;
-        bool ISaveData.HasCarGenerators => true;
-        bool ISaveData.HasPlayerInfo => true;
+        bool ISaveFile.HasSimpleVariables => true;
+        bool ISaveFile.HasScriptData => true;
+        bool ISaveFile.HasGarageData => true;
+        bool ISaveFile.HasCarGenerators => true;
+        bool ISaveFile.HasPlayerInfo => true;
 
-        ISimpleVariables ISaveData.SimpleVars => SimpleVars;
-        IScriptData ISaveData.ScriptData => Scripts;
-        IGarageData ISaveData.GarageData => Garages;
-        ICarGeneratorData ISaveData.CarGenerators => CarGenerators;
-        IPlayerInfo ISaveData.PlayerInfo => PlayerInfo;
+        ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
+        IScriptData ISaveFile.ScriptData => Scripts;
+        IGarageData ISaveFile.GarageData => Garages;
+        ICarGeneratorData ISaveFile.CarGenerators => CarGenerators;
+        IPlayerInfo ISaveFile.PlayerInfo => PlayerInfo;
 
-        IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
+        IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
             Scripts,
@@ -218,17 +218,17 @@ namespace GTASaveData.GTA3
             PedTypeInfo
         };
 
-        public static GTA3Save Load(string path)
+        public static SaveFileGTA3 Load(string path)
         {
-            return Load<GTA3Save>(path);
+            return Load<SaveFileGTA3>(path);
         }
 
-        public static GTA3Save Load(string path, FileFormat fmt)
+        public static SaveFileGTA3 Load(string path, FileFormat fmt)
         {
-            return Load<GTA3Save>(path, fmt);
+            return Load<SaveFileGTA3>(path, fmt);
         }
 
-        public GTA3Save()
+        public SaveFileGTA3()
         {
             SimpleVars = new SimpleVariables();
             Scripts = new ScriptData();
@@ -253,7 +253,7 @@ namespace GTASaveData.GTA3
             PedTypeInfo = new PedTypeData();
         }
 
-        public GTA3Save(GTA3Save other)
+        public SaveFileGTA3(SaveFileGTA3 other)
         {
             SimpleVars = new SimpleVariables(other.SimpleVars);
             Scripts = new ScriptData(other.Scripts);
@@ -576,10 +576,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as GTA3Save);
+            return Equals(obj as SaveFileGTA3);
         }
 
-        public bool Equals(GTA3Save other)
+        public bool Equals(SaveFileGTA3 other)
         {
             if (other == null)
             {
@@ -609,9 +609,9 @@ namespace GTASaveData.GTA3
                 && PedTypeInfo.Equals(other.PedTypeInfo);
         }
 
-        public GTA3Save DeepClone()
+        public SaveFileGTA3 DeepClone()
         {
-            return new GTA3Save(this);
+            return new SaveFileGTA3(this);
         }
 
         public static class FileFormats
