@@ -13,10 +13,9 @@ namespace GTASaveData.VC
         public const int RadioStationListCount = 10;
         public const int SteamMagicNumber = 0x3DF5C2FD;
 
-        // TODO get steam ID in here
-
         private string m_lastMissionPassedName;
         private SystemTime m_timeStamp;
+        private int m_sizeOfGameInBytes;
         private Level m_currLevel;
         private Vector3 m_cameraPosition;
         private int m_steamId;
@@ -58,6 +57,12 @@ namespace GTASaveData.VC
         {
             get { return m_timeStamp; }
             set { m_timeStamp = value; OnPropertyChanged(); }
+        }
+
+        public int SizeOfGameInBytes
+        {
+            get { return m_sizeOfGameInBytes; }
+            set { m_sizeOfGameInBytes = value; }
         }
 
         public Level CurrLevel
@@ -250,6 +255,7 @@ namespace GTASaveData.VC
         {
             LastMissionPassedName = other.LastMissionPassedName;
             TimeStamp = other.TimeStamp;
+            SizeOfGameInBytes = other.SizeOfGameInBytes;
             CurrLevel = other.CurrLevel;
             CameraPosition = other.CameraPosition;
             SteamMagic = other.SteamMagic;
@@ -286,7 +292,7 @@ namespace GTASaveData.VC
         {
             LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
             TimeStamp = buf.ReadStruct<SystemTime>();
-            buf.ReadInt32();
+            SizeOfGameInBytes = buf.ReadInt32();
             CurrLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.ReadStruct<Vector3>();
             if (fmt.IsPC && fmt.IsSteam) SteamMagic = buf.ReadInt32();
@@ -333,7 +339,7 @@ namespace GTASaveData.VC
         {
             buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
             buf.Write(TimeStamp);
-            buf.Write(SaveFileVC.SizeOfGameInBytes + 1);
+            buf.Write(SizeOfGameInBytes);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
             if (fmt.IsPC && fmt.IsSteam) buf.Write(SteamMagic);
@@ -404,6 +410,7 @@ namespace GTASaveData.VC
 
             return LastMissionPassedName.Equals(other.LastMissionPassedName)
                 && TimeStamp.Equals(other.TimeStamp)
+                && SizeOfGameInBytes.Equals(other.SizeOfGameInBytes)
                 && CurrLevel.Equals(other.CurrLevel)
                 && CameraPosition.Equals(other.CameraPosition)
                 && SteamMagic.Equals(other.SteamMagic)

@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using System.Collections.Generic;
 using TestFramework;
 using Xunit;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace GTASaveData.VC.Tests
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 //.RuleFor(x => x.Scripts, Generator.Generate<TheScripts, TestTheScripts>(format))
-                //.RuleFor(x => x.PedPool, Generator.Generate<PedPool, TestPedPool>(format))
+                .RuleFor(x => x.PedPool, Generator.Generate<PedPool, TestPedPool>(format))
                 //.RuleFor(x => x.Garages, Generator.Generate<Garages, TestGarages>(format))
                 //.RuleFor(x => x.VehiclePool, Generator.Generate<VehiclePool, TestVehiclePool>(format))
                 //.RuleFor(x => x.ObjectPool, Generator.Generate<ObjectPool, TestObjectPool>(format))
@@ -58,10 +57,8 @@ namespace GTASaveData.VC.Tests
             using SaveFileVC x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
-
-            int calculatedSum = data.Take(data.Length - 4).Sum(x => x);
-            int storedSum = BitConverter.ToInt32(data, data.Length - 4);
-            Assert.Equal(calculatedSum, storedSum);
+            AssertCheckSumValid(data, format);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
 
         [Theory]
@@ -74,14 +71,21 @@ namespace GTASaveData.VC.Tests
             using SaveFileVC x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
-
-            int calculatedSum = data.Take(data.Length - 4).Sum(x => x);
-            int storedSum = BitConverter.ToInt32(data, data.Length - 4);
-            Assert.Equal(calculatedSum, storedSum);
+            AssertCheckSumValid(data, format);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
 
         [Fact]
-        public void BlockSizeExceeded()
+        public void CopyConstructor()
+        {
+            SaveFileVC x0 = GenerateTestObject();
+            SaveFileVC x1 = new SaveFileVC(x0);
+
+            Assert.Equal(x0, x1);
+        }
+
+        [Fact]
+        public void BlockBounds()
         {
             string path = TestData.GetTestDataPath(Game.VC, SaveFileVC.FileFormats.PC, "COK_2");
             byte[] data = File.ReadAllBytes(path);
@@ -104,11 +108,11 @@ namespace GTASaveData.VC.Tests
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);
-            Assert.Equal(x0.PlayerPeds, x1.PlayerPeds);
+            Assert.Equal(x0.PedPool, x1.PedPool);
             Assert.Equal(x0.Garages, x1.Garages);
             Assert.Equal(x0.GameLogic, x1.GameLogic);
-            Assert.Equal(x0.VehiclePool, x1.VehiclePool);
-            Assert.Equal(x0.ObjectPool, x1.ObjectPool);
+            Assert.Equal(x0.Vehicles, x1.Vehicles);
+            Assert.Equal(x0.Objects, x1.Objects);
             Assert.Equal(x0.Paths, x1.Paths);
             Assert.Equal(x0.Cranes, x1.Cranes);
             Assert.Equal(x0.Pickups, x1.Pickups);
@@ -127,6 +131,14 @@ namespace GTASaveData.VC.Tests
             Assert.Equal(x0.Streaming, x1.Streaming);
             Assert.Equal(x0.PedTypeInfo, x1.PedTypeInfo);
             Assert.Equal(x0, x1);
+        }
+
+        private void AssertCheckSumValid(byte[] data, FileFormat format)
+        {
+            int sumOffset = (format.IsXbox) ? data.Length - 24 : data.Length - 4;
+            int calculatedSum = data.Take(sumOffset).Sum(x => x);
+            int storedSum = BitConverter.ToInt32(data, sumOffset);
+            Assert.Equal(calculatedSum, storedSum);
         }
     }
 }
