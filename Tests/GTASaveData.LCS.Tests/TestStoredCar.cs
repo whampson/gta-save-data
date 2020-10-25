@@ -10,7 +10,7 @@ namespace GTASaveData.LCS.Tests
         {
             Faker<StoredCar> model = new Faker<StoredCar>()
                 .RuleFor(x => x.Model, f => f.Random.Int())
-                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Position, f => Generator.Vector3(f))
                 .RuleFor(x => x.Heading, f => f.Random.Float(0, 359))
                 .RuleFor(x => x.Pitch, f => f.Random.Float(-45, 45))
                 .RuleFor(x => x.Traction, f => f.Random.Float())

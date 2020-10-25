@@ -10,7 +10,7 @@ namespace GTASaveData.LCS
         IEquatable<StoredCar>, IDeepClonable<StoredCar>
     {
         private int m_model;
-        private Vector3D m_position;
+        private Vector3 m_position;
         private float m_heading;
         private float m_pitch;
         private float m_traction;
@@ -125,13 +125,13 @@ namespace GTASaveData.LCS
 
         public StoredCar()
         {
-            Position = new Vector3D();
+            Position = new Vector3();
         }
 
         public StoredCar(StoredCar other)
         {
             Model = other.Model;
-            Position = new Vector3D(other.Position);
+            Position = other.Position;
             Heading = other.Heading;
             Pitch = other.Pitch;
             Traction = other.Traction;
@@ -146,7 +146,7 @@ namespace GTASaveData.LCS
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Model = buf.ReadInt32();
-            Position = buf.Read<Vector3D>();
+            Position = buf.ReadStruct<Vector3>();
             float headingX = buf.ReadFloat();
             float headingY = buf.ReadFloat();
             float heading = (float) RadToDeg(Math.Atan2(headingY, headingX)) - 90;
