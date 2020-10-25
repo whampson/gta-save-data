@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 
-namespace GTASaveData.GTA4
+namespace GTASaveData.IV
 {
     /// <summary>
     /// Represents a <i>Grand Theft Auto IV</i> save file.

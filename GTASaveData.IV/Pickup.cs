@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Numerics;
 using GTASaveData.Interfaces;
 
-namespace GTASaveData.GTA4
+namespace GTASaveData.IV
 {
     public class Pickup : SaveDataObject,
         IEquatable<Pickup>, IDeepClonable<Pickup>

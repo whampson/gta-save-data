@@ -42,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GTASaveData.Core\GTASaveData.Core.csproj" />
     <ProjectReference Include="..\..\GTASaveData.VC\GTASaveData.VC.csproj" />
     <ProjectReference Include="..\GTASaveData.Core.Tests\GTASaveData.Core.Tests.csproj" />
     <ProjectReference Include="..\TestFramework\TestFramework.csproj" />

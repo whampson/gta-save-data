@@ -1,6 +1,6 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
-using GTASaveData.GTA4;
+using GTASaveData.IV;
 using GTASaveData.LCS;
 using GTASaveData.SA;
 using GTASaveData.VC;
@@ -21,7 +21,7 @@ using VCBlock = GTASaveData.VC.DataBlock;
 using SABlock = GTASaveData.SA.DataBlock;
 using LCSBlock = GTASaveData.LCS.DataBlock;
 using VCSBlock = GTASaveData.VCS.DataBlock;
-using IVBlock = GTASaveData.GTA4.DataBlock;
+using IVBlock = GTASaveData.IV.DataBlock;
 
 
 namespace TestApp
