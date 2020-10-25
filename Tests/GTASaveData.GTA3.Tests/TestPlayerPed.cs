@@ -9,9 +9,13 @@ namespace GTASaveData.GTA3.Tests
         public override PlayerPed GenerateTestObject(FileFormat format)
         {
             Faker<PlayerPed> model = new Faker<PlayerPed>()
+
+                /* These fields are saved in the PedPool structure that wraps the PlayerPed struct,
+                   not in the PlayerPed struct itself */
                 //.RuleFor(x => x.Type, f => f.PickRandom<PedTypeId>())
                 //.RuleFor(x => x.ModelIndex, f => f.Random.Short())
                 //.RuleFor(x => x.Handle, f => f.Random.Int())
+
                 .RuleFor(x => x.Position, f => Generator.Vector3(f))
                 .RuleFor(x => x.CreatedBy, f => f.PickRandom<CharCreatedBy>())
                 .RuleFor(x => x.Health, f => f.Random.Float())
@@ -20,6 +24,8 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.MaxWeaponTypeAllowed, f => f.Random.Byte())
                 .RuleFor(x => x.MaxStamina, f => f.Random.Float())
                 .RuleFor(x => x.TargetableObjects, f => Generator.Array(PlayerPed.NumTargetableObjects, g => f.Random.Int()));
+                
+                /* Ditto. */
                 //.RuleFor(x => x.MaxWantedLevel, f => f.Random.Int())
                 //.RuleFor(x => x.MaxChaosLevel, f => f.Random.Int())
                 //.RuleFor(x => x.ModelName, f => Generator.AsciiString(f, PlayerPed.MaxModelNameLength - 1));

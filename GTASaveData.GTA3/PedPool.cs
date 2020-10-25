@@ -7,8 +7,8 @@ using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
-    public class PlayerPedPool : SaveDataObject,
-        IEquatable<PlayerPedPool>, IDeepClonable<PlayerPedPool>,
+    public class PedPool : SaveDataObject,
+        IEquatable<PedPool>, IDeepClonable<PedPool>,
         IEnumerable<PlayerPed>
     {
         // Yes, you can have multiple player peds
@@ -33,7 +33,7 @@ namespace GTASaveData.GTA3
             get { return PlayerPeds.Count; }
         }
 
-        public PlayerPedPool()
+        public PedPool()
         {
             PlayerPeds = new Array<PlayerPed>()
             {
@@ -41,7 +41,7 @@ namespace GTASaveData.GTA3
             };
         }
 
-        public PlayerPedPool(PlayerPedPool other)
+        public PedPool(PedPool other)
         {
             PlayerPeds = ArrayHelper.DeepClone(other.PlayerPeds);
         }
@@ -114,10 +114,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as PlayerPedPool);
+            return Equals(obj as PedPool);
         }
 
-        public bool Equals(PlayerPedPool other)
+        public bool Equals(PedPool other)
         {
             if (other == null)
             {
@@ -127,9 +127,9 @@ namespace GTASaveData.GTA3
             return PlayerPeds.SequenceEqual(other.PlayerPeds);
         }
 
-        public PlayerPedPool DeepClone()
+        public PedPool DeepClone()
         {
-            return new PlayerPedPool(this);
+            return new PedPool(this);
         }
 
         public IEnumerator<PlayerPed> GetEnumerator()
