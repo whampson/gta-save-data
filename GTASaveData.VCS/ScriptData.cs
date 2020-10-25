@@ -1,6 +1,5 @@
-﻿using GTASaveData.JsonConverters;
-using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
+using GTASaveData.JsonConverters;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,9 +18,11 @@ namespace GTASaveData.VCS
 
         private const int ScriptDataSize = 0x6B8;
 
+        // TODO: port from LCS
+
         // Only the global variables are editable :(
 
-        private Array<byte> m_scriptSpace;
+        private Array<int> m_globals;
         private int m_onAMissionFlag;
         private uint m_lastMissionPassedTime;
         private Array<BuildingSwap> m_buildingSwapArray;
@@ -33,11 +34,11 @@ namespace GTASaveData.VCS
         private short m_numberOfMissionScripts;
         private Array<RunningScript> m_activeScripts;
 
-        [JsonConverter(typeof(ByteArrayConverter))]
-        public Array<byte> ScriptSpace
+        [JsonConverter(typeof(IntArrayConverter))]
+        public Array<int> Globals
         {
-            get { return m_scriptSpace; }
-            set { m_scriptSpace = value; OnPropertyChanged(); }
+            get { return m_globals; }
+            set { m_globals = value; OnPropertyChanged(); }
         }
 
         [Obsolete("Not loaded by the game.")]
@@ -104,38 +105,28 @@ namespace GTASaveData.VCS
         }
 
         [Obsolete("Not loaded by the game.")]
-        public Array<RunningScript> ActiveScripts
+        public Array<RunningScript> Threads
         {
             get { return m_activeScripts; }
             set { m_activeScripts = value; OnPropertyChanged(); }
         }
 
-        public IEnumerable<int> GlobalVariables
-        {
-            get
-            {
-                for (int i = 0; i < ScriptSpace.Count / 4; i++)
-                {
-                    yield return GetGlobal(i);
-                }
-            }
-        }
-
+        IEnumerable<int> IScriptData.Globals => m_globals;
         IEnumerable<IBuildingSwap> IScriptData.BuildingSwaps => m_buildingSwapArray;
         IEnumerable<IInvisibleObject> IScriptData.InvisibilitySettings => m_invisibilitySettingArray;
-        IEnumerable<IRunningScript> IScriptData.ActiveScripts => m_activeScripts;
+        IEnumerable<IRunningScript> IScriptData.Threads => m_activeScripts;
 
         public ScriptData()
         {
-            ScriptSpace = new Array<byte>();
+            Globals = new Array<int>();
             BuildingSwaps = ArrayHelper.CreateArray<BuildingSwap>(NumBuildingSwaps);
             InvisibilitySettings = ArrayHelper.CreateArray<InvisibleObject>(NumInvisibilitySettings);
-            ActiveScripts = new Array<RunningScript>();
+            Threads = new Array<RunningScript>();
         }
 
         public ScriptData(ScriptData other)
         {
-            ScriptSpace = ArrayHelper.DeepClone(other.ScriptSpace);
+            Globals = ArrayHelper.DeepClone(other.Globals);
             OnAMissionFlag = other.OnAMissionFlag;
             LastMissionPassedTime = other.LastMissionPassedTime;
             BuildingSwaps = ArrayHelper.DeepClone(other.BuildingSwaps);
@@ -145,54 +136,36 @@ namespace GTASaveData.VCS
             MainScriptSize = other.MainScriptSize;
             LargestMissionScriptSize = other.LargestMissionScriptSize;
             NumberOfMissionScripts = other.NumberOfMissionScripts;
-            ActiveScripts = ArrayHelper.DeepClone(other.ActiveScripts);
+            Threads = ArrayHelper.DeepClone(other.Threads);
         }
 
-        public RunningScript GetScript(string name)
+        public RunningScript GetThread(string name)
         {
-            return ActiveScripts.Where(x => x.Name == name).FirstOrDefault();
+            return Threads.Where(x => x.Name == name).FirstOrDefault();
         }
 
-        IRunningScript IScriptData.GetScript(string name) => GetScript(name);
+        IRunningScript IScriptData.GetThread(string name) => GetThread(name);
 
         public int GetGlobal(int index)
         {
-            byte[] intBits = new byte[4];
-            for (int i = 0; i < 4; i++)
-            {
-                intBits[i] = ScriptSpace[(index * 4) + i];
-            }
-
-            return BitConverter.ToInt32(intBits, 0);
+            return Globals[index];
         }
 
         public float GetGlobalAsFloat(int index)
         {
-            byte[] floatBits = new byte[4];
-            for (int i = 0; i < 4; i++)
-            {
-                floatBits[i] = ScriptSpace[(index * 4) + i];
-            }
-
+            byte[] floatBits = BitConverter.GetBytes(GetGlobal(index));
             return BitConverter.ToSingle(floatBits, 0);
         }
 
         public void SetGlobal(int index, int value)
         {
-            byte[] intBits = BitConverter.GetBytes(value);
-            for (int i = 0; i < sizeof(int); i++)
-            {
-                ScriptSpace[(index * sizeof(int)) + i] = intBits[i];
-            }
+            Globals[index] = value;
         }
 
         public void SetGlobal(int index, float value)
         {
             byte[] floatBits = BitConverter.GetBytes(value);
-            for (int i = 0; i < sizeof(float); i++)
-            {
-                ScriptSpace[(index * sizeof(float)) + i] = floatBits[i];
-            }
+            Globals[index] = BitConverter.ToInt32(floatBits, 0);
         }
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
@@ -200,7 +173,7 @@ namespace GTASaveData.VCS
             int size = GTA3VCSave.ReadBlockHeader(buf, "SCR");
 
             int varSpace = buf.ReadInt32();
-            ScriptSpace = buf.ReadArray<byte>(varSpace);
+            Globals = buf.ReadArray<int>(varSpace / sizeof(int));
             buf.Align4();
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
@@ -216,7 +189,7 @@ namespace GTASaveData.VCS
             NumberOfMissionScripts = buf.ReadInt16();
             buf.ReadUInt16();
             int runningScripts = buf.ReadInt32();
-            ActiveScripts = buf.ReadArray<RunningScript>(runningScripts, fmt);
+            Threads = buf.ReadArray<RunningScript>(runningScripts, fmt);
 
             Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
             Debug.Assert(size == SizeOfObject(this, fmt) - GTA3VCSave.BlockHeaderSize);
@@ -227,8 +200,8 @@ namespace GTASaveData.VCS
             int size = SizeOfObject(this, fmt);
             GTA3VCSave.WriteBlockHeader(buf, "SCR", size - GTA3VCSave.BlockHeaderSize);
 
-            buf.Write(ScriptSpace.Count);
-            buf.Write(ScriptSpace);
+            buf.Write(Globals.Count * sizeof(int));
+            buf.Write(Globals);
             buf.Align4();
             buf.Write(ScriptDataSize);
             buf.Write(OnAMissionFlag);
@@ -242,16 +215,16 @@ namespace GTASaveData.VCS
             buf.Write(LargestMissionScriptSize);
             buf.Write(NumberOfMissionScripts);
             buf.Write((short) 0);
-            buf.Write(ActiveScripts.Count);
-            buf.Write(ActiveScripts, fmt);
+            buf.Write(Threads.Count);
+            buf.Write(Threads, fmt);
 
             Debug.Assert(buf.Offset == size);
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            return SizeOfType<RunningScript>(fmt) * ActiveScripts.Count
-                + DataBuffer.Align4(ScriptSpace.Count)
+            return SizeOfType<RunningScript>(fmt) * Threads.Count
+                + Globals.Count * sizeof(int)
                 + ScriptDataSize
                 + GTA3VCSave.BlockHeaderSize
                 + 3 * sizeof(int);
@@ -269,7 +242,7 @@ namespace GTASaveData.VCS
                 return false;
             }
 
-            return ScriptSpace.SequenceEqual(other.ScriptSpace)
+            return Globals.SequenceEqual(other.Globals)
                 && OnAMissionFlag.Equals(other.OnAMissionFlag)
                 && LastMissionPassedTime.Equals(other.LastMissionPassedTime)
                 && BuildingSwaps.SequenceEqual(other.BuildingSwaps)
@@ -279,7 +252,7 @@ namespace GTASaveData.VCS
                 && MainScriptSize.Equals(other.MainScriptSize)
                 && LargestMissionScriptSize.Equals(other.LargestMissionScriptSize)
                 && NumberOfMissionScripts.Equals(other.NumberOfMissionScripts)
-                && ActiveScripts.SequenceEqual(other.ActiveScripts);
+                && Threads.SequenceEqual(other.Threads);
         }
 
         public ScriptData DeepClone()

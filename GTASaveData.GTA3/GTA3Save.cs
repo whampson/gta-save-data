@@ -223,6 +223,11 @@ namespace GTASaveData.GTA3
             return Load<GTA3Save>(path);
         }
 
+        public static GTA3Save Load(string path, FileFormat fmt)
+        {
+            return Load<GTA3Save>(path, fmt);
+        }
+
         public GTA3Save()
         {
             SimpleVars = new SimpleVariables();

@@ -17,7 +17,7 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.InstructionPointer, f => f.Random.Int())
                 .RuleFor(x => x.Stack, f => Generator.Array(RunningScript.MaxStackDepth, g => f.Random.Int()))
                 .RuleFor(x => x.StackPointer, f => f.Random.Short())
-                .RuleFor(x => x.LocalVariables, f => Generator.Array(RunningScript.NumLocalVariables, g => f.Random.Int()))
+                .RuleFor(x => x.Locals, f => Generator.Array(RunningScript.NumLocalVariables, g => f.Random.Int()))
                 .RuleFor(x => x.TimerA, f => f.Random.UInt())
                 .RuleFor(x => x.TimerB, f => f.Random.UInt())
                 .RuleFor(x => x.Field210h, f => f.Random.Int())
@@ -48,7 +48,7 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0.InstructionPointer, x1.InstructionPointer);
             Assert.Equal(x0.Stack, x1.Stack);
             Assert.Equal(x0.StackPointer, x1.StackPointer);
-            Assert.Equal(x0.LocalVariables, x1.LocalVariables);
+            Assert.Equal(x0.Locals, x1.Locals);
             Assert.Equal(x0.TimerA, x1.TimerA);
             Assert.Equal(x0.TimerB, x1.TimerB);
             Assert.Equal(x0.ConditionResult, x1.ConditionResult);

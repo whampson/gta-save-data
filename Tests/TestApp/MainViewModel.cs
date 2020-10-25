@@ -1,11 +1,14 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
+using GTASaveData.GTA4;
 using GTASaveData.LCS;
+using GTASaveData.SA;
 using GTASaveData.VC;
 using GTASaveData.VCS;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -15,8 +18,10 @@ using WpfEssentials.Win32;
 
 using IIIBlock = GTASaveData.GTA3.DataBlock;
 using VCBlock = GTASaveData.VC.DataBlock;
+using SABlock = GTASaveData.SA.DataBlock;
 using LCSBlock = GTASaveData.LCS.DataBlock;
 using VCSBlock = GTASaveData.VCS.DataBlock;
+using IVBlock = GTASaveData.GTA4.DataBlock;
 
 
 namespace TestApp
@@ -83,10 +88,12 @@ namespace TestApp
             {
                 return SelectedGame switch
                 {
-                    Game.GTA3 => GTA3Save.FileFormats.GetAll(),
+                    Game.III => GTA3Save.FileFormats.GetAll(),
                     Game.VC => VCSave.FileFormats.GetAll(),
+                    Game.SA => SASave.FileFormats.GetAll(),
                     Game.LCS => LCSSave.FileFormats.GetAll(),
                     Game.VCS => VCSSave.FileFormats.GetAll(),
+                    Game.IV => GTA4Save.FileFormats.GetAll(),
                     _ => new FileFormat[0],
                 };
             }
@@ -94,10 +101,12 @@ namespace TestApp
 
         public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
         {
-            { Game.GTA3, Enum.GetNames(typeof(IIIBlock)) },
+            { Game.III, Enum.GetNames(typeof(IIIBlock)) },
             { Game.VC, Enum.GetNames(typeof(VCBlock)) },
+            { Game.SA, Enum.GetNames(typeof(SABlock)) },
             { Game.LCS, Enum.GetNames(typeof(LCSBlock)) },
             { Game.VCS, Enum.GetNames(typeof(VCSBlock)) },
+            { Game.IV, Enum.GetNames(typeof(IVBlock)) },
         };
 
         public string[] BlockNameForCurrentGame
@@ -182,12 +191,12 @@ namespace TestApp
         {
             switch (SelectedGame)
             {
-                case Game.GTA3: DoLoad<GTA3Save>(path); break;
+                case Game.III: DoLoad<GTA3Save>(path); break;
                 case Game.VC: DoLoad<VCSave>(path); break;
-                //case GameType.SA: DoLoad<SanAndreasSave>(path); break;
+                case Game.SA: DoLoad<SASave>(path); break;
                 case Game.LCS: DoLoad<LCSSave>(path); break;
                 case Game.VCS: DoLoad<VCSSave>(path); break;
-                //case GameType.IV: DoLoad<GTA4Save>(path); break;
+                case Game.IV: DoLoad<GTA4Save>(path); break;
                 default: RequestMessageBoxError("Selected game not yet supported!"); return;
             }
 
@@ -197,7 +206,6 @@ namespace TestApp
                 StatusText = "Loaded " + path + ".";
 
                 OnLoadingFile();
-                //OnPropertyChanged(nameof(BlockNameForCurrentGame));
             }
         }
 
@@ -239,6 +247,10 @@ namespace TestApp
             else if (CurrentSaveFile is VCSave)
             {
                 (CurrentSaveFile as VCSave).Dispose();
+            }
+            else if (CurrentSaveFile is SASave)
+            {
+                (CurrentSaveFile as SASave).Dispose();
             }
         }
 
@@ -340,5 +352,26 @@ namespace TestApp
         {
             get;
         }
+    }
+
+    public enum Game
+    {
+        [Description("GTA III")]
+        III,
+
+        [Description("Vice City")]
+        VC,
+
+        [Description("San Andreas")]
+        SA,
+
+        [Description("Liberty City Stories")]
+        LCS,
+
+        [Description("Vice City Stories")]
+        VCS,
+
+        [Description("GTA IV")]
+        IV
     }
 }

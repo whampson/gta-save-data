@@ -1,14 +1,15 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.VC
 {
-    public class CarGenerator : SaveDataObject, ICarGenerator, IEquatable<CarGenerator>
+    public class CarGenerator : SaveDataObject, ICarGenerator,
+        IEquatable<CarGenerator>, IDeepClonable<CarGenerator>
     {
         private int m_modelIndex;
-        private Vector3D m_position;
+        private Vector3 m_position;
         private float m_heading;
         private short m_color1;
         private short m_color2;
@@ -28,7 +29,7 @@ namespace GTASaveData.VC
             set { m_modelIndex = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Position
+        public Vector3 Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -133,10 +134,28 @@ namespace GTASaveData.VC
         public CarGenerator()
         { }
 
+        public CarGenerator(CarGenerator other)
+        {
+            Model = other.Model;
+            Position = other.Position;
+            Heading = other.Heading;
+            Color1 = other.Color1;
+            Color2 = other.Color2;
+            ForceSpawn = other.ForceSpawn;
+            AlarmChance = other.AlarmChance;
+            LockedChance = other.LockedChance;
+            MinDelay = other.MinDelay;
+            MaxDelay = other.MaxDelay;
+            Timer = other.Timer;
+            Handle = other.Handle;
+            Enabled = other.Enabled;
+            IsBlocking = other.IsBlocking;
+}
+
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Model = buf.ReadInt32();
-            Position = buf.ReadObject<Vector3D>();
+            Position = buf.ReadStruct<Vector3>();
             Heading = buf.ReadFloat();
             Color1 = buf.ReadInt16();
             Color2 = buf.ReadInt16();
@@ -208,6 +227,11 @@ namespace GTASaveData.VC
                 && Handle.Equals(other.Handle)
                 && Enabled.Equals(other.Enabled)
                 && IsBlocking.Equals(other.IsBlocking);
+        }
+
+        public CarGenerator DeepClone()
+        {
+            return new CarGenerator(this);
         }
     }
 }

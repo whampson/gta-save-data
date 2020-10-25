@@ -1,9 +1,9 @@
 ﻿using GTASaveData.Extensions;
-using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+using GTASaveData.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 
 namespace GTASaveData.GTA4
@@ -11,18 +11,16 @@ namespace GTASaveData.GTA4
     /// <summary>
     /// Represents a <i>Grand Theft Auto IV</i> save file.
     /// </summary>
-    public class GTA4Save : SaveData, ISaveData, IEquatable<GTA4Save>
+    public class GTA4Save : SaveData, ISaveData,
+        IEquatable<GTA4Save>, IDeepClonable<GTA4Save>
     {
-        public static class Limits
-        {
-            public const int MaxNameLength = 128;
-        }
+        public const int MaxNameLength = 128;
 
-        private DataBuffer m_file;
+        //private DataBuffer m_file;
 
         private int m_saveVersion;
         private int m_saveSizeInBytes;
-        private int m_scriptSpace;
+        private int m_scriptSpaceSize;
         private string m_lastMissionPassedName;
         private DateTime m_timeLastSaved;   // Not in savefile
 
@@ -33,7 +31,7 @@ namespace GTASaveData.GTA4
         private Dummy m_garages;
         private Dummy m_gameLogic;
         private Dummy m_paths;
-        private Pickups m_pickups;
+        private PickupData m_pickups;
         private Dummy m_restartPoints;
         private Dummy m_radarBlips;
         private Dummy m_zones;
@@ -61,18 +59,6 @@ namespace GTASaveData.GTA4
         private Dummy m_unusedExtraBlock;
         private Dummy m_gfwlData;
 
-        public override string Name
-        {
-            get { return m_lastMissionPassedName; }
-            set { m_lastMissionPassedName = value; OnPropertyChanged(); }
-        }
-
-        public override DateTime TimeStamp
-        {
-            get { return m_timeLastSaved; }
-            set { m_timeLastSaved = value; OnPropertyChanged(); }
-        }
-
         public int SaveVersion
         { 
             get { return m_saveVersion; }
@@ -85,10 +71,10 @@ namespace GTASaveData.GTA4
             set { m_saveSizeInBytes = value; OnPropertyChanged(); }
         }
 
-        public int ScriptSpace
+        public int ScriptSpaceSize
         { 
-            get { return m_scriptSpace; }
-            set { m_scriptSpace = value; OnPropertyChanged(); }
+            get { return m_scriptSpaceSize; }
+            set { m_scriptSpaceSize = value; OnPropertyChanged(); }
         }
 
         public SimpleVariables SimpleVars
@@ -133,7 +119,7 @@ namespace GTASaveData.GTA4
             set { m_paths = value; OnPropertyChanged(); }
         }
 
-        public Pickups Pickups
+        public PickupData Pickups
         {
             get { return m_pickups; }
             set { m_pickups = value; OnPropertyChanged(); }
@@ -295,8 +281,31 @@ namespace GTASaveData.GTA4
             set { m_gfwlData = value; OnPropertyChanged(); }
         }
 
-        [JsonIgnore]
-        public override IReadOnlyList<SaveDataObject> Blocks => new List<SaveDataObject>()
+        public override string Name
+        {
+            get { return m_lastMissionPassedName; }
+            set { m_lastMissionPassedName = value; OnPropertyChanged(); }
+        }
+
+        public override DateTime TimeStamp
+        {
+            get { return m_timeLastSaved; }
+            set { m_timeLastSaved = value; OnPropertyChanged(); }
+        }
+
+        bool ISaveData.HasSimpleVariables => true;
+        bool ISaveData.HasScriptData => false;
+        bool ISaveData.HasGarageData => false;
+        bool ISaveData.HasCarGenerators => false;
+        bool ISaveData.HasPlayerInfo => false;
+
+        ISimpleVariables ISaveData.SimpleVars => SimpleVars;
+        IScriptData ISaveData.ScriptData => throw new NotImplementedException();
+        IGarageData ISaveData.GarageData => throw new NotImplementedException();
+        ICarGeneratorData ISaveData.CarGenerators => throw new NotImplementedException();
+        IPlayerInfo ISaveData.PlayerInfo => throw new NotImplementedException();
+
+        IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
             PlayerInfo,
@@ -334,6 +343,16 @@ namespace GTASaveData.GTA4
             GfwlData
         };
 
+        public static GTA4Save Load(string path)
+        {
+            return Load<GTA4Save>(path);
+        }
+
+        public static GTA4Save Load(string path, FileFormat fmt)
+        {
+            return Load<GTA4Save>(path, fmt);
+        }
+
         public GTA4Save()
         {
             Name = "";
@@ -344,7 +363,7 @@ namespace GTASaveData.GTA4
             Garages = new Dummy();
             GameLogic = new Dummy();
             Paths = new Dummy();
-            Pickups = new Pickups();
+            Pickups = new PickupData();
             RestartPoints = new Dummy();
             RadarBlips = new Dummy();
             Zones = new Dummy();
@@ -373,71 +392,116 @@ namespace GTASaveData.GTA4
             GfwlData = new Dummy();
         }
 
-        private void LoadFileHeader()
+        public GTA4Save(GTA4Save other)
         {
-            SaveVersion = m_file.ReadInt32();
-            SaveSizeInBytes = m_file.ReadInt32();
-            ScriptSpace = m_file.ReadInt32();
+            Name = other.Name;
+            TimeStamp = other.TimeStamp;
+            SaveVersion = other.SaveVersion;
+            SaveSizeInBytes = other.SaveSizeInBytes;
+            ScriptSpaceSize = other.ScriptSpaceSize;
+            SimpleVars = new SimpleVariables(other.SimpleVars);
+            PlayerInfo = new Dummy(other.PlayerInfo);
+            ExtraContent = new Dummy(other.ExtraContent);
+            Scripts = new Dummy(other.Scripts);
+            Garages = new Dummy(other.Garages);
+            GameLogic = new Dummy(other.GameLogic);
+            Paths = new Dummy(other.Paths);
+            Pickups = new PickupData(other.Pickups);
+            RestartPoints = new Dummy(other.RestartPoints);
+            RadarBlips = new Dummy(other.RadarBlips);
+            Zones = new Dummy(other.Zones);
+            GangData = new Dummy(other.GangData);
+            CarGenerators = new Dummy(other.CarGenerators);
+            Stats = new Dummy(other.Stats);
+            IplStore = new Dummy(other.IplStore);
+            StuntJumps = new Dummy(other.StuntJumps);
+            Radio = new Dummy(other.Radio);
+            Objects = new Dummy(other.Objects);
+            Relationships = new Dummy(other.Relationships);
+            Inventory = new Dummy(other.Inventory);
+            UnusedPools = new Dummy(other.UnusedPools);
+            UnusedPhoneInfo = new Dummy(other.UnusedPhoneInfo);
+            UnusedAudioScript = new Dummy(other.UnusedAudioScript);
+            UnusedSetPieces = new Dummy(other.UnusedSetPieces);
+            UnusedStreaming = new Dummy(other.UnusedStreaming);
+            UnusedPedTypeInfo = new Dummy(other.UnusedPedTypeInfo);
+            UnusedTags = new Dummy(other.UnusedTags);
+            UnusedShopping = new Dummy(other.UnusedShopping);
+            UnusedGangWars = new Dummy(other.UnusedGangWars);
+            UnusedEntryExits = new Dummy(other.UnusedEntryExits);
+            Unused3dMarkers = new Dummy(other.Unused3dMarkers);
+            UnusedVehicles = new Dummy(other.UnusedVehicles);
+            UnusedExtraBlock = new Dummy(other.UnusedExtraBlock);
+            GfwlData = new Dummy(other.GfwlData);
+        }
 
-            string sig = m_file.ReadString(4);
+        private void LoadFileHeader(DataBuffer file)
+        {
+            SaveVersion = file.ReadInt32();
+            SaveSizeInBytes = file.ReadInt32();
+            ScriptSpaceSize = file.ReadInt32();
+
+            string sig = file.ReadString(4);
             if (FileFormat.IsWin32)
             {
-                Name = m_file.ReadString(Limits.MaxNameLength, unicode: true);
+                Name = file.ReadString(MaxNameLength, unicode: true);
             }
 
             Debug.Assert(sig == "SAVE", "Invalid 'SAVE' signature!");
-            Debug.Assert(SaveSizeInBytes == m_file.Length, "SaveSizeInBytes value incorrect!");
+            Debug.Assert(SaveSizeInBytes == file.Length, "SaveSizeInBytes value incorrect!");
         }
 
-        private void LoadFileFooter()
+        private void LoadFileFooter(DataBuffer file)
         {
-            string sig = m_file.ReadString(4);
+            string sig = file.ReadString(4);
             Debug.Assert(sig == "END", "Invalid 'END' signature!");
 
             if (FileFormat.IsWin32)
             {
-                int size = m_file.Length - m_file.Position;
-                GfwlData = new Dummy(m_file.ReadBytes(size));
+                int size = file.Length - file.Position;
+                GfwlData = LoadDummy(file, size);
             }
         }
 
-        private T LoadData<T>() where T : SaveDataObject, new()
+        private T LoadData<T>(DataBuffer file) where T : SaveDataObject, new()
         {
-            string sig = m_file.ReadString(5);
-            int size = m_file.ReadInt32();
+            string sig = file.ReadString(5);
+            int size = file.ReadInt32();
             Debug.Assert(sig == "BLOCK", "Invalid 'BLOCK' signature!");
 
-            m_file.Mark();
-            T obj = m_file.ReadObject<T>();
-            Debug.Assert(m_file.Offset == size - 9);
+            file.Mark();
+            T obj = file.ReadObject<T>();
+            Debug.Assert(file.Offset == size - 9);
 
             return obj;
         }
 
-        private Dummy LoadDummy(byte[] data)
+        private Dummy LoadDummyBlock(DataBuffer file)
         {
-            return new Dummy(data);
+            file.Mark();
+
+            string sig = file.ReadString(5);
+            int size = file.ReadInt32();
+            Debug.Assert(sig == "BLOCK", "Invalid 'BLOCK' signature!");
+
+            Dummy obj = LoadDummy(file, size - 9);
+            Debug.Assert(file.Offset == size);
+
+            return obj;
         }
 
-        private byte[] LoadBlockData()
+        private Dummy LoadDummy(DataBuffer buf, int size)
         {
-            string sig = m_file.ReadString(5);
-            int size = m_file.ReadInt32();
-            Debug.Assert(sig == "BLOCK", "Invalid 'BLOCK' signature!");
-            
-            m_file.Mark();
-            byte[] data = m_file.ReadBytes(size - 9);
-            Debug.Assert(m_file.Offset == size - 9);
-            
-            return data;
+            Dummy obj = new Dummy(size);
+            Serializer.Read(obj, buf, FileFormat);
+
+            return obj;
         }
 
         protected override void LoadAllData(DataBuffer file)
         {
-            m_file = file;
-            m_file.BigEndian = (FileFormat.IsXbox360 || FileFormat.IsPS3);
-
-            LoadFileHeader();
+            file.BigEndian = (FileFormat.IsXbox360 || FileFormat.IsPS3);
+            LoadFileHeader(file);
 
             int blockCount = (FileFormat.IsPS3) ? 33 : 32;
             int index = 0;
@@ -446,49 +510,51 @@ namespace GTASaveData.GTA4
             {
                 switch (index++)
                 {
-                    case 0: SimpleVars = LoadData<SimpleVariables>(); break;
-                    case 1: PlayerInfo = LoadDummy(LoadBlockData()); break;     // lol fix this syntax
-                    case 2: ExtraContent = LoadDummy(LoadBlockData()); break;
-                    case 3: Scripts = LoadDummy(LoadBlockData()); break;
-                    case 4: Garages = LoadDummy(LoadBlockData()); break;
-                    case 5: GameLogic = LoadDummy(LoadBlockData()); break;
-                    case 6: Paths = LoadDummy(LoadBlockData()); break;
-                    case 7: Pickups = LoadData<Pickups>(); break;
-                    case 8: RestartPoints = LoadDummy(LoadBlockData()); break;
-                    case 9: RadarBlips = LoadDummy(LoadBlockData()); break;
-                    case 10: Zones = LoadDummy(LoadBlockData()); break;
-                    case 11: GangData = LoadDummy(LoadBlockData()); break;
-                    case 12: CarGenerators = LoadDummy(LoadBlockData()); break;
-                    case 13: Stats = LoadDummy(LoadBlockData()); break;
-                    case 14: IplStore = LoadDummy(LoadBlockData()); break;
-                    case 15: StuntJumps = LoadDummy(LoadBlockData()); break;
-                    case 16: Radio = LoadDummy(LoadBlockData()); break;
-                    case 17: Objects = LoadDummy(LoadBlockData()); break;
-                    case 18: Relationships = LoadDummy(LoadBlockData()); break;
-                    case 19: Inventory = LoadDummy(LoadBlockData()); break;
-                    case 20: UnusedPools = LoadDummy(LoadBlockData()); break;
-                    case 21: UnusedPhoneInfo = LoadDummy(LoadBlockData()); break;
-                    case 22: UnusedAudioScript = LoadDummy(LoadBlockData()); break;
-                    case 23: UnusedSetPieces = LoadDummy(LoadBlockData()); break;
-                    case 24: UnusedStreaming = LoadDummy(LoadBlockData()); break;
-                    case 25: UnusedPedTypeInfo = LoadDummy(LoadBlockData()); break;
-                    case 26: UnusedTags = LoadDummy(LoadBlockData()); break;
-                    case 27: UnusedShopping = LoadDummy(LoadBlockData()); break;
-                    case 28: UnusedGangWars = LoadDummy(LoadBlockData()); break;
-                    case 29: UnusedEntryExits = LoadDummy(LoadBlockData()); break;
-                    case 30: Unused3dMarkers = LoadDummy(LoadBlockData()); break;
-                    case 31: UnusedVehicles = LoadDummy(LoadBlockData()); break;
-                    case 32: UnusedExtraBlock = LoadDummy(LoadBlockData()); break;
+                    case 0: SimpleVars = LoadData<SimpleVariables>(file); break;
+                    case 1: PlayerInfo = LoadDummyBlock(file); break;
+                    case 2: ExtraContent = LoadDummyBlock(file); break;
+                    case 3: Scripts = LoadDummyBlock(file); break;
+                    case 4: Garages = LoadDummyBlock(file); break;
+                    case 5: GameLogic = LoadDummyBlock(file); break;
+                    case 6: Paths = LoadDummyBlock(file); break;
+                    case 7: Pickups = LoadData<PickupData>(file); break;
+                    case 8: RestartPoints = LoadDummyBlock(file); break;
+                    case 9: RadarBlips = LoadDummyBlock(file); break;
+                    case 10: Zones = LoadDummyBlock(file); break;
+                    case 11: GangData = LoadDummyBlock(file); break;
+                    case 12: CarGenerators = LoadDummyBlock(file); break;
+                    case 13: Stats = LoadDummyBlock(file); break;
+                    case 14: IplStore = LoadDummyBlock(file); break;
+                    case 15: StuntJumps = LoadDummyBlock(file); break;
+                    case 16: Radio = LoadDummyBlock(file); break;
+                    case 17: Objects = LoadDummyBlock(file); break;
+                    case 18: Relationships = LoadDummyBlock(file); break;
+                    case 19: Inventory = LoadDummyBlock(file); break;
+                    case 20: UnusedPools = LoadDummyBlock(file); break;
+                    case 21: UnusedPhoneInfo = LoadDummyBlock(file); break;
+                    case 22: UnusedAudioScript = LoadDummyBlock(file); break;
+                    case 23: UnusedSetPieces = LoadDummyBlock(file); break;
+                    case 24: UnusedStreaming = LoadDummyBlock(file); break;
+                    case 25: UnusedPedTypeInfo = LoadDummyBlock(file); break;
+                    case 26: UnusedTags = LoadDummyBlock(file); break;
+                    case 27: UnusedShopping = LoadDummyBlock(file); break;
+                    case 28: UnusedGangWars = LoadDummyBlock(file); break;
+                    case 29: UnusedEntryExits = LoadDummyBlock(file); break;
+                    case 30: Unused3dMarkers = LoadDummyBlock(file); break;
+                    case 31: UnusedVehicles = LoadDummyBlock(file); break;
+                    case 32: UnusedExtraBlock = LoadDummyBlock(file); break;
                 }
             }
 
-            m_file.ReadInt32();     // checksum
-            LoadFileFooter();
+            file.ReadInt32();     // checksum
+            LoadFileFooter(file);
+
+            // TODO: size check
         }
 
         protected override void SaveAllData(DataBuffer file)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException();        // TODO
         }
 
         protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
@@ -527,6 +593,11 @@ namespace GTASaveData.GTA4
             return false;
         }
 
+        protected override int GetSize(FileFormat fmt)
+        {
+            throw new NotImplementedException();        // TODO
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as GTA4Save);
@@ -540,9 +611,10 @@ namespace GTASaveData.GTA4
             }
 
             return Name.Equals(other.Name)
+                && TimeStamp.Equals(other.TimeStamp)
                 && SaveVersion.Equals(other.SaveVersion)
                 && SaveSizeInBytes.Equals(other.SaveSizeInBytes)
-                && ScriptSpace.Equals(other.ScriptSpace)
+                && ScriptSpaceSize.Equals(other.ScriptSpaceSize)
                 && SimpleVars.Equals(other.SimpleVars)
                 && PlayerInfo.Equals(other.PlayerInfo)
                 && ExtraContent.Equals(other.ExtraContent)
@@ -579,22 +651,26 @@ namespace GTASaveData.GTA4
                 && GfwlData.Equals(other.GfwlData);
         }
 
+        public GTA4Save DeepClone()
+        {
+            return new GTA4Save(this);
+        }
+
         public static class FileFormats
         {
             public static readonly FileFormat PC = new FileFormat(
                 "PC", "PC", "Windows",
-                new GameConsole(GameConsoleType.Win32),
-                new GameConsole(GameConsoleType.Win32, ConsoleFlags.Steam)
+                GameConsole.Win32
             );
 
             public static readonly FileFormat PS3 = new FileFormat(
                 "PS3", "PS3", "PlayStation 3",
-                new GameConsole(GameConsoleType.PS3)
+                GameConsole.PS3
             );
 
             public static readonly FileFormat Xbox360 = new FileFormat(
                 "Xbox360", "Xbox 360", "Xbox 360",
-                new GameConsole(GameConsoleType.Xbox360)
+                GameConsole.Xbox360
             );
 
             public static FileFormat[] GetAll()
@@ -602,5 +678,43 @@ namespace GTASaveData.GTA4
                 return new FileFormat[] { PC, PS3, Xbox360 };
             }
         }
+    }
+
+    public enum DataBlock
+    {
+        SimpleVars,
+        PlayerInfo,
+        ExtraContent,
+        Scripts,
+        Garages,
+        GameLogic,
+        Paths,
+        Pickups,
+        RestartPoints,
+        RadarBlips,
+        Zones,
+        GangData,
+        CarGenerators,
+        Stats,
+        IplStore,
+        StuntJumps,
+        Radio,
+        Objects,
+        Relationships,
+        Inventory,
+        UnusedPools,
+        UnusedPhoneInfo,
+        UnusedAudioScript,
+        UnusedSetPieces,
+        UnusedStreaming,
+        UnusedPedTypeInfo,
+        UnusedTags,
+        UnusedShopping,
+        UnusedGangWars,
+        UnusedEntryExits,
+        Unused3dMarkers,
+        UnusedVehicles,
+        UnusedExtraBlock,
+        GfwlData,
     }
 }

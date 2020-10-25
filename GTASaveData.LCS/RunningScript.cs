@@ -80,7 +80,7 @@ namespace GTASaveData.LCS
         }
 
         [JsonConverter(typeof(IntArrayConverter))]
-        public Array<int> LocalVariables
+        public Array<int> Locals
         {
             get { return m_localVariables; }
             set { m_localVariables = value; OnPropertyChanged(); }
@@ -184,7 +184,7 @@ namespace GTASaveData.LCS
             InstructionPointer = other.InstructionPointer;
             Stack = ArrayHelper.DeepClone(other.Stack);
             StackPointer = other.StackPointer;
-            LocalVariables = ArrayHelper.DeepClone(other.LocalVariables);
+            Locals = ArrayHelper.DeepClone(other.Locals);
             TimerA = other.TimerA;
             TimerB = other.TimerB;
             Field210h = other.Field210h;
@@ -233,7 +233,7 @@ namespace GTASaveData.LCS
 
         public void SetLocal(int index, int value)
         {
-            LocalVariables[index] = value;
+            Locals[index] = value;
         }
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
@@ -249,7 +249,7 @@ namespace GTASaveData.LCS
             Stack = buf.ReadArray<int>(MaxStackDepth);
             StackPointer = buf.ReadInt16();
             buf.Skip(2);
-            LocalVariables = buf.ReadArray<int>(NumLocalVariables);
+            Locals = buf.ReadArray<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
             Field210h = buf.ReadInt32();
@@ -282,7 +282,7 @@ namespace GTASaveData.LCS
             buf.Write(Stack, MaxStackDepth);
             buf.Write(StackPointer);
             buf.Skip(2);
-            buf.Write(LocalVariables, NumLocalVariables);
+            buf.Write(Locals, NumLocalVariables);
             buf.Write(TimerA);
             buf.Write(TimerB);
             buf.Write(Field210h);
@@ -326,7 +326,7 @@ namespace GTASaveData.LCS
                 && InstructionPointer.Equals(other.InstructionPointer)
                 && Stack.SequenceEqual(other.Stack)
                 && StackPointer.Equals(other.StackPointer)
-                && LocalVariables.SequenceEqual(other.LocalVariables)
+                && Locals.SequenceEqual(other.Locals)
                 && TimerA.Equals(other.TimerA)
                 && TimerB.Equals(other.TimerB)
                 && ConditionResult.Equals(other.ConditionResult)

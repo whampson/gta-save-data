@@ -1,16 +1,14 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.SA
 {
-    public class SimpleVariables : SaveDataObject, IEquatable<SimpleVariables>
+    public class SimpleVariables : SaveDataObject, ISimpleVariables,
+        IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
-        public static class Limits
-        {
-            public const int MaxNameLength = 100;   // PC, not sure if different on other platforms
-        }
+        public const int MaxNameLength = 100;   // PC, not sure if different on other platforms
 
         private const int SizeOfSimpleVariablesPC = 0x138;
         private const int SizeOfSimpleVariablesAndroid = 0x1A8;
@@ -19,7 +17,7 @@ namespace GTASaveData.SA
         private string m_lastMissionPassedName;
         private byte m_missionPackGame;
         private LevelType m_currLevel;
-        private Vector3D m_cameraPosition;
+        private Vector3 m_cameraPosition;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
         private byte m_gameClockMonths;
@@ -92,7 +90,7 @@ namespace GTASaveData.SA
             set { m_currLevel = value; OnPropertyChanged(); }
         }
 
-        public Vector3D CameraPosition
+        public Vector3 CameraPosition
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
@@ -384,17 +382,73 @@ namespace GTASaveData.SA
         {
             LastMissionPassedName = "";
             TimeLastSaved = new SystemTime();
-            CameraPosition = new Vector3D();
+            CameraPosition = new Vector3();
+        }
+
+        public SimpleVariables(SimpleVariables other)
+        {
+            VersionId = other.VersionId;
+            LastMissionPassedName = other.LastMissionPassedName;
+            MissionPackGame = other.MissionPackGame;
+            CurrLevel = other.CurrLevel;
+            CameraPosition = other.CameraPosition;
+            MillisecondsPerGameMinute = other.MillisecondsPerGameMinute;
+            LastClockTick = other.LastClockTick;
+            GameClockMonths = other.GameClockMonths;
+            GameClockDays = other.GameClockDays;
+            GameClockHours = other.GameClockHours;
+            GameClockMinutes = other.GameClockMinutes;
+            GameClockDayOfWeek = other.GameClockDayOfWeek;
+            StoredGameClockMonths = other.StoredGameClockMonths;
+            StoredGameClockDays = other.StoredGameClockDays;
+            StoredGameClockHours = other.StoredGameClockHours;
+            StoredGameClockMinutes = other.StoredGameClockMinutes;
+            ClockHasBeenStored = other.ClockHasBeenStored;
+            CurrPadMode = other.CurrPadMode;
+            HasPlayerCheated = other.HasPlayerCheated;
+            TimeInMilliseconds = other.TimeInMilliseconds;
+            TimeScale = other.TimeScale;
+            TimeStep = other.TimeStep;
+            TimeStepNonClipped = other.TimeStepNonClipped;
+            FrameCounter = other.FrameCounter;
+            OldWeatherType = other.OldWeatherType;
+            NewWeatherType = other.NewWeatherType;
+            ForcedWeatherType = other.ForcedWeatherType;
+            WeatherInterpolation = other.WeatherInterpolation;
+            WeatherTypeInList = other.WeatherTypeInList;
+            Rain = other.Rain;
+            CameraCarZoomIndicator = other.CameraCarZoomIndicator;
+            CameraPedZoomIndicator = other.CameraPedZoomIndicator;
+            CurrArea = other.CurrArea;
+            InvertLook4Pad = other.InvertLook4Pad;
+            ExtraColour = other.ExtraColour;
+            ExtraColourOn = other.ExtraColourOn;
+            ExtraColourInterpolation = other.ExtraColourInterpolation;
+            ExtraColourWeatherType = other.ExtraColourWeatherType;
+            WaterConfiguration = other.WaterConfiguration;
+            LARiots = other.LARiots;
+            LARiotsNoPoliceCars = other.LARiotsNoPoliceCars;
+            MaximumWantedLevel = other.MaximumWantedLevel;
+            MaximumChaosLevel = other.MaximumChaosLevel;
+            GermanGame = other.GermanGame;
+            FrenchGame = other.FrenchGame;
+            NastyGame = other.NastyGame;
+            CinematicCamMessagesLeftToDisplay = other.CinematicCamMessagesLeftToDisplay;
+            TimeLastSaved = other.TimeLastSaved;
+            TargetMarkerHandle = other.TargetMarkerHandle;
+            HasDisplayedPlayerQuitEnterCarHelpText = other.HasDisplayedPlayerQuitEnterCarHelpText;
+            AllTaxisHaveNitro = other.AllTaxisHaveNitro;
+            ProstiutesPayYou = other.ProstiutesPayYou;
         }
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             VersionId = buf.ReadUInt32();
-            LastMissionPassedName = buf.ReadString(Limits.MaxNameLength);
+            LastMissionPassedName = buf.ReadString(MaxNameLength);
             MissionPackGame = buf.ReadByte();
             buf.Align4();
             CurrLevel = (LevelType) buf.ReadInt32();
-            CameraPosition = buf.ReadObject<Vector3D>();
+            CameraPosition = buf.ReadStruct<Vector3>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockMonths = buf.ReadByte();
@@ -445,7 +499,7 @@ namespace GTASaveData.SA
             buf.Skip(0x2C);
             CinematicCamMessagesLeftToDisplay = buf.ReadByte();
             buf.Skip(1);    // Android: BlurOn
-            TimeLastSaved = buf.Read<SystemTime>();
+            TimeLastSaved = buf.ReadStruct<SystemTime>();
             buf.Align4();
             TargetMarkerHandle = buf.ReadInt32();
             HasDisplayedPlayerQuitEnterCarHelpText = buf.ReadBool();
@@ -459,7 +513,7 @@ namespace GTASaveData.SA
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(VersionId);
-            buf.Write(LastMissionPassedName, Limits.MaxNameLength);
+            buf.Write(LastMissionPassedName, MaxNameLength);
             buf.Write(MissionPackGame);
             buf.Align4();
             buf.Write((int) CurrLevel);
@@ -600,5 +654,48 @@ namespace GTASaveData.SA
                 && AllTaxisHaveNitro.Equals(other.AllTaxisHaveNitro)
                 && ProstiutesPayYou.Equals(other.ProstiutesPayYou);
         }
+
+        public SimpleVariables DeepClone()
+        {
+            return new SimpleVariables(this);
+        }
+    }
+
+    public enum WeatherType
+    {
+        None = -1,
+        ExtraSunnyLA,
+        SunnyLA,
+        ExtraSunnySmogLA,
+        SunnySmogLA,
+        CloudyLA,
+        SunnySF,
+        ExtraSunnySF,
+        CloudySF,
+        RainySF,
+        FoggySF,
+        SunnyVegas,
+        ExtraSunnyVegas,
+        CloudyVegas,
+        ExtraSunnyCountryside,
+        SunnyCountryside,
+        CloudyCountryside,
+        RainyCountryside,
+        ExtraSunnyDesert,
+        SunnyDesert,
+        SandstormDesert,
+        Underwater,
+        ExtraColours1,
+        ExtraColours2
+    }
+
+    // TODO: confirm
+    public enum LevelType
+    {
+        Countryside,
+        LA,
+        SF,
+        Vegas,
+        Desert
     }
 }

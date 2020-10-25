@@ -34,7 +34,7 @@ namespace GTASaveData.LCS
         private Array<RunningScript> m_activeScripts;
 
         [JsonConverter(typeof(IntArrayConverter))]
-        public Array<int> GlobalVariables
+        public Array<int> Globals
         {
             get { return m_globals; }
             set { m_globals = value; OnPropertyChanged(); }
@@ -119,7 +119,7 @@ namespace GTASaveData.LCS
 
         public ScriptData()
         {
-            GlobalVariables = new Array<int>();
+            Globals = new Array<int>();
             Collectives = ArrayHelper.CreateArray<Collective>(NumCollectives);
             BuildingSwaps = ArrayHelper.CreateArray<BuildingSwap>(NumBuildingSwaps);
             InvisibilitySettings = ArrayHelper.CreateArray<InvisibleObject>(NumInvisibilitySettings);
@@ -128,7 +128,7 @@ namespace GTASaveData.LCS
 
         public ScriptData(ScriptData other)
         {
-            GlobalVariables = ArrayHelper.DeepClone(other.GlobalVariables);
+            Globals = ArrayHelper.DeepClone(other.Globals);
             OnAMissionFlag = other.OnAMissionFlag;
             LastMissionPassedTime = other.LastMissionPassedTime;
             Collectives = ArrayHelper.DeepClone(other.Collectives);
@@ -143,16 +143,16 @@ namespace GTASaveData.LCS
             Threads = ArrayHelper.DeepClone(other.Threads);
         }
 
-        public RunningScript GetScript(string name)
+        public RunningScript GetThread(string name)
         {
             return Threads.Where(x => x.Name == name).FirstOrDefault();
         }
 
-        IRunningScript IScriptData.GetThread(string name) => GetScript(name);
+        IRunningScript IScriptData.GetThread(string name) => GetThread(name);
 
         public int GetGlobal(int index)
         {
-            return GlobalVariables[index];
+            return Globals[index];
         }
 
         public float GetGlobalAsFloat(int index)
@@ -163,13 +163,13 @@ namespace GTASaveData.LCS
 
         public void SetGlobal(int index, int value)
         {
-            GlobalVariables[index] = value;
+            Globals[index] = value;
         }
 
         public void SetGlobal(int index, float value)
         {
             byte[] floatBits = BitConverter.GetBytes(value);
-            GlobalVariables[index] = BitConverter.ToInt32(floatBits, 0);
+            Globals[index] = BitConverter.ToInt32(floatBits, 0);
         }
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
@@ -177,7 +177,7 @@ namespace GTASaveData.LCS
             int size = GTA3VCSave.ReadBlockHeader(buf, "SCR");
 
             int varSpace = buf.ReadInt32();
-            GlobalVariables = buf.ReadArray<int>(varSpace / sizeof(int));
+            Globals = buf.ReadArray<int>(varSpace / sizeof(int));
             buf.Align4();
             int scriptDataSize = buf.ReadInt32();
             Debug.Assert(scriptDataSize == ScriptDataSize);
@@ -206,8 +206,8 @@ namespace GTASaveData.LCS
             int size = SizeOfObject(this, fmt);
             GTA3VCSave.WriteBlockHeader(buf, "SCR", size - GTA3VCSave.BlockHeaderSize);
 
-            buf.Write(GlobalVariables.Count * sizeof(int));
-            buf.Write(GlobalVariables);
+            buf.Write(Globals.Count * sizeof(int));
+            buf.Write(Globals);
             buf.Align4();
             buf.Write(ScriptDataSize);      // wrong value in save, actually is +0x104
             buf.Write(OnAMissionFlag);
@@ -232,7 +232,7 @@ namespace GTASaveData.LCS
         protected override int GetSize(FileFormat fmt)
         {
             return SizeOfType<RunningScript>(fmt) * Threads.Count
-                + GlobalVariables.Count * sizeof(int)
+                + Globals.Count * sizeof(int)
                 + ScriptDataSize + 0x104
                 + GTA3VCSave.BlockHeaderSize
                 + 3 * sizeof(int);
@@ -250,7 +250,7 @@ namespace GTASaveData.LCS
                 return false;
             }
 
-            return GlobalVariables.SequenceEqual(other.GlobalVariables)
+            return Globals.SequenceEqual(other.Globals)
                 && OnAMissionFlag.Equals(other.OnAMissionFlag)
                 && LastMissionPassedTime.Equals(other.LastMissionPassedTime)
                 && Collectives.SequenceEqual(other.Collectives)

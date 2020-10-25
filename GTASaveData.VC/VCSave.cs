@@ -1,6 +1,5 @@
 ﻿using GTASaveData.Extensions;
-using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+using GTASaveData.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,11 +9,11 @@ namespace GTASaveData.VC
     /// <summary>
     /// Represents a saved <i>Grand Theft Auto: Vice City</i> game.
     /// </summary>
-    public class VCSave : GTA3VCSave, ISaveData, IEquatable<VCSave>
+    public class VCSave : GTA3VCSave, ISaveData,
+        IEquatable<VCSave>, IDeepClonable<VCSave>
     {
         public const int SizeOfGameInBytes = 201728;
         public const int MaxNumPaddingBlocks = 4;
-        public const int SteamId = 0x3DF5C2FD;      // constant?
 
         private SimpleVariables m_simpleVars;
         private Dummy m_scripts;
@@ -237,6 +236,16 @@ namespace GTASaveData.VC
             PedTypeInfo
         };
 
+        public static VCSave Load(string path)
+        {
+            return Load<VCSave>(path);
+        }
+
+        public static VCSave Load(string path, FileFormat fmt)
+        {
+            return Load<VCSave>(path, fmt);
+        }
+
         public VCSave()
         {
             SimpleVars = new SimpleVariables();
@@ -263,6 +272,34 @@ namespace GTASaveData.VC
             SetPieces = new Dummy();
             Streaming = new Dummy();
             PedTypeInfo = new Dummy();
+        }
+
+        public VCSave(VCSave other)
+        {
+            SimpleVars = new SimpleVariables(other.SimpleVars);
+            Scripts = new Dummy(other.Scripts);
+            PlayerPeds = new Dummy(other.PlayerPeds);
+            Garages = new Dummy(other.Garages);
+            GameLogic = new Dummy(other.GameLogic);
+            VehiclePool = new Dummy(other.VehiclePool);
+            ObjectPool = new Dummy(other.ObjectPool);
+            Paths = new Dummy(other.Paths);
+            Cranes = new Dummy(other.Cranes);
+            Pickups = new Dummy(other.Pickups);
+            PhoneInfo = new Dummy(other.PhoneInfo);
+            RestartPoints = new Dummy(other.RestartPoints);
+            RadarBlips = new Dummy(other.RadarBlips);
+            Zones = new Dummy(other.Zones);
+            Gangs = new Dummy(other.Gangs);
+            CarGenerators = new CarGeneratorData(other.CarGenerators);
+            ParticleObjects = new Dummy(other.ParticleObjects);
+            AudioScriptObjects = new Dummy(other.AudioScriptObjects);
+            ScriptPaths = new Dummy(other.ScriptPaths);
+            PlayerInfo = new Dummy(other.PlayerInfo);
+            Stats = new Dummy(other.Stats);
+            SetPieces = new Dummy(other.SetPieces);
+            Streaming = new Dummy(other.Streaming);
+            PedTypeInfo = new Dummy(other.PedTypeInfo);
         }
 
         protected override void LoadAllData(DataBuffer file)
@@ -444,6 +481,11 @@ namespace GTASaveData.VC
                 && SetPieces.Equals(other.SetPieces)
                 && Streaming.Equals(other.Streaming)
                 && PedTypeInfo.Equals(other.PedTypeInfo);
+        }
+
+        public VCSave DeepClone()
+        {
+            return new VCSave(this);
         }
 
         public static class FileFormats

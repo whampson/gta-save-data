@@ -1,6 +1,5 @@
 ﻿using GTASaveData.Extensions;
-using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+using GTASaveData.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,9 @@ namespace GTASaveData.SA
     /// <summary>
     /// Represents a <i>Grand Theft Auto: San Andreas</i> save file.
     /// </summary>
-    public class SanAndreasSave : SaveData, ISaveData, IEquatable<SanAndreasSave>, IDisposable
+    public class SASave : SaveData, ISaveData,
+        IEquatable<SASave>, IDeepClonable<SASave>,
+        IDisposable
     {
         public const int SizeOfOneGameInBytes = 202752;
         private const int MaxBufferSize = 65000;
@@ -232,22 +233,31 @@ namespace GTASaveData.SA
             set { m_postEffects = value; }
         }
 
-        [JsonIgnore]
         public override string Name
         {
             get { return SimpleVars.LastMissionPassedName; }
             set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
         }
 
-        [JsonIgnore]
         public override DateTime TimeStamp
         {
             get { return SimpleVars.TimeLastSaved; }
             set { SimpleVars.TimeLastSaved = new SystemTime(value); OnPropertyChanged(); }
         }
 
-        [JsonIgnore]
-        public override IReadOnlyList<SaveDataObject> Blocks => new List<SaveDataObject>()
+        bool ISaveData.HasSimpleVariables => true;
+        bool ISaveData.HasScriptData => false;      // todo
+        bool ISaveData.HasGarageData => false;      // todo
+        bool ISaveData.HasCarGenerators => false;   // todo
+        bool ISaveData.HasPlayerInfo => false;      // todo
+
+        ISimpleVariables ISaveData.SimpleVars => SimpleVars;
+        IScriptData ISaveData.ScriptData => throw new NotSupportedException();
+        IGarageData ISaveData.GarageData => throw new NotSupportedException();
+        ICarGeneratorData ISaveData.CarGenerators => throw new NotSupportedException();
+        IPlayerInfo ISaveData.PlayerInfo => throw new NotSupportedException();
+
+        IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
         {
             SimpleVars,
             Scripts,
@@ -280,7 +290,17 @@ namespace GTASaveData.SA
             PostEffects
         };
 
-        public SanAndreasSave()
+        public static SASave Load(string path)
+        {
+            return Load<SASave>(path);
+        }
+
+        public static SASave Load(string path, FileFormat fmt)
+        {
+            return Load<SASave>(path, fmt);
+        }
+
+        public SASave()
         {
             m_disposed = false;
             m_workBuffer = new DataBuffer(new byte[MaxBufferSize]);
@@ -314,6 +334,39 @@ namespace GTASaveData.SA
             Radio = new Dummy();
             User3dMarkers = new Dummy(0x8C);
             PostEffects = new Dummy(0x160);
+        }
+
+        public SASave(SASave other)
+        {
+            SimpleVars = new SimpleVariables(other.SimpleVars);
+            Scripts = new Dummy(other.Scripts);
+            Pools = new Dummy(other.Pools);
+            Garages = new Dummy(other.Garages);
+            GameLogic = new Dummy(other.GameLogic);
+            Paths = new Dummy(other.Paths);
+            Pickups = new Dummy(other.Pickups);
+            PhoneInfo = new Dummy(other.PhoneInfo);
+            RestartPoints = new Dummy(other.RestartPoints);
+            RadarBlips = new Dummy(other.RadarBlips);
+            Zones = new Dummy(other.Zones);
+            GangData = new Dummy(other.GangData);
+            CarGenerators = new Dummy(other.CarGenerators);
+            PedGenerators = new Dummy(other.PedGenerators);
+            AudioScriptObjects = new Dummy(other.AudioScriptObjects);
+            PlayerInfo = new Dummy(other.PlayerInfo);
+            Stats = new Dummy(other.Stats);
+            SetPieces = new Dummy(other.SetPieces);
+            Streaming = new Dummy(other.Streaming);
+            PedTypeInfo = new Dummy(other.PedTypeInfo);
+            Tags = new Dummy(other.Tags);
+            IplStore = new Dummy(other.IplStore);
+            Shopping = new Dummy(other.Shopping);
+            GangWars = new Dummy(other.GangWars);
+            StuntJumps = new Dummy(other.StuntJumps);
+            EntryExits = new Dummy(other.EntryExits);
+            Radio = new Dummy(other.Radio);
+            User3dMarkers = new Dummy(other.User3dMarkers);
+            PostEffects = new Dummy(other.PostEffects);
         }
 
         private int LoadBlockHeader()
@@ -629,12 +682,50 @@ namespace GTASaveData.SA
             return true;
         }
 
-        public override bool Equals(object obj)
+        protected override int GetSize(FileFormat fmt)
         {
-            return Equals(obj as SanAndreasSave);
+            // TODO: calculate size
+
+            //int size = 0;
+            //size += BlockHeaderSize + SizeOfObject(SimpleVars, fmt);
+            //size += BlockHeaderSize + SizeOfObject(Scripts, fmt);
+            //size += BlockHeaderSize + SizeOfObject(Pools, fmt);
+            //size += BlockHeaderSize + SizeOfObject(Garages, fmt);
+            //size += BlockHeaderSize + SizeOfObject(GameLogic, fmt);
+            //size += BlockHeaderSize + SizeOfObject(Paths, fmt);
+            //size += BlockHeaderSize + SizeOfObject(Pickups, fmt);
+            //size += BlockHeaderSize + SizeOfObject(PhoneInfo, fmt);
+            //size += BlockHeaderSize + SizeOfObject(RestartPoints, fmt);
+            //size += BlockHeaderSize + SizeOfObject(RadarBlips, fmt);
+            //size += BlockHeaderSize + SizeOfObject(Zones, fmt);
+            //size += BlockHeaderSize + SizeOfObject(GangData, fmt);
+            //size += BlockHeaderSize + SizeOfObject(CarGenerators, fmt);
+            //size += BlockHeaderSize + SizeOfObject(PedGenerators, fmt);
+            //size += BlockHeaderSize + SizeOfObject(AudioScriptObjects, fmt);
+            //size += BlockHeaderSize + SizeOfObject(PlayerInfo, fmt);
+            //size += BlockHeaderSize + SizeOfObject(Stats, fmt);
+            //size += BlockHeaderSize + SizeOfObject(SetPieces, fmt);
+            //size += BlockHeaderSize + SizeOfObject(Streaming, fmt);
+            //size += BlockHeaderSize + SizeOfObject(PedTypeInfo, fmt);
+            //size += BlockHeaderSize + SizeOfObject(Tags, fmt);
+            //size += BlockHeaderSize + SizeOfObject(IplStore, fmt);
+            //size += BlockHeaderSize + SizeOfObject(Shopping, fmt);
+            //size += BlockHeaderSize + SizeOfObject(GangWars, fmt);
+            //size += BlockHeaderSize + SizeOfObject(StuntJumps, fmt);
+            //size += BlockHeaderSize + SizeOfObject(EntryExits, fmt);
+            //size += BlockHeaderSize + SizeOfObject(Radio, fmt);
+            //size += BlockHeaderSize + SizeOfObject(User3dMarkers, fmt);
+            //size += BlockHeaderSize + SizeOfObject(PostEffects, fmt);
+
+            return SizeOfOneGameInBytes;
         }
 
-        public bool Equals(SanAndreasSave other)
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as SASave);
+        }
+
+        public bool Equals(SASave other)
         {
             if (other == null)
             {
@@ -681,31 +772,36 @@ namespace GTASaveData.SA
             }
         }
 
+        public SASave DeepClone()
+        {
+            return new SASave(this);
+        }
+
         public static class FileFormats
         {
             // TODO: 1.05 and 1.06 different?
             public static readonly FileFormat Mobile = new FileFormat(
                 "Mobile", "Mobile", "Android, iOS",
-                new GameConsole(GameConsoleType.Android),
-                new GameConsole(GameConsoleType.iOS)
+                GameConsole.Android,
+                GameConsole.iOS
             );
 
             public static readonly FileFormat PC = new FileFormat(
                 "PC", "PC", "Windows, macOS",
-                new GameConsole(GameConsoleType.Win32),
-                new GameConsole(GameConsoleType.MacOS),
-                new GameConsole(GameConsoleType.Win32, ConsoleFlags.Steam),
-                new GameConsole(GameConsoleType.MacOS, ConsoleFlags.Steam)
+                GameConsole.Win32,
+                GameConsole.MacOS,
+                GameConsole.Win32,
+                GameConsole.MacOS
             );
 
             public static readonly FileFormat PS2 = new FileFormat(
                 "PS2", "PS2", "PlayStation 2",
-                new GameConsole(GameConsoleType.PS2)
+                GameConsole.PS2
             );
 
             public static readonly FileFormat Xbox = new FileFormat(
                 "Xbox", "Xbox", "Xbox",
-                new GameConsole(GameConsoleType.Xbox)
+                GameConsole.Xbox
             );
 
             public static FileFormat[] GetAll()
@@ -713,5 +809,38 @@ namespace GTASaveData.SA
                 return new FileFormat[] { Mobile, PC, PS2, Xbox };
             }
         }
+    }
+
+    public enum DataBlock
+    {
+        SimpleVars,
+        Scripts,
+        Pools,
+        Garages,
+        GameLogic,
+        PathFind,
+        Pickups,
+        PhoneInfo,
+        RestartPoints,
+        RadarBlips,
+        Zones,
+        GangData,
+        CarGenerators,
+        PedGenerators,
+        AudioScriptObjects,
+        PlayerInfo,
+        Stats,
+        SetPieces,
+        Streaming,
+        PedTypeInfo,
+        TagManager,
+        IplStore,
+        Shopping,
+        GangWars,
+        StuntJumpManager,
+        EntryExitManager,
+        RadioTrackManager,
+        User3dMarkers,
+        PostEffects
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using GTASaveData.Core.Tests;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -17,7 +16,7 @@ namespace GTASaveData.VCS.Tests
             int runningScripts = faker.Random.Int(1, 20);
 
             Faker<ScriptData> model = new Faker<ScriptData>()
-                .RuleFor(x => x.ScriptSpace, f => Generator.Array(varSpace, g => f.Random.Byte()))
+                .RuleFor(x => x.Globals, f => Generator.Array(varSpace, g => f.Random.Int()))
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
                 .RuleFor(x => x.LastMissionPassedTime, f => f.Random.UInt())
                 .RuleFor(x => x.BuildingSwaps, f => Generator.Array(ScriptData.NumBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
@@ -27,7 +26,7 @@ namespace GTASaveData.VCS.Tests
                 .RuleFor(x => x.MainScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.LargestMissionScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.NumberOfMissionScripts, f => f.Random.Short())
-                .RuleFor(x => x.ActiveScripts, f => Generator.Array(runningScripts, g => Generator.Generate<RunningScript, TestRunningScript>(format)));
+                .RuleFor(x => x.Threads, f => Generator.Array(runningScripts, g => Generator.Generate<RunningScript, TestRunningScript>(format)));
 
             return model.Generate();
         }
@@ -39,7 +38,7 @@ namespace GTASaveData.VCS.Tests
             ScriptData x0 = GenerateTestObject(format);
             ScriptData x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
-            Assert.Equal(x0.ScriptSpace, x1.ScriptSpace);
+            Assert.Equal(x0.Globals, x1.Globals);
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
             Assert.Equal(x0.LastMissionPassedTime, x1.LastMissionPassedTime);
             Assert.Equal(x0.BuildingSwaps, x1.BuildingSwaps);
@@ -49,7 +48,7 @@ namespace GTASaveData.VCS.Tests
             Assert.Equal(x0.MainScriptSize, x1.MainScriptSize);
             Assert.Equal(x0.LargestMissionScriptSize, x1.LargestMissionScriptSize);
             Assert.Equal(x0.NumberOfMissionScripts, x1.NumberOfMissionScripts);
-            Assert.Equal(x0.ActiveScripts, x1.ActiveScripts);
+            Assert.Equal(x0.Threads, x1.Threads);
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
@@ -64,8 +63,8 @@ namespace GTASaveData.VCS.Tests
             Assert.Equal(x0, x1);
 
             // Prove that deep copy actually happened
-            x0.ActiveScripts[0].IP = 6969;
-            Assert.NotEqual(x0.ActiveScripts[0], x1.ActiveScripts[0]);
+            x0.Threads[0].InstructionPointer = 6969;
+            Assert.NotEqual(x0.Threads[0], x1.Threads[0]);
         }
 
         // [Fact]

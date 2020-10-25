@@ -88,6 +88,11 @@ namespace GTASaveData.LCS
             return Load<LCSSave>(path);
         }
 
+        public static LCSSave Load(string path, FileFormat fmt)
+        {
+            return Load<LCSSave>(path, fmt);
+        }
+
         public LCSSave()
         {
             SimpleVars = new SimpleVariables();

@@ -1,8 +1,30 @@
 ﻿using GTASaveData;
 using System;
+using System.ComponentModel;
 
 namespace TestFramework
 {
+    public enum Game
+    {
+        [Description("GTA III")]
+        III,
+
+        [Description("Vice City")]
+        VC,
+
+        [Description("San Andreas")]
+        SA,
+
+        [Description("Liberty City Stories")]
+        LCS,
+
+        [Description("Vice City Stories")]
+        VCS,
+
+        [Description("GTA IV")]
+        IV
+    }
+
     public abstract class TestBase : IDisposable
     {
         public TestBase()

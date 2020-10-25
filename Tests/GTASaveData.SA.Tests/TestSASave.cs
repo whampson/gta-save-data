@@ -1,5 +1,4 @@
 using Bogus;
-using System.Collections.Generic;
 using TestFramework;
 using Xunit;
 using System.Linq;
@@ -7,11 +6,11 @@ using System;
 
 namespace GTASaveData.SA.Tests
 {
-    public class TestSanAndreasSave : Base<SanAndreasSave>
+    public class TestSASave : Base<SASave>
     {
-        public override SanAndreasSave GenerateTestObject(FileFormat format)
+        public override SASave GenerateTestObject(FileFormat format)
         {
-            Faker<SanAndreasSave> model = new Faker<SanAndreasSave>()
+            Faker<SASave> model = new Faker<SASave>()
                 .RuleFor(x => x.FileFormat, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format));
             // TODO: the rest of the blocks
@@ -24,7 +23,7 @@ namespace GTASaveData.SA.Tests
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.SA, expectedFormat, filename);
-            SaveData.GetFileFormat<SanAndreasSave>(path, out FileFormat detectedFormat);
+            SaveData.GetFileFormat<SASave>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -33,8 +32,8 @@ namespace GTASaveData.SA.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileFormat format)
         {
-            using SanAndreasSave x0 = GenerateTestObject(format);
-            using SanAndreasSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using SASave x0 = GenerateTestObject(format);
+            using SASave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -49,8 +48,8 @@ namespace GTASaveData.SA.Tests
         {
             string path = TestData.GetTestDataPath(Game.SA, format, filename);
 
-            using SanAndreasSave x0 = SaveData.Load<SanAndreasSave>(path, format);
-            using SanAndreasSave x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using SASave x0 = SaveData.Load<SASave>(path, format);
+            using SASave x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
 
@@ -59,7 +58,7 @@ namespace GTASaveData.SA.Tests
             Assert.Equal(calculatedSum, storedSum);
         }
 
-        private void AssertSavesAreEqual(SanAndreasSave x0, SanAndreasSave x1)
+        private void AssertSavesAreEqual(SASave x0, SASave x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);
@@ -92,17 +91,5 @@ namespace GTASaveData.SA.Tests
             Assert.Equal(x0.PostEffects, x1.PostEffects);
             Assert.Equal(x0, x1);
         }
-
-        public static IEnumerable<object[]> TestFiles => new[]
-        {
-            new object[] { SanAndreasSave.FileFormats.PC, "BCES4_2" },
-            new object[] { SanAndreasSave.FileFormats.PC, "CASINO3" },
-            new object[] { SanAndreasSave.FileFormats.PC, "CASINO6" },
-            new object[] { SanAndreasSave.FileFormats.PC, "GROVE_1" },
-            new object[] { SanAndreasSave.FileFormats.PC, "RIOT_4" },
-            new object[] { SanAndreasSave.FileFormats.PC, "STAD_01" },
-            new object[] { SanAndreasSave.FileFormats.PC, "STAD_03" },
-            new object[] { SanAndreasSave.FileFormats.PC, "STRAP_4" },
-        };
     }
 }

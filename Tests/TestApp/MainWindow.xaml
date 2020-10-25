@@ -4,7 +4,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:TestApp"
-    xmlns:s="clr-namespace:GTASaveData;assembly=GTASaveData.Core"
     xmlns:econv="clr-namespace:WpfEssentials.Win32.Converters;assembly=WpfEssentials.Win32"
     xmlns:eext="clr-namespace:WpfEssentials.Win32.Extensions;assembly=WpfEssentials.Win32"
     mc:Ignorable="d"
@@ -179,7 +178,7 @@
                 <StatusBarItem Grid.Column="4" HorizontalContentAlignment="Center">
                     <TextBlock Text="{Binding SelectedGame, Converter={StaticResource EnumDescriptionConverter}}">
                         <TextBlock.ContextMenu>
-                            <ContextMenu ItemsSource="{eext:EnumValueCollection EnumType=s:Game}">
+                            <ContextMenu ItemsSource="{eext:EnumValueCollection EnumType=local:Game}">
                                 <ContextMenu.ItemContainerStyle>
                                     <Style TargetType="MenuItem">
                                         <EventSetter Event="Click" Handler="GameMenuItem_Click"/>

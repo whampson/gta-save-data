@@ -1,17 +1,14 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA4
 {
-    [Size(0xD551)]
-    public class Pickups : SaveDataObject, IEquatable<Pickups>
+    public class PickupData : SaveDataObject,
+        IEquatable<PickupData>, IDeepClonable<PickupData>
     {
-        public static class Limits
-        {
-            public const int MaxPickupsCount = 650;
-        }
+        public const int MaxPickupsCount = 650;
 
         private int m_pickupsCount;
         private Array<Pickup> m_pickupsArray;
@@ -42,37 +39,45 @@ namespace GTASaveData.GTA4
             set { m_unknown = value; OnPropertyChanged(); }
         }
 
-        public Pickups()
+        public PickupData()
         {
             PickupsArray = new Array<Pickup>();
+        }
+
+        public PickupData(PickupData other)
+        {
+            PickupsCount = other.PickupsCount;
+            PickupsArray = ArrayHelper.DeepClone(other.PickupsArray);
+            WeaponPickupMessagesRemaining = other.WeaponPickupMessagesRemaining;
+            Unknown = other.Unknown;
         }
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             PickupsCount = buf.ReadInt32();
-            PickupsArray = buf.ReadArray<Pickup>(Limits.MaxPickupsCount);
+            PickupsArray = buf.ReadArray<Pickup>(MaxPickupsCount);
             WeaponPickupMessagesRemaining = buf.ReadByte();
             Unknown = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOfType<Pickups>());
+            Debug.Assert(buf.Offset == SizeOfType<PickupData>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(PickupsCount);
-            buf.Write(PickupsArray, Limits.MaxPickupsCount);
+            buf.Write(PickupsArray, MaxPickupsCount);
             buf.Write(WeaponPickupMessagesRemaining);
             buf.Write(Unknown);
 
-            Debug.Assert(buf.Offset == SizeOfType<Pickups>());
+            Debug.Assert(buf.Offset == SizeOfType<PickupData>());
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Pickups);
+            return Equals(obj as PickupData);
         }
 
-        public bool Equals(Pickups other)
+        public bool Equals(PickupData other)
         {
             if (other == null)
             {
@@ -83,6 +88,16 @@ namespace GTASaveData.GTA4
                 && PickupsArray.SequenceEqual(other.PickupsArray)
                 && WeaponPickupMessagesRemaining.Equals(other.WeaponPickupMessagesRemaining)
                 && Unknown.Equals(other.Unknown);
+        }
+
+        protected override int GetSize(FileFormat fmt)
+        {
+            return 0xD551;  // TODO calculate
+        }
+
+        public PickupData DeepClone()
+        {
+            return new PickupData(this);
         }
     }
 }

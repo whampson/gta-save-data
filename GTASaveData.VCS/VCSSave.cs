@@ -1,5 +1,4 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -88,6 +87,11 @@ namespace GTASaveData.VCS
         public static VCSSave Load(string path)
         {
             return Load<VCSSave>(path);
+        }
+
+        public static VCSSave Load(string path, FileFormat fmt)
+        {
+            return Load<VCSSave>(path, fmt);
         }
 
         public VCSSave()

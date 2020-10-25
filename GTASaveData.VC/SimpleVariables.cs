@@ -1,21 +1,24 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.VC
 {
     public class SimpleVariables : SaveDataObject, ISimpleVariables,
-        IEquatable<SimpleVariables>
+        IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
         public const int MaxMissionPassedNameLength = 24;
         public const int RadioStationListCount = 10;
+        public const int SteamMagicNumber = 0x3DF5C2FD;
+
+        // TODO get steam ID in here
 
         private string m_lastMissionPassedName;
         private SystemTime m_timeStamp;
         private Level m_currLevel;
-        private Vector3D m_cameraPosition;
+        private Vector3 m_cameraPosition;
         private int m_steamId;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
@@ -63,13 +66,13 @@ namespace GTASaveData.VC
             set { m_currLevel = value; OnPropertyChanged(); }
         }
 
-        public Vector3D CameraPosition
+        public Vector3 CameraPosition
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
         }
 
-        public int SteamId
+        public int SteamMagic
         {
             get { return m_steamId; }
             set { m_steamId = value; OnPropertyChanged(); }
@@ -243,14 +246,50 @@ namespace GTASaveData.VC
             RadioStationPositionList = new Array<int>();
         }
 
+        public SimpleVariables(SimpleVariables other)
+        {
+            LastMissionPassedName = other.LastMissionPassedName;
+            TimeStamp = other.TimeStamp;
+            CurrLevel = other.CurrLevel;
+            CameraPosition = other.CameraPosition;
+            SteamMagic = other.SteamMagic;
+            MillisecondsPerGameMinute = other.MillisecondsPerGameMinute;
+            LastClockTick = other.LastClockTick;
+            GameClockHours = other.GameClockHours;
+            GameClockMinutes = other.GameClockMinutes;
+            CurrPadMode = other.CurrPadMode;
+            TimeInMilliseconds = other.TimeInMilliseconds;
+            TimerTimeScale = other.TimerTimeScale;
+            TimerTimeStep = other.TimerTimeStep;
+            TimerTimeStepNonClipped = other.TimerTimeStepNonClipped;
+            FrameCounter = other.FrameCounter;
+            TimeStep = other.TimeStep;
+            FramesPerUpdate = other.FramesPerUpdate;
+            TimeScale = other.TimeScale;
+            OldWeatherType = other.OldWeatherType;
+            NewWeatherType = other.NewWeatherType;
+            ForcedWeatherType = other.ForcedWeatherType;
+            WeatherInterpolation = other.WeatherInterpolation;
+            WeatherTypeInList = other.WeatherTypeInList;
+            CameraCarZoomIndicator = other.CameraCarZoomIndicator;
+            CameraPedZoomIndicator = other.CameraPedZoomIndicator;
+            CurrArea = other.CurrArea;
+            AllTaxisHaveNitro = other.AllTaxisHaveNitro;
+            InvertLook4Pad = other.InvertLook4Pad;
+            ExtraColour = other.ExtraColour;
+            ExtraColourOn = other.ExtraColourOn;
+            ExtraColourInterpolation = other.ExtraColourInterpolation;
+            RadioStationPositionList = other.RadioStationPositionList;
+        }
+
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
-            TimeStamp = buf.Read<SystemTime>();
+            TimeStamp = buf.ReadStruct<SystemTime>();
             buf.ReadInt32();
             CurrLevel = (Level) buf.ReadInt32();
-            CameraPosition = buf.ReadObject<Vector3D>();
-            if (fmt.IsPC && fmt.IsSteam) SteamId = buf.ReadInt32();
+            CameraPosition = buf.ReadStruct<Vector3>();
+            if (fmt.IsPC && fmt.IsSteam) SteamMagic = buf.ReadInt32();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockHours = (byte) buf.ReadInt32();
@@ -297,7 +336,7 @@ namespace GTASaveData.VC
             buf.Write(VCSave.SizeOfGameInBytes + 1);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
-            if (fmt.IsPC && fmt.IsSteam) buf.Write(SteamId);
+            if (fmt.IsPC && fmt.IsSteam) buf.Write(SteamMagic);
             buf.Write(MillisecondsPerGameMinute);
             buf.Write(LastClockTick);
             buf.Write(GameClockHours);
@@ -367,7 +406,7 @@ namespace GTASaveData.VC
                 && TimeStamp.Equals(other.TimeStamp)
                 && CurrLevel.Equals(other.CurrLevel)
                 && CameraPosition.Equals(other.CameraPosition)
-                && SteamId.Equals(other.SteamId)
+                && SteamMagic.Equals(other.SteamMagic)
                 && MillisecondsPerGameMinute.Equals(other.MillisecondsPerGameMinute)
                 && LastClockTick.Equals(other.LastClockTick)
                 && GameClockHours.Equals(other.GameClockHours)
@@ -395,6 +434,11 @@ namespace GTASaveData.VC
                 && ExtraColourOn.Equals(other.ExtraColourOn)
                 && ExtraColourInterpolation.Equals(other.ExtraColourInterpolation)
                 && RadioStationPositionList.SequenceEqual(other.RadioStationPositionList);
+        }
+
+        public SimpleVariables DeepClone()
+        {
+            return new SimpleVariables(this);
         }
     }
 

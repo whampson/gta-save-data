@@ -9,6 +9,8 @@ namespace GTASaveData
     /// </summary>
     public abstract class SaveData : SaveDataObject
     {
+        private const int FileSizeMax = 0x200000;
+
         private FileFormat m_fileFormat;
         private PaddingType m_paddingType;
         private byte[] m_paddingBytes;
@@ -81,7 +83,7 @@ namespace GTASaveData
             if (File.Exists(path))
             {
                 FileInfo info = new FileInfo(path);
-                if (info.Length > 0x40000)
+                if (info.Length > FileSizeMax)
                 {
                     goto Fail;
                 }
@@ -195,7 +197,7 @@ namespace GTASaveData
             if (File.Exists(path))
             {
                 FileInfo info = new FileInfo(path);
-                if (info.Length > 0x40000)
+                if (info.Length > FileSizeMax)
                 {
                     throw new InvalidDataException("File is too large to be a GTA save file.");
                 }
