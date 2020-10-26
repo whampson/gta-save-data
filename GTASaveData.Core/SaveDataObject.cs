@@ -44,22 +44,22 @@ namespace GTASaveData
         /// <summary>
         /// Event handler executed before <see cref="ReadData(DataBuffer, FileFormat)"/> is called.
         /// </summary>
-        protected virtual void OnReading() { }
+        protected virtual void OnReading(FileFormat fmt) { }
 
         /// <summary>
         /// Event handler executed after <see cref="ReadData(DataBuffer, FileFormat)"/> is called.
         /// </summary>
-        protected virtual void OnRead() { }
+        protected virtual void OnRead(FileFormat fmt) { }
 
         /// <summary>
         /// Event handler executed before <see cref="WriteData(DataBuffer, FileFormat)"/> is called.
         /// </summary>
-        protected virtual void OnWriting() { }
+        protected virtual void OnWriting(FileFormat fmt) { }
 
         /// <summary>
         /// Event handler executed after <see cref="WriteData(DataBuffer, FileFormat)"/> is called.
         /// </summary>
-        protected virtual void OnWrite() { }
+        protected virtual void OnWrite(FileFormat fmt) { }
 
         /// <summary>
         /// Reads this object's data in from the stream buffer using the
@@ -92,9 +92,9 @@ namespace GTASaveData
             buf.Mark();
             start = buf.Position;
 
-            OnReading();
+            OnReading(fmt);
             ReadData(buf, fmt);
-            OnRead();
+            OnRead(fmt);
 
             len = buf.Position - start;
             buf.MarkedPosition = oldMark;
@@ -110,9 +110,9 @@ namespace GTASaveData
             buf.Mark();
             start = buf.Position;
 
-            OnWriting();
+            OnWriting(fmt);
             WriteData(buf, fmt);
-            OnWrite();
+            OnWrite(fmt);
 
             len = buf.Position - start;
             buf.MarkedPosition = oldMark;

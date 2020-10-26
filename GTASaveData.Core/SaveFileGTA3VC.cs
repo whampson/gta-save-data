@@ -177,15 +177,17 @@ namespace GTASaveData
             return size;
         }
 
-        protected override void OnReading()
+        protected override void OnReading(FileFormat fmt)
         {
-            base.OnReading();
+            base.OnReading(fmt);
+            FileFormat = fmt;
             ReInitWorkBuff();
         }
 
-        protected override void OnWriting()
+        protected override void OnWriting(FileFormat fmt)
         {
-            base.OnWriting();
+            base.OnWriting(fmt);
+            FileFormat = fmt;
             ReInitWorkBuff();
         }
 
