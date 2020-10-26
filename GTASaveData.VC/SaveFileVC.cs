@@ -412,33 +412,63 @@ namespace GTASaveData.VC
 
         protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
         {
-            // TODO: Android, iOS, PS2, Xbox
+            // TODO: PS2, Xbox
 
-            int fileId = data.FindFirst(BitConverter.GetBytes(DataSize + 1));
-            int fileIdJP = data.FindFirst(BitConverter.GetBytes(DataSize));  // TODO: confirm this japan difference even exists
-            int scr = data.FindFirst("SCR\0".GetAsciiBytes());
+            bool isMobile = false;
 
-            int blk1Size;
-            using (DataBuffer wb = new DataBuffer(data))
+            int saveSizeOffset = data.FindFirst(BitConverter.GetBytes(DataSize + 1));
+            int saveSizeOffsetJP = data.FindFirst(BitConverter.GetBytes(DataSize));
+            int scrOffset = data.FindFirst("SCR\0".GetAsciiBytes());
+
+            if ((saveSizeOffset < 0 && saveSizeOffsetJP < 0) || scrOffset < 0)
             {
-                wb.Skip(wb.ReadInt32());
-                blk1Size = wb.ReadInt32();
+                goto DetectionFailed;
             }
 
-            if (fileId == 0x44)
+            if (saveSizeOffset == 0x40)
             {
-                if (scr == 0xEC)
+                isMobile = true;
+            }
+            else if (saveSizeOffset == 0x44)
+            {
+                if (scrOffset == 0xEC)
                 {
                     fmt = FileFormats.PC;
                     return true;
                 }
-                else if (scr == 0xF0)
+                else if (scrOffset == 0xF0)
                 {
                     fmt = FileFormats.PC_Steam;
                     return true;
                 }
             }
 
+            int sizeOfPlayerPed;
+            using (DataBuffer s = new DataBuffer(data))
+            {
+                int block0Size = s.ReadInt32();
+                if (block0Size > s.Length) goto DetectionFailed;
+                s.Skip(block0Size + sizeof(int));
+                int sizeOfPedPool = DataBuffer.Align4(s.ReadInt32() - sizeof(int));
+                int numPlayerPeds = s.ReadInt32();
+                sizeOfPlayerPed = sizeOfPedPool / numPlayerPeds;
+            }
+
+            if (isMobile)
+            {
+                if (sizeOfPlayerPed == 0x754 || sizeOfPlayerPed == 0x758)
+                {
+                    fmt = FileFormats.iOS;
+                    return true;
+                }
+                else if (sizeOfPlayerPed == 0x75C)
+                {
+                    fmt = FileFormats.Android;
+                    return true;
+                }
+            }
+
+        DetectionFailed:
             fmt = FileFormat.Default;
             return false;
         }

@@ -33,5 +33,14 @@ namespace GTASaveData.VC.Tests
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            CarGeneratorData x0 = GenerateTestObject();
+            CarGeneratorData x1 = new CarGeneratorData(x0);
+
+            Assert.Equal(x0, x1);
+        }
     }
 }

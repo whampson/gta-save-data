@@ -10,15 +10,17 @@ namespace GTASaveData.VC
         IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
         public const int MaxMissionPassedNameLength = 24;
+        public const int MaxMissionPassedNameLengthMobile = 28;
         public const int RadioStationListCount = 10;
-        public const int SteamMagicNumber = 0x3DF5C2FD;
+        public const int SteamMagic = 0x3DF5C2FD;
 
+        private int m_saveVersionNumber;
         private string m_lastMissionPassedName;
         private SystemTime m_timeStamp;
         private int m_sizeOfGameInBytes;
         private Level m_currLevel;
         private Vector3 m_cameraPosition;
-        private int m_steamId;
+        private int m_steamMagicNumber;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
         private byte m_gameClockHours;
@@ -46,6 +48,12 @@ namespace GTASaveData.VC
         private bool m_extraColourOn;
         private float m_extraColourInter;
         private Array<int> m_radioStationPositionList;
+
+        public int SaveVersionNumber
+        {
+            get { return m_saveVersionNumber; }
+            set { m_saveVersionNumber = value; }
+        }
 
         public string LastMissionPassedName
         {
@@ -77,10 +85,10 @@ namespace GTASaveData.VC
             set { m_cameraPosition = value; OnPropertyChanged(); }
         }
 
-        public int SteamMagic
+        public int SteamMagicNumber
         {
-            get { return m_steamId; }
-            set { m_steamId = value; OnPropertyChanged(); }
+            get { return m_steamMagicNumber; }
+            set { m_steamMagicNumber = value; OnPropertyChanged(); }
         }
 
         public int MillisecondsPerGameMinute
@@ -248,17 +256,19 @@ namespace GTASaveData.VC
         public SimpleVariables()
         {
             LastMissionPassedName = "";
+            TimeStamp = SystemTime.MinValue;
             RadioStationPositionList = new Array<int>();
         }
 
         public SimpleVariables(SimpleVariables other)
         {
+            SaveVersionNumber = other.SaveVersionNumber;
             LastMissionPassedName = other.LastMissionPassedName;
             TimeStamp = other.TimeStamp;
             SizeOfGameInBytes = other.SizeOfGameInBytes;
             CurrLevel = other.CurrLevel;
             CameraPosition = other.CameraPosition;
-            SteamMagic = other.SteamMagic;
+            SteamMagicNumber = other.SteamMagicNumber;
             MillisecondsPerGameMinute = other.MillisecondsPerGameMinute;
             LastClockTick = other.LastClockTick;
             GameClockHours = other.GameClockHours;
@@ -290,12 +300,20 @@ namespace GTASaveData.VC
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
-            TimeStamp = buf.ReadStruct<SystemTime>();
+            if (fmt.IsMobile)
+            {
+                SaveVersionNumber = buf.ReadInt32();
+                LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLengthMobile, unicode: true);
+            }
+            else
+            {
+                LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
+                TimeStamp = buf.ReadStruct<SystemTime>();
+            }
             SizeOfGameInBytes = buf.ReadInt32();
             CurrLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.ReadStruct<Vector3>();
-            if (fmt.IsPC && fmt.IsSteam) SteamMagic = buf.ReadInt32();
+            if (fmt.IsPC && fmt.IsSteam) SteamMagicNumber = buf.ReadInt32();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockHours = (byte) buf.ReadInt32();
@@ -337,12 +355,20 @@ namespace GTASaveData.VC
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
-            buf.Write(TimeStamp);
+            if (fmt.IsMobile)
+            {
+                buf.Write(SaveVersionNumber);
+                buf.Write(LastMissionPassedName, MaxMissionPassedNameLengthMobile, unicode: true);
+            }
+            else
+            {
+                buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
+                buf.Write(TimeStamp);
+            }
             buf.Write(SizeOfGameInBytes);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
-            if (fmt.IsPC && fmt.IsSteam) buf.Write(SteamMagic);
+            if (fmt.IsPC && fmt.IsSteam) buf.Write(SteamMagicNumber);
             buf.Write(MillisecondsPerGameMinute);
             buf.Write(LastClockTick);
             buf.Write(GameClockHours);
@@ -384,7 +410,11 @@ namespace GTASaveData.VC
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPC)
+            if (fmt.IsMobile)
+            {
+                return 0xE0;
+            }
+            else if (fmt.IsPC)
             {
                 if (fmt.IsSteam)
                 {
@@ -408,12 +438,13 @@ namespace GTASaveData.VC
                 return false;
             }
 
-            return LastMissionPassedName.Equals(other.LastMissionPassedName)
+            return SaveVersionNumber.Equals(other.SaveVersionNumber)
+                && LastMissionPassedName.Equals(other.LastMissionPassedName)
                 && TimeStamp.Equals(other.TimeStamp)
                 && SizeOfGameInBytes.Equals(other.SizeOfGameInBytes)
                 && CurrLevel.Equals(other.CurrLevel)
                 && CameraPosition.Equals(other.CameraPosition)
-                && SteamMagic.Equals(other.SteamMagic)
+                && SteamMagicNumber.Equals(other.SteamMagicNumber)
                 && MillisecondsPerGameMinute.Equals(other.MillisecondsPerGameMinute)
                 && LastClockTick.Equals(other.LastClockTick)
                 && GameClockHours.Equals(other.GameClockHours)

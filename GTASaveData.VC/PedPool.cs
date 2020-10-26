@@ -71,6 +71,7 @@ namespace GTASaveData.VC
                 p.MaxWantedLevel = buf.ReadInt32();
                 p.MaxChaosLevel = buf.ReadInt32();
                 p.ModelName = buf.ReadString(PlayerPed.MaxModelNameLength);
+                if (fmt.IsMobile) buf.Skip(4);
                 PlayerPeds.Add(p);
             }
 
@@ -90,6 +91,7 @@ namespace GTASaveData.VC
                 buf.Write(p.MaxWantedLevel);
                 buf.Write(p.MaxChaosLevel);
                 buf.Write(p.ModelName, PlayerPed.MaxModelNameLength);
+                if (fmt.IsMobile) buf.Skip(4);
             }
 
             Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
@@ -99,6 +101,7 @@ namespace GTASaveData.VC
         {
             int headerSize = 2 * sizeof(int) + sizeof(short);
             int footerSize = 2 * sizeof(int) + PlayerPed.MaxModelNameLength;
+            if (fmt.IsMobile) footerSize += sizeof(int);
 
             int size = 0;
             foreach (PlayerPed p in PlayerPeds)

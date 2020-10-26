@@ -8,12 +8,14 @@ namespace GTASaveData.VC.Tests
     {
         public override SimpleVariables GenerateTestObject(FileFormat format)
         {
+            int nameLength = (format.IsMobile) ? SimpleVariables.MaxMissionPassedNameLengthMobile : SimpleVariables.MaxMissionPassedNameLength;
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.LastMissionPassedName, f => Generator.UnicodeString(f, SimpleVariables.MaxMissionPassedNameLength - 1))
-                .RuleFor(x => x.TimeStamp, f => new SystemTime(Generator.Date(f)))
+                .RuleFor(x => x.SaveVersionNumber, f => (format.IsMobile) ? f.Random.Int() : 0)
+                .RuleFor(x => x.LastMissionPassedName, f => Generator.UnicodeString(f, nameLength - 1))
+                .RuleFor(x => x.TimeStamp, f => (format.IsPC) ? new SystemTime(Generator.Date(f)) : SystemTime.MinValue)
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3(f))
-                .RuleFor(x => x.SteamMagic, (format.IsPC && format.IsSteam) ? SimpleVariables.SteamMagicNumber : 0)
+                .RuleFor(x => x.SteamMagicNumber, (format.IsPC && format.IsSteam) ? SimpleVariables.SteamMagic : 0)
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
                 .RuleFor(x => x.GameClockHours, f => f.Random.Byte())
@@ -52,11 +54,12 @@ namespace GTASaveData.VC.Tests
             SimpleVariables x0 = GenerateTestObject(format);
             SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
+            Assert.Equal(x0.SaveVersionNumber, x1.SaveVersionNumber);
             Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
             Assert.Equal(x0.TimeStamp, x1.TimeStamp);
             Assert.Equal(x0.CurrLevel, x1.CurrLevel);
             Assert.Equal(x0.CameraPosition, x1.CameraPosition);
-            Assert.Equal(x0.SteamMagic, x1.SteamMagic);
+            Assert.Equal(x0.SteamMagicNumber, x1.SteamMagicNumber);
             Assert.Equal(x0.MillisecondsPerGameMinute, x1.MillisecondsPerGameMinute);
             Assert.Equal(x0.LastClockTick, x1.LastClockTick);
             Assert.Equal(x0.GameClockHours, x1.GameClockHours);
@@ -87,6 +90,15 @@ namespace GTASaveData.VC.Tests
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+        }
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            SimpleVariables x0 = GenerateTestObject();
+            SimpleVariables x1 = new SimpleVariables(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }
