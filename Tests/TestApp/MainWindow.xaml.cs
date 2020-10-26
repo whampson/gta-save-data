@@ -58,5 +58,13 @@ namespace TestApp
         {
             ViewModel.Initialize();
         }
+
+        //private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    if (ViewModel.SelectedBlockIndex == 0)
+        //    {
+        //        ViewModel.UpdateTextBox();
+        //    }
+        //}
     }
 }

@@ -7,7 +7,7 @@
     xmlns:econv="clr-namespace:WpfEssentials.Win32.Converters;assembly=WpfEssentials.Win32"
     xmlns:eext="clr-namespace:WpfEssentials.Win32.Extensions;assembly=WpfEssentials.Win32"
     mc:Ignorable="d"
-    Title="MainWindow"
+    Title="GTA Save File Viewer"
     Loaded="Window_Loaded"
     Height="550" Width="800">
 
@@ -24,6 +24,7 @@
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type local:EmpireEditorViewModel}">
+            <!-- VCS only -->
             <local:EmpireEditor/>
         </DataTemplate>
 
@@ -110,29 +111,68 @@
                 <RowDefinition Height="25"/>
             </Grid.RowDefinitions>
 
-            <local:TabControlEx
-                DockPanel.Dock="Top"
-                Style="{StaticResource TabControlStyle}"
-                ItemsSource="{Binding Tabs}"
-                IsSynchronizedWithCurrentItem="True"
-                SelectedIndex="{Binding SelectedTabIndex}">
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="175"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="175"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <TabControl.ItemContainerStyle>
-                    <Style TargetType="{x:Type TabItem}">
-                        <Setter
+                <Label Grid.Row="0" Grid.Column="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Content="Name:"
+                    IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
+
+                <TextBox Grid.Row="0" Grid.Column="1"
+                    Margin="5,5,5,5"
+                    Text="{Binding CurrentSaveFile.Name, UpdateSourceTrigger=PropertyChanged}"
+                    VerticalContentAlignment="Center"
+                    IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
+
+                <Label Grid.Row="0" Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Content="File Format:"
+                    IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
+
+                <ComboBox Grid.Row="0" Grid.Column="3"
+                    Style="{StaticResource ComboBoxStyle}"
+                    ItemsSource="{Binding FileFormatsForCurrentGame, Mode=OneWay}"
+                    SelectedItem="{Binding CurrentFileFormat}"
+                    IsEnabled="{Binding CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
+
+                <local:TabControlEx
+                    Grid.Row="1" Grid.ColumnSpan="5" Margin="0,5,0,0"
+                    Style="{StaticResource TabControlStyle}"
+                    ItemsSource="{Binding Tabs}"
+                    IsSynchronizedWithCurrentItem="True"
+                    SelectedIndex="{Binding SelectedTabIndex}">
+
+                    <TabControl.ItemContainerStyle>
+                        <Style TargetType="{x:Type TabItem}">
+                            <Setter
                                 Property="Visibility"
                                 Value="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                    </Style>
-                </TabControl.ItemContainerStyle>
+                        </Style>
+                    </TabControl.ItemContainerStyle>
 
-                <TabControl.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Title, Mode=OneWay}"/>
-                    </DataTemplate>
-                </TabControl.ItemTemplate>
-            </local:TabControlEx>
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Title, Mode=OneWay}"/>
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                </local:TabControlEx>
+            </Grid>
+            
 
-            <StatusBar Grid.Row="2" Grid.ColumnSpan="5">
+            <StatusBar Grid.Row="1" Grid.ColumnSpan="5">
                 <StatusBar.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid>

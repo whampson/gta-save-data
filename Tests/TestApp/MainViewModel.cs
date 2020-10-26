@@ -68,11 +68,10 @@ namespace TestApp
         public Game SelectedGame
         {
             get { return m_selectedGame; }
-            set
-            {
-                m_selectedGame = value;
+            set{ m_selectedGame = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(BlockNameForCurrentGame));
+                OnPropertyChanged(nameof(BlockNamesForCurrentGame));
+                OnPropertyChanged(nameof(FileFormatsForCurrentGame));
             }
         }
 
@@ -82,21 +81,19 @@ namespace TestApp
             set { m_statusText = value; OnPropertyChanged(); }
         }
 
-        public IEnumerable<FileFormat> FileFormats
+        public static Dictionary<Game, IEnumerable<FileFormat>> FileFormats => new Dictionary<Game, IEnumerable<FileFormat>>()
         {
-            get
-            {
-                return SelectedGame switch
-                {
-                    Game.GTA3 => SaveFileGTA3.FileFormats.GetAll(),
-                    Game.VC => SaveFileVC.FileFormats.GetAll(),
-                    Game.SA => SaveFileSA.FileFormats.GetAll(),
-                    Game.LCS => SaveFileLCS.FileFormats.GetAll(),
-                    Game.VCS => SaveFileVCS.FileFormats.GetAll(),
-                    Game.IV => SaveFileIV.FileFormats.GetAll(),
-                    _ => new FileFormat[0],
-                };
-            }
+            { Game.GTA3, SaveFileGTA3.FileFormats.GetAll() },
+            { Game.VC, SaveFileVC.FileFormats.GetAll() },
+            { Game.SA, SaveFileSA.FileFormats.GetAll() },
+            { Game.LCS, SaveFileLCS.FileFormats.GetAll() },
+            { Game.VCS, SaveFileVCS.FileFormats.GetAll() },
+            { Game.IV, SaveFileIV.FileFormats.GetAll() },
+        };
+
+        public IEnumerable<FileFormat> FileFormatsForCurrentGame
+        {
+            get { return FileFormats[SelectedGame]; }
         }
 
         public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
@@ -109,7 +106,7 @@ namespace TestApp
             { Game.IV, Enum.GetNames(typeof(IVBlock)) },
         };
 
-        public string[] BlockNameForCurrentGame
+        public string[] BlockNamesForCurrentGame
         {
             get { return BlockNames[SelectedGame]; }
         }
@@ -275,11 +272,6 @@ namespace TestApp
             CurrentSaveFile.FileFormat = CurrentFileFormat;
             CurrentSaveFile.Save(path);
             StatusText = "File saved.";
-        }
-
-        public void SetFileTypeByName(string fileTypeName)
-        {
-            CurrentFileFormat = FileFormats.FirstOrDefault(x => x.Name == fileTypeName);
         }
 
         #region View Operations
