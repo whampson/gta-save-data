@@ -22,7 +22,7 @@ namespace GTASaveData.VC
         private Dummy m_garages;
         private Dummy m_gameLogic;
         private Dummy m_vehiclePool;
-        private Dummy m_objectPool;
+        private ObjectPool m_objectPool;
         private Dummy m_paths;
         private Dummy m_cranes;
         private Dummy m_pickups;
@@ -77,7 +77,7 @@ namespace GTASaveData.VC
             set { m_vehiclePool = value; OnPropertyChanged(); }
         }
 
-        public Dummy Objects
+        public ObjectPool Objects
         {
             get { return m_objectPool; }
             set { m_objectPool = value; OnPropertyChanged(); }
@@ -255,7 +255,7 @@ namespace GTASaveData.VC
             Garages = new Dummy();
             GameLogic = new Dummy();
             Vehicles = new Dummy();
-            Objects = new Dummy();
+            Objects = new ObjectPool();
             Paths = new Dummy();
             Cranes = new Dummy();
             Pickups = new Dummy();
@@ -283,7 +283,7 @@ namespace GTASaveData.VC
             Garages = new Dummy(other.Garages);
             GameLogic = new Dummy(other.GameLogic);
             Vehicles = new Dummy(other.Vehicles);
-            Objects = new Dummy(other.Objects);
+            Objects = new ObjectPool(other.Objects);
             Paths = new Dummy(other.Paths);
             Cranes = new Dummy(other.Cranes);
             Pickups = new Dummy(other.Pickups);
@@ -314,7 +314,7 @@ namespace GTASaveData.VC
             dataSize += ReadBlock(file); Garages = LoadTypePreAlloc<Dummy>();
             dataSize += ReadBlock(file); GameLogic = LoadTypePreAlloc<Dummy>();
             dataSize += ReadBlock(file); Vehicles = LoadTypePreAlloc<Dummy>();
-            dataSize += ReadBlock(file); Objects = LoadTypePreAlloc<Dummy>();
+            dataSize += ReadBlock(file); Objects = LoadType<ObjectPool>();
             dataSize += ReadBlock(file); Paths = LoadTypePreAlloc<Dummy>();
             dataSize += ReadBlock(file); Cranes = LoadTypePreAlloc<Dummy>();
             dataSize += ReadBlock(file); Pickups = LoadTypePreAlloc<Dummy>();
