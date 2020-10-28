@@ -83,6 +83,7 @@ namespace TestApp
 
         public static Dictionary<Game, IEnumerable<FileFormat>> FileFormats => new Dictionary<Game, IEnumerable<FileFormat>>()
         {
+            { Game.None, new List<FileFormat>() },
             { Game.GTA3, SaveFileGTA3.FileFormats.GetAll() },
             { Game.VC, SaveFileVC.FileFormats.GetAll() },
             { Game.SA, SaveFileSA.FileFormats.GetAll() },
@@ -98,6 +99,7 @@ namespace TestApp
 
         public static Dictionary<Game, string[]> BlockNames => new Dictionary<Game, string[]>()
         {
+            { Game.None, new string[0] },
             { Game.GTA3, Enum.GetNames(typeof(IIIBlock)) },
             { Game.VC, Enum.GetNames(typeof(VCBlock)) },
             { Game.SA, Enum.GetNames(typeof(SABlock)) },
@@ -186,16 +188,13 @@ namespace TestApp
 
         public void LoadSaveData(string path)
         {
-            switch (SelectedGame)
-            {
-                case Game.GTA3: DoLoad<SaveFileGTA3>(path); break;
-                case Game.VC: DoLoad<SaveFileVC>(path); break;
-                case Game.SA: DoLoad<SaveFileSA>(path); break;
-                case Game.LCS: DoLoad<SaveFileLCS>(path); break;
-                case Game.VCS: DoLoad<SaveFileVCS>(path); break;
-                case Game.IV: DoLoad<SaveFileIV>(path); break;
-                default: RequestMessageBoxError("Selected game not yet supported!"); return;
-            }
+            // lol
+            if (OpenIfValid<SaveFileGTA3>(path, Game.GTA3)) { }
+            else if (OpenIfValid<SaveFileVC>(path, Game.VC)) { }
+            else if (OpenIfValid<SaveFileSA>(path, Game.SA)) { }
+            else if (OpenIfValid<SaveFileLCS>(path, Game.LCS)) { }
+            else if (OpenIfValid<SaveFileVCS>(path, Game.VCS)) { }
+            else if (OpenIfValid<SaveFileIV>(path, Game.IV)) { }
 
             if (CurrentSaveFile != null)
             {
@@ -206,7 +205,19 @@ namespace TestApp
             }
         }
 
-        private bool DoLoad<T>(string path) where T : GTASaveData.SaveFile, new()
+        private bool OpenIfValid<T>(string path, Game game) where T : SaveFile, new()
+        {
+            if (SaveFile.TryLoad<T>(path, out var _))
+            {
+                DoLoad<T>(path);
+                SelectedGame = game;
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool DoLoad<T>(string path) where T : SaveFile, new()
         {
             try
             {
@@ -217,7 +228,7 @@ namespace TestApp
                     return false;
                 }
                 CurrentFileFormat = fmt;
-                
+
                 CleanupOldSaveData();
                 CurrentSaveFile = SaveFile.Load<T>(path, CurrentFileFormat);
 
@@ -348,6 +359,9 @@ namespace TestApp
 
     public enum Game
     {
+        [Description("")]
+        None,
+
         [Description("GTA III")]
         GTA3,
 

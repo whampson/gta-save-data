@@ -191,7 +191,7 @@
                     <TextBlock Text="{Binding StatusText}"/>
                 </StatusBarItem>
 
-                <Separator Grid.Column="1"/>
+                <!--<Separator Grid.Column="1"/>
 
                 <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Center">
                     <TextBlock Text="{Binding CurrentFileFormat.Name}">
@@ -199,7 +199,7 @@
                             <ToolTip Content="{Binding CurrentFileFormat.Description}"/>
                         </TextBlock.ToolTip>
                         <TextBlock.ContextMenu>
-                            <ContextMenu ItemsSource="{Binding FileFormats}">
+                            <ContextMenu ItemsSource="{Binding FileFormatsForCurrentGame}">
                                 <ContextMenu.ItemContainerStyle>
                                     <Style TargetType="MenuItem">
                                         <EventSetter Event="Click" Handler="FileTypeMenuItem_Click"/>
@@ -211,13 +211,13 @@
                             </ContextMenu>
                         </TextBlock.ContextMenu>
                     </TextBlock>
-                </StatusBarItem>
+                </StatusBarItem>-->
 
                 <Separator Grid.Column="3"/>
 
                 <StatusBarItem Grid.Column="4" HorizontalContentAlignment="Center">
                     <TextBlock Text="{Binding SelectedGame, Converter={StaticResource EnumDescriptionConverter}}">
-                        <TextBlock.ContextMenu>
+                        <!--<TextBlock.ContextMenu>
                             <ContextMenu ItemsSource="{eext:EnumValueCollection EnumType=local:Game}">
                                 <ContextMenu.ItemContainerStyle>
                                     <Style TargetType="MenuItem">
@@ -225,7 +225,7 @@
                                     </Style>
                                 </ContextMenu.ItemContainerStyle>
                             </ContextMenu>
-                        </TextBlock.ContextMenu>
+                        </TextBlock.ContextMenu>-->
                     </TextBlock>
                 </StatusBarItem>
             </StatusBar>
