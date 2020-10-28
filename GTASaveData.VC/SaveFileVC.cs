@@ -458,7 +458,7 @@ namespace GTASaveData.VC
 
             if (isMobile)
             {
-                if (sizeOfPlayerPed == 0x754 || sizeOfPlayerPed == 0x758)
+                if (sizeOfPlayerPed == 0x754)
                 {
                     fmt = FileFormats.iOS;
                     return true;

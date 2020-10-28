@@ -26,9 +26,8 @@ namespace GTASaveData.VC.Tests
             new object[] { SaveFileVC.FileFormats.Android, "LAW_3" },
             new object[] { SaveFileVC.FileFormats.iOS, "FIN_1 0" },
             new object[] { SaveFileVC.FileFormats.iOS, "FIN_1 1" },
-            new object[] { SaveFileVC.FileFormats.iOS, "FIN_1 2" }, // contains extra dword at the end of PedPool, hmm....
+            new object[] { SaveFileVC.FileFormats.iOS, "FIN_1 2" },
             new object[] { SaveFileVC.FileFormats.iOS, "FIN_1 3" },
-            new object[] { SaveFileVC.FileFormats.iOS, "FIN_1 4" },
             new object[] { SaveFileVC.FileFormats.PC, "COK_2" },
             new object[] { SaveFileVC.FileFormats.PC, "CREAM" },
             new object[] { SaveFileVC.FileFormats.PC, "FIN_1" },
