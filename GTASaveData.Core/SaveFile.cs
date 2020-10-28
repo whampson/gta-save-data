@@ -98,6 +98,58 @@ namespace GTASaveData
         }
 
         /// <summary>
+        /// Attempts to load a GTA save file from the specified file.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="SaveFile"/> to load.</typeparam>
+        /// <param name="path">The path to the file to read.</param>
+        /// <param name="saveFile">The resulting <see cref="SaveFile"/> object.</param>
+        /// <returns>True if the file is a valid GTA save file, false otherwise.</returns>
+        public static bool TryLoad<T>(string path, out T saveFile) where T : SaveFile, new()
+        {
+            try
+            {
+                saveFile = Load<T>(path);
+                return saveFile != null;
+            }
+            catch (Exception e)
+            {
+                if (!(e is InvalidDataException && e is SerializationException))
+                {
+                    throw;
+                }
+            }
+
+            saveFile = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to load a GTA save file from the specified byte array.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="SaveFile"/> to load.</typeparam>
+        /// <param name="data">Attempts to load a</param>
+        /// <param name="saveFile">The resulting <see cref="SaveFile"/> object.</param>
+        /// <returns>True if the file is a valid GTA save file, false otherwise.</returns>
+        public static bool TryLoad<T>(byte[] data, out T saveFile) where T : SaveFile, new()
+        {
+            try
+            {
+                saveFile = Load<T>(data);
+                return saveFile != null;
+            }
+            catch (Exception e)
+            {
+                if (!(e is InvalidDataException && e is SerializationException))
+                {
+                    throw;
+                }
+            }
+
+            saveFile = default;
+            return false;
+        }
+
+        /// <summary>
         /// Creates a <see cref="SaveFile"/> object from the specified byte array
         /// using the detected file format.
         /// </summary>
