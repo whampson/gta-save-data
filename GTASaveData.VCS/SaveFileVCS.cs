@@ -67,13 +67,15 @@ namespace GTASaveData.VCS
         bool ISaveFile.HasScriptData => true;
         bool ISaveFile.HasGarageData => false;      // TODO
         bool ISaveFile.HasCarGenerators => false;
-        bool ISaveFile.HasPlayerInfo => true;       // TODO
+        bool ISaveFile.HasPlayerInfo => false;       // TODO
+        bool ISaveFile.HasStats => false;       // tODO
 
         ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
         IScriptData ISaveFile.ScriptData => Scripts;
-        IGarageData ISaveFile.GarageData => throw new NotSupportedException();
-        ICarGeneratorData ISaveFile.CarGenerators => throw new NotSupportedException();
-        IPlayerInfo ISaveFile.PlayerInfo => throw new NotSupportedException();
+        IGarageData ISaveFile.GarageData => throw new NotImplementedException();
+        ICarGeneratorData ISaveFile.CarGenerators => throw new NotImplementedException();
+        IPlayerInfo ISaveFile.PlayerInfo => throw new NotImplementedException();
+        IStats ISaveFile.Stats => throw new NotImplementedException();
 
         IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
         {
@@ -113,7 +115,6 @@ namespace GTASaveData.VCS
             Stats = new Dummy(other.Stats);
             m_over = new Dummy(other.m_over);
         }
-
 
         private int ReadDataBlock<T>(DataBuffer file, string tag, out T obj)
             where T : SaveDataObject, new()

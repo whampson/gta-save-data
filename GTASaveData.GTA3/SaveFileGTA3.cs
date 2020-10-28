@@ -189,12 +189,14 @@ namespace GTASaveData.GTA3
         bool ISaveFile.HasGarageData => true;
         bool ISaveFile.HasCarGenerators => true;
         bool ISaveFile.HasPlayerInfo => true;
+        bool ISaveFile.HasStats => true;
 
         ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
         IScriptData ISaveFile.ScriptData => Scripts;
         IGarageData ISaveFile.GarageData => Garages;
         ICarGeneratorData ISaveFile.CarGenerators => CarGenerators;
         IPlayerInfo ISaveFile.PlayerInfo => PlayerInfo;
+        IStats ISaveFile.Stats => Stats;
 
         IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
         {

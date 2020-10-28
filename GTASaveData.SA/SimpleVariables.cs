@@ -378,6 +378,36 @@ namespace GTASaveData.SA
             set { m_prostiutesPayYou = value; OnPropertyChanged(); }
         }
 
+        int ISimpleVariables.GameClockHours
+        {
+            get { return GameClockHours; }
+            set { GameClockHours = (byte) value; OnPropertyChanged(); }
+        }
+
+        int ISimpleVariables.GameClockMinutes
+        {
+            get { return GameClockMinutes; }
+            set { GameClockMinutes = (byte) value; OnPropertyChanged(); }
+        }
+
+        int ISimpleVariables.OldWeatherType
+        {
+            get { return (int) OldWeatherType; }
+            set { OldWeatherType = (WeatherType) value; OnPropertyChanged(); }
+        }
+
+        int ISimpleVariables.NewWeatherType
+        {
+            get { return (int) NewWeatherType; }
+            set { NewWeatherType = (WeatherType) value; OnPropertyChanged(); }
+        }
+
+        int ISimpleVariables.ForcedWeatherType
+        {
+            get { return (int) ForcedWeatherType; }
+            set { ForcedWeatherType = (WeatherType) value; OnPropertyChanged(); }
+        }
+
         public SimpleVariables()
         {
             LastMissionPassedName = "";

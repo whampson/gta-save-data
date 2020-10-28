@@ -16,8 +16,6 @@ namespace GTASaveData.IV
     {
         public const int MaxNameLength = 128;
 
-        //private DataBuffer m_file;
-
         private int m_saveVersion;
         private int m_saveSizeInBytes;
         private int m_scriptSpaceSize;
@@ -294,16 +292,18 @@ namespace GTASaveData.IV
         }
 
         bool ISaveFile.HasSimpleVariables => true;
-        bool ISaveFile.HasScriptData => false;
-        bool ISaveFile.HasGarageData => false;
-        bool ISaveFile.HasCarGenerators => false;
-        bool ISaveFile.HasPlayerInfo => false;
+        bool ISaveFile.HasScriptData => false;  // TODO
+        bool ISaveFile.HasGarageData => false;  // TODO
+        bool ISaveFile.HasCarGenerators => false;   // TODO
+        bool ISaveFile.HasPlayerInfo => false;  // TOOD
+        bool ISaveFile.HasStats => false;       // TODO
 
         ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
         IScriptData ISaveFile.ScriptData => throw new NotImplementedException();
         IGarageData ISaveFile.GarageData => throw new NotImplementedException();
         ICarGeneratorData ISaveFile.CarGenerators => throw new NotImplementedException();
         IPlayerInfo ISaveFile.PlayerInfo => throw new NotImplementedException();
+        IStats ISaveFile.Stats => throw new NotImplementedException();
 
         IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
         {

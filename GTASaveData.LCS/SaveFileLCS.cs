@@ -67,12 +67,14 @@ namespace GTASaveData.LCS
         bool ISaveFile.HasGarageData => true;
         bool ISaveFile.HasCarGenerators => false;
         bool ISaveFile.HasPlayerInfo => true;
+        bool ISaveFile.HasStats => true;
 
         ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
         IScriptData ISaveFile.ScriptData => Scripts;
         IGarageData ISaveFile.GarageData => Garages;
         ICarGeneratorData ISaveFile.CarGenerators => throw new NotSupportedException();
         IPlayerInfo ISaveFile.PlayerInfo => PlayerInfo;
+        IStats ISaveFile.Stats => Stats;
 
         IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
         {

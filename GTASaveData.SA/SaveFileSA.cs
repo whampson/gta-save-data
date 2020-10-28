@@ -250,12 +250,14 @@ namespace GTASaveData.SA
         bool ISaveFile.HasGarageData => false;      // todo
         bool ISaveFile.HasCarGenerators => false;   // todo
         bool ISaveFile.HasPlayerInfo => false;      // todo
+        bool ISaveFile.HasStats => false;      // todo
 
         ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
         IScriptData ISaveFile.ScriptData => throw new NotSupportedException();
         IGarageData ISaveFile.GarageData => throw new NotSupportedException();
         ICarGeneratorData ISaveFile.CarGenerators => throw new NotSupportedException();
         IPlayerInfo ISaveFile.PlayerInfo => throw new NotSupportedException();
+        IStats ISaveFile.Stats => throw new NotSupportedException();
 
         IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
         {

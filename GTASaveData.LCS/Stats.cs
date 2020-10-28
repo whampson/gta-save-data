@@ -5,7 +5,7 @@ using GTASaveData.Interfaces;
 
 namespace GTASaveData.LCS
 {
-    public class Stats : SaveDataObject, 
+    public class Stats : SaveDataObject, IStats,
         IEquatable<Stats>, IDeepClonable<Stats>
     {
         public const int NumPedTypes = 23;

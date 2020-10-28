@@ -16,12 +16,13 @@ namespace GTASaveData.Interfaces
         bool HasGarageData { get; }
         bool HasCarGenerators { get; }
         bool HasPlayerInfo { get; }
+        bool HasStats { get; }
 
-        ISimpleVariables SimpleVars {get;}
+        ISimpleVariables SimpleVars { get; }
         IScriptData ScriptData { get; }
         IGarageData GarageData { get; }
         ICarGeneratorData CarGenerators { get; }
         IPlayerInfo PlayerInfo { get; }
-        //IStats Stats { get; }
+        IStats Stats { get; }
     }
 }
