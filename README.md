@@ -1,6 +1,7 @@
 # GTASaveData
 [![Build Status](https://github.com/whampson/gta-save-data/workflows/CoreLib/badge.svg)](https://github.com/whampson/gta-save-data/actions)
 [![Build Status](https://github.com/whampson/gta-save-data/workflows/GTA3/badge.svg)](https://github.com/whampson/gta-save-data/actions)
+[![Build Status](https://github.com/whampson/gta-save-data/workflows/VC/badge.svg)](https://github.com/whampson/gta-save-data/actions)
 [![Build Status](https://github.com/whampson/gta-save-data/workflows/LCS/badge.svg)](https://github.com/whampson/gta-save-data/actions)
 [![Build Status](https://github.com/whampson/gta-save-data/workflows/VCS/badge.svg)](https://github.com/whampson/gta-save-data/actions)
 
@@ -19,9 +20,9 @@ Fully supported:
   * *Grand Theft Auto: Liberty City Stories*
 
 In progress:
+  * *Grand Theft Auto: Vice City*
   * *Grand Theft Auto: Vice City Stories*
 
 Planned:
-  * *Grand Theft Auto: Vice City*
   * *Grand Theft Auto: San Andreas*
   * *Grand Theft Auto IV & Episodes*
