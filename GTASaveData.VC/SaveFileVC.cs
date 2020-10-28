@@ -36,7 +36,7 @@ namespace GTASaveData.VC
         private Dummy m_audioScriptObjects;
         private Dummy m_scriptPaths;
         private Dummy m_playerInfo;
-        private Dummy m_stats;
+        private Stats m_stats;
         private Dummy m_setPieces;
         private Dummy m_streaming;
         private Dummy m_pedType;
@@ -161,7 +161,7 @@ namespace GTASaveData.VC
             set { m_playerInfo = value; OnPropertyChanged(); }
         }
 
-        public Dummy Stats
+        public Stats Stats
         {
             get { return m_stats; }
             set { m_stats = value; OnPropertyChanged(); }
@@ -202,12 +202,14 @@ namespace GTASaveData.VC
         bool ISaveFile.HasGarageData => false;      // TODO
         bool ISaveFile.HasCarGenerators => true;    // TODO
         bool ISaveFile.HasPlayerInfo => false;      // TODO
+        bool ISaveFile.HasStats => true;
 
         ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
         IScriptData ISaveFile.ScriptData => throw new NotImplementedException();
         IGarageData ISaveFile.GarageData => throw new NotImplementedException();
         ICarGeneratorData ISaveFile.CarGenerators => CarGenerators;
         IPlayerInfo ISaveFile.PlayerInfo => throw new NotImplementedException();
+        IStats ISaveFile.Stats => Stats;
 
         IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
         {
@@ -269,7 +271,7 @@ namespace GTASaveData.VC
             AudioScriptObjects = new Dummy();
             ScriptPaths = new Dummy();
             PlayerInfo = new Dummy();
-            Stats = new Dummy();
+            Stats = new Stats();
             SetPieces = new Dummy();
             Streaming = new Dummy();
             PedTypeInfo = new Dummy();
@@ -297,7 +299,7 @@ namespace GTASaveData.VC
             AudioScriptObjects = new Dummy(other.AudioScriptObjects);
             ScriptPaths = new Dummy(other.ScriptPaths);
             PlayerInfo = new Dummy(other.PlayerInfo);
-            Stats = new Dummy(other.Stats);
+            Stats = new Stats(other.Stats);
             SetPieces = new Dummy(other.SetPieces);
             Streaming = new Dummy(other.Streaming);
             PedTypeInfo = new Dummy(other.PedTypeInfo);
@@ -328,7 +330,7 @@ namespace GTASaveData.VC
             dataSize += ReadBlock(file); AudioScriptObjects = LoadTypePreAlloc<Dummy>();
             dataSize += ReadBlock(file); ScriptPaths = LoadTypePreAlloc<Dummy>();
             dataSize += ReadBlock(file); PlayerInfo = LoadTypePreAlloc<Dummy>();
-            dataSize += ReadBlock(file); Stats = LoadTypePreAlloc<Dummy>();
+            dataSize += ReadBlock(file); Stats = LoadType<Stats>();
             dataSize += ReadBlock(file); SetPieces = LoadTypePreAlloc<Dummy>();
             dataSize += ReadBlock(file); Streaming = LoadTypePreAlloc<Dummy>();
             dataSize += ReadBlock(file); PedTypeInfo = LoadTypePreAlloc<Dummy>();
