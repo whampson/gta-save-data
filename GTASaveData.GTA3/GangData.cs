@@ -100,11 +100,13 @@ namespace GTASaveData.GTA3
     public enum GangType
     {
         Mafia,
-        Triad,
+        Triads,
         Diablos,
         Yakuza,
-        Yardie,
-        Columb,
-        Hoods
+        Yardies,
+        Cartel,
+        Hoods,
+        Gang8,
+        Gang9
     }
 }
