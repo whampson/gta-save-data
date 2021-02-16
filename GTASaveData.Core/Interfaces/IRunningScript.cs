@@ -5,9 +5,9 @@ namespace GTASaveData.Interfaces
     public interface IRunningScript
     {
         string Name { get; set; }
-        int InstructionPointer { get; set; }
+        int IP { get; set; }
         IEnumerable<int> Stack { get; }
-        short StackPointer { get; set; }
+        short StackIndex { get; set; }
         IEnumerable<int> Locals { get; }
         uint TimerA { get; set; }
         uint TimerB { get; set; }

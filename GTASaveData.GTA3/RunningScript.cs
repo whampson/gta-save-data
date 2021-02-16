@@ -54,7 +54,7 @@ namespace GTASaveData.GTA3
             set { m_name = value; OnPropertyChanged(); }
         }
 
-        public int InstructionPointer
+        public int IP
         {
             get { return m_ip; }
             set { m_ip = value; OnPropertyChanged(); }
@@ -66,7 +66,7 @@ namespace GTASaveData.GTA3
             set { m_stack = value; OnPropertyChanged(); }
         }
 
-        public short StackPointer
+        public short StackIndex
         {
             get { return m_stackPointer; }
             set { m_stackPointer = value; OnPropertyChanged(); }
@@ -160,9 +160,9 @@ namespace GTASaveData.GTA3
             NextScriptPointer = other.NextScriptPointer;
             PrevScriptPointer = other.PrevScriptPointer;
             Name = other.Name;
-            InstructionPointer = other.InstructionPointer;
+            IP = other.IP;
             Stack = ArrayHelper.DeepClone(other.Stack);
-            StackPointer = other.StackPointer;
+            StackIndex = other.StackIndex;
             Locals = ArrayHelper.DeepClone(other.Locals);
             TimerA = other.TimerA;
             TimerB = other.TimerB;
@@ -179,33 +179,33 @@ namespace GTASaveData.GTA3
 
         public void PushStack(int value)
         {
-            if (StackPointer + 1 >= Stack.Count)
+            if (StackIndex + 1 >= Stack.Count)
             {
                 Stack.Add(value);
-                StackPointer++;
+                StackIndex++;
             }
             else
             {
-                Stack[StackPointer++] = value;
+                Stack[StackIndex++] = value;
             }
         }
 
         public int PopStack()
         {
-            if (StackPointer == 0)
+            if (StackIndex == 0)
             {
                 throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
             }
-            return Stack[--StackPointer];
+            return Stack[--StackIndex];
         }
 
         public int PeekStack()
         {
-            if (StackPointer == 0)
+            if (StackIndex == 0)
             {
                 throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
             }
-            return Stack[StackPointer - 1];
+            return Stack[StackIndex - 1];
         }
 
         public void SetLocal(int index, int value)
@@ -218,9 +218,9 @@ namespace GTASaveData.GTA3
             NextScriptPointer = buf.ReadUInt32();
             PrevScriptPointer = buf.ReadUInt32();
             Name = buf.ReadString(MaxNameLength);
-            InstructionPointer = buf.ReadInt32();
+            IP = buf.ReadInt32();
             Stack = buf.ReadArray<int>(GetMaxStackDepth(fmt));
-            StackPointer = buf.ReadInt16();
+            StackIndex = buf.ReadInt16();
             buf.Align4();
             Locals = buf.ReadArray<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
@@ -245,9 +245,9 @@ namespace GTASaveData.GTA3
             buf.Write(NextScriptPointer);
             buf.Write(PrevScriptPointer);
             buf.Write(Name, MaxNameLength);
-            buf.Write(InstructionPointer);
+            buf.Write(IP);
             buf.Write(Stack, GetMaxStackDepth(fmt));
-            buf.Write(StackPointer);
+            buf.Write(StackIndex);
             buf.Align4();
             buf.Write(Locals, NumLocalVariables);
             buf.Write(TimerA);
@@ -292,9 +292,9 @@ namespace GTASaveData.GTA3
             return NextScriptPointer.Equals(other.NextScriptPointer)
                 && PrevScriptPointer.Equals(other.PrevScriptPointer)
                 && Name.Equals(other.Name)
-                && InstructionPointer.Equals(other.InstructionPointer)
+                && IP.Equals(other.IP)
                 && Stack.SequenceEqual(other.Stack)
-                && StackPointer.Equals(other.StackPointer)
+                && StackIndex.Equals(other.StackIndex)
                 && Locals.SequenceEqual(other.Locals)
                 && TimerA.Equals(other.TimerA)
                 && TimerB.Equals(other.TimerB)
