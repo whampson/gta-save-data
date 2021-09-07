@@ -353,6 +353,11 @@ namespace GTASaveData
             return m_items.ToArray();
         }
 
+        public override string ToString()
+        {
+            return $"{typeof(T).Name}[{Count}]";
+        }
+
         #region Thread Safety
         private IDisposable BlockReentrancy()
         {
