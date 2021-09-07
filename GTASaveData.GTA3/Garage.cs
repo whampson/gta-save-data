@@ -1,5 +1,6 @@
 ﻿using GTASaveData.Interfaces;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Numerics;
 
@@ -43,7 +44,7 @@ namespace GTASaveData.GTA3
         private byte m_collectedCarsState;
         private uint m_pTargetCar;  // zeroed on load
         private int m_field96h; // not used by game
-        private StoredCar m_storedCar;
+        private StoredCar m_storedCar; // not used by game
 
         public GarageType Type
         {
@@ -487,42 +488,6 @@ namespace GTASaveData.GTA3
         {
             return new Garage(this);
         }
-    }
-
-    public enum GarageState
-    {
-        Closed,
-        Opened,
-        Closing,
-        Opening,
-        OpenedContainsCar,
-        ClosedAfterDropOff
-    }
-
-    public enum GarageType
-    {
-        None,
-        Mission,
-        BombShop1,
-        BombShop2,
-        BombShop3,
-        Respray,
-        CollectorsItems,
-        CollectSpecificCars,
-        CollectCars1,
-        CollectCars2,
-        CollectCars3,
-        ForCarToComeOutOf,
-        SixtySeconds,
-        Crusher,
-        MissionKeepCar,
-        ForScriptToOpen,
-        Hideout1,
-        Hideout2,
-        Hideout3,
-        ForScriptToOpenAndClose,
-        KeepsOpeningForSpecificCar,
-        MissionKeepCarRemainClosed
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

@@ -20,12 +20,12 @@ namespace GTASaveData.GTA3
         private int m_numGarages;
         private bool m_bombsAreFree;
         private bool m_respraysAreFree;
-        private int m_carsCollected;        // not used
+        private int m_carsCollected;
         private int m_bankVansCollected;
-        private int m_policeCarsCollected;  // not used
+        private int m_policeCarsCollected;
         private PortlandImportExportCars m_carTypesCollected1;
         private ShoresideImportExportCars m_carTypesCollected2;
-        private int m_carTypesCollected3;   // not used
+        private int m_carTypesCollected3;
         private int m_lastTimeHelpMessage;
         private Array<StoredCar> m_carsInSafeHouse;
         private Array<Garage> m_garages;
@@ -55,6 +55,7 @@ namespace GTASaveData.GTA3
             set { m_carsCollected = value; OnPropertyChanged(); }
         }
 
+        [Obsolete("Not used by the game.")]
         public int BankVansCollected
         { 
             get { return m_bankVansCollected; }

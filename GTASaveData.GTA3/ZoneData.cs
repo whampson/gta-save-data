@@ -15,7 +15,7 @@ namespace GTASaveData.GTA3
         public const int MaxNumAudioZones = 36;
 
         private int m_currentZoneIndex;
-        private Level m_currentLevel;
+        private LevelName m_currentLevel;
         private short m_findIndex;      // useless field
         private Array<Zone> m_zones;
         private Array<ZoneInfo> m_zoneInfo;
@@ -32,7 +32,7 @@ namespace GTASaveData.GTA3
             set { m_currentZoneIndex = value; OnPropertyChanged(); }
         }
 
-        public Level CurrentLevel
+        public LevelName CurrentLevel
         {
             get { return m_currentLevel; }
             set { m_currentLevel = value; OnPropertyChanged(); }
@@ -121,7 +121,7 @@ namespace GTASaveData.GTA3
             int size = SaveFileGTA3VC.ReadBlockHeader(buf, "ZNS");
 
             CurrentZoneIndex = buf.ReadInt32();
-            CurrentLevel = (Level) buf.ReadInt32();
+            CurrentLevel = (LevelName) buf.ReadInt32();
             FindIndex = buf.ReadInt16();
             buf.ReadInt16();
             Zones = buf.ReadArray<Zone>(MaxNumZones);

@@ -19,8 +19,8 @@ namespace GTASaveData.GTA3
         private RestartPoint m_overrideRestartPoint;
         private bool m_fadeInAfteNextDeath;
         private bool m_fadeInAfteNextArrest;
-        private Level m_overrideHospitalLevel;
-        private Level m_overridePoliceStationLevel;
+        private LevelName m_overrideHospitalLevel;
+        private LevelName m_overridePoliceStationLevel;
 
         public Array<RestartPoint> WastedRestartPoints
         {
@@ -70,13 +70,13 @@ namespace GTASaveData.GTA3
             set { m_fadeInAfteNextArrest = value; OnPropertyChanged(); }
         }
 
-        public Level OverrideHospitalLevel
+        public LevelName OverrideHospitalLevel
         {
             get { return m_overrideHospitalLevel; }
             set { m_overrideHospitalLevel = value; OnPropertyChanged(); }
         }
 
-        public Level OverridePoliceStationLevel
+        public LevelName OverridePoliceStationLevel
         {
             get { return m_overridePoliceStationLevel; }
             set { m_overridePoliceStationLevel = value; OnPropertyChanged(); }
@@ -116,8 +116,8 @@ namespace GTASaveData.GTA3
             OverrideRestartPoint = buf.ReadObject<RestartPoint>();
             FadeInAfteNextDeath = buf.ReadBool();
             FadeInAfteNextArrest = buf.ReadBool();
-            OverrideHospitalLevel = (Level) buf.ReadByte();
-            OverridePoliceStationLevel = (Level) buf.ReadByte();
+            OverrideHospitalLevel = (LevelName) buf.ReadByte();
+            OverridePoliceStationLevel = (LevelName) buf.ReadByte();
 
             Debug.Assert(buf.Offset == size + SaveFileGTA3VC.BlockHeaderSize);
             Debug.Assert(size == SizeOfType<RestartData>() - SaveFileGTA3VC.BlockHeaderSize);
