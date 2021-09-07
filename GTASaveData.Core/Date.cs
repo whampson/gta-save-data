@@ -31,7 +31,6 @@ namespace GTASaveData
 
         public Date(DateTime dt)
         {
-            dt = dt.ToUniversalTime();
             Year = dt.Year;
             Month = dt.Month;
             Day = dt.Day;
@@ -88,7 +87,7 @@ namespace GTASaveData
             return !s1.Equals(s2);
         }
 
-        public static implicit operator DateTime(Date st)
+        public static explicit operator DateTime(Date st)
         {
             if (st.Year == 0 || st == MinValue) return DateTime.MinValue;
             if (st == MaxValue) return DateTime.MaxValue;
