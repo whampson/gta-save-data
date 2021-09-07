@@ -9,8 +9,7 @@ namespace GTASaveData.GTA3
         IEquatable<StoredCar>, IDeepClonable<StoredCar>
     {
         private int m_model;
-        private Vector3 m_position;
-        private Vector3 m_angle;
+        private Vehicle m_veh;
         private StoredCarFlags m_flags;
         private byte m_color1;
         private byte m_color2;
@@ -27,14 +26,14 @@ namespace GTASaveData.GTA3
 
         public Vector3 Position
         {
-            get { return m_position; }
-            set { m_position = value; OnPropertyChanged(); }
+            get { return m_veh.Position; }
+            set { m_veh.Position = value; OnPropertyChanged(); }
         }
 
-        public Vector3 Angle
+        public float Heading
         {
-            get { return m_angle; }
-            set { m_angle = value; OnPropertyChanged(); }
+            get { return (ToDeg(m_veh.Matrix.GetEulerAngles().Z) + 360) % 360; }
+            set { m_veh.SetHeading(ToRad(value)); OnPropertyChanged(); }
         }
 
         public StoredCarFlags Flags
@@ -117,15 +116,14 @@ namespace GTASaveData.GTA3
 
         public StoredCar()
         {
-            Position = new Vector3();
-            Angle = new Vector3();
+            m_veh = Vehicle.CreateDefault();
         }
 
-        public StoredCar(StoredCar other)
+        public StoredCar(StoredCar other) : this()
         {
             Model = other.Model;
             Position = other.Position;
-            Angle = other.Angle;
+            Heading = other.Heading;
             Flags = other.Flags;
             Color1 = other.Color1;
             Color2 = other.Color2;
@@ -138,8 +136,15 @@ namespace GTASaveData.GTA3
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Model = buf.ReadInt32();
-            Position = buf.ReadStruct<Vector3>();
-            Angle = buf.ReadStruct<Vector3>();
+            Vector3 position = buf.ReadStruct<Vector3>();
+            Vector3 angle = buf.ReadStruct<Vector3>();
+            m_veh.Matrix = new Matrix()
+            {
+                Position = position,
+                Forward = angle,
+                Right = new Vector3(angle.Y, -angle.X, 0),
+                Up = new Vector3(0, 0, 1)
+            };
             Flags = (StoredCarFlags) buf.ReadInt32();
             Color1 = buf.ReadByte();
             Color2 = buf.ReadByte();
@@ -156,7 +161,7 @@ namespace GTASaveData.GTA3
         {
             buf.Write(Model);
             buf.Write(Position);
-            buf.Write(Angle);
+            buf.Write(m_veh.Matrix.Forward);
             buf.Write((int) Flags);
             buf.Write(Color1);
             buf.Write(Color2);
@@ -188,7 +193,7 @@ namespace GTASaveData.GTA3
 
             return Model.Equals(other.Model)
                 && Position.Equals(other.Position)
-                && Angle.Equals(other.Angle)
+                && Heading.Equals(other.Heading)
                 && Flags.Equals(other.Flags)
                 && Color1.Equals(other.Color1)
                 && Color2.Equals(other.Color2)
@@ -202,41 +207,8 @@ namespace GTASaveData.GTA3
         {
             return new StoredCar(this);
         }
-    }
 
-    [Flags]
-    public enum StoredCarFlags
-    {
-        BulletProof     = 0b00001,
-        FireProof       = 0b00010,
-        ExplosionProof  = 0b00100,
-        CollisionProof  = 0b01000,
-        MeleeProof      = 0b10000
-    }
-
-    public enum BombType
-    {
-        None,
-        Timer,
-        Ignition,
-        Remote,
-        TimerArmed,
-        IgnitionArmed
-    }
-
-    public enum RadioStation
-    {
-        HeadRadio,
-        DoubleCleff,
-        JahRadio,
-        RiseFM,
-        Lips106,
-        GameFM,
-        MsxFM,
-        Flashback,
-        Chatterbox,
-        UserTrack,
-        PoliceRadio,
-        None
+        private static float ToDeg(float rad) => (float) (rad * 180.0f / Math.PI);
+        private static float ToRad(float deg) => (float) (deg * Math.PI / 180.0f);
     }
 }
