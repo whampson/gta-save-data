@@ -58,23 +58,51 @@ namespace GTASaveData
             _pad3 = 0;
         }
 
-        public CompressedMatrix Compress()
+        private static bool CloseEnough(float a, float b)
         {
-            return new CompressedMatrix
-            {
-                Position = Position,
-                RightX = (byte) (127 * Right.X),
-                RightY = (byte) (127 * Right.Y),
-                RightZ = (byte) (127 * Right.Z),
-                ForwardX = (byte) (127 * Forward.X),
-                ForwardY = (byte) (127 * Forward.Y),
-                ForwardZ = (byte) (127 * Forward.Z)
-            };
+            return (float.Epsilon > Math.Abs(a - b));
         }
 
-        // TOOD: test
+        public Vector3 GetEulerAngles()
+        {
+            // Check for gimbal lock
+            if (CloseEnough(Right.Z, -1.0f))
+            {
+                return new Vector3()
+                {
+                    X = 0,  // Gimbal lock, X doesn't matter
+                    Y = (float) Math.PI / 2,
+                    Z = (float) Math.Atan2(Forward.X, Up.X)
+                };
+            }
+            else if (CloseEnough(Right.Z, 1.0f))
+            {
+                return new Vector3()
+                {
+                    X = 0,  // Gimbal lock, X doesn't matter
+                    Y = (float) -Math.PI / 2,
+                    Z = (float) Math.Atan2(-Forward.X, -Up.X)
+                };
+            }
+            else    // Two solutions exist
+            {
+                float x1 = (float) -Math.Asin(Right.Z);
+                float x2 = (float) Math.PI - x1;
+                float y1 = (float) Math.Atan2(Forward.Z / Math.Cos(x1), Up.Z / Math.Cos(x1));
+                float y2 = (float) Math.Atan2(Forward.Z / Math.Cos(x2), Up.Z / Math.Cos(x2));
+                float z1 = (float) Math.Atan2(Right.Y / Math.Cos(x1), Right.X / Math.Cos(x1));
+                float z2 = (float) Math.Atan2(Right.Y / Math.Cos(x2), Right.X / Math.Cos(x2));
 
-        public Matrix RotateX(float angle)
+                float a1 = Math.Abs(x1) + Math.Abs(y1) + Math.Abs(z1);
+                float a2 = Math.Abs(x2) + Math.Abs(y2) + Math.Abs(z2);
+
+                return (a1 <= a2)
+                    ? new Vector3(x1, y1, z1)
+                    : new Vector3(x2, y2, z2);
+            }
+        }
+
+        public Matrix SetRotateX(float angle)
         {
             float sin = (float) Math.Sin(angle);
             float cos = (float) Math.Cos(angle);
@@ -86,7 +114,7 @@ namespace GTASaveData
             return this;
         }
 
-        public Matrix RotateY(float angle)
+        public Matrix SetRotateY(float angle)
         {
             float sin = (float) Math.Sin(angle);
             float cos = (float) Math.Cos(angle);
@@ -98,7 +126,7 @@ namespace GTASaveData
             return this;
         }
 
-        public Matrix RotateZ(float angle)
+        public Matrix SetRotateZ(float angle)
         {
             float sin = (float) Math.Sin(angle);
             float cos = (float) Math.Cos(angle);
@@ -110,7 +138,7 @@ namespace GTASaveData
             return this;
         }
 
-        public Matrix Rotate(float xAngle, float yAngle, float zAngle)
+        public Matrix SetRotate(float xAngle, float yAngle, float zAngle)
         {
             float sinX = (float) Math.Sin(xAngle);
             float cosX = (float) Math.Cos(xAngle);
@@ -152,6 +180,20 @@ namespace GTASaveData
             Forward = Vector3.Normalize(Vector3.Cross(u, r));
 
             return this;
+        }
+
+        public CompressedMatrix Compress()
+        {
+            return new CompressedMatrix
+            {
+                Position = Position,
+                RightX = (byte) (127 * Right.X),
+                RightY = (byte) (127 * Right.Y),
+                RightZ = (byte) (127 * Right.Z),
+                ForwardX = (byte) (127 * Forward.X),
+                ForwardY = (byte) (127 * Forward.Y),
+                ForwardZ = (byte) (127 * Forward.Z)
+            };
         }
 
         public override int GetHashCode()
