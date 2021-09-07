@@ -35,7 +35,6 @@ namespace GTASaveData
 
         public SystemTime(DateTime dt)
         {
-            dt = dt.ToUniversalTime();
             Year = Convert.ToUInt16(dt.Year);
             Month = Convert.ToUInt16(dt.Month);
             DayOfWeek = Convert.ToUInt16(dt.DayOfWeek);
@@ -96,7 +95,7 @@ namespace GTASaveData
             return !s1.Equals(s2);
         }
 
-        public static implicit operator DateTime(SystemTime st)
+        public static explicit operator DateTime(SystemTime st)
         {
             if (st.Year == 0 || st == MinValue) return DateTime.MinValue;
             if (st == MaxValue) return DateTime.MaxValue;
