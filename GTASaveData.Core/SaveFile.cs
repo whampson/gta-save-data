@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace GTASaveData
 {
@@ -14,6 +15,21 @@ namespace GTASaveData
         private FileFormat m_fileFormat;
         private PaddingType m_paddingType;
         private byte[] m_paddingBytes;
+
+        [JsonIgnore] public bool IsAndroid => FileFormat.IsAndroid;
+        [JsonIgnore] public bool IsiOS => FileFormat.IsiOS;
+        [JsonIgnore] public bool IsMobile => FileFormat.IsMobile;
+        [JsonIgnore] public bool IsPS2 => FileFormat.IsPS2;
+        [JsonIgnore] public bool IsPS3 => FileFormat.IsPS3;
+        [JsonIgnore] public bool IsPSP => FileFormat.IsPSP;
+        [JsonIgnore] public bool IsXbox => FileFormat.IsXbox;
+        [JsonIgnore] public bool IsXbox360 => FileFormat.IsXbox360;
+        [JsonIgnore] public bool IsWin32 => FileFormat.IsWin32;
+        [JsonIgnore] public bool IsMacOS => FileFormat.IsMacOS;
+        [JsonIgnore] public bool IsPC => FileFormat.IsPC;
+        [JsonIgnore] public bool IsSteam => FileFormat.IsSteam;
+        [JsonIgnore] public bool IsAustralian => FileFormat.IsAustralian;
+        [JsonIgnore] public bool IsJapanese => FileFormat.IsJapanese;
 
         /// <summary>
         /// Gets or sets the file format, which defines the order
@@ -256,11 +272,10 @@ namespace GTASaveData
 
                 OnFileLoading(path);
                 byte[] data = File.ReadAllBytes(path);
-                Name = Path.GetFileNameWithoutExtension(path);
-                TimeStamp = File.GetLastWriteTime(path);
+                int bytesRead = Load(data);
                 OnFileLoad(path);
 
-                return Load(data);
+                return bytesRead;
             }
 
             throw new DirectoryNotFoundException($"The path does not exist: {path}");
@@ -288,9 +303,8 @@ namespace GTASaveData
         /// <returns>The number of bytes written.</returns>
         public int Save(string path)
         {
-            int bytesWritten = Save(out byte[] data);
-
             OnFileSaving(path);
+            int bytesWritten = Save(out byte[] data);
             File.WriteAllBytes(path, data);
             OnFileSave(path);
 
@@ -316,6 +330,18 @@ namespace GTASaveData
             bool bigEndian = false) where T : SaveDataObject
         {
             return Serializer.Write(obj, FileFormat, out data, bigEndian, PaddingType, PaddingBytes);
+        }
+
+        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        {
+            FileFormat = fmt;
+            LoadAllData(buf);
+        }
+
+        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        {
+            FileFormat = fmt;
+            SaveAllData(buf);
         }
 
         /// <summary>
@@ -377,17 +403,5 @@ namespace GTASaveData
         /// <param name="fmt">The detected file format.</param>
         /// <returns>A value indicating whether the format detection was successful.</returns>
         protected abstract bool DetectFileFormat(byte[] data, out FileFormat fmt);
-
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
-        {
-            FileFormat = fmt;
-            LoadAllData(buf);
-        }
-
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
-        {
-            FileFormat = fmt;
-            SaveAllData(buf);
-        }
     }
 }
