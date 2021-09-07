@@ -202,6 +202,24 @@ namespace GTASaveData.GTA3
             set { m_doorLock = value; OnPropertyChanged(); }
         }
 
+        public static Vehicle Create(int model, VehicleType type = VehicleType.Car)
+        {
+            switch (type)
+            {
+                case VehicleType.Car:
+                    return new Automobile((short) model);
+                case VehicleType.Boat:
+                    return new Boat((short) model);
+                default:
+                    throw new InvalidOperationException("Invalid VehicleType: " + (int) type);
+            }
+        }
+
+        public static Vehicle CreateDefault(VehicleType type = VehicleType.Car)
+        {
+            return Create(0, type);
+        }
+
         public Vehicle(VehicleType type, short model, int handle)
             : base()
         {
