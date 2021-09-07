@@ -191,80 +191,96 @@ namespace GTASaveData.GTA3
             }
         }
 
-        public int Read1ByteFromScript(int offset, out byte value)
+        public void SetScriptSpace(IEnumerable<int> globals)
         {
-            value = ScriptSpace[offset];
-            return sizeof(byte);
-        }
-
-        public int Read2BytesFromScript(int offset, out short value)
-        {
-            byte[] data = new byte[sizeof(short)];
-            for (int i = 0; i < sizeof(short); i++)
+            using (DataBuffer buf = new DataBuffer())
             {
-                data[i] = ScriptSpace[offset + i];
+                foreach (var g in globals)
+                {
+                    buf.Write(g);
+                }
+
+                ScriptSpace = buf.GetBytes();
+                int size = ScriptSpace.Count;
+                buf.Seek(3);
+                buf.Write(size);
             }
-            value = BitConverter.ToInt16(data, 0);
-            return sizeof(short);
         }
 
-        public int Read4BytesFromScript(int offset, out int value)
-        {
-            byte[] data = new byte[sizeof(int)];
-            for (int i = 0; i < sizeof(int); i++)
-            {
-                data[i] = ScriptSpace[offset + i];
-            }
-            value = BitConverter.ToInt32(data, 0);
-            return sizeof(int);
-        }
+        //public int Read1ByteFromScript(int offset, out byte value)
+        //{
+        //    value = ScriptSpace[offset];
+        //    return sizeof(byte);
+        //}
 
-        public int ReadFloatFromScript(int offset, out float value)
-        {
-            byte[] data = new byte[sizeof(float)];
-            for (int i = 0; i < sizeof(float); i++)
-            {
-                data[i] = ScriptSpace[offset + i];
-            }
-            value = BitConverter.ToSingle(data, 0);
-            return sizeof(float);
-        }
+        //public int Read2BytesFromScript(int offset, out short value)
+        //{
+        //    byte[] data = new byte[sizeof(short)];
+        //    for (int i = 0; i < sizeof(short); i++)
+        //    {
+        //        data[i] = ScriptSpace[offset + i];
+        //    }
+        //    value = BitConverter.ToInt16(data, 0);
+        //    return sizeof(short);
+        //}
 
-        public int Write1ByteToScript(int offset, byte value)
-        {
-            ScriptSpace[offset] = value;
-            return sizeof(byte);
-        }
+        //public int Read4BytesFromScript(int offset, out int value)
+        //{
+        //    byte[] data = new byte[sizeof(int)];
+        //    for (int i = 0; i < sizeof(int); i++)
+        //    {
+        //        data[i] = ScriptSpace[offset + i];
+        //    }
+        //    value = BitConverter.ToInt32(data, 0);
+        //    return sizeof(int);
+        //}
 
-        public int Write2BytesToScript(int offset, short value)
-        {
-            byte[] data = BitConverter.GetBytes(value);
-            for (int i = 0; i < sizeof(short); i++)
-            {
-                ScriptSpace[offset + i] = data[i];
-            }
-            return sizeof(short);
-        }
+        //public int ReadFloatFromScript(int offset, out float value)
+        //{
+        //    byte[] data = new byte[sizeof(float)];
+        //    for (int i = 0; i < sizeof(float); i++)
+        //    {
+        //        data[i] = ScriptSpace[offset + i];
+        //    }
+        //    value = BitConverter.ToSingle(data, 0);
+        //    return sizeof(float);
+        //}
 
-        public int Write4BytesToScript(int offset, int value)
-        {
-            byte[] data = BitConverter.GetBytes(value);
-            for (int i = 0; i < sizeof(int); i++)
-            {
-                ScriptSpace[offset + i] = data[i];
-            }
-            return sizeof(int);
-        }
+        //public int Write1ByteToScript(int offset, byte value)
+        //{
+        //    ScriptSpace[offset] = value;
+        //    return sizeof(byte);
+        //}
 
-        public int WriteFloatToScript(int offset, float value)
-        {
-            byte[] data = BitConverter.GetBytes(value);
-            for (int i = 0; i < sizeof(float); i++)
-            {
-                ScriptSpace[offset + i] = data[i];
-            }
-            return sizeof(float);
-        }
+        //public int Write2BytesToScript(int offset, short value)
+        //{
+        //    byte[] data = BitConverter.GetBytes(value);
+        //    for (int i = 0; i < sizeof(short); i++)
+        //    {
+        //        ScriptSpace[offset + i] = data[i];
+        //    }
+        //    return sizeof(short);
+        //}
+
+        //public int Write4BytesToScript(int offset, int value)
+        //{
+        //    byte[] data = BitConverter.GetBytes(value);
+        //    for (int i = 0; i < sizeof(int); i++)
+        //    {
+        //        ScriptSpace[offset + i] = data[i];
+        //    }
+        //    return sizeof(int);
+        //}
+
+        //public int WriteFloatToScript(int offset, float value)
+        //{
+        //    byte[] data = BitConverter.GetBytes(value);
+        //    for (int i = 0; i < sizeof(float); i++)
+        //    {
+        //        ScriptSpace[offset + i] = data[i];
+        //    }
+        //    return sizeof(float);
+        //}
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
