@@ -14,7 +14,7 @@ namespace GTASaveData.GTA3
         private float m_unknown3;
         private float m_unknown4;
         private PedTypeFlags m_threats;
-        private PedTypeFlags m_avoid;
+        private PedTypeFlags m_avoids;
 
         public PedTypeFlags Flag
         {
@@ -58,10 +58,15 @@ namespace GTASaveData.GTA3
             set { m_threats = value; OnPropertyChanged(); }
         }
 
-        public PedTypeFlags Avoid
+        public PedTypeFlags Avoids
         {
-            get { return m_avoid; }
-            set { m_avoid = value; OnPropertyChanged(); }
+            get { return m_avoids; }
+            set { m_avoids = value; OnPropertyChanged(); }
+        }
+
+        public bool IsGang
+        {
+            get { return Flag >= PedTypeFlags.Gang1 && Flag <= PedTypeFlags.Gang9; }
         }
 
         public PedType()
@@ -76,7 +81,7 @@ namespace GTASaveData.GTA3
             Unknown3 = other.Unknown3;
             Unknown4 = other.Unknown4;
             Threats = other.Threats;
-            Avoid = other.Avoid;
+            Avoids = other.Avoids;
         }
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
@@ -88,7 +93,7 @@ namespace GTASaveData.GTA3
             Unknown3 = buf.ReadFloat();
             Unknown4 = buf.ReadFloat();
             Threats = (PedTypeFlags) buf.ReadInt32();
-            Avoid = (PedTypeFlags) buf.ReadInt32();
+            Avoids = (PedTypeFlags) buf.ReadInt32();
 
             Debug.Assert(buf.Offset == SizeOfType<PedType>());
         }
@@ -102,7 +107,7 @@ namespace GTASaveData.GTA3
             buf.Write(Unknown3);
             buf.Write(Unknown4);
             buf.Write((int) Threats);
-            buf.Write((int) Avoid);
+            buf.Write((int) Avoids);
 
             Debug.Assert(buf.Offset == SizeOfType<PedType>());
         }
@@ -131,12 +136,44 @@ namespace GTASaveData.GTA3
                 && Unknown3.Equals(other.Unknown3)
                 && Unknown4.Equals(other.Unknown4)
                 && Threats.Equals(other.Threats)
-                && Avoid.Equals(other.Avoid);
+                && Avoids.Equals(other.Avoids);
         }
 
         public PedType DeepClone()
         {
             return new PedType(this);
+        }
+
+        public static PedTypeFlags GetFlag(PedTypeId pedType)
+        {
+            switch (pedType)
+            {
+                case PedTypeId.Player1: return PedTypeFlags.Player1;
+                case PedTypeId.Player2: return PedTypeFlags.Player2;
+                case PedTypeId.Player3: return PedTypeFlags.Player3;
+                case PedTypeId.Player4: return PedTypeFlags.Player4;
+                case PedTypeId.CivMale: return PedTypeFlags.CivMale;
+                case PedTypeId.CivFemale: return PedTypeFlags.CivFemale;
+                case PedTypeId.Cop: return PedTypeFlags.Cop;
+                case PedTypeId.Gang1: return PedTypeFlags.Gang1;
+                case PedTypeId.Gang2: return PedTypeFlags.Gang2;
+                case PedTypeId.Gang3: return PedTypeFlags.Gang3;
+                case PedTypeId.Gang4: return PedTypeFlags.Gang4;
+                case PedTypeId.Gang5: return PedTypeFlags.Gang5;
+                case PedTypeId.Gang6: return PedTypeFlags.Gang6;
+                case PedTypeId.Gang7: return PedTypeFlags.Gang7;
+                case PedTypeId.Gang8: return PedTypeFlags.Gang8;
+                case PedTypeId.Gang9: return PedTypeFlags.Gang9;
+                case PedTypeId.Emergency: return PedTypeFlags.Emergency;
+                case PedTypeId.Fireman: return PedTypeFlags.Fireman;
+                case PedTypeId.Criminal: return PedTypeFlags.Criminal;
+                case PedTypeId.Special: return PedTypeFlags.Special;
+                case PedTypeId.Prostitute: return PedTypeFlags.Prostitute;
+                case PedTypeId.Unused1: return 0;
+                case PedTypeId.Unused2: return 0;
+            }
+
+            throw new InvalidOperationException("Unknown ped type " + pedType);
         }
     }
 
@@ -192,7 +229,9 @@ namespace GTASaveData.GTA3
         Emergency,
         Fireman,
         Criminal,
-        Prostitute = 20,
+        Unused1,
+        Prostitute,
         Special,
+        Unused2,
     }
 }
