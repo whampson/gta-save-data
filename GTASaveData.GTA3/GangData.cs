@@ -24,13 +24,13 @@ namespace GTASaveData.GTA3
         public Gang this[int i]
         {
             get { return Gangs[i]; }
-            set { Gangs[i] = value; OnPropertyChanged(); }
+            //set { Gangs[i] = value; OnPropertyChanged(); }
         }
 
         public Gang this[GangType g]
         {
             get { return Gangs[(int) g]; }
-            set { Gangs[(int) g] = value; OnPropertyChanged(); }
+            //set { Gangs[(int) g] = value; OnPropertyChanged(); }
         }
 
         public GangData()
