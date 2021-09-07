@@ -27,39 +27,87 @@ namespace GTASaveData.GTA3
             PedTypes = ArrayHelper.DeepClone(other.PedTypes);
         }
 
-        public PedTypeFlags GetFlag(PedTypeId type)
+        public PedType GetPedInfo(PedTypeId type)
         {
-            return m_pedTypes[(int) type].Flag;
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type] : null;
         }
 
-        public PedTypeFlags GetAvoid(PedTypeId type)
+        public PedTypeFlags GetFlag(PedTypeId type)
         {
-            return m_pedTypes[(int) type].Avoid;
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type].Flag : 0;
         }
 
         public PedTypeFlags GetThreats(PedTypeId type)
         {
-            return m_pedTypes[(int) type].Threats;
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type].Threats : 0;
         }
 
-        public void SetThreats(PedTypeId type, PedTypeFlags threat)
+        public void SetThreat(PedTypeId type, PedTypeFlags threat)
         {
-            m_pedTypes[(int) type].Threats = threat;
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Threats = threat;
+            }
         }
 
         public void AddThreat(PedTypeId type, PedTypeFlags threat)
         {
-            m_pedTypes[(int) type].Threats |= threat;
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Threats |= threat;
+            }
         }
 
         public void RemoveThreat(PedTypeId type, PedTypeFlags threat)
         {
-            m_pedTypes[(int) type].Threats &= ~threat;
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Threats &= ~threat;
+            }
         }
 
         public bool IsThreat(PedTypeId type, PedTypeFlags threat)
         {
-            return m_pedTypes[(int) type].Threats.HasFlag(threat);
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type].Threats.HasFlag(threat) : false;
+        }
+
+        public PedTypeFlags GetAvoids(PedTypeId type)
+        {
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type].Avoids : 0;
+        }
+
+        public void SetAvoid(PedTypeId type, PedTypeFlags avoid)
+        {
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Avoids = avoid;
+            }
+        }
+
+        public void AddAvoid(PedTypeId type, PedTypeFlags avoid)
+        {
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Avoids |= avoid;
+            }
+        }
+
+        public void RemoveAvoid(PedTypeId type, PedTypeFlags avoid)
+        {
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Avoids &= ~avoid;
+            }
+        }
+
+        public bool IsAvoid(PedTypeId type, PedTypeFlags threat)
+        {
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type].Avoids.HasFlag(threat) : false;
+        }
+
+        private bool IsPedTypeValid(PedTypeId type)
+        {
+            return type >= PedTypeId.Player1 && type <= PedTypeId.Unused2;
         }
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
