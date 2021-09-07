@@ -11,6 +11,8 @@ namespace GTASaveData
     {
         public const int BlockHeaderSize = 8;
 
+        private bool m_disposed;
+
         /// <summary>
         /// A fixed-size buffer used to read and build GTA3/VC saves.
         /// </summary>
@@ -26,8 +28,6 @@ namespace GTASaveData
         /// Checksum is simply the sum of all preceding bytes.
         /// </remarks>
         protected int CheckSum { get; set; }
-
-        private bool m_disposed;
 
         /// <summary>
         /// Creates a new <see cref="SaveFileGTA3VC"/> instance.
@@ -166,14 +166,14 @@ namespace GTASaveData
             file.Write(data);
             file.Align4();
 
-            Debug.Assert(file.Offset == size + 4);
-            CheckSum += file.GetBytesFromMark().Sum(x => x);
+            // game code has a bug where the size of the 'size' variable itself
+            // is not factored in to the total file size, so savefiles are
+            // always 4 * numBlocks bytes larger than told by SizeOfGameInBytes.
+            Debug.Assert(file.Offset - 4 == size);
 
+            CheckSum += file.GetBytesFromMark().Sum(x => x);
             WorkBuff.Reset();
 
-            // game code has a bug where the size of the 'size' itself is not
-            // factored in to the total file size, so savefiles are always
-            // 4 * numBlocks bytes larger than told by SizeOfGameInBytes
             return size;
         }
 
