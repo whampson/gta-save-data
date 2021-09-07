@@ -4,6 +4,7 @@ using GTASaveData.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace GTASaveData.GTA3
 {
@@ -17,12 +18,6 @@ namespace GTASaveData.GTA3
         private const int NumOuterBlocks = 20;
         private const int NumOuterBlocksPS2 = 3;
         private const int DataSize = 0x31400;
-
-        private static readonly byte[] XboxTitleKey =
-        {
-            0xFF, 0x3B, 0x8F, 0x5C, 0xDE, 0x53, 0xF3, 0x25,
-            0x9E, 0x70, 0x09, 0x54, 0xEF, 0xDC, 0xA8, 0xDC
-        };
 
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
@@ -180,7 +175,7 @@ namespace GTASaveData.GTA3
 
         public override DateTime TimeStamp
         {
-            get { return SimpleVars.TimeStamp; }
+            get { return (DateTime) SimpleVars.TimeStamp; }
             set { SimpleVars.TimeStamp = new SystemTime(value); OnPropertyChanged(); }
         }
 
@@ -461,9 +456,35 @@ namespace GTASaveData.GTA3
             expectedDataSize = (expectedDataSize - 1) & 0x7FFFFFFC;
             int expectedFileSize = expectedDataSize + ((numOuterBlocks + numPaddingBlocks) * sizeof(int)) + sizeof(int);
             if (FileFormat.IsXbox) expectedFileSize += XboxHelper.SignatureLength;
+
             Debug.Assert(expectedDataSize == dataSize);
             Debug.Assert(expectedFileSize == file.Length);
             Debug.WriteLine("Save successful!");
+        }
+
+        protected override void OnFileLoad(string path)
+        {
+            base.OnFileLoad(path);
+
+            if (IsPS2)
+            {
+                Name = Path.GetFileName(path);
+            }
+
+            if (!IsXbox && !IsPC)
+            {
+                TimeStamp = File.GetLastWriteTime(path);
+            }
+        }
+
+        protected override void OnFileSave(string path)
+        {
+            base.OnFileSave(path);
+
+            if (IsPS2)
+            {
+                Name = Path.GetFileName(path);
+            }
         }
 
         protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
@@ -697,6 +718,13 @@ namespace GTASaveData.GTA3
                 return new FileFormat[] { Android, iOS, PC, PS2, PS2_AU, PS2_JP, Xbox };
             }
         }
+
+        private static readonly byte[] XboxTitleKey =
+{
+            0xFF, 0x3B, 0x8F, 0x5C, 0xDE, 0x53, 0xF3, 0x25,
+            0x9E, 0x70, 0x09, 0x54, 0xEF, 0xDC, 0xA8, 0xDC
+        };
+
     }
 
     public enum DataBlock
