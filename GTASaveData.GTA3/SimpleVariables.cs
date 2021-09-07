@@ -14,7 +14,7 @@ namespace GTASaveData.GTA3
         private string m_lastMissionPassedName;
         private SystemTime m_timeStamp;
         private int m_sizeOfGameInBytes;
-        private Level m_currLevel;
+        private LevelName m_currLevel;
         private Vector3 m_cameraPosition;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
@@ -67,7 +67,7 @@ namespace GTASaveData.GTA3
             set { m_sizeOfGameInBytes = value; }
         }
 
-        public Level CurrentLevel
+        public LevelName CurrentLevel
         {
             get { return m_currLevel; }
             set { m_currLevel = value; OnPropertyChanged(); }
@@ -202,7 +202,7 @@ namespace GTASaveData.GTA3
             set { m_prefsUseVibration = value; OnPropertyChanged(); }
         }
 
-        public bool StereoOutput
+        public bool StereoMono
         {
             get { return m_prefsStereoMono; }
             set { m_prefsStereoMono = value; OnPropertyChanged(); }
@@ -340,7 +340,7 @@ namespace GTASaveData.GTA3
             MusicVolume = other.MusicVolume;
             SfxVolume = other.SfxVolume;
             UseVibration = other.UseVibration;
-            StereoOutput = other.StereoOutput;
+            StereoMono = other.StereoMono;
             RadioStation = other.RadioStation;
             Brightness = other.Brightness;
             ShowSubtitles = other.ShowSubtitles;
@@ -359,7 +359,7 @@ namespace GTASaveData.GTA3
             if (!fmt.IsPS2) LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
             if (fmt.IsPC || fmt.IsXbox) TimeStamp = buf.ReadStruct<SystemTime>();
             SizeOfGameInBytes = buf.ReadInt32();
-            CurrentLevel = (Level) buf.ReadInt32();
+            CurrentLevel = (LevelName) buf.ReadInt32();
             CameraPosition = buf.ReadStruct<Vector3>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
@@ -395,7 +395,7 @@ namespace GTASaveData.GTA3
                 }
                 UseVibration = buf.ReadBool();
                 buf.Align4();
-                StereoOutput = buf.ReadBool();
+                StereoMono = buf.ReadBool();
                 buf.Align4();
                 RadioStation = (RadioStation) buf.ReadByte();
                 buf.Align4();
@@ -465,7 +465,7 @@ namespace GTASaveData.GTA3
                 }
                 buf.Write(UseVibration);
                 buf.Align4();
-                buf.Write(StereoOutput);
+                buf.Write(StereoMono);
                 buf.Align4();
                 buf.Write((byte) RadioStation);
                 buf.Align4();
@@ -545,7 +545,7 @@ namespace GTASaveData.GTA3
                 && MusicVolume.Equals(other.MusicVolume)
                 && SfxVolume.Equals(other.SfxVolume)
                 && UseVibration.Equals(other.UseVibration)
-                && StereoOutput.Equals(other.StereoOutput)
+                && StereoMono.Equals(other.StereoMono)
                 && RadioStation.Equals(other.RadioStation)
                 && Brightness.Equals(other.Brightness)
                 && ShowSubtitles.Equals(other.ShowSubtitles)
@@ -563,40 +563,6 @@ namespace GTASaveData.GTA3
         {
             return new SimpleVariables(this);
         }
-    }
-
-    public enum Language
-    {
-        English,
-        French,
-        German,
-        Italian,
-        Spanish,
-        Japanese,
-    }
-
-    public enum Level
-    {
-        None,
-        Industrial,
-        Commercial,
-        Suburban
-    }
-
-    public enum WeatherType
-    {
-        None = -1,
-        Sunny,
-        Cloudy,
-        Rainy,
-        Foggy
-    }
-
-    public enum QuickSaveState
-    {
-        None,
-        Normal,
-        OnMission
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete
