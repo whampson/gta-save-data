@@ -25,7 +25,7 @@ namespace GTASaveData.LCS
         private int m_boatsExploded;
         private int m_tyresPopped;
         private int m_roundsFiredByPlayer;
-        private Array<int> m_pedsKilledOfThisType;
+        private ObservableArray<int> m_pedsKilledOfThisType;
         private int m_helisDestroyed;
         private float m_progressMade;
         private float m_totalProgressInGame;
@@ -102,10 +102,10 @@ namespace GTASaveData.LCS
         private PlayerOutfitFlags m_unlockedCostumes; // doesn't actually unlock outfits, just shows them in stats
         private int m_bloodringKills; // vc leftover
         private int m_bloodringTime; // vc leftover
-        private Array<byte> m_propertyOwned; // vc leftover
+        private ObservableArray<byte> m_propertyOwned; // vc leftover
         private float m_highestChaseValue;
-        private Array<int> m_fastestTimes; // vc leftover
-        private Array<int> m_highestScores; // vc leftover
+        private ObservableArray<int> m_fastestTimes; // vc leftover
+        private ObservableArray<int> m_highestScores; // vc leftover
         private int m_bestPositions; // vc leftover
         private int m_killsSinceLastCheckpoint; // always 0 on save
         private int m_totalLegitimateKills;
@@ -138,14 +138,14 @@ namespace GTASaveData.LCS
         private int m_fastestHeliRaceTime; // beta/multiplayer?
         private int m_bestHeliRacePosition; // beta/multiplayer?
         private int m_numberOutfitChanges;
-        private Array<int> m_bestBanditLapTimes;
-        private Array<int> m_bestBanditPositions;
-        private Array<int> m_bestStreetRacePositions;
-        private Array<int> m_fastestStreetRaceLapTimes;
-        private Array<int> m_fastestStreetRaceTimes;
-        private Array<int> m_fastestDirtBikeLapTimes;
-        private Array<int> m_fastestDirtBikeTimes;
-        private Array<float> m_favoriteRadioStationList;
+        private ObservableArray<int> m_bestBanditLapTimes;
+        private ObservableArray<int> m_bestBanditPositions;
+        private ObservableArray<int> m_bestStreetRacePositions;
+        private ObservableArray<int> m_fastestStreetRaceLapTimes;
+        private ObservableArray<int> m_fastestStreetRaceTimes;
+        private ObservableArray<int> m_fastestDirtBikeLapTimes;
+        private ObservableArray<int> m_fastestDirtBikeTimes;
+        private ObservableArray<float> m_favoriteRadioStationList;
 
         public int PeopleKilledByPlayer
         {
@@ -183,7 +183,7 @@ namespace GTASaveData.LCS
             set { m_roundsFiredByPlayer = value; OnPropertyChanged(); }
         }
 
-        public Array<int> PedsKilledOfThisType
+        public ObservableArray<int> PedsKilledOfThisType
         {
             get { return m_pedsKilledOfThisType; }
             set { m_pedsKilledOfThisType = value; OnPropertyChanged(); }
@@ -645,7 +645,7 @@ namespace GTASaveData.LCS
             set { m_bloodringTime = value; OnPropertyChanged(); }
         }
 
-        public Array<byte> PropertyOwned
+        public ObservableArray<byte> PropertyOwned
         {
             get { return m_propertyOwned; }
             set { m_propertyOwned = value; OnPropertyChanged(); }
@@ -657,13 +657,13 @@ namespace GTASaveData.LCS
             set { m_highestChaseValue = value; OnPropertyChanged(); }
         }
 
-        public Array<int> FastestTimes
+        public ObservableArray<int> FastestTimes
         {
             get { return m_fastestTimes; }
             set { m_fastestTimes = value; OnPropertyChanged(); }
         }
 
-        public Array<int> HighestScores
+        public ObservableArray<int> HighestScores
         {
             get { return m_highestScores; }
             set { m_highestScores = value; OnPropertyChanged(); }
@@ -861,49 +861,49 @@ namespace GTASaveData.LCS
             set { m_numberOutfitChanges = value; OnPropertyChanged(); }
         }
 
-        public Array<int> BestBanditLapTimes
+        public ObservableArray<int> BestBanditLapTimes
         {
             get { return m_bestBanditLapTimes; }
             set { m_bestBanditLapTimes = value; OnPropertyChanged(); }
         }
 
-        public Array<int> BestBanditPositions
+        public ObservableArray<int> BestBanditPositions
         {
             get { return m_bestBanditPositions; }
             set { m_bestBanditPositions = value; OnPropertyChanged(); }
         }
 
-        public Array<int> BestStreetRacePositions
+        public ObservableArray<int> BestStreetRacePositions
         {
             get { return m_bestStreetRacePositions; }
             set { m_bestStreetRacePositions = value; OnPropertyChanged(); }
         }
 
-        public Array<int> FastestStreetRaceLapTimes
+        public ObservableArray<int> FastestStreetRaceLapTimes
         {
             get { return m_fastestStreetRaceLapTimes; }
             set { m_fastestStreetRaceLapTimes = value; OnPropertyChanged(); }
         }
 
-        public Array<int> FastestStreetRaceTimes
+        public ObservableArray<int> FastestStreetRaceTimes
         {
             get { return m_fastestStreetRaceTimes; }
             set { m_fastestStreetRaceTimes = value; OnPropertyChanged(); }
         }
 
-        public Array<int> FastestDirtBikeLapTimes
+        public ObservableArray<int> FastestDirtBikeLapTimes
         {
             get { return m_fastestDirtBikeLapTimes; }
             set { m_fastestDirtBikeLapTimes = value; OnPropertyChanged(); }
         }
 
-        public Array<int> FastestDirtBikeTimes
+        public ObservableArray<int> FastestDirtBikeTimes
         {
             get { return m_fastestDirtBikeTimes; }
             set { m_fastestDirtBikeTimes = value; OnPropertyChanged(); }
         }
 
-        public Array<float> FavoriteRadioStationList
+        public ObservableArray<float> FavoriteRadioStationList
         {
             get { return m_favoriteRadioStationList; }
             set { m_favoriteRadioStationList = value; OnPropertyChanged(); }

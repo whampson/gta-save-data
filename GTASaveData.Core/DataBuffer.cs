@@ -1100,7 +1100,7 @@ namespace GTASaveData
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="ArgumentOutOfRangeException"/>
         /// <exception cref="EndOfStreamException"/>
-        public int Write<T>(Array<T> items,
+        public int Write<T>(ObservableArray<T> items,
             int? count = null,
             int itemLength = 0,
             bool unicode = false)
@@ -1128,7 +1128,7 @@ namespace GTASaveData
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="ArgumentOutOfRangeException"/>
         /// <exception cref="EndOfStreamException"/>
-        public int Write<T>(Array<T> items,
+        public int Write<T>(ObservableArray<T> items,
             FileFormat format,
             int? count = null,
             int itemLength = 0,

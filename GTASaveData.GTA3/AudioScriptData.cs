@@ -11,9 +11,9 @@ namespace GTASaveData.GTA3
         IEquatable<AudioScriptData>, IDeepClonable<AudioScriptData>,
         IEnumerable<AudioScriptObject>
     {
-        private Array<AudioScriptObject> m_audioScriptObjects;
+        private ObservableArray<AudioScriptObject> m_audioScriptObjects;
 
-        public Array<AudioScriptObject> AudioScriptObjects
+        public ObservableArray<AudioScriptObject> AudioScriptObjects
         {
             get { return m_audioScriptObjects; }
             set { m_audioScriptObjects = value; OnPropertyChanged(); }
@@ -27,7 +27,7 @@ namespace GTASaveData.GTA3
 
         public AudioScriptData()
         {
-            AudioScriptObjects = new Array<AudioScriptObject>();
+            AudioScriptObjects = new ObservableArray<AudioScriptObject>();
         }
 
         public AudioScriptData(AudioScriptData other)

@@ -5,7 +5,7 @@ namespace GTASaveData.Extensions
     public static class TypeExtensions
     {
         /// <summary>
-        /// Gets a value indicating whether this type implements an interface.
+        /// Gets a value indicating whether this type implements an interface type.
         /// </summary>
         /// <param name="t">The type to check.</param>
         /// <param name="iface">the interface type to check for implementation</param>

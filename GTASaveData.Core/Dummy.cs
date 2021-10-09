@@ -12,10 +12,10 @@ namespace GTASaveData
     public class Dummy : SaveDataObject,
         IEquatable<Dummy>, IDeepClonable<Dummy>
     {
-        private Array<byte> m_data;
+        private ObservableArray<byte> m_data;
 
         [JsonConverter(typeof(ByteArrayConverter))]
-        public Array<byte> Data
+        public ObservableArray<byte> Data
         {
             get { return m_data; }
             set { m_data = value; OnPropertyChanged(); }

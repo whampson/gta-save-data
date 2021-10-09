@@ -11,9 +11,9 @@ namespace GTASaveData.GTA3
         IEquatable<ParticleData>, IDeepClonable<ParticleData>,
         IEnumerable<ParticleObject>
     {
-        private Array<ParticleObject> m_objects;
+        private ObservableArray<ParticleObject> m_objects;
 
-        public Array<ParticleObject> Objects
+        public ObservableArray<ParticleObject> Objects
         {
             get { return m_objects; }
             set { m_objects = value; OnPropertyChanged(); }
@@ -27,7 +27,7 @@ namespace GTASaveData.GTA3
 
         public ParticleData()
         {
-            Objects = new Array<ParticleObject>();
+            Objects = new ObservableArray<ParticleObject>();
         }
 
         public ParticleData(ParticleData other)

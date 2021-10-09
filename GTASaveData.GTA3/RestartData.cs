@@ -11,8 +11,8 @@ namespace GTASaveData.GTA3
         public const int MaxNumWastedRestarts = 8;
         public const int MaxNumBustedRestarts = 8;
 
-        private Array<RestartPoint> m_wastedRestartPoints;
-        private Array<RestartPoint> m_bustedRestartPoints;
+        private ObservableArray<RestartPoint> m_wastedRestartPoints;
+        private ObservableArray<RestartPoint> m_bustedRestartPoints;
         private short m_numberOfWastedRestartPoints;
         private short m_numberOfBustedRestartPoints;
         private bool m_overrideNextRestart;
@@ -22,13 +22,13 @@ namespace GTASaveData.GTA3
         private LevelName m_overrideHospitalLevel;
         private LevelName m_overridePoliceStationLevel;
 
-        public Array<RestartPoint> WastedRestartPoints
+        public ObservableArray<RestartPoint> WastedRestartPoints
         {
             get { return m_wastedRestartPoints; }
             set { m_wastedRestartPoints = value; OnPropertyChanged(); }
         }
 
-        public Array<RestartPoint> BustedRestartPoints
+        public ObservableArray<RestartPoint> BustedRestartPoints
         {
             get { return m_bustedRestartPoints; }
             set { m_bustedRestartPoints = value; OnPropertyChanged(); }

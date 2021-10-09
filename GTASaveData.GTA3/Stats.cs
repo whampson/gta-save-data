@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3
         private int m_peopleKilledByOthers;
         private int m_carsExploded;
         private int m_roundsFiredByPlayer;
-        private Array<int> m_pedsKilledOfThisType;
+        private ObservableArray<int> m_pedsKilledOfThisType;
         private int m_helisDestroyed;
         private int m_progressMade;
         private int m_totalProgressInGame;
@@ -60,8 +60,8 @@ namespace GTASaveData.GTA3
         private int m_numberKillFrenziesPassed;
         private int m_totalNumberKillFrenzies;
         private int m_totalNumberMissions;
-        private Array<int> m_fastestTimes;
-        private Array<int> m_highestScores;
+        private ObservableArray<int> m_fastestTimes;
+        private ObservableArray<int> m_highestScores;
         private int m_killsSinceLastCheckpoint;
         private int m_totalLegitimateKills;
         private string m_lastMissionPassedName;
@@ -90,7 +90,7 @@ namespace GTASaveData.GTA3
             set { m_roundsFiredByPlayer = value; OnPropertyChanged(); }
         }
 
-        public Array<int> PedsKilledOfThisType
+        public ObservableArray<int> PedsKilledOfThisType
         {
             get { return m_pedsKilledOfThisType; }
             set { m_pedsKilledOfThisType = value; OnPropertyChanged(); }
@@ -348,13 +348,13 @@ namespace GTASaveData.GTA3
             set { m_totalNumberMissions = value; OnPropertyChanged(); }
         }
 
-        public Array<int> FastestTimes
+        public ObservableArray<int> FastestTimes
         {
             get { return m_fastestTimes; }
             set { m_fastestTimes = value; OnPropertyChanged(); }
         }
 
-        public Array<int> HighestScores
+        public ObservableArray<int> HighestScores
         {
             get { return m_highestScores; }
             set { m_highestScores = value; OnPropertyChanged(); }

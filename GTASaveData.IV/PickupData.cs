@@ -11,7 +11,7 @@ namespace GTASaveData.IV
         public const int MaxPickupsCount = 650;
 
         private int m_pickupsCount;
-        private Array<Pickup> m_pickupsArray;
+        private ObservableArray<Pickup> m_pickupsArray;
         private byte m_weaponPickupMessagesRemaining;
         private int m_unknown;
 
@@ -21,7 +21,7 @@ namespace GTASaveData.IV
             set { m_pickupsCount = value; OnPropertyChanged(); }
         }
 
-        public Array<Pickup> PickupsArray
+        public ObservableArray<Pickup> PickupsArray
         {
             get { return m_pickupsArray; }
             set { m_pickupsArray = value; OnPropertyChanged(); }
@@ -41,7 +41,7 @@ namespace GTASaveData.IV
 
         public PickupData()
         {
-            PickupsArray = new Array<Pickup>();
+            PickupsArray = new ObservableArray<Pickup>();
         }
 
         public PickupData(PickupData other)

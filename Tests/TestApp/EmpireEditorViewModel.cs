@@ -22,7 +22,7 @@ namespace TestApp
 
         private bool m_componentsEditable;
         private EmpireSite m_selectedEmpire;
-        private Array<EmpireSite> m_empires;
+        private ObservableArray<EmpireSite> m_empires;
         private SaveFileVCS m_save;
 
         public bool ComponentsEnabled
@@ -37,7 +37,7 @@ namespace TestApp
             set { m_selectedEmpire = value; OnPropertyChanged(); }
         }
 
-        public Array<EmpireSite> Empires
+        public ObservableArray<EmpireSite> Empires
         {
             get { return m_empires; }
             set { m_empires = value; OnPropertyChanged(); }
@@ -46,7 +46,7 @@ namespace TestApp
         public EmpireEditorViewModel(MainViewModel mainViewModel)
             : base("Empire Editor", PageVisibility.WhenFileLoaded, mainViewModel)
         {
-            Empires = new Array<EmpireSite>();
+            Empires = new ObservableArray<EmpireSite>();
             MainViewModel.TabRefresh += MainViewModel_TabRefresh;
         }
 

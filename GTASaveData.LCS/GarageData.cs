@@ -27,8 +27,8 @@ namespace GTASaveData.LCS
         private int m_carTypesCollected3;   // not used
         private int m_carTypesCollected4;   // not used
         private uint m_lastTimeHelpMessage;
-        private Array<StoredCar> m_carsInSafeHouse;
-        private Array<Garage> m_garages;
+        private ObservableArray<StoredCar> m_carsInSafeHouse;
+        private ObservableArray<Garage> m_garages;
 
         public int NumGarages
         {
@@ -102,13 +102,13 @@ namespace GTASaveData.LCS
             set { m_lastTimeHelpMessage = value; OnPropertyChanged(); }
         }
 
-        public Array<StoredCar> CarsInSafeHouse
+        public ObservableArray<StoredCar> CarsInSafeHouse
         {
             get { return m_carsInSafeHouse; }
             set { m_carsInSafeHouse = value; OnPropertyChanged(); }
         }
 
-        public Array<Garage> Garages
+        public ObservableArray<Garage> Garages
         {
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }

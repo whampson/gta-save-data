@@ -19,9 +19,9 @@ namespace GTASaveData.GTA3
         private uint m_pPrevScript; // not loaded
         private string m_name;
         private int m_ip;
-        private Array<int> m_stack;
+        private ObservableArray<int> m_stack;
         private short m_stackPointer;
-        private Array<int> m_localVariables;
+        private ObservableArray<int> m_localVariables;
         private uint m_timerA;
         private uint m_timerB;
         private bool m_condResult;
@@ -60,7 +60,7 @@ namespace GTASaveData.GTA3
             set { m_ip = value; OnPropertyChanged(); }
         }
 
-        public Array<int> Stack
+        public ObservableArray<int> Stack
         {
             get { return m_stack; }
             set { m_stack = value; OnPropertyChanged(); }
@@ -72,7 +72,7 @@ namespace GTASaveData.GTA3
             set { m_stackPointer = value; OnPropertyChanged(); }
         }
 
-        public Array<int> Locals
+        public ObservableArray<int> Locals
         {
             get { return m_localVariables; }
             set { m_localVariables = value; OnPropertyChanged(); }

@@ -20,7 +20,7 @@ namespace GTASaveData.GTA3
         private int m_currentActiveCount;
         private byte m_processCounter;
         private byte m_generateEvenIfPlayerIsCloseCounter;
-        private Array<CarGenerator> m_carGeneratorArray;
+        private ObservableArray<CarGenerator> m_carGeneratorArray;
 
         public int NumberOfCarGenerators
         {
@@ -46,7 +46,7 @@ namespace GTASaveData.GTA3
             set { m_generateEvenIfPlayerIsCloseCounter = value; OnPropertyChanged(); }
         }
 
-        public Array<CarGenerator> CarGenerators
+        public ObservableArray<CarGenerator> CarGenerators
         {
             get { return m_carGeneratorArray; }
             set { m_carGeneratorArray = value; OnPropertyChanged(); }

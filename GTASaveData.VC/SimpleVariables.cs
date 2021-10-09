@@ -47,7 +47,7 @@ namespace GTASaveData.VC
         private int m_extraColour;
         private bool m_extraColourOn;
         private float m_extraColourInter;
-        private Array<int> m_radioStationPositionList;
+        private ObservableArray<int> m_radioStationPositionList;
 
         public int SaveVersionNumber
         {
@@ -247,7 +247,7 @@ namespace GTASaveData.VC
             set { m_extraColourInter = value; OnPropertyChanged(); }
         }
 
-        public Array<int> RadioStationPositionList
+        public ObservableArray<int> RadioStationPositionList
         {
             get { return m_radioStationPositionList; }
             set { m_radioStationPositionList = value; OnPropertyChanged(); }
@@ -287,7 +287,7 @@ namespace GTASaveData.VC
         {
             LastMissionPassedName = "";
             TimeStamp = SystemTime.MinValue;
-            RadioStationPositionList = new Array<int>();
+            RadioStationPositionList = new ObservableArray<int>();
         }
 
         public SimpleVariables(SimpleVariables other)

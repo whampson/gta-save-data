@@ -11,9 +11,9 @@ namespace GTASaveData.VC
         IEquatable<ObjectPool>, IDeepClonable<ObjectPool>,
         IEnumerable<PhysicalObject>
     {
-        private Array<PhysicalObject> m_objects;
+        private ObservableArray<PhysicalObject> m_objects;
 
-        public Array<PhysicalObject> Objects
+        public ObservableArray<PhysicalObject> Objects
         {
             get { return m_objects; }
             set { m_objects = value; OnPropertyChanged(); }
@@ -27,7 +27,7 @@ namespace GTASaveData.VC
 
         public ObjectPool()
         {
-            Objects = new Array<PhysicalObject>();
+            Objects = new ObservableArray<PhysicalObject>();
         }
 
         public ObjectPool(ObjectPool other)

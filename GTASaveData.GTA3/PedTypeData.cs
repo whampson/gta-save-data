@@ -10,8 +10,8 @@ namespace GTASaveData.GTA3
     {
         public const int NumPedTypes = 23;
         
-        private Array<PedType> m_pedTypes;
-        public Array<PedType> PedTypes
+        private ObservableArray<PedType> m_pedTypes;
+        public ObservableArray<PedType> PedTypes
         {
             get { return m_pedTypes; }
             set { m_pedTypes = value; OnPropertyChanged(); }

@@ -42,6 +42,6 @@ namespace GTASaveData.Core.Tests.JsonConverters
     public class TestClass
     {
         [JsonConverter(typeof(ByteArrayConverter))]
-        public Array<byte> Data;
+        public ObservableArray<byte> Data;
     }
 }

@@ -17,12 +17,12 @@ namespace GTASaveData.GTA3
         private int m_currentZoneIndex;
         private LevelName m_currentLevel;
         private short m_findIndex;      // useless field
-        private Array<Zone> m_zones;
-        private Array<ZoneInfo> m_zoneInfo;
+        private ObservableArray<Zone> m_zones;
+        private ObservableArray<ZoneInfo> m_zoneInfo;
         private short m_numberOfZones;
         private short m_numberOfZoneInfos;
-        private Array<Zone> m_mapZones;
-        private Array<short> m_audioZones;
+        private ObservableArray<Zone> m_mapZones;
+        private ObservableArray<short> m_audioZones;
         private short m_numberOfMapZones;
         private short m_numberOfAudioZones;
 
@@ -45,13 +45,13 @@ namespace GTASaveData.GTA3
             set { m_findIndex = value; OnPropertyChanged(); }
         }
 
-        public Array<Zone> Zones
+        public ObservableArray<Zone> Zones
         {
             get { return m_zones; }
             set { m_zones = value; OnPropertyChanged(); }
         }
 
-        public Array<ZoneInfo> ZoneInfo
+        public ObservableArray<ZoneInfo> ZoneInfo
         {
             get { return m_zoneInfo; }
             set { m_zoneInfo = value; OnPropertyChanged(); }
@@ -69,13 +69,13 @@ namespace GTASaveData.GTA3
             set { m_numberOfZoneInfos = value; OnPropertyChanged(); }
         }
 
-        public Array<Zone> MapZones
+        public ObservableArray<Zone> MapZones
         {
             get { return m_mapZones; }
             set { m_mapZones = value; OnPropertyChanged(); }
         }
 
-        public Array<short> AudioZones
+        public ObservableArray<short> AudioZones
         {
             get { return m_audioZones; }
             set { m_audioZones = value; OnPropertyChanged(); }

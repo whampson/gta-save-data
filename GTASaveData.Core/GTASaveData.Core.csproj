@@ -9,9 +9,9 @@
     <Product>GTASaveData</Product>
     <Description>GTASaveData core framework library.</Description>
     <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
-    <AssemblyVersion>1.4.0.1088</AssemblyVersion>
-    <FileVersion>1.4.0.1088</FileVersion>
-    <Version>1.4.0</Version>
+    <AssemblyVersion>1.5.0.1089</AssemblyVersion>
+    <FileVersion>1.5.0.1089</FileVersion>
+    <Version>1.5.0</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>gta save data; gta save file; gta save; gta; savedata; savefile; gta savedata; gta savefile</PackageTags>

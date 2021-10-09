@@ -22,20 +22,20 @@ namespace GTASaveData.VCS
 
         // Only the global variables are editable :(
 
-        private Array<int> m_globals;
+        private ObservableArray<int> m_globals;
         private int m_onAMissionFlag;
         private uint m_lastMissionPassedTime;
-        private Array<BuildingSwap> m_buildingSwapArray;
-        private Array<InvisibleObject> m_invisibilitySettingArray;
+        private ObservableArray<BuildingSwap> m_buildingSwapArray;
+        private ObservableArray<InvisibleObject> m_invisibilitySettingArray;
         private bool m_usingAMultiScriptFile;
         private bool m_playerHasMetDebbieHarry;
         private int m_mainScriptSize;
         private int m_largestMissionScriptSize;
         private short m_numberOfMissionScripts;
-        private Array<RunningScript> m_activeScripts;
+        private ObservableArray<RunningScript> m_activeScripts;
 
         [JsonConverter(typeof(IntArrayConverter))]
-        public Array<int> Globals
+        public ObservableArray<int> Globals
         {
             get { return m_globals; }
             set { m_globals = value; OnPropertyChanged(); }
@@ -56,14 +56,14 @@ namespace GTASaveData.VCS
         }
 
         [Obsolete("Not loaded by the game.")]
-        public Array<BuildingSwap> BuildingSwaps
+        public ObservableArray<BuildingSwap> BuildingSwaps
         {
             get { return m_buildingSwapArray; }
             set { m_buildingSwapArray = value; OnPropertyChanged(); }
         }
 
         [Obsolete("Not loaded by the game.")]
-        public Array<InvisibleObject> InvisibilitySettings
+        public ObservableArray<InvisibleObject> InvisibilitySettings
         {
             get { return m_invisibilitySettingArray; }
             set { m_invisibilitySettingArray = value; OnPropertyChanged(); }
@@ -105,7 +105,7 @@ namespace GTASaveData.VCS
         }
 
         [Obsolete("Not loaded by the game.")]
-        public Array<RunningScript> Threads
+        public ObservableArray<RunningScript> Threads
         {
             get { return m_activeScripts; }
             set { m_activeScripts = value; OnPropertyChanged(); }
@@ -118,10 +118,10 @@ namespace GTASaveData.VCS
 
         public ScriptData()
         {
-            Globals = new Array<int>();
+            Globals = new ObservableArray<int>();
             BuildingSwaps = ArrayHelper.CreateArray<BuildingSwap>(NumBuildingSwaps);
             InvisibilitySettings = ArrayHelper.CreateArray<InvisibleObject>(NumInvisibilitySettings);
-            Threads = new Array<RunningScript>();
+            Threads = new ObservableArray<RunningScript>();
         }
 
         public ScriptData(ScriptData other)

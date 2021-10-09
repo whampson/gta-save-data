@@ -18,23 +18,23 @@ namespace GTASaveData
     /// and <see cref="INotifyPropertyChanged.PropertyChanged"/> events. Changes made to items in the collection are notified
     /// via the <see cref="ItemStateChanged"/> event.
     /// </remarks>
-    public class Array<T> : ObservableObject,
+    public class ObservableArray<T> : ObservableObject,
         IEnumerable, IEnumerable<T>,
         IList, IList<T>,
         INotifyCollectionChanged, INotifyItemStateChanged
     {
         /// <summary>
-        /// An empty <see cref="Array{T}"/>.
+        /// An empty <see cref="ObservableArray{T}"/>.
         /// </summary>
-        public static readonly Array<T> Empty = new Array<T>();
+        public static readonly ObservableArray<T> Empty = new ObservableArray<T>();
 
         /// <summary>
-        /// Occurs when the <see cref="Array{T}"/> changes, such as an item being added, removed, or replaced.
+        /// Occurs when the <see cref="ObservableArray{T}"/> changes, such as an item being added, removed, or replaced.
         /// </summary>
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         /// <summary>
-        /// Occurs when the state of an item within the <see cref="Array{T}"/> changes.
+        /// Occurs when the state of an item within the <see cref="ObservableArray{T}"/> changes.
         /// </summary>
         public event NotifyItemStateChangedEventHandler ItemStateChanged;
 
@@ -71,9 +71,9 @@ namespace GTASaveData
         }
         
         /// <summary>
-        /// Creates a new empty <see cref="Array{T}"/>.
+        /// Creates a new empty <see cref="ObservableArray{T}"/>.
         /// </summary>
-        public Array()
+        public ObservableArray()
         {
             m_monitor = new BusyMonitor();
             m_items = new List<T>();
@@ -81,10 +81,10 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Creates a new <see cref="Array{T}"/> with items from the specified enumerable.
+        /// Creates a new <see cref="ObservableArray{T}"/> with items from the specified enumerable.
         /// </summary>
         /// <param name="items">The items to initalize the array with.</param>
-        public Array(IEnumerable<T> items)
+        public ObservableArray(IEnumerable<T> items)
             : this()
         {
             foreach (T item in items)
@@ -95,15 +95,15 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Creates a new <see cref="Array{T}"/> with items from the specified list.
+        /// Creates a new <see cref="ObservableArray{T}"/> with items from the specified list.
         /// </summary>
         /// <param name="items">The items to initalize the array with.</param>
-        public Array(List<T> items)
+        public ObservableArray(List<T> items)
             : this((IEnumerable<T>) items)
         { }
 
         /// <summary>
-        /// Adds an item to the <see cref="Array{T}"/>.
+        /// Adds an item to the <see cref="ObservableArray{T}"/>.
         /// </summary>
         /// <param name="value">The item to add.</param>
         /// <returns>The index of the new item.</returns>
@@ -115,7 +115,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Adds an item to the <see cref="Array{T}"/>.
+        /// Adds an item to the <see cref="ObservableArray{T}"/>.
         /// </summary>
         /// <param name="item">The item to add.</param>
         public void Add(T item)
@@ -131,7 +131,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Removes all items from <see cref="Array{T}"/>.
+        /// Removes all items from <see cref="ObservableArray{T}"/>.
         /// </summary>
         public void Clear()
         {
@@ -145,7 +145,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Determines whether the <see cref="Array{T}"/> contains a specific value.
+        /// Determines whether the <see cref="ObservableArray{T}"/> contains a specific value.
         /// </summary>
         /// <param name="value">The item to locate.</param>
         /// <returns>True if the item exists in the array.</returns>
@@ -155,7 +155,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Determines whether the <see cref="Array{T}"/> contains a specific value.
+        /// Determines whether the <see cref="ObservableArray{T}"/> contains a specific value.
         /// </summary>
         /// <param name="item">The item to locate.</param>
         /// <returns>True if the item exists in the array.</returns>
@@ -165,7 +165,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Copyies the elements of this <see cref="Array{T}"/> to a compatible
+        /// Copyies the elements of this <see cref="ObservableArray{T}"/> to a compatible
         /// one-dimensional array.
         /// </summary>
         /// <param name="array">The one-dimensional array to copy to.</param>
@@ -175,7 +175,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Copyies the elements of this <see cref="Array{T}"/> to a compatible
+        /// Copyies the elements of this <see cref="ObservableArray{T}"/> to a compatible
         /// one-dimensional array, starting at the specifed index of the target array.
         /// </summary>
         /// <param name="array">The one-dimensional array to copy to.</param>
@@ -191,7 +191,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Copyies the elements of this <see cref="Array{T}"/> to a compatible
+        /// Copyies the elements of this <see cref="ObservableArray{T}"/> to a compatible
         /// one-dimensional array, starting at the specifed index of the target array.
         /// </summary>
         /// <param name="index">The zero-based index in the source at which copying begins.</param>
@@ -204,7 +204,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Determines the index of a specific item in the <see cref="Array{T}"/>.
+        /// Determines the index of a specific item in the <see cref="ObservableArray{T}"/>.
         /// </summary>
         /// <param name="value">The item to get the index of.</param>
         /// <returns>The index of the item if found, -1 if not found.</returns>
@@ -214,7 +214,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Determines the index of a specific item in the <see cref="Array{T}"/>.
+        /// Determines the index of a specific item in the <see cref="ObservableArray{T}"/>.
         /// </summary>
         /// <param name="item">The item to get the index of.</param>
         /// <returns>The index of the item if found, -1 if not found.</returns>
@@ -224,7 +224,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Inserts an item into the <see cref="Array{T}"/> at the specified index.
+        /// Inserts an item into the <see cref="ObservableArray{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The index at which to insert the item.</param>
         /// <param name="value">The item to insert.</param>
@@ -234,7 +234,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Inserts an item into the <see cref="Array{T}"/> at the specified index.
+        /// Inserts an item into the <see cref="ObservableArray{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The index at which to insert the item.</param>
         /// <param name="item">The item to insert.</param>
@@ -251,7 +251,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Gets the item in the <see cref="Array{T}"/> at the specified index.
+        /// Gets the item in the <see cref="ObservableArray{T}"/> at the specified index.
         /// </summary>
         /// <param name="index">The index of the item to get.</param>
         /// <returns></returns>
@@ -261,7 +261,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Moves an item in the <see cref="Array{T}"/> to a new index.
+        /// Moves an item in the <see cref="ObservableArray{T}"/> to a new index.
         /// </summary>
         /// <param name="oldIndex">The index of the item to be moved.</param>
         /// <param name="newIndex">The index to move the item to.</param>
@@ -278,7 +278,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="Array{T}"/>.
+        /// Removes the first occurrence of a specific object from the <see cref="ObservableArray{T}"/>.
         /// </summary>
         /// <param name="value">The item to remove.</param>
         public void Remove(object value)
@@ -287,7 +287,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="Array{T}"/>.
+        /// Removes the first occurrence of a specific object from the <see cref="ObservableArray{T}"/>.
         /// </summary>
         /// <param name="item">The item to remove.</param>
         /// <returns>True if the item was found in the list and removed.</returns>
@@ -310,7 +310,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Removes the item at the specified index from the <see cref="Array{T}"/>.
+        /// Removes the item at the specified index from the <see cref="ObservableArray{T}"/>.
         /// </summary>
         /// <param name="index">The index of the item to remove.</param>
         public void RemoveAt(int index)
@@ -345,7 +345,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Converts this <see cref="Array{T}"/> into a language-native array.
+        /// Converts this <see cref="ObservableArray{T}"/> into a language-native array.
         /// </summary>
         /// <returns></returns>
         public T[] ToArray()
@@ -492,22 +492,22 @@ namespace GTASaveData
         #endregion
 
         #region Operators
-        public static implicit operator Array<T>(T[] array)
+        public static implicit operator ObservableArray<T>(T[] array)
         {
-            return new Array<T>(array);
+            return new ObservableArray<T>(array);
         }
 
-        public static explicit operator T[](Array<T> array)
+        public static explicit operator T[](ObservableArray<T> array)
         {
             return array.ToArray();
         }
 
-        public static implicit operator Array<T>(List<T> array)
+        public static implicit operator ObservableArray<T>(List<T> array)
         {
-            return new Array<T>(array);
+            return new ObservableArray<T>(array);
         }
 
-        public static implicit operator List<T>(Array<T> array)
+        public static implicit operator List<T>(ObservableArray<T> array)
         {
             return array.ToList();
         }

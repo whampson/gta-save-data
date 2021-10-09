@@ -42,7 +42,7 @@ namespace GTASaveData.Core.Tests.JsonConverters
         public class TestClass
         {
             [JsonConverter(typeof(IntArrayConverter))]
-            public Array<int> Data;
+            public ObservableArray<int> Data;
         }
     }
 }

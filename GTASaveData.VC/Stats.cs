@@ -22,7 +22,7 @@ namespace GTASaveData.VC
         private int m_boatsExploded;
         private int m_tyresPopped;
         private int m_roundsFiredByPlayer;
-        private Array<int> m_pedsKilledOfThisType;
+        private ObservableArray<int> m_pedsKilledOfThisType;
         private int m_helisDestroyed;
         private float m_progressMade;
         private float m_totalProgressInGame;
@@ -96,16 +96,16 @@ namespace GTASaveData.VC
         private int m_numPropertyOwned;
         private int m_bloodRingKills;
         private int m_bloodRingTime;
-        private Array<bool> m_propertyOwned;
+        private ObservableArray<bool> m_propertyOwned;
         private float m_highestChaseValue;
-        private Array<int> m_fastestTimes;
-        private Array<int> m_highestScores;
-        private Array<int> m_bestPositions;
+        private ObservableArray<int> m_fastestTimes;
+        private ObservableArray<int> m_highestScores;
+        private ObservableArray<int> m_bestPositions;
         private int m_killsSinceLastCheckpoint; // always 0 on save
         private int m_totalLegitimateKills;
         private string m_lastMissionPassedName;
         private int m_cheatedCount;
-        private Array<float> m_favoriteRadioStationList;
+        private ObservableArray<float> m_favoriteRadioStationList;
 
         public int PeopleKilledByPlayer
         {
@@ -143,7 +143,7 @@ namespace GTASaveData.VC
             set { m_roundsFiredByPlayer = value; OnPropertyChanged(); }
         }
 
-        public Array<int> PedsKilledOfThisType
+        public ObservableArray<int> PedsKilledOfThisType
         {
             get { return m_pedsKilledOfThisType; }
             set { m_pedsKilledOfThisType = value; OnPropertyChanged(); }
@@ -587,7 +587,7 @@ namespace GTASaveData.VC
             set { m_bloodRingTime = value; OnPropertyChanged(); }
         }
 
-        public Array<bool> PropertyOwned
+        public ObservableArray<bool> PropertyOwned
         {
             get { return m_propertyOwned; }
             set { m_propertyOwned = value; OnPropertyChanged(); }
@@ -599,19 +599,19 @@ namespace GTASaveData.VC
             set { m_highestChaseValue = value; OnPropertyChanged(); }
         }
 
-        public Array<int> FastestTimes
+        public ObservableArray<int> FastestTimes
         {
             get { return m_fastestTimes; }
             set { m_fastestTimes = value; OnPropertyChanged(); }
         }
 
-        public Array<int> HighestScores
+        public ObservableArray<int> HighestScores
         {
             get { return m_highestScores; }
             set { m_highestScores = value; OnPropertyChanged(); }
         }
 
-        public Array<int> BestPositions
+        public ObservableArray<int> BestPositions
         {
             get { return m_bestPositions; }
             set { m_bestPositions = value; OnPropertyChanged(); }
@@ -641,7 +641,7 @@ namespace GTASaveData.VC
             set { m_cheatedCount = value; OnPropertyChanged(); }
         }
 
-        public Array<float> FavoriteRadioStationList
+        public ObservableArray<float> FavoriteRadioStationList
         {
             get { return m_favoriteRadioStationList; }
             set { m_favoriteRadioStationList = value; OnPropertyChanged(); }

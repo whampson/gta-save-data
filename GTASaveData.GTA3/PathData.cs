@@ -11,9 +11,9 @@ namespace GTASaveData.GTA3
         IEquatable<PathData>, IDeepClonable<PathData>,
         IEnumerable<PathNode>
     {
-        private Array<PathNode> m_pathNodes;
+        private ObservableArray<PathNode> m_pathNodes;
 
-        public Array<PathNode> PathNodes
+        public ObservableArray<PathNode> PathNodes
         {
             get { return m_pathNodes; }
             set { m_pathNodes = value; OnPropertyChanged(); }

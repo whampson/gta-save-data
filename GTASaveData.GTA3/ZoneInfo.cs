@@ -12,12 +12,12 @@ namespace GTASaveData.GTA3
         public const int GangDensityCapacity = 9;
 
         private short m_carDensity;
-        private Array<short> m_carThreshold;
+        private ObservableArray<short> m_carThreshold;
         private short m_copCarDensity;
-        private Array<short> m_gangCarDensity;
+        private ObservableArray<short> m_gangCarDensity;
         private short m_pedDensity;
         private short m_copPedDensity;
-        private Array<short> m_gangPedDensity;
+        private ObservableArray<short> m_gangPedDensity;
         private short m_pedGroup;
 
         public short CarDensity
@@ -26,7 +26,7 @@ namespace GTASaveData.GTA3
             set { m_carDensity = value; OnPropertyChanged(); }
         }
 
-        public Array<short> CarThreshold
+        public ObservableArray<short> CarThreshold
         {
             get { return m_carThreshold; }
             set { m_carThreshold = value; OnPropertyChanged(); }
@@ -38,7 +38,7 @@ namespace GTASaveData.GTA3
             set { m_copCarDensity = value; OnPropertyChanged(); }
         }
 
-        public Array<short> GangCarDensity
+        public ObservableArray<short> GangCarDensity
         {
             get { return m_gangCarDensity; }
             set { m_gangCarDensity = value; OnPropertyChanged(); }
@@ -56,7 +56,7 @@ namespace GTASaveData.GTA3
             set { m_copPedDensity = value; OnPropertyChanged(); }
         }
 
-        public Array<short> GangPedDensity
+        public ObservableArray<short> GangPedDensity
         {
             get { return m_gangPedDensity; }
             set { m_gangPedDensity = value; OnPropertyChanged(); }

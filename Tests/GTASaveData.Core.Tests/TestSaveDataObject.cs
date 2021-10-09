@@ -78,8 +78,8 @@ namespace GTASaveData.Core.Tests
 
         private int m_value;
         private TestObject2 m_object;
-        private Array<int> m_valueArray;
-        private Array<TestObject2> m_objectArray;
+        private ObservableArray<int> m_valueArray;
+        private ObservableArray<TestObject2> m_objectArray;
 
         public int Value
         {
@@ -93,13 +93,13 @@ namespace GTASaveData.Core.Tests
             set { m_object = value; OnPropertyChanged(); }
         }
 
-        public Array<int> ValueArray
+        public ObservableArray<int> ValueArray
         {
             get { return m_valueArray; }
             set { m_valueArray = value; OnPropertyChanged(); }
         }
 
-        public Array<TestObject2> ObjectArray
+        public ObservableArray<TestObject2> ObjectArray
         {
             get { return m_objectArray; }
             set { m_objectArray = value; OnPropertyChanged(); }
@@ -109,8 +109,8 @@ namespace GTASaveData.Core.Tests
         {
             m_value = 0;
             m_object = new TestObject2();
-            m_valueArray = new Array<int>();
-            m_objectArray = new Array<TestObject2>();
+            m_valueArray = new ObservableArray<int>();
+            m_objectArray = new ObservableArray<TestObject2>();
         }
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)

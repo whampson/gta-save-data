@@ -14,11 +14,11 @@ namespace GTASaveData.GTA3
         public const int MaxNumPickups = 336;
         public const int MaxNumCollectedPickups = 20;
 
-        private Array<Pickup> m_pickUps;
+        private ObservableArray<Pickup> m_pickUps;
         private short m_collectedPickupIndex;
-        private Array<int> m_pickUpsCollected;
+        private ObservableArray<int> m_pickUpsCollected;
 
-        public Array<Pickup> Pickups
+        public ObservableArray<Pickup> Pickups
         {
             get { return m_pickUps; }
             set { m_pickUps = value; OnPropertyChanged(); }
@@ -30,7 +30,7 @@ namespace GTASaveData.GTA3
             set { m_collectedPickupIndex = value; OnPropertyChanged(); }
         }
 
-        public Array<int> PickupsCollected
+        public ObservableArray<int> PickupsCollected
         {
             get { return m_pickUpsCollected; }
             set { m_pickUpsCollected = value; OnPropertyChanged(); }

@@ -9,16 +9,16 @@ namespace GTASaveData.GTA3
     public class VehiclePool : SaveDataObject,
         IEquatable<VehiclePool>, IDeepClonable<VehiclePool>
     {
-        private Array<Automobile> m_cars;
-        private Array<Boat> m_boats;
+        private ObservableArray<Automobile> m_cars;
+        private ObservableArray<Boat> m_boats;
 
-        public Array<Automobile> Cars
+        public ObservableArray<Automobile> Cars
         {
             get { return m_cars; }
             set { m_cars = value; OnPropertyChanged(); }
         }
 
-        public Array<Boat> Boats
+        public ObservableArray<Boat> Boats
         {
             get { return m_boats; }
             set { m_boats = value; OnPropertyChanged(); }
@@ -26,8 +26,8 @@ namespace GTASaveData.GTA3
 
         public VehiclePool()
         {
-            Cars = new Array<Automobile>();
-            Boats = new Array<Boat>();
+            Cars = new ObservableArray<Automobile>();
+            Boats = new ObservableArray<Boat>();
         }
 
         public VehiclePool(VehiclePool other)

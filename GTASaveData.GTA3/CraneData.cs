@@ -15,7 +15,7 @@ namespace GTASaveData.GTA3
 
         private int m_numCranes;
         private CollectCarsMilitaryCrane m_carsCollectedMilitaryCrane;
-        private Array<Crane> m_cranes;
+        private ObservableArray<Crane> m_cranes;
 
         public int NumCranes
         {
@@ -29,7 +29,7 @@ namespace GTASaveData.GTA3
             set { m_carsCollectedMilitaryCrane = value; OnPropertyChanged(); }
         }
 
-        public Array<Crane> Cranes
+        public ObservableArray<Crane> Cranes
         {
             get { return m_cranes; }
             set { m_cranes = value; OnPropertyChanged(); }

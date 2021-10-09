@@ -20,9 +20,9 @@ namespace GTASaveData.LCS
         private int m_id;
         private string m_name;
         private int m_ip;
-        private Array<int> m_stack;
+        private ObservableArray<int> m_stack;
         private short m_stackPointer;
-        private Array<int> m_localVariables;
+        private ObservableArray<int> m_localVariables;
         private uint m_timerA;
         private uint m_timerB;
         private int m_field210h;
@@ -67,7 +67,7 @@ namespace GTASaveData.LCS
             set { m_ip = value; OnPropertyChanged(); }
         }
 
-        public Array<int> Stack
+        public ObservableArray<int> Stack
         {
             get { return m_stack; }
             set { m_stack = value; OnPropertyChanged(); }
@@ -80,7 +80,7 @@ namespace GTASaveData.LCS
         }
 
         [JsonConverter(typeof(IntArrayConverter))]
-        public Array<int> Locals
+        public ObservableArray<int> Locals
         {
             get { return m_localVariables; }
             set { m_localVariables = value; OnPropertyChanged(); }

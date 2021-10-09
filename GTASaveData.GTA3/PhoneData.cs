@@ -15,7 +15,7 @@ namespace GTASaveData.GTA3
 
         private int m_numPhones;
         private int m_numActivePhones;
-        private Array<Phone> m_phones;
+        private ObservableArray<Phone> m_phones;
 
         public int NumPhones
         {
@@ -29,7 +29,7 @@ namespace GTASaveData.GTA3
             set { m_numActivePhones = value; OnPropertyChanged(); }
         }
 
-        public Array<Phone> Phones
+        public ObservableArray<Phone> Phones
         {
             get { return m_phones; }
             set { m_phones = value; OnPropertyChanged(); }

@@ -19,21 +19,21 @@ namespace GTASaveData.GTA3
 
         private const int ScriptDataSize = 968;
 
-        private Array<byte> m_scriptSpace;
+        private ObservableArray<byte> m_scriptSpace;
         private int m_onAMissionFlag;
-        private Array<Contact> m_contacts;
-        private Array<Collective> m_collectives;    // not used
+        private ObservableArray<Contact> m_contacts;
+        private ObservableArray<Collective> m_collectives;    // not used
         private int m_nextFreeCollectiveIndex;      // not used
-        private Array<BuildingSwap> m_buildingSwapArray;
-        private Array<InvisibleObject> m_invisibilitySettingArray;
+        private ObservableArray<BuildingSwap> m_buildingSwapArray;
+        private ObservableArray<InvisibleObject> m_invisibilitySettingArray;
         private bool m_usingAMultiScriptFile;
         private int m_mainScriptSize;
         private int m_largestMissionScriptSize;
         private short m_numberOfMissionScripts;
-        private Array<RunningScript> m_activeScripts;
+        private ObservableArray<RunningScript> m_activeScripts;
 
         [JsonConverter(typeof(ByteArrayConverter))]
-        public Array<byte> ScriptSpace
+        public ObservableArray<byte> ScriptSpace
         {
             get { return m_scriptSpace; }
             set { m_scriptSpace = value; OnPropertyChanged(); }
@@ -45,14 +45,14 @@ namespace GTASaveData.GTA3
             set { m_onAMissionFlag = value; OnPropertyChanged(); }
         }
 
-        public Array<Contact> Contacts
+        public ObservableArray<Contact> Contacts
         {
             get { return m_contacts; }
             set { m_contacts = value; OnPropertyChanged(); }
         }
 
         [Obsolete("Not used by the game.")]
-        public Array<Collective> Collectives
+        public ObservableArray<Collective> Collectives
         {
             get { return m_collectives; }
             set { m_collectives = value; OnPropertyChanged(); }
@@ -65,13 +65,13 @@ namespace GTASaveData.GTA3
             set { m_nextFreeCollectiveIndex = value; OnPropertyChanged(); }
         }
 
-        public Array<BuildingSwap> BuildingSwaps
+        public ObservableArray<BuildingSwap> BuildingSwaps
         {
             get { return m_buildingSwapArray; }
             set { m_buildingSwapArray = value; OnPropertyChanged(); }
         }
 
-        public Array<InvisibleObject> InvisibilitySettings
+        public ObservableArray<InvisibleObject> InvisibilitySettings
         {
             get { return m_invisibilitySettingArray; }
             set { m_invisibilitySettingArray = value; OnPropertyChanged(); }
@@ -101,7 +101,7 @@ namespace GTASaveData.GTA3
             set { m_numberOfMissionScripts = value; OnPropertyChanged(); }
         }
 
-        public Array<RunningScript> Threads
+        public ObservableArray<RunningScript> Threads
         {
             get { return m_activeScripts; }
             set { m_activeScripts = value; OnPropertyChanged(); }
@@ -120,12 +120,12 @@ namespace GTASaveData.GTA3
 
         public ScriptData()
         {
-            ScriptSpace = new Array<byte>();
+            ScriptSpace = new ObservableArray<byte>();
             Contacts = ArrayHelper.CreateArray<Contact>(NumContacts);
             Collectives = ArrayHelper.CreateArray<Collective>(NumCollectives);
             BuildingSwaps = ArrayHelper.CreateArray<BuildingSwap>(NumBuildingSwaps);
             InvisibilitySettings = ArrayHelper.CreateArray<InvisibleObject>(NumInvisibilitySettings);
-            Threads = new Array<RunningScript>();
+            Threads = new ObservableArray<RunningScript>();
         }
 
         public ScriptData(ScriptData other)

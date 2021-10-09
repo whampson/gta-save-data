@@ -14,9 +14,9 @@ namespace GTASaveData.VC
         // Yes, you can have multiple player peds
         // You get some weird behavior though...
 
-        private Array<PlayerPed> m_playerPeds;
+        private ObservableArray<PlayerPed> m_playerPeds;
 
-        public Array<PlayerPed> PlayerPeds
+        public ObservableArray<PlayerPed> PlayerPeds
         {
             get { return m_playerPeds; }
             set { m_playerPeds = value; OnPropertyChanged(); }
@@ -35,7 +35,7 @@ namespace GTASaveData.VC
 
         public PedPool()
         {
-            PlayerPeds = new Array<PlayerPed>()
+            PlayerPeds = new ObservableArray<PlayerPed>()
             {
                 new PlayerPed()
             };

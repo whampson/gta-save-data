@@ -12,7 +12,7 @@ namespace GTASaveData.GTA3
         public const int MaxNumMessages = 6;
 
         private Vector3 m_position;
-        private Array<uint> m_messages;     // wchar pointers
+        private ObservableArray<uint> m_messages;     // wchar pointers
         private uint m_repeatedMessageStartTime;
         private int m_handle;
         private PhoneState m_state;
@@ -24,7 +24,7 @@ namespace GTASaveData.GTA3
             set { m_position = value; OnPropertyChanged(); }
         }
 
-        public Array<uint> Messages
+        public ObservableArray<uint> Messages
         {
             get { return m_messages; }
             set { m_messages = value; OnPropertyChanged(); }

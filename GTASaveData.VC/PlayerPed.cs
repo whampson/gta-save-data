@@ -21,9 +21,9 @@ namespace GTASaveData.VC
         private CharCreatedBy m_createdBy;
         private float m_health;
         private float m_armor;
-        private Array<Weapon> m_weapons;
+        private ObservableArray<Weapon> m_weapons;
         private float m_maxStamina;
-        private Array<int> m_targetableObjects;
+        private ObservableArray<int> m_targetableObjects;
         private int m_maxWantedLevel;
         private int m_maxChaosLevel;
         private string m_modelName;
@@ -70,7 +70,7 @@ namespace GTASaveData.VC
             set { m_armor = value; OnPropertyChanged(); }
         }
 
-        public Array<Weapon> Weapons
+        public ObservableArray<Weapon> Weapons
         {
             get { return m_weapons; }
             set { m_weapons = value; OnPropertyChanged(); }
@@ -82,7 +82,7 @@ namespace GTASaveData.VC
             set { m_maxStamina = value; OnPropertyChanged(); }
         }
 
-        public Array<int> TargetableObjects
+        public ObservableArray<int> TargetableObjects
         {
             get { return m_targetableObjects; }
             set { m_targetableObjects = value; OnPropertyChanged(); }

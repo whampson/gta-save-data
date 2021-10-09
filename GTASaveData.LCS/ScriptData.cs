@@ -19,22 +19,22 @@ namespace GTASaveData.LCS
 
         // Only the global variables are editable :(
 
-        private Array<int> m_globals;
+        private ObservableArray<int> m_globals;
         private int m_onAMissionFlag;
         private int m_lastMissionPassedTime;
-        private Array<Collective> m_collectives;    // not used
+        private ObservableArray<Collective> m_collectives;    // not used
         private int m_nextFreeCollectiveIndex;      // not used
-        private Array<BuildingSwap> m_buildingSwapArray;
-        private Array<InvisibleObject> m_invisibilitySettingArray;
+        private ObservableArray<BuildingSwap> m_buildingSwapArray;
+        private ObservableArray<InvisibleObject> m_invisibilitySettingArray;
         private bool m_usingAMultiScriptFile;
         private bool m_playerHasMetDebbieHarry;
         private int m_mainScriptSize;
         private int m_largestMissionScriptSize;
         private short m_numberOfMissionScripts;
-        private Array<RunningScript> m_activeScripts;
+        private ObservableArray<RunningScript> m_activeScripts;
 
         [JsonConverter(typeof(IntArrayConverter))]
-        public Array<int> Globals
+        public ObservableArray<int> Globals
         {
             get { return m_globals; }
             set { m_globals = value; OnPropertyChanged(); }
@@ -52,7 +52,7 @@ namespace GTASaveData.LCS
             set { m_lastMissionPassedTime = value; OnPropertyChanged(); }
         }
 
-        public Array<Collective> Collectives
+        public ObservableArray<Collective> Collectives
         {
             get { return m_collectives; }
             set { m_collectives = value; OnPropertyChanged(); }
@@ -64,13 +64,13 @@ namespace GTASaveData.LCS
             set { m_nextFreeCollectiveIndex = value; OnPropertyChanged(); }
         }
 
-        public Array<BuildingSwap> BuildingSwaps
+        public ObservableArray<BuildingSwap> BuildingSwaps
         {
             get { return m_buildingSwapArray; }
             set { m_buildingSwapArray = value; OnPropertyChanged(); }
         }
 
-        public Array<InvisibleObject> InvisibilitySettings
+        public ObservableArray<InvisibleObject> InvisibilitySettings
         {
             get { return m_invisibilitySettingArray; }
             set { m_invisibilitySettingArray = value; OnPropertyChanged(); }
@@ -106,7 +106,7 @@ namespace GTASaveData.LCS
             set { m_numberOfMissionScripts = value; OnPropertyChanged(); }
         }
 
-        public Array<RunningScript> Threads
+        public ObservableArray<RunningScript> Threads
         {
             get { return m_activeScripts; }
             set { m_activeScripts = value; OnPropertyChanged(); }
@@ -119,11 +119,11 @@ namespace GTASaveData.LCS
 
         public ScriptData()
         {
-            Globals = new Array<int>();
+            Globals = new ObservableArray<int>();
             Collectives = ArrayHelper.CreateArray<Collective>(NumCollectives);
             BuildingSwaps = ArrayHelper.CreateArray<BuildingSwap>(NumBuildingSwaps);
             InvisibilitySettings = ArrayHelper.CreateArray<InvisibleObject>(NumInvisibilitySettings);
-            Threads = new Array<RunningScript>();
+            Threads = new ObservableArray<RunningScript>();
         }
 
         public ScriptData(ScriptData other)

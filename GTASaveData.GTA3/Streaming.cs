@@ -10,8 +10,8 @@ namespace GTASaveData.GTA3
     {
         public const int NumModels = 200;
 
-        private Array<StreamingFlags> m_modelFlags;
-        public Array<StreamingFlags> ModelFlags
+        private ObservableArray<StreamingFlags> m_modelFlags;
+        public ObservableArray<StreamingFlags> ModelFlags
         {
             get { return m_modelFlags; }
             set { m_modelFlags = value; OnPropertyChanged(); }

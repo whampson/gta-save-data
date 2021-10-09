@@ -13,9 +13,9 @@ namespace GTASaveData.GTA3
     {
         public const int MaxNumRadarBlips = 32;
 
-        private Array<RadarBlip> m_radarBlips;
+        private ObservableArray<RadarBlip> m_radarBlips;
 
-        public Array<RadarBlip> RadarBlips
+        public ObservableArray<RadarBlip> RadarBlips
         {
             get { return m_radarBlips; }
             set { m_radarBlips = value; OnPropertyChanged(); }

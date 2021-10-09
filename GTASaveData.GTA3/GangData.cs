@@ -13,9 +13,9 @@ namespace GTASaveData.GTA3
     {
         public const int MaxNumGangs = 9;
 
-        private Array<Gang> m_gangs;
+        private ObservableArray<Gang> m_gangs;
 
-        public Array<Gang> Gangs
+        public ObservableArray<Gang> Gangs
         {
             get { return m_gangs; }
             set { m_gangs = value;OnPropertyChanged(); }

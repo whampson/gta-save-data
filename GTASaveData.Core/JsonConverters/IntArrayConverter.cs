@@ -5,10 +5,10 @@ using System.Collections.Generic;
 namespace GTASaveData.JsonConverters
 {
     /// <summary>
-    /// Converts a <see cref="int"/> <see cref="Array{T}"/> to
+    /// Converts a <see cref="int"/> <see cref="ObservableArray{T}"/> to
     /// a base64 string if the array is sufficiently large.
     /// </summary>
-    public class IntArrayConverter : JsonConverter<Array<int>>
+    public class IntArrayConverter : JsonConverter<ObservableArray<int>>
     {
         public const int DefaultThreshold = 25;
 
@@ -23,8 +23,8 @@ namespace GTASaveData.JsonConverters
         /// </summary>
         public static int Threshold { get; set; }
 
-        public override Array<int> ReadJson(JsonReader reader, Type objectType,
-            Array<int> existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override ObservableArray<int> ReadJson(JsonReader reader, Type objectType,
+            ObservableArray<int> existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -69,7 +69,7 @@ namespace GTASaveData.JsonConverters
             throw EndOfStream();
         }
 
-        private Array<int> ReadIntArray(byte[] value)
+        private ObservableArray<int> ReadIntArray(byte[] value)
         {
             using (DataBuffer buf = new DataBuffer(value))
             {
@@ -78,7 +78,7 @@ namespace GTASaveData.JsonConverters
             }
         }
 
-        private byte[] WriteIntArray(Array<int> value)
+        private byte[] WriteIntArray(ObservableArray<int> value)
         {
             using (DataBuffer buf = new DataBuffer(value.Count * sizeof(int)))
             {
@@ -87,7 +87,7 @@ namespace GTASaveData.JsonConverters
             }
         }
 
-        public override void WriteJson(JsonWriter writer, Array<int> value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, ObservableArray<int> value, JsonSerializer serializer)
         {
             if (value == null)
             {
