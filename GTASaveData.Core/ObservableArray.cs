@@ -358,22 +358,6 @@ namespace GTASaveData
             return $"{typeof(T).Name}[{Count}]";
         }
 
-        #region Thread Safety
-        private IDisposable BlockReentrancy()
-        {
-            m_monitor.Enter();
-            return m_monitor;
-        }
-
-        private void CheckReentrancy()
-        {
-            if (m_monitor.Busy)
-            {
-                throw new InvalidOperationException(Strings.Error_InvalidOperation_NoCollectionReentrancy);
-            }
-        }
-        #endregion
-
         #region IEnumerable
         public IEnumerator<T> GetEnumerator()
         {
@@ -502,14 +486,30 @@ namespace GTASaveData
             return array.ToArray();
         }
 
-        public static implicit operator ObservableArray<T>(List<T> array)
+        public static explicit operator ObservableArray<T>(List<T> array)
         {
             return new ObservableArray<T>(array);
         }
 
-        public static implicit operator List<T>(ObservableArray<T> array)
+        public static explicit operator List<T>(ObservableArray<T> array)
         {
             return array.ToList();
+        }
+        #endregion
+
+        #region Thread Safety
+        private IDisposable BlockReentrancy()
+        {
+            m_monitor.Enter();
+            return m_monitor;
+        }
+
+        private void CheckReentrancy()
+        {
+            if (m_monitor.Busy)
+            {
+                throw new InvalidOperationException(Strings.Error_InvalidOperation_NoCollectionReentrancy);
+            }
         }
         #endregion
 
