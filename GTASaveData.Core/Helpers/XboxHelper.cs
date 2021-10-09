@@ -9,12 +9,6 @@ namespace GTASaveData.Helpers
         public const int KeyLength = 16;
         public const int SaveNameEncodingLength = 12;
 
-        private static readonly byte[] CertificateKey =
-        {
-            0x5C, 0x07, 0x33, 0xAE, 0x04, 0x01, 0xF7, 0xE8,
-            0xBA, 0x79, 0x93, 0xFD, 0xCD, 0x2F, 0x1F, 0xE0
-        };
-
         public static byte[] CalculateGameSaveSignature(byte[] titleSigKey, byte[] data, int offset, int length)
         {
             byte[] authKey = new byte[KeyLength];
@@ -58,5 +52,11 @@ namespace GTASaveData.Helpers
 
             return new string(result);
         }
+
+        private static readonly byte[] CertificateKey =
+        {
+            0x5C, 0x07, 0x33, 0xAE, 0x04, 0x01, 0xF7, 0xE8,
+            0xBA, 0x79, 0x93, 0xFD, 0xCD, 0x2F, 0x1F, 0xE0
+        };
     }
 }
