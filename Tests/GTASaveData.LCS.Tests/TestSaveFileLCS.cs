@@ -13,7 +13,7 @@ namespace GTASaveData.LCS.Tests
         public override SaveFileLCS GenerateTestObject(FileFormat format)
         {
             Faker<SaveFileLCS> model = new Faker<SaveFileLCS>()
-                .RuleFor(x => x.FileFormat, format)
+                .RuleFor(x => x.FileType, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 .RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
                 .RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData>(format))
@@ -28,8 +28,8 @@ namespace GTASaveData.LCS.Tests
         [MemberData(nameof(TestFiles))]
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
-            string path = TestData.GetTestDataPath(Game.LCS, expectedFormat, filename);
-            SaveFile.GetFileFormat<SaveFileLCS>(path, out FileFormat detectedFormat);
+            string path = TestData.GetTestDataPath(TestFramework.Game.LCS, expectedFormat, filename);
+            SaveFile.TryGetFileType<SaveFileLCS>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -50,7 +50,7 @@ namespace GTASaveData.LCS.Tests
         [MemberData(nameof(TestFiles))]
         public void RealDataSerialization(FileFormat format, string filename)
         {
-            string path = TestData.GetTestDataPath(Game.LCS, format, filename);
+            string path = TestData.GetTestDataPath(TestFramework.Game.LCS, format, filename);
 
             SaveFileLCS x0 = SaveFile.Load<SaveFileLCS>(path, format);
             SaveFileLCS x1 = CreateSerializedCopy(x0, format, out byte[] data);

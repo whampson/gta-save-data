@@ -1,30 +1,8 @@
 ﻿using GTASaveData;
 using System;
-using System.ComponentModel;
 
 namespace TestFramework
 {
-    public enum Game
-    {
-        [Description("GTA III")]
-        GTA3,
-
-        [Description("Vice City")]
-        VC,
-
-        [Description("San Andreas")]
-        SA,
-
-        [Description("Liberty City Stories")]
-        LCS,
-
-        [Description("Vice City Stories")]
-        VCS,
-
-        [Description("GTA IV")]
-        IV
-    }
-
     public abstract class TestBase : IDisposable
     {
         public TestBase()
@@ -36,14 +14,14 @@ namespace TestFramework
 
     public abstract class TestBase<T> where T : new()
     {
-        public int GetSizeOfTestObject(T obj)
+        public virtual int GetSizeOfTestObject(T obj)
         {
-            return Serializer.SizeOfObject(obj, FileFormat.Default);
+            return Serializer.SizeOf(obj, FileFormat.Default);
         }
 
-        public int GetSizeOfTestObject(T obj, FileFormat format)
+        public virtual int GetSizeOfTestObject(T obj, FileFormat format)
         {
-            return Serializer.SizeOfObject(obj, format);
+            return Serializer.SizeOf(obj, format);
         }
 
         public T CreateSerializedCopy(T obj, out byte[] bytes)

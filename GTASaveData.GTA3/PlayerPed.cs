@@ -157,7 +157,7 @@ namespace GTASaveData.GTA3
             if(fmt.IsPC || fmt.IsXbox) buf.Skip(288);
             if (fmt.IsiOS) buf.Skip(292);
             if (fmt.IsAndroid) buf.Skip(296);
-            if (fmt.IsPS2 && fmt.IsJapanese) buf.Skip(324);
+            if (fmt.IsPS2 && fmt.FlagJapan) buf.Skip(324);
             else if (fmt.IsPS2) buf.Skip(356);
             CreatedBy = (CharCreatedBy) buf.ReadByte();
             buf.Skip(351);
@@ -179,7 +179,7 @@ namespace GTASaveData.GTA3
             if (fmt.IsMobile) buf.Skip(144);
             if (fmt.IsPS2) buf.Skip(16);
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerPed>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -190,7 +190,7 @@ namespace GTASaveData.GTA3
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(288);
             if (fmt.IsiOS) buf.Skip(292);
             if (fmt.IsAndroid) buf.Skip(296);
-            if (fmt.IsPS2 && fmt.IsJapanese) buf.Skip(324);
+            if (fmt.IsPS2 && fmt.FlagJapan) buf.Skip(324);
             else if (fmt.IsPS2) buf.Skip(356);
             buf.Write((byte) CreatedBy);
             buf.Skip(351);
@@ -212,12 +212,12 @@ namespace GTASaveData.GTA3
             if (fmt.IsMobile) buf.Skip(144);
             if (fmt.IsPS2) buf.Skip(16);
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerPed>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPS2 && fmt.IsJapanese) return 0x590;
+            if (fmt.IsPS2 && fmt.FlagJapan) return 0x590;
             if (fmt.IsPS2) return 0x5B0;
             if (fmt.IsPC) return 0x5F0;
             if (fmt.IsXbox) return 0x5F4;

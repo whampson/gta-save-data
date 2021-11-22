@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Numerics;
+using GTASaveData.Types;
 using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
-    public class StoredCar : SaveDataObject, IStoredCar,
+    public class StoredCar : SaveDataObject,
         IEquatable<StoredCar>, IDeepClonable<StoredCar>
     {
         private int m_model;
@@ -78,42 +79,6 @@ namespace GTASaveData.GTA3
             set { m_bomb = value; OnPropertyChanged(); }
         }
 
-        int IStoredCar.Flags
-        {
-            get { return (int) Flags; }
-            set { Flags = (StoredCarFlags) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Color1
-        {
-            get { return Color1; }
-            set { Color1 = (byte) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Color2
-        {
-            get { return Color2; }
-            set { Color2 = (byte) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Radio
-        {
-            get { return (int) Radio; }
-            set { Radio = (RadioStation) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Extra1
-        {
-            get { return Extra1; }
-            set { Extra1 = (sbyte) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Extra2
-        {
-            get { return Extra2; }
-            set { Extra2 = (sbyte) value; OnPropertyChanged(); }
-        }
-
         public StoredCar()
         {
             m_veh = Vehicle.CreateDefault();
@@ -154,7 +119,7 @@ namespace GTASaveData.GTA3
             Bomb = (BombType) buf.ReadSByte();
             buf.Skip(2);
 
-            Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -171,7 +136,7 @@ namespace GTASaveData.GTA3
             buf.Write((sbyte) Bomb);
             buf.Skip(2);
 
-            Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
         protected override int GetSize(FileFormat fmt)

@@ -471,7 +471,7 @@ namespace GTASaveData.LCS
                 buf.Skip(9);
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<Garage>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Garage>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -618,7 +618,7 @@ namespace GTASaveData.LCS
                 buf.Skip(9);
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<Garage>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Garage>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

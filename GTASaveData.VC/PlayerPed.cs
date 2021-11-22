@@ -167,7 +167,7 @@ namespace GTASaveData.VC
             TargetableObjects = buf.ReadArray<int>(numTargetableObjects);
             buf.Skip(164);
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerPed>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -194,7 +194,7 @@ namespace GTASaveData.VC
             buf.Write(TargetableObjects, numTargetableObjects);
             buf.Skip(164);
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerPed>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

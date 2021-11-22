@@ -7,7 +7,7 @@ using System.Linq;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class RunningScript : SaveDataObject, IRunningScript,
+    public class RunningScript : SaveDataObject,
         IEquatable<RunningScript>, IDeepClonable<RunningScript>
     {
         public const int MaxNameLength = 8;
@@ -143,10 +143,6 @@ namespace GTASaveData.GTA3
             get { return m_missionFlag; }
             set { m_missionFlag = value; OnPropertyChanged(); }
         }
-
-        IEnumerable<int> IRunningScript.Stack => m_stack;
-
-        IEnumerable<int> IRunningScript.Locals => m_localVariables;
 
         public RunningScript()
         {

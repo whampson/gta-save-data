@@ -8,7 +8,7 @@ using System.Linq;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class GarageData : SaveDataObject, IGarageData,
+    public class GarageData : SaveDataObject,
         IEquatable<GarageData>, IDeepClonable<GarageData>,
         IEnumerable<Garage>
     {
@@ -145,10 +145,6 @@ namespace GTASaveData.GTA3
             }
         }
 
-        IEnumerable<IStoredCar> IGarageData.CarsInSafeHouse => m_carsInSafeHouse;
-
-        IEnumerable<IGarage> IGarageData.Garages => m_garages;
-
         public GarageData()
         {
             CarsInSafeHouse = ArrayHelper.CreateArray<StoredCar>(NumStoredCars);
@@ -187,7 +183,7 @@ namespace GTASaveData.GTA3
             Garages = buf.ReadArray<Garage>(MaxNumGarages);
             buf.Skip(244);
 
-            Debug.Assert(buf.Offset == SizeOfType<GarageData>());
+            Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -208,7 +204,7 @@ namespace GTASaveData.GTA3
             // Game writes some garbage here due to incorrect size calculation
             buf.Skip(244);
 
-            Debug.Assert(buf.Offset == SizeOfType<GarageData>());
+            Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }
 
         protected override int GetSize(FileFormat fmt)

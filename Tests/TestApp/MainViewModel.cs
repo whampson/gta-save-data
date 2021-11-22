@@ -221,7 +221,7 @@ namespace TestApp
         {
             try
             {
-                bool detected = SaveFile.GetFileFormat<T>(path, out FileFormat fmt);
+                bool detected = SaveFile.TryGetFileType<T>(path, out FileFormat fmt);
                 if (!detected)
                 {
                     RequestMessageBoxError(string.Format("Unable to detect file type!"));
@@ -280,7 +280,7 @@ namespace TestApp
                 return;
             }
 
-            CurrentSaveFile.FileFormat = CurrentFileFormat;
+            CurrentSaveFile.FileType = CurrentFileFormat;
             CurrentSaveFile.Save(path);
             StatusText = "File saved.";
         }

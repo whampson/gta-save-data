@@ -282,7 +282,7 @@ namespace GTASaveData.GTA3
             PathFindNodesCount = buf.ReadInt16();
             buf.Skip(6);
 
-            Debug.Assert(buf.Offset == SizeOfType<AutoPilot>());
+            Debug.Assert(buf.Offset == SizeOf<AutoPilot>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -321,7 +321,7 @@ namespace GTASaveData.GTA3
             buf.Write(PathFindNodesCount);
             buf.Skip(6);
 
-            Debug.Assert(buf.Offset == SizeOfType<AutoPilot>());
+            Debug.Assert(buf.Offset == SizeOf<AutoPilot>());
         }
 
         protected override int GetSize(FileFormat fmt)

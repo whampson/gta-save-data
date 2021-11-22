@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using GTASaveData;
+using GTASaveData.Types;
 using System;
 using System.Linq;
 using System.Numerics;

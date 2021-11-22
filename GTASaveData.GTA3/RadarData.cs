@@ -39,19 +39,20 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "RDR");
+            int size = SaveFileGTA3VC.ReadBlockHeader(buf, out string tag);
+            Debug.Assert(tag == "RDR");
             RadarBlips = buf.ReadArray<RadarBlip>(MaxNumRadarBlips);
 
             Debug.Assert(buf.Offset == size + SaveFileGTA3VC.BlockHeaderSize);
-            Debug.Assert(size == SizeOfType<RadarData>() - SaveFileGTA3VC.BlockHeaderSize);
+            Debug.Assert(size == SizeOf<RadarData>() - SaveFileGTA3VC.BlockHeaderSize);
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            SaveFileGTA3VC.WriteBlockHeader(buf, "RDR", SizeOfType<RadarData>() - SaveFileGTA3VC.BlockHeaderSize);
+            SaveFileGTA3VC.WriteBlockHeader(buf, "RDR", SizeOf<RadarData>() - SaveFileGTA3VC.BlockHeaderSize);
             buf.Write(RadarBlips, MaxNumRadarBlips);
 
-            Debug.Assert(buf.Offset == SizeOfType<RadarData>());
+            Debug.Assert(buf.Offset == SizeOf<RadarData>());
         }
 
         protected override int GetSize(FileFormat fmt)

@@ -12,7 +12,7 @@ namespace GTASaveData.VC.Tests
         public override SaveFileVC GenerateTestObject(FileFormat format)
         {
             Faker<SaveFileVC> model = new Faker<SaveFileVC>()
-                .RuleFor(x => x.FileFormat, format)
+                .RuleFor(x => x.FileType, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 //.RuleFor(x => x.Scripts, Generator.Generate<TheScripts, TestTheScripts>(format))
                 .RuleFor(x => x.PedPool, Generator.Generate<PedPool, TestPedPool>(format))
@@ -43,8 +43,8 @@ namespace GTASaveData.VC.Tests
         [MemberData(nameof(TestFiles))]
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
-            string path = TestData.GetTestDataPath(Game.VC, expectedFormat, filename);
-            SaveFile.GetFileFormat<SaveFileVC>(path, out FileFormat detectedFormat);
+            string path = TestData.GetTestDataPath(TestFramework.Game.VC, expectedFormat, filename);
+            SaveFile.TryGetFileType<SaveFileVC>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -65,7 +65,7 @@ namespace GTASaveData.VC.Tests
         [MemberData(nameof(TestFiles))]
         public void RealDataSerialization(FileFormat format, string filename)
         {
-            string path = TestData.GetTestDataPath(Game.VC, format, filename);
+            string path = TestData.GetTestDataPath(TestFramework.Game.VC, format, filename);
 
             using SaveFileVC x0 = SaveFile.Load<SaveFileVC>(path, format);
             using SaveFileVC x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -87,7 +87,7 @@ namespace GTASaveData.VC.Tests
         [Fact]
         public void BlockBounds()
         {
-            string path = TestData.GetTestDataPath(Game.VC, SaveFileVC.FileFormats.PC, "COK_2");
+            string path = TestData.GetTestDataPath(TestFramework.Game.VC, SaveFileVC.FileFormats.PC, "COK_2");
             byte[] data = File.ReadAllBytes(path);
 
             // Fudge the block size

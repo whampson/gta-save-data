@@ -7,7 +7,7 @@ using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
-    public class PathData : SaveDataObject,
+    public class PathData : BufferedObject,
         IEquatable<PathData>, IDeepClonable<PathData>,
         IEnumerable<PathNode>
     {
@@ -29,9 +29,9 @@ namespace GTASaveData.GTA3
             : this(0)
         { }
 
-        public PathData(int saveSize)
+        public PathData(int size)
         {
-            PathNodes = ArrayHelper.CreateArray<PathNode>((saveSize / 2) * 8);
+            PathNodes = ArrayHelper.CreateArray<PathNode>((size / 2) * 8);
         }
 
         public PathData(PathData other)
@@ -49,26 +49,26 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int size = SizeOfObject(this);
-            byte[] data = buf.ReadBytes(size);
-            int n = size / 2;
+            FillWorkBuffer(buf);
+
+            int n = WorkBuffer.Count / 2;
 
             for (int i = 0; i < PathNodes.Count; i++)
             {
-                PathNodes[i].Disabled = ((data[i / 8] & (1 << i % 8)) != 0);
+                PathNodes[i].Disabled = ((WorkBuffer[i / 8] & (1 << i % 8)) != 0);
             }
 
             for (int i = 0; i < PathNodes.Count; i++)
             {
-                PathNodes[i].BetweenLevels = ((data[i / 8 + n] & (1 << i % 8)) != 0);
+                PathNodes[i].BetweenLevels = ((WorkBuffer[i / 8 + n] & (1 << i % 8)) != 0);
             }
 
-            Debug.Assert(buf.Offset == size);
+            Debug.Assert(buf.Offset == WorkBuffer.Count);
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            int size = SizeOfObject(this);
+            int size = SizeOf(this);
             byte[] data = new byte[size];
             int n = size / 2;
 

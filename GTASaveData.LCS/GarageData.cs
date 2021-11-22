@@ -196,7 +196,7 @@ namespace GTASaveData.LCS
             Garages = buf.ReadArray<Garage>(MaxNumGarages, fmt);
             buf.Skip(344);
 
-            Debug.Assert(buf.Offset == SizeOfType<GarageData>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<GarageData>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -218,7 +218,7 @@ namespace GTASaveData.LCS
             // Game writes some garbage here due to incorrect size calculation
             buf.Skip(344);
 
-            Debug.Assert(buf.Offset == SizeOfType<GarageData>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<GarageData>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

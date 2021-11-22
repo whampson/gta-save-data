@@ -63,7 +63,7 @@ namespace GTASaveData.GTA3
                 }
             }
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -81,14 +81,14 @@ namespace GTASaveData.GTA3
                 buf.Write(v, fmt);
             }
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
             int headerSize = 2 * sizeof(int) + sizeof(short);
-            int sizeOfCars = (SizeOfType<Automobile>(fmt) + headerSize) * Cars.Count;
-            int sizeOfBoats = (SizeOfType<Boat>(fmt) + headerSize) * Boats.Count;
+            int sizeOfCars = (SizeOf<Automobile>(fmt) + headerSize) * Cars.Count;
+            int sizeOfBoats = (SizeOf<Boat>(fmt) + headerSize) * Boats.Count;
 
             return 2 * sizeof(int) + sizeOfCars + sizeOfBoats;
         }

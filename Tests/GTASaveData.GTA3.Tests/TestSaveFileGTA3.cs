@@ -12,7 +12,7 @@ namespace GTASaveData.GTA3.Tests
         public override SaveFileGTA3 GenerateTestObject(FileFormat format)
         {
             Faker<SaveFileGTA3> model = new Faker<SaveFileGTA3>()
-                .RuleFor(x => x.FileFormat, format)
+                .RuleFor(x => x.FileType, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 .RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
                 .RuleFor(x => x.PlayerPeds, Generator.Generate<PedPool, TestPedPool>(format))
@@ -44,7 +44,7 @@ namespace GTASaveData.GTA3.Tests
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.GTA3, expectedFormat, filename);
-            SaveFile.GetFileFormat<SaveFileGTA3>(path, out FileFormat detectedFormat);
+            SaveFile.TryGetFileType<SaveFileGTA3>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -63,18 +63,27 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealDataSerialization(FileFormat format, string filename)
+        public void RealData(FileFormat format, string filename)
         {
             string path = TestData.GetTestDataPath(Game.GTA3, format, filename);
 
             using SaveFileGTA3 x0 = SaveFile.Load<SaveFileGTA3>(path, format);
             using SaveFileGTA3 x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
+            // Copy properties that don't actually get saved to the new buffer.
+            if (format.IsPS2)
+            {
+                x1.Title = x0.Title;
+            }
+            if (!format.IsPC && !format.IsXbox)
+            {
+                x1.TimeStamp = x0.TimeStamp;
+            }
+
             AssertSavesAreEqual(x0, x1);
             AssertCheckSumValid(data, format);
             Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
-
 
         [Fact]
         public void CopyConstructor()

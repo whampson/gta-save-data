@@ -58,7 +58,7 @@ namespace GTASaveData.GTA3
             Weapon1 = (WeaponType) buf.ReadInt32();
             Weapon2 = (WeaponType) buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOfType<Gang>());
+            Debug.Assert(buf.Offset == SizeOf<Gang>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -69,7 +69,7 @@ namespace GTASaveData.GTA3
             buf.Write((int) Weapon1);
             buf.Write((int) Weapon2);
 
-            Debug.Assert(buf.Offset == SizeOfType<Gang>());
+            Debug.Assert(buf.Offset == SizeOf<Gang>());
         }
 
         protected override int GetSize(FileFormat fmt)

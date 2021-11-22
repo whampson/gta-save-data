@@ -40,7 +40,7 @@ namespace GTASaveData.GTA3
             int numObjects = buf.ReadInt32();
             Objects = buf.ReadArray<PhysicalObject>(numObjects, fmt);
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -48,12 +48,12 @@ namespace GTASaveData.GTA3
             buf.Write(Objects.Count);
             buf.Write(Objects, fmt);
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            return (SizeOfType<PhysicalObject>(fmt) * Objects.Count) + sizeof(int);
+            return (SizeOf<PhysicalObject>(fmt) * Objects.Count) + sizeof(int);
         }
 
         public override bool Equals(object obj)

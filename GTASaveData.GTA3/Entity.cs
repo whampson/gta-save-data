@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Types;
+using System;
 using System.Numerics;
 
 namespace GTASaveData.GTA3

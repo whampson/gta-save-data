@@ -59,7 +59,7 @@ namespace GTASaveData.IV
             WeaponPickupMessagesRemaining = buf.ReadByte();
             Unknown = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOfType<PickupData>());
+            Debug.Assert(buf.Offset == SizeOf<PickupData>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -69,7 +69,7 @@ namespace GTASaveData.IV
             buf.Write(WeaponPickupMessagesRemaining);
             buf.Write(Unknown);
 
-            Debug.Assert(buf.Offset == SizeOfType<PickupData>());
+            Debug.Assert(buf.Offset == SizeOf<PickupData>());
         }
 
         public override bool Equals(object obj)

@@ -149,7 +149,7 @@ namespace GTASaveData.GTA3
                 panelStatus >>= 4;
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<DamageManager>());
+            Debug.Assert(buf.Offset == SizeOf<DamageManager>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -176,7 +176,7 @@ namespace GTASaveData.GTA3
             buf.Write(panelStatus);
             buf.Write(Field24h);
 
-            Debug.Assert(buf.Offset == SizeOfType<DamageManager>());
+            Debug.Assert(buf.Offset == SizeOf<DamageManager>());
         }
 
         protected override int GetSize(FileFormat fmt)

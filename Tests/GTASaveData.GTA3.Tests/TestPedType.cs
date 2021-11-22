@@ -15,7 +15,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Unknown3, f => f.Random.Float())
                 .RuleFor(x => x.Unknown4, f => f.Random.Float())
                 .RuleFor(x => x.Threats, f => f.PickRandom<PedTypeFlags>())
-                .RuleFor(x => x.Avoid, f => f.PickRandom<PedTypeFlags>());
+                .RuleFor(x => x.Avoids, f => f.PickRandom<PedTypeFlags>());
 
             return model.Generate();
         }
@@ -34,7 +34,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Unknown3, x1.Unknown3);
             Assert.Equal(x0.Unknown4, x1.Unknown4);
             Assert.Equal(x0.Threats, x1.Threats);
-            Assert.Equal(x0.Avoid, x1.Avoid);
+            Assert.Equal(x0.Avoids, x1.Avoids);
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);

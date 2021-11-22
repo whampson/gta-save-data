@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Numerics;
+using GTASaveData.Types;
 using GTASaveData.Interfaces;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class SimpleVariables : SaveDataObject, ISimpleVariables,
+    public class SimpleVariables : SaveDataObject,
         IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
         public const int MaxMissionPassedNameLength = 24;
@@ -14,7 +15,7 @@ namespace GTASaveData.GTA3
         private string m_lastMissionPassedName;
         private SystemTime m_timeStamp;
         private int m_sizeOfGameInBytes;
-        private LevelName m_currLevel;
+        private Level m_currLevel;
         private Vector3 m_cameraPosition;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
@@ -67,7 +68,7 @@ namespace GTASaveData.GTA3
             set { m_sizeOfGameInBytes = value; }
         }
 
-        public LevelName CurrentLevel
+        public Level CurrentLevel
         {
             get { return m_currLevel; }
             set { m_currLevel = value; OnPropertyChanged(); }
@@ -275,36 +276,6 @@ namespace GTASaveData.GTA3
             set { m_isQuickSave = value; OnPropertyChanged(); }
         }
 
-        int ISimpleVariables.GameClockHours
-        {
-            get { return GameClockHours; }
-            set { GameClockHours = (byte) value; OnPropertyChanged(); }
-        }
-
-        int ISimpleVariables.GameClockMinutes
-        {
-            get { return GameClockMinutes; }
-            set { GameClockMinutes = (byte) value; OnPropertyChanged(); }
-        }
-
-        int ISimpleVariables.OldWeatherType
-        {
-            get { return (int) OldWeatherType; }
-            set { OldWeatherType = (WeatherType) value; OnPropertyChanged(); }
-        }
-
-        int ISimpleVariables.NewWeatherType
-        {
-            get { return (int) NewWeatherType; }
-            set { NewWeatherType = (WeatherType) value; OnPropertyChanged(); }
-        }
-
-        int ISimpleVariables.ForcedWeatherType
-        {
-            get { return (int) ForcedWeatherType; }
-            set { ForcedWeatherType = (WeatherType) value; OnPropertyChanged(); }
-        }
-
         public SimpleVariables()
         {
             LastMissionPassedName = "";
@@ -359,7 +330,7 @@ namespace GTASaveData.GTA3
             if (!fmt.IsPS2) LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
             if (fmt.IsPC || fmt.IsXbox) TimeStamp = buf.ReadStruct<SystemTime>();
             SizeOfGameInBytes = buf.ReadInt32();
-            CurrentLevel = (LevelName) buf.ReadInt32();
+            CurrentLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.ReadStruct<Vector3>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
@@ -388,7 +359,7 @@ namespace GTASaveData.GTA3
             {
                 MusicVolume = buf.ReadInt32();
                 SfxVolume = buf.ReadInt32();
-                if (!fmt.IsAustralian)
+                if (!fmt.FlagAustralia)
                 {
                     buf.ReadInt16();    // duplicate of CurrPadMode
                     buf.Align4();
@@ -400,7 +371,7 @@ namespace GTASaveData.GTA3
                 RadioStation = (RadioStation) buf.ReadByte();
                 buf.Align4();
                 Brightness = buf.ReadInt32();
-                if (!fmt.IsAustralian)
+                if (!fmt.FlagAustralia)
                 {
                     buf.ReadBool();     // duplicate of BlurOn
                     buf.Align4();
@@ -458,7 +429,7 @@ namespace GTASaveData.GTA3
             {
                 buf.Write(MusicVolume);
                 buf.Write(SfxVolume);
-                if (!fmt.IsAustralian)
+                if (!fmt.FlagAustralia)
                 {
                     buf.Write(CurrPadMode);
                     buf.Align4();
@@ -470,7 +441,7 @@ namespace GTASaveData.GTA3
                 buf.Write((byte) RadioStation);
                 buf.Align4();
                 buf.Write(Brightness);
-                if (!fmt.IsAustralian)
+                if (!fmt.FlagAustralia)
                 {
                     buf.Write(BlurOn);
                     buf.Align4();
@@ -501,7 +472,7 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPS2 && fmt.IsAustralian) return 0xA8;
+            if (fmt.IsPS2 && fmt.FlagAustralia) return 0xA8;
             if (fmt.IsPS2) return 0xB0;
             if (fmt.IsMobile) return 0xB0;
             if (fmt.IsPC || fmt.IsXbox) return 0xBC;

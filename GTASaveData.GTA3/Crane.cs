@@ -295,7 +295,7 @@ namespace GTASaveData.GTA3
             IsTop = buf.ReadBool();
             buf.Skip(1);
 
-            Debug.Assert(buf.Offset == SizeOfType<Crane>());
+            Debug.Assert(buf.Offset == SizeOf<Crane>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -332,7 +332,7 @@ namespace GTASaveData.GTA3
             buf.Write(IsTop);
             buf.Skip(1);
 
-            Debug.Assert(buf.Offset == SizeOfType<Crane>());
+            Debug.Assert(buf.Offset == SizeOf<Crane>());
         }
 
         protected override int GetSize(FileFormat fmt)

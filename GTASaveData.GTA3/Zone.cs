@@ -14,7 +14,7 @@ namespace GTASaveData.GTA3
         private Vector3 m_min;
         private Vector3 m_max;
         private ZoneType m_type;
-        private LevelName m_level;
+        private Level m_level;
         private short m_zoneInfoDay;
         private short m_zoneInfoNight;
         private int m_childZoneIndex;
@@ -45,7 +45,7 @@ namespace GTASaveData.GTA3
             set { m_type = value; OnPropertyChanged(); }
         }
 
-        public LevelName Level
+        public Level Level
         {
             get { return m_level; }
             set { m_level = value; OnPropertyChanged(); }
@@ -108,14 +108,14 @@ namespace GTASaveData.GTA3
             Min = buf.ReadStruct<Vector3>();
             Max = buf.ReadStruct<Vector3>();
             Type = (ZoneType) buf.ReadInt32();
-            Level = (LevelName) buf.ReadInt32();
+            Level = (Level) buf.ReadInt32();
             ZoneInfoDay = buf.ReadInt16();
             ZoneInfoNight = buf.ReadInt16();
             ChildZoneIndex = buf.ReadInt32();
             ParentZoneIndex = buf.ReadInt32();
             NextZoneIndex = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOfType<Zone>());
+            Debug.Assert(buf.Offset == SizeOf<Zone>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -131,7 +131,7 @@ namespace GTASaveData.GTA3
             buf.Write(ParentZoneIndex);
             buf.Write(NextZoneIndex);
 
-            Debug.Assert(buf.Offset == SizeOfType<Zone>());
+            Debug.Assert(buf.Offset == SizeOf<Zone>());
         }
 
         protected override int GetSize(FileFormat fmt)

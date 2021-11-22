@@ -5,7 +5,7 @@ using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
-    public class Stats : SaveDataObject, IStats,
+    public class Stats : SaveDataObject,
         IEquatable<Stats>, IDeepClonable<Stats>
     {
         public const int NumPedTypes = 23;
@@ -497,7 +497,7 @@ namespace GTASaveData.GTA3
             TotalLegitimateKills = buf.ReadInt32();
             LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength);
 
-            Debug.Assert(buf.Offset == SizeOfType<Stats>());
+            Debug.Assert(buf.Offset == SizeOf<Stats>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -555,7 +555,7 @@ namespace GTASaveData.GTA3
             buf.Write(TotalLegitimateKills);
             buf.Write(LastMissionPassedName, MaxMissionPassedNameLength);
 
-            Debug.Assert(buf.Offset == SizeOfType<Stats>());
+            Debug.Assert(buf.Offset == SizeOf<Stats>());
         }
 
         protected override int GetSize(FileFormat fmt)

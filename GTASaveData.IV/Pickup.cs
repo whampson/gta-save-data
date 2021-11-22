@@ -221,7 +221,7 @@ namespace GTASaveData.IV
             Unknown4Ch = buf.ReadInt32();
             Unknown50h = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOfType<Pickup>());
+            Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -252,7 +252,7 @@ namespace GTASaveData.IV
             buf.Write(Unknown4Ch);
             buf.Write(Unknown50h);
 
-            Debug.Assert(buf.Offset == SizeOfType<Pickup>());
+            Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
         protected override int GetSize(FileFormat fmt)

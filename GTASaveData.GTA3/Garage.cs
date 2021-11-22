@@ -7,7 +7,7 @@ using System.Numerics;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
-    public class Garage : SaveDataObject, IGarage,
+    public class Garage : SaveDataObject,
         IEquatable<Garage>, IDeepClonable<Garage>
     {
         private GarageType m_type;
@@ -262,18 +262,6 @@ namespace GTASaveData.GTA3
             set { m_storedCar = value; OnPropertyChanged(); }
         }
 
-        int IGarage.Type
-        {
-            get { return (int) Type; }
-            set { Type = (GarageType) value; OnPropertyChanged(); }
-        }
-
-        int IGarage.State
-        {
-            get { return (int) State; }
-            set { State = (GarageState) value; OnPropertyChanged(); }
-        }
-
         public Vector3 PositionMin
         {
             get { return new Vector3(X1, Y1, Z1); }
@@ -383,7 +371,7 @@ namespace GTASaveData.GTA3
             Field96h = buf.ReadInt32();
             StoredCar = buf.ReadObject<StoredCar>();
 
-            Debug.Assert(buf.Offset == SizeOfType<Garage>());
+            Debug.Assert(buf.Offset == SizeOf<Garage>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -427,7 +415,7 @@ namespace GTASaveData.GTA3
             buf.Write(Field96h);
             buf.Write(StoredCar);
 
-            Debug.Assert(buf.Offset == SizeOfType<Garage>());
+            Debug.Assert(buf.Offset == SizeOf<Garage>());
         }
 
         protected override int GetSize(FileFormat fmt)

@@ -31,14 +31,14 @@ namespace GTASaveData.GTA3
         {
             ModelFlags = buf.ReadArray<StreamingFlags>(NumModels);
 
-            Debug.Assert(buf.Offset == SizeOfType<Streaming>());
+            Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(ModelFlags, NumModels);
 
-            Debug.Assert(buf.Offset == SizeOfType<Streaming>());
+            Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }
 
         protected override int GetSize(FileFormat fmt)

@@ -59,7 +59,7 @@ namespace GTASaveData.GTA3
             CarsCollectedMilitaryCrane = (CollectCarsMilitaryCrane) buf.ReadInt32();
             Cranes = buf.ReadArray<Crane>(MaxNumCranes);
 
-            Debug.Assert(buf.Offset == SizeOfType<CraneData>());
+            Debug.Assert(buf.Offset == SizeOf<CraneData>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -68,7 +68,7 @@ namespace GTASaveData.GTA3
             buf.Write((int) CarsCollectedMilitaryCrane);
             buf.Write(Cranes, MaxNumCranes);
 
-            Debug.Assert(buf.Offset == SizeOfType<CraneData>());
+            Debug.Assert(buf.Offset == SizeOf<CraneData>());
         }
 
         protected override int GetSize(FileFormat fmt)

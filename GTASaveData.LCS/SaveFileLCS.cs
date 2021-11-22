@@ -50,7 +50,7 @@ namespace GTASaveData.LCS
             set { m_stats = value; OnPropertyChanged(); }
         }
 
-        public override string Name
+        public override string Title
         {
             get { return m_name; }
             set { m_name = value; OnPropertyChanged(); }
@@ -124,7 +124,7 @@ namespace GTASaveData.LCS
             int size = file.ReadInt32();
             Debug.Assert(file.Position + size < file.Length);
 
-            obj = file.ReadObject<T>(FileFormat);
+            obj = file.ReadObject<T>(FileType);
             file.Align4();
 
             return file.Offset;
@@ -148,7 +148,7 @@ namespace GTASaveData.LCS
             return size + 8;
         }
 
-        protected override void LoadAllData(DataBuffer file)
+        protected override void Load(DataBuffer file)
         {
             int totalSize = 0;
 
@@ -163,7 +163,7 @@ namespace GTASaveData.LCS
             totalSize += Align4(ReadDataBlock(file, "STAT", out Stats stat));
             Stats = stat;
 
-            if (FileFormat.IsPS2)
+            if (FileType.IsPS2)
             {
                 file.Skip(SizeOfGameInBytes - totalSize);
             }
@@ -171,7 +171,7 @@ namespace GTASaveData.LCS
             Debug.WriteLine("Load successful!");
         }
 
-        protected override void SaveAllData(DataBuffer file)
+        protected override void Save(DataBuffer file)
         {
             int totalSize = 0;
             m_checkSum = 0;
@@ -182,7 +182,7 @@ namespace GTASaveData.LCS
             totalSize += Align4(WriteDataBlock(file, "PLYR", PlayerInfo));
             totalSize += Align4(WriteDataBlock(file, "STAT", Stats));
 
-            if (FileFormat.IsPS2)
+            if (FileType.IsPS2)
             {
                 file.Mark();
                 totalSize += file.Pad(SizeOfGameInBytes - totalSize - 4);
@@ -196,7 +196,7 @@ namespace GTASaveData.LCS
             Debug.WriteLine("Save successful!");
         }
 
-        protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
+        protected override bool DetectFileType(byte[] data, out FileFormat fmt)
         {
             const int SimpSizePS2 = 0xF8;
             const int SimpSizePSP = 0xBC;
@@ -262,11 +262,11 @@ namespace GTASaveData.LCS
         protected override int GetSize(FileFormat fmt)
         {
             int size = 0;
-            size += Align4(SizeOfObject(SimpleVars, fmt)) + 8;
-            size += Align4(SizeOfObject(Scripts, fmt)) + 8;
-            size += Align4(SizeOfObject(Garages, fmt)) + 8;
-            size += Align4(SizeOfObject(PlayerInfo, fmt)) + 8;
-            size += Align4(SizeOfObject(Stats, fmt)) + 8;
+            size += Align4(SizeOf(SimpleVars, fmt)) + 8;
+            size += Align4(SizeOf(Scripts, fmt)) + 8;
+            size += Align4(SizeOf(Garages, fmt)) + 8;
+            size += Align4(SizeOf(PlayerInfo, fmt)) + 8;
+            size += Align4(SizeOf(Stats, fmt)) + 8;
 
             if (fmt.IsPS2) size += (SizeOfGameInBytes - size);
 
@@ -301,22 +301,22 @@ namespace GTASaveData.LCS
         {
             public static readonly FileFormat Android = new FileFormat(
                 "Android", "Android", "Android OS",
-                GameConsole.Android
+                GameSystem.Android
             );
 
             public static readonly FileFormat iOS = new FileFormat(
                 "iOS", "iOS", "Apple iOS",
-                GameConsole.iOS
+                GameSystem.iOS
             );
 
             public static readonly FileFormat PS2 = new FileFormat(
                 "PS2", "PS2", "PlayStation 2",
-                GameConsole.PS2
+                GameSystem.PS2
             );
 
             public static readonly FileFormat PSP = new FileFormat(
                 "PSP", "PSP", "PlayStation Portable",
-                GameConsole.PSP
+                GameSystem.PSP
             );
 
             public static FileFormat[] GetAll()

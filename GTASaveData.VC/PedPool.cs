@@ -75,7 +75,7 @@ namespace GTASaveData.VC
                 PlayerPeds.Add(p);
             }
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -94,7 +94,7 @@ namespace GTASaveData.VC
                 if (fmt.IsMobile) buf.Skip(4);
             }
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
@@ -107,7 +107,7 @@ namespace GTASaveData.VC
             foreach (PlayerPed p in PlayerPeds)
             {
                 size += headerSize;
-                size += SizeOfObject(p, fmt);
+                size += SizeOf(p, fmt);
                 size += footerSize;
             }
 

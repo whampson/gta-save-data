@@ -76,7 +76,7 @@ namespace GTASaveData.LCS.Tests
         public void GlobalVariables()
         {
             Faker f = new Faker();
-            string path = TestData.GetTestDataPath(Game.LCS, SaveFileLCS.FileFormats.PS2, "NEDS4");
+            string path = TestData.GetTestDataPath(TestFramework.Game.LCS, SaveFileLCS.FileFormats.PS2, "NEDS4");
             SaveFileLCS x = SaveFile.Load<SaveFileLCS>(path, SaveFileLCS.FileFormats.PS2);
 
             Assert.Equal(272.1489f, x.Scripts.GetGlobalAsFloat(7));

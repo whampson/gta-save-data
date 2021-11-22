@@ -193,8 +193,8 @@ namespace GTASaveData.GTA3
             buf.Skip(48);
             Position = buf.ReadStruct<Vector3>();
             buf.Skip(4);
-            if (!(fmt.IsPS2 && fmt.IsJapanese)) buf.Skip(8);
-            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(24);
+            if (!(fmt.IsPS2 && fmt.FlagJapan)) buf.Skip(8);
+            if (fmt.IsPS2 && !fmt.FlagJapan) buf.Skip(24);
             NextParticleObjectPointer = buf.ReadUInt32();
             PrevParticleObjectPointer = buf.ReadUInt32();
             ParticlePointer = buf.ReadUInt32();
@@ -215,7 +215,7 @@ namespace GTASaveData.GTA3
             buf.Align4();
             if (fmt.IsPS2) Unknown = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOfType<ParticleObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<ParticleObject>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -224,8 +224,8 @@ namespace GTASaveData.GTA3
             buf.Skip(48);
             buf.Write(Position);
             buf.Skip(4);
-            if (!(fmt.IsPS2 && fmt.IsJapanese)) buf.Skip(8);
-            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(24);
+            if (!(fmt.IsPS2 && fmt.FlagJapan)) buf.Skip(8);
+            if (fmt.IsPS2 && !fmt.FlagJapan) buf.Skip(24);
             buf.Write(NextParticleObjectPointer);
             buf.Write(PrevParticleObjectPointer);
             buf.Write(ParticlePointer);
@@ -246,12 +246,12 @@ namespace GTASaveData.GTA3
             buf.Align4();
             if (fmt.IsPS2) buf.Write(Unknown);
 
-            Debug.Assert(buf.Offset == SizeOfType<ParticleObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<ParticleObject>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPS2 && fmt.IsJapanese) return 0x80;
+            if (fmt.IsPS2 && fmt.FlagJapan) return 0x80;
             if (fmt.IsPS2) return 0xA0;
 
             return 0x88;

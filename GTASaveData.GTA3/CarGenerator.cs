@@ -5,7 +5,7 @@ using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
-    public class CarGenerator : SaveDataObject, ICarGenerator,
+    public class CarGenerator : SaveDataObject,
         IEquatable<CarGenerator>, IDeepClonable<CarGenerator>
     {
         private int m_modelIndex;
@@ -126,30 +126,6 @@ namespace GTASaveData.GTA3
         {
             get { return m_size; }
             set { m_size= value; OnPropertyChanged(); }
-        }
-
-        int ICarGenerator.Color1
-        {
-            get { return Color1; }
-            set { Color1 = (short) value; OnPropertyChanged(); }
-        }
-
-        int ICarGenerator.Color2
-        {
-            get { return Color2; }
-            set { Color2 = (short) value; OnPropertyChanged(); }
-        }
-
-        int ICarGenerator.AlarmChance
-        {
-            get { return AlarmChance; }
-            set { AlarmChance = (byte) value; OnPropertyChanged(); }
-        }
-
-        int ICarGenerator.LockedChance
-        {
-            get { return LockedChance; }
-            set { LockedChance = (byte) value; OnPropertyChanged(); }
         }
 
         public CarGenerator()

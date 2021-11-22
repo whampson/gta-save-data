@@ -1,15 +1,16 @@
 using GTASaveData.Extensions;
+using GTASaveData.Types;
 using GTASaveData.Helpers;
 using GTASaveData.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace GTASaveData.GTA3
 {
     /// <summary>
-    /// Represents a saved <i>Grand Theft Auto III</i> game.
+    /// A saved <i>Grand Theft Auto III</i> game.
     /// </summary>
     public class SaveFileGTA3 : SaveFileGTA3VC, ISaveFile,
         IEquatable<SaveFileGTA3>, IDeepClonable<SaveFileGTA3>
@@ -167,7 +168,7 @@ namespace GTASaveData.GTA3
             set { m_pedType = value; OnPropertyChanged(); }
         }
 
-        public override string Name
+        public override string Title
         {
             get { return SimpleVars.LastMissionPassedName; }
             set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
@@ -178,45 +179,6 @@ namespace GTASaveData.GTA3
             get { return (DateTime) SimpleVars.TimeStamp; }
             set { SimpleVars.TimeStamp = new SystemTime(value); OnPropertyChanged(); }
         }
-
-        bool ISaveFile.HasSimpleVariables => true;
-        bool ISaveFile.HasScriptData => true;
-        bool ISaveFile.HasGarageData => true;
-        bool ISaveFile.HasCarGenerators => true;
-        bool ISaveFile.HasPlayerInfo => true;
-        bool ISaveFile.HasStats => true;
-
-        ISimpleVariables ISaveFile.SimpleVars => SimpleVars;
-        IScriptData ISaveFile.ScriptData => Scripts;
-        IGarageData ISaveFile.GarageData => Garages;
-        ICarGeneratorData ISaveFile.CarGenerators => CarGenerators;
-        IPlayerInfo ISaveFile.PlayerInfo => PlayerInfo;
-        IStats ISaveFile.Stats => Stats;
-
-        IReadOnlyList<ISaveDataObject> ISaveFile.Blocks => new List<SaveDataObject>()
-        {
-            SimpleVars,
-            Scripts,
-            PlayerPeds,
-            Garages,
-            Vehicles,
-            Objects,
-            Paths,
-            Cranes,
-            Pickups,
-            PhoneInfo,
-            RestartPoints,
-            RadarBlips,
-            Zones,
-            Gangs,
-            CarGenerators,
-            ParticleObjects,
-            AudioScriptObjects,
-            PlayerInfo,
-            Stats,
-            Streaming,
-            PedTypeInfo
-        };
 
         public static SaveFileGTA3 Load(string path)
         {
@@ -229,6 +191,7 @@ namespace GTASaveData.GTA3
         }
 
         public SaveFileGTA3()
+            : base(Game.GTA3)
         {
             SimpleVars = new SimpleVariables();
             Scripts = new ScriptData();
@@ -251,9 +214,12 @@ namespace GTASaveData.GTA3
             Stats = new Stats();
             Streaming = new Streaming();
             PedTypeInfo = new PedTypeData();
+
+            TimeStamp = DateTime.Now;
         }
 
         public SaveFileGTA3(SaveFileGTA3 other)
+            : base(Game.GTA3)
         {
             SimpleVars = new SimpleVariables(other.SimpleVars);
             Scripts = new ScriptData(other.Scripts);
@@ -278,88 +244,92 @@ namespace GTASaveData.GTA3
             PedTypeInfo = new PedTypeData(other.PedTypeInfo);
         }
 
-        protected override void LoadAllData(DataBuffer file)
+        protected override void Load(DataBuffer file)
         {
             int dataSize = 0;
             int numOuterBlocks;
 
-            if (FileFormat.IsPS2)
+            if (IsPS2)
             {
-                dataSize += ReadBlock(file);
-                SimpleVars = WorkBuff.ReadObject<SimpleVariables>(FileFormat);
-                Scripts = LoadType<ScriptData>();
-                PlayerPeds = LoadType<PedPool>();
-                Garages = LoadType<GarageData>();
-                Vehicles = LoadType<VehiclePool>();
-                dataSize += ReadBlock(file);
-                Objects = LoadType<ObjectPool>();
-                Paths = LoadTypePreAlloc<PathData>();
-                Cranes = LoadType<CraneData>();
-                dataSize += ReadBlock(file);
-                Pickups = LoadType<PickupData>();
-                PhoneInfo = LoadType<PhoneData>();
-                RestartPoints = LoadType<RestartData>();
-                RadarBlips = LoadType<RadarData>();
-                Zones = LoadType<ZoneData>();
-                Gangs = LoadType<GangData>();
-                CarGenerators = LoadType<CarGeneratorData>();
-                ParticleObjects = LoadType<ParticleData>();
-                AudioScriptObjects = LoadType<AudioScriptData>();
-                PlayerInfo = LoadType<PlayerInfo>();
-                Stats = LoadType<Stats>();
-                Streaming = LoadType<Streaming>();
-                PedTypeInfo = LoadType<PedTypeData>();
+                dataSize += FillWorkBuffer(file);
+                SimpleVars = WorkBuff.ReadObject<SimpleVariables>(FileType);
+                Scripts = Get<ScriptData>();
+                PlayerPeds = Get<PedPool>();
+                Garages = Get<GarageData>();
+                Vehicles = Get<VehiclePool>();
+
+                dataSize += FillWorkBuffer(file);
+                Objects = Get<ObjectPool>();
+                Paths = Get<PathData>();
+                Cranes = Get<CraneData>();
+
+                dataSize += FillWorkBuffer(file);
+                Pickups = Get<PickupData>();
+                PhoneInfo = Get<PhoneData>();
+                RestartPoints = Get<RestartData>();
+                RadarBlips = Get<RadarData>();
+                Zones = Get<ZoneData>();
+                Gangs = Get<GangData>();
+                CarGenerators = Get<CarGeneratorData>();
+                ParticleObjects = Get<ParticleData>();
+                AudioScriptObjects = Get<AudioScriptData>();
+                PlayerInfo = Get<PlayerInfo>();
+                Stats = Get<Stats>();
+                Streaming = Get<Streaming>();
+                PedTypeInfo = Get<PedTypeData>();
+
                 numOuterBlocks = NumOuterBlocksPS2;
             }
             else
             {
-                dataSize += ReadBlock(file);
-                SimpleVars = WorkBuff.ReadObject<SimpleVariables>(FileFormat);
-                Scripts = LoadType<ScriptData>();
-                dataSize += ReadBlock(file); PlayerPeds = LoadType<PedPool>();
-                dataSize += ReadBlock(file); Garages = LoadType<GarageData>();
-                dataSize += ReadBlock(file); Vehicles = LoadType<VehiclePool>();
-                dataSize += ReadBlock(file); Objects = LoadType<ObjectPool>();
-                dataSize += ReadBlock(file); Paths = LoadTypePreAlloc<PathData>();
-                dataSize += ReadBlock(file); Cranes = LoadType<CraneData>();
-                dataSize += ReadBlock(file); Pickups = LoadType<PickupData>();
-                dataSize += ReadBlock(file); PhoneInfo = LoadType<PhoneData>();
-                dataSize += ReadBlock(file); RestartPoints = LoadType<RestartData>();
-                dataSize += ReadBlock(file); RadarBlips = LoadType<RadarData>();
-                dataSize += ReadBlock(file); Zones = LoadType<ZoneData>();
-                dataSize += ReadBlock(file); Gangs = LoadType<GangData>();
-                dataSize += ReadBlock(file); CarGenerators = LoadType<CarGeneratorData>();
-                dataSize += ReadBlock(file); ParticleObjects = LoadType<ParticleData>();
-                dataSize += ReadBlock(file); AudioScriptObjects = LoadType<AudioScriptData>();
-                dataSize += ReadBlock(file); PlayerInfo = LoadType<PlayerInfo>();
-                dataSize += ReadBlock(file); Stats = LoadType<Stats>();
-                dataSize += ReadBlock(file); Streaming = LoadType<Streaming>();
-                dataSize += ReadBlock(file); PedTypeInfo = LoadType<PedTypeData>();
+                dataSize += FillWorkBuffer(file);
+                SimpleVars = WorkBuff.ReadObject<SimpleVariables>(FileType);
+                Scripts = Get<ScriptData>();
+
+                dataSize += FillWorkBuffer(file); PlayerPeds = Get<PedPool>();
+                dataSize += FillWorkBuffer(file); Garages = Get<GarageData>();
+                dataSize += FillWorkBuffer(file); Vehicles = Get<VehiclePool>();
+                dataSize += FillWorkBuffer(file); Objects = Get<ObjectPool>();
+                dataSize += FillWorkBuffer(file); Paths = Get<PathData>();
+                dataSize += FillWorkBuffer(file); Cranes = Get<CraneData>();
+                dataSize += FillWorkBuffer(file); Pickups = Get<PickupData>();
+                dataSize += FillWorkBuffer(file); PhoneInfo = Get<PhoneData>();
+                dataSize += FillWorkBuffer(file); RestartPoints = Get<RestartData>();
+                dataSize += FillWorkBuffer(file); RadarBlips = Get<RadarData>();
+                dataSize += FillWorkBuffer(file); Zones = Get<ZoneData>();
+                dataSize += FillWorkBuffer(file); Gangs = Get<GangData>();
+                dataSize += FillWorkBuffer(file); CarGenerators = Get<CarGeneratorData>();
+                dataSize += FillWorkBuffer(file); ParticleObjects = Get<ParticleData>();
+                dataSize += FillWorkBuffer(file); AudioScriptObjects = Get<AudioScriptData>();
+                dataSize += FillWorkBuffer(file); PlayerInfo = Get<PlayerInfo>();
+                dataSize += FillWorkBuffer(file); Stats = Get<Stats>();
+                dataSize += FillWorkBuffer(file); Streaming = Get<Streaming>();
+                dataSize += FillWorkBuffer(file); PedTypeInfo = Get<PedTypeData>();
+
                 numOuterBlocks = NumOuterBlocks;
             }
 
             // Skip over padding
             int numPaddingBlocks = 0;
             int size = file.Length;
-            if (FileFormat.IsXbox) size -= XboxHelper.SignatureLength;
+            if (IsXbox) size -= XboxHelper.SignatureLength;
             while (file.Position < size - 4)
             {
-                dataSize += ReadBlock(file);
+                dataSize += FillWorkBuffer(file);
                 numPaddingBlocks++;
             }
 
             // Size checks
             int expectedDataSize = DataSize;
-            if (!(FileFormat.IsPS2 && FileFormat.IsJapanese)) expectedDataSize += 1;
+            if (!IsPS2Japan) expectedDataSize += 1;
             expectedDataSize = (expectedDataSize - 1) & 0x7FFFFFFC;
             int expectedFileSize = expectedDataSize + ((numOuterBlocks + numPaddingBlocks) * sizeof(int)) + sizeof(int);
-            if (FileFormat.IsXbox) expectedFileSize += XboxHelper.SignatureLength;
+            if (IsXbox) expectedFileSize += XboxHelper.SignatureLength;
             Debug.Assert(expectedDataSize == dataSize);
             Debug.Assert(expectedFileSize == file.Length);
-            Debug.WriteLine("Load successful!");
         }
 
-        protected override void SaveAllData(DataBuffer file)
+        protected override void Save(DataBuffer file)
         {
             int dataSize = 0;
             int size;
@@ -369,59 +339,63 @@ namespace GTASaveData.GTA3
             CheckSum = 0;
             SimpleVars.SizeOfGameInBytes = DataSize;
 
-            if (FileFormat.IsPS2)
+            if (IsPS2)
             {
-                if (!FileFormat.IsJapanese) SimpleVars.SizeOfGameInBytes += 1;
-                WorkBuff.Write(SimpleVars, FileFormat);
-                SaveObject(Scripts);
-                SaveObject(PlayerPeds);
-                SaveObject(Garages);
-                SaveObject(Vehicles);
-                dataSize += WriteBlock(file);
-                SaveObject(Objects);
-                SaveObject(Paths);
-                SaveObject(Cranes);
-                dataSize += WriteBlock(file);
-                SaveObject(Pickups);
-                SaveObject(PhoneInfo);
-                SaveObject(RestartPoints);
-                SaveObject(RadarBlips);
-                SaveObject(Zones);
-                SaveObject(Gangs);
-                SaveObject(CarGenerators);
-                SaveObject(ParticleObjects);
-                SaveObject(AudioScriptObjects);
-                SaveObject(PlayerInfo);
-                SaveObject(Stats);
-                SaveObject(Streaming);
-                SaveObject(PedTypeInfo);
-                dataSize += WriteBlock(file);
+                if (!IsPS2Japan) SimpleVars.SizeOfGameInBytes += 1;
+                WorkBuff.Write(SimpleVars, FileType);
+                Put(Scripts);
+                Put(PlayerPeds);
+                Put(Garages);
+                Put(Vehicles);
+                dataSize += FlushWorkBuffer(file);
+
+                Put(Objects);
+                Put(Paths);
+                Put(Cranes);
+                dataSize += FlushWorkBuffer(file);
+
+                Put(Pickups);
+                Put(PhoneInfo);
+                Put(RestartPoints);
+                Put(RadarBlips);
+                Put(Zones);
+                Put(Gangs);
+                Put(CarGenerators);
+                Put(ParticleObjects);
+                Put(AudioScriptObjects);
+                Put(PlayerInfo);
+                Put(Stats);
+                Put(Streaming);
+                Put(PedTypeInfo);
+                dataSize += FlushWorkBuffer(file);
+
                 numOuterBlocks = NumOuterBlocksPS2;
             }
             else
             {
                 SimpleVars.SizeOfGameInBytes += 1;
-                WorkBuff.Write(SimpleVars, FileFormat);
-                SaveObject(Scripts); dataSize += WriteBlock(file);
-                SaveObject(PlayerPeds); dataSize += WriteBlock(file);
-                SaveObject(Garages); dataSize += WriteBlock(file);
-                SaveObject(Vehicles); dataSize += WriteBlock(file);
-                SaveObject(Objects); dataSize += WriteBlock(file);
-                SaveObject(Paths); dataSize += WriteBlock(file);
-                SaveObject(Cranes); dataSize += WriteBlock(file);
-                SaveObject(Pickups); dataSize += WriteBlock(file);
-                SaveObject(PhoneInfo); dataSize += WriteBlock(file);
-                SaveObject(RestartPoints); dataSize += WriteBlock(file);
-                SaveObject(RadarBlips); dataSize += WriteBlock(file);
-                SaveObject(Zones); dataSize += WriteBlock(file);
-                SaveObject(Gangs); dataSize += WriteBlock(file);
-                SaveObject(CarGenerators); dataSize += WriteBlock(file);
-                SaveObject(ParticleObjects); dataSize += WriteBlock(file);
-                SaveObject(AudioScriptObjects); dataSize += WriteBlock(file);
-                SaveObject(PlayerInfo); dataSize += WriteBlock(file);
-                SaveObject(Stats); dataSize += WriteBlock(file);
-                SaveObject(Streaming); dataSize += WriteBlock(file);
-                SaveObject(PedTypeInfo); dataSize += WriteBlock(file);
+                WorkBuff.Write(SimpleVars, FileType);
+                Put(Scripts); dataSize += FlushWorkBuffer(file);
+                Put(PlayerPeds); dataSize += FlushWorkBuffer(file);
+                Put(Garages); dataSize += FlushWorkBuffer(file);
+                Put(Vehicles); dataSize += FlushWorkBuffer(file);
+                Put(Objects); dataSize += FlushWorkBuffer(file);
+                Put(Paths); dataSize += FlushWorkBuffer(file);
+                Put(Cranes); dataSize += FlushWorkBuffer(file);
+                Put(Pickups); dataSize += FlushWorkBuffer(file);
+                Put(PhoneInfo); dataSize += FlushWorkBuffer(file);
+                Put(RestartPoints); dataSize += FlushWorkBuffer(file);
+                Put(RadarBlips); dataSize += FlushWorkBuffer(file);
+                Put(Zones); dataSize += FlushWorkBuffer(file);
+                Put(Gangs); dataSize += FlushWorkBuffer(file);
+                Put(CarGenerators); dataSize += FlushWorkBuffer(file);
+                Put(ParticleObjects); dataSize += FlushWorkBuffer(file);
+                Put(AudioScriptObjects); dataSize += FlushWorkBuffer(file);
+                Put(PlayerInfo); dataSize += FlushWorkBuffer(file);
+                Put(Stats); dataSize += FlushWorkBuffer(file);
+                Put(Streaming); dataSize += FlushWorkBuffer(file);
+                Put(PedTypeInfo); dataSize += FlushWorkBuffer(file);
+
                 numOuterBlocks = NumOuterBlocks;
             }
 
@@ -429,37 +403,36 @@ namespace GTASaveData.GTA3
             for (int i = 0; i < MaxNumPaddingBlocks; i++)
             {
                 size = (SimpleVars.SizeOfGameInBytes - dataSize - 1) & 0x7FFFFFFC;
-                if (size > GetBufferSize())
+                if (size > GetWorkBufferSize())
                 {
-                    size = GetBufferSize();
+                    size = GetWorkBufferSize();
                 }
                 if (size > 4)
                 {
                     WorkBuff.Reset();
                     WorkBuff.Pad(size);
-                    dataSize += WriteBlock(file);
+                    dataSize += FlushWorkBuffer(file);
                     numPaddingBlocks++;
                 }
             }
 
             file.Write(CheckSum);
-            if (FileFormat.IsXbox)
+            if (IsXbox)
             {
                 byte[] data = file.GetBytes();
-                byte[] sig = XboxHelper.CalculateGameSaveSignature(XboxTitleKey, data, 0, data.Length - 4);
+                byte[] sig = XboxHelper.GenerateSignature(XboxTitleKey, data, 0, data.Length - 4);
                 file.Write(sig);
             }
 
             // Size checks
             int expectedDataSize = DataSize;
-            if (!(FileFormat.IsPS2 && FileFormat.IsJapanese)) expectedDataSize += 1;
+            if (!IsPS2Japan) expectedDataSize += 1;
             expectedDataSize = (expectedDataSize - 1) & 0x7FFFFFFC;
             int expectedFileSize = expectedDataSize + ((numOuterBlocks + numPaddingBlocks) * sizeof(int)) + sizeof(int);
-            if (FileFormat.IsXbox) expectedFileSize += XboxHelper.SignatureLength;
+            if (IsXbox) expectedFileSize += XboxHelper.SignatureLength;
 
             Debug.Assert(expectedDataSize == dataSize);
             Debug.Assert(expectedFileSize == file.Length);
-            Debug.WriteLine("Save successful!");
         }
 
         protected override void OnFileLoad(string path)
@@ -468,7 +441,7 @@ namespace GTASaveData.GTA3
 
             if (IsPS2)
             {
-                Name = Path.GetFileName(path);
+                Title = Path.GetFileName(path);
             }
 
             if (!IsXbox && !IsPC)
@@ -483,11 +456,11 @@ namespace GTASaveData.GTA3
 
             if (IsPS2)
             {
-                Name = Path.GetFileName(path);
+                Title = Path.GetFileName(path);
             }
         }
 
-        protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
+        protected override bool DetectFileType(byte[] data, out FileFormat fmt)
         {
             if (data.Length < 0x10000)
             {
@@ -508,14 +481,14 @@ namespace GTASaveData.GTA3
 
             if (scrOffset == 0xB0 && saveSizeOffset == 0x04)
             {
-                fmt = FileFormats.PS2_AU;
+                fmt = FileFormats.PS2AU;
                 return true;
             }
             else if (scrOffset == 0xB8)
             {
                 if (saveSizeOffsetJP == 0x04)
                 {
-                    fmt = FileFormats.PS2_JP;
+                    fmt = FileFormats.PS2JP;
                     return true;
                 }
                 else if (saveSizeOffset == 0x04)
@@ -576,9 +549,9 @@ namespace GTASaveData.GTA3
             return false;
         }
 
-        protected override int GetBufferSize()
+        protected override int GetWorkBufferSize()
         {
-            if (FileFormat.IsPS2)
+            if (IsPS2)
             {
                 return 50000;
             }
@@ -591,33 +564,33 @@ namespace GTASaveData.GTA3
             int size = 0;
 
             // data blocks
-            size += SizeOfObject(SimpleVars, fmt);
-            size += SizeOfObject(Scripts, fmt) + sizeof(int);
-            size += SizeOfObject(PlayerPeds, fmt) + sizeof(int);
-            size += SizeOfObject(Garages, fmt) + sizeof(int);
-            size += SizeOfObject(Vehicles, fmt) + sizeof(int);
-            size += SizeOfObject(Objects, fmt) + sizeof(int);
-            size += SizeOfObject(Paths, fmt) + sizeof(int);
-            size += SizeOfObject(Cranes, fmt) + sizeof(int);
-            size += SizeOfObject(Pickups, fmt) + sizeof(int);
-            size += SizeOfObject(PhoneInfo, fmt) + sizeof(int);
-            size += SizeOfObject(RestartPoints, fmt) + sizeof(int);
-            size += SizeOfObject(RadarBlips, fmt) + sizeof(int);
-            size += SizeOfObject(Zones, fmt) + sizeof(int);
-            size += SizeOfObject(Gangs, fmt) + sizeof(int);
-            size += SizeOfObject(CarGenerators, fmt) + sizeof(int);
-            size += SizeOfObject(ParticleObjects, fmt) + sizeof(int);
-            size += SizeOfObject(AudioScriptObjects, fmt) + sizeof(int);
-            size += SizeOfObject(PlayerInfo, fmt) + sizeof(int);
-            size += SizeOfObject(Stats, fmt) + sizeof(int);
-            size += SizeOfObject(Streaming, fmt) + sizeof(int);
-            size += SizeOfObject(PedTypeInfo, fmt) + sizeof(int);
+            size += SizeOf(SimpleVars, fmt);
+            size += SizeOf(Scripts, fmt) + sizeof(int);
+            size += SizeOf(PlayerPeds, fmt) + sizeof(int);
+            size += SizeOf(Garages, fmt) + sizeof(int);
+            size += SizeOf(Vehicles, fmt) + sizeof(int);
+            size += SizeOf(Objects, fmt) + sizeof(int);
+            size += SizeOf(Paths, fmt) + sizeof(int);
+            size += SizeOf(Cranes, fmt) + sizeof(int);
+            size += SizeOf(Pickups, fmt) + sizeof(int);
+            size += SizeOf(PhoneInfo, fmt) + sizeof(int);
+            size += SizeOf(RestartPoints, fmt) + sizeof(int);
+            size += SizeOf(RadarBlips, fmt) + sizeof(int);
+            size += SizeOf(Zones, fmt) + sizeof(int);
+            size += SizeOf(Gangs, fmt) + sizeof(int);
+            size += SizeOf(CarGenerators, fmt) + sizeof(int);
+            size += SizeOf(ParticleObjects, fmt) + sizeof(int);
+            size += SizeOf(AudioScriptObjects, fmt) + sizeof(int);
+            size += SizeOf(PlayerInfo, fmt) + sizeof(int);
+            size += SizeOf(Stats, fmt) + sizeof(int);
+            size += SizeOf(Streaming, fmt) + sizeof(int);
+            size += SizeOf(PedTypeInfo, fmt) + sizeof(int);
 
             // padding blocks
             int totalDataSize = DataSize;
-            if (!(fmt.IsPS2 && fmt.IsJapanese)) totalDataSize += 1;
+            if (!(fmt.IsPS2 && fmt.FlagJapan)) totalDataSize += 1;
             int numRemaining = ((totalDataSize - 1) & 0x7FFFFFFC) - size;
-            int numPadding = (numRemaining / (GetBufferSize() - sizeof(int))) + 1;
+            int numPadding = (numRemaining / (GetWorkBufferSize() - sizeof(int))) + 1;
             size += numRemaining;
 
             // "outer" block sizes
@@ -676,79 +649,73 @@ namespace GTASaveData.GTA3
         public static class FileFormats
         {
             public static readonly FileFormat Android = new FileFormat(
-                "Android", "Android", "Android OS",
-                GameConsole.Android
+                nameof(Android),
+                GameSystem.Android
             );
 
             public static readonly FileFormat iOS = new FileFormat(
-                "iOS", "iOS", "Apple iOS",
-                GameConsole.iOS
+                nameof(iOS),
+                GameSystem.iOS
             );
 
             public static readonly FileFormat PC = new FileFormat(
-                "PC", "PC", "Windows, MacOS",
-                GameConsole.Win32,
-                GameConsole.MacOS
+                nameof(PC),
+                GameSystem.Windows
             );
 
             public static readonly FileFormat PS2 = new FileFormat(
-                "PS2", "PS2", "PlayStation 2 (North America/Europe)",
-                GameConsole.PS2
+                nameof(PS2), "PS2", "PlayStation 2",
+                GameSystem.PS2
             );
 
-            public static readonly FileFormat PS2_AU = new FileFormat(
-                "PS2_AU", "PS2 (Australia)", "PlayStation 2 (Australia)",
-                FileFormatFlags.Australian,
-                GameConsole.PS2
+            public static readonly FileFormat PS2AU = new FileFormat(
+                nameof(PS2AU), "PS2 (Australia)", "PlayStation 2 (Australia Release)",
+                FileFormatFlags.Australia,
+                GameSystem.PS2
             );
 
-            public static readonly FileFormat PS2_JP = new FileFormat(
-                "PS2_JP", "PS2 (Japan)", "PlayStation 2 (Japan)",
-                FileFormatFlags.Japanese,
-                GameConsole.PS2
+            public static readonly FileFormat PS2JP = new FileFormat(
+                nameof(PS2JP), "PS2 (Japan)", "PlayStation 2 (Japan Release)",
+                FileFormatFlags.Japan,
+                GameSystem.PS2
             );
 
             public static readonly FileFormat Xbox = new FileFormat(
-                "Xbox",
-                GameConsole.Xbox
+                nameof(Xbox),
+                GameSystem.Xbox
             );
+
+            //public static readonly FileFormat DefinitiveEdition = new FileFormat(
+            //    nameof(DefinitiveEdition), "Definitive Edition", "Grand Theft Auto: The Trilogy - The Definitive Edition",
+            //    FileFormatFlags.DE,
+            //    GameSystem.PS4,
+            //    GameSystem.PS5,
+            //    GameSystem.Switch,
+            //    GameSystem.XboxOne,
+            //    GameSystem.Windows
+            //);
 
             public static FileFormat[] GetAll()
             {
-                return new FileFormat[] { Android, iOS, PC, PS2, PS2_AU, PS2_JP, Xbox };
+                return new FileFormat[] { Android, iOS, PC, PS2, PS2AU, PS2JP, Xbox };
             }
         }
 
+        [JsonIgnore] public bool IsAndroid => FileType.IsAndroid;
+        [JsonIgnore] public bool IsiOS=> FileType.IsiOS;
+        [JsonIgnore] public bool IsPC => FileType.IsPC;
+        [JsonIgnore] public bool IsPS2 => FileType.IsPS2;
+        [JsonIgnore] public bool IsPS2Japan => FileType.IsPS2 && FileType.FlagJapan;
+        [JsonIgnore] public bool IsPS2Australia => FileType.IsPS2 && FileType.FlagAustralia;
+        [JsonIgnore] public bool IsXbox => FileType.IsXbox;
+        [JsonIgnore] public bool IsDefinitiveEdition => FileType.FlagDE;
+
+
         private static readonly byte[] XboxTitleKey =
-{
+        {
             0xFF, 0x3B, 0x8F, 0x5C, 0xDE, 0x53, 0xF3, 0x25,
             0x9E, 0x70, 0x09, 0x54, 0xEF, 0xDC, 0xA8, 0xDC
         };
 
-    }
-
-    public enum DataBlock
-    {
-        SimpleVars,
-        Scripts,
-        PedPool,
-        Garages,
-        Vehicles,
-        Objects,
-        PathFind,
-        Cranes,
-        Pickups,
-        PhoneInfo,
-        RestartPoints,
-        RadarBlips,
-        Zones,
-        Gangs,
-        CarGenerators,
-        ParticleObjects,
-        AudioScriptObjects,
-        PlayerInfo,
-        Stats,
-        Streaming,
-        PedTypeInfo
     }
 }

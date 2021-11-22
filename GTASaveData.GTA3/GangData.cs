@@ -45,20 +45,21 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "GNG");
+            int size = SaveFileGTA3VC.ReadBlockHeader(buf, out string tag);
+            Debug.Assert(tag == "GNG");
 
             Gangs = buf.ReadArray<Gang>(MaxNumGangs);
 
-            Debug.Assert(buf.Offset == SizeOfType<GangData>());
-            Debug.Assert(size == SizeOfType<GangData>() - SaveFileGTA3VC.BlockHeaderSize);
+            Debug.Assert(buf.Offset == SizeOf<GangData>());
+            Debug.Assert(size == SizeOf<GangData>() - SaveFileGTA3VC.BlockHeaderSize);
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            SaveFileGTA3VC.WriteBlockHeader(buf, "GNG", SizeOfType<GangData>() - SaveFileGTA3VC.BlockHeaderSize);
+            SaveFileGTA3VC.WriteBlockHeader(buf, "GNG", SizeOf<GangData>() - SaveFileGTA3VC.BlockHeaderSize);
             buf.Write(Gangs, MaxNumGangs);
 
-            Debug.Assert(buf.Offset == SizeOfType<GangData>());
+            Debug.Assert(buf.Offset == SizeOf<GangData>());
         }
 
         protected override int GetSize(FileFormat fmt)

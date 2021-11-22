@@ -80,7 +80,7 @@ namespace GTASaveData.GTA3
             VisibleToCam = buf.ReadBool();
             buf.Align4();
 
-            Debug.Assert(buf.Offset == SizeOfType<Phone>());
+            Debug.Assert(buf.Offset == SizeOf<Phone>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -93,7 +93,7 @@ namespace GTASaveData.GTA3
             buf.Write(VisibleToCam);
             buf.Align4();
 
-            Debug.Assert(buf.Offset == SizeOfType<Phone>());
+            Debug.Assert(buf.Offset == SizeOf<Phone>());
         }
 
         protected override int GetSize(FileFormat fmt)

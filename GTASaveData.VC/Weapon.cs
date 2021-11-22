@@ -77,7 +77,7 @@ namespace GTASaveData.VC
                 buf.ReadBytes(3);
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<Weapon>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Weapon>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -93,7 +93,7 @@ namespace GTASaveData.VC
                 buf.Write(new byte[3]);
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<Weapon>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Weapon>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

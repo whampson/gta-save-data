@@ -279,7 +279,7 @@ namespace GTASaveData.IV
             set { m_gfwlData = value; OnPropertyChanged(); }
         }
 
-        public override string Name
+        public override string Title
         {
             get { return m_lastMissionPassedName; }
             set { m_lastMissionPassedName = value; OnPropertyChanged(); }
@@ -355,7 +355,7 @@ namespace GTASaveData.IV
 
         public SaveFileIV()
         {
-            Name = "";
+            Title = "";
             SimpleVars = new SimpleVariables();
             PlayerInfo = new Dummy();
             ExtraContent = new Dummy();
@@ -394,7 +394,7 @@ namespace GTASaveData.IV
 
         public SaveFileIV(SaveFileIV other)
         {
-            Name = other.Name;
+            Title = other.Title;
             TimeStamp = other.TimeStamp;
             SaveVersion = other.SaveVersion;
             SaveSizeInBytes = other.SaveSizeInBytes;
@@ -442,9 +442,9 @@ namespace GTASaveData.IV
             ScriptSpaceSize = file.ReadInt32();
 
             string sig = file.ReadString(4);
-            if (FileFormat.IsWin32)
+            if (FileType.IsWin32)
             {
-                Name = file.ReadString(MaxNameLength, unicode: true);
+                Title = file.ReadString(MaxNameLength, unicode: true);
             }
 
             Debug.Assert(sig == "SAVE", "Invalid 'SAVE' signature!");
@@ -456,7 +456,7 @@ namespace GTASaveData.IV
             string sig = file.ReadString(4);
             Debug.Assert(sig == "END", "Invalid 'END' signature!");
 
-            if (FileFormat.IsWin32)
+            if (FileType.IsWin32)
             {
                 int size = file.Length - file.Position;
                 GfwlData = LoadDummy(file, size);
@@ -493,17 +493,17 @@ namespace GTASaveData.IV
         private Dummy LoadDummy(DataBuffer buf, int size)
         {
             Dummy obj = new Dummy(size);
-            Serializer.Read(obj, buf, FileFormat);
+            Serializer.Read(obj, buf, FileType);
 
             return obj;
         }
 
-        protected override void LoadAllData(DataBuffer file)
+        protected override void Load(DataBuffer file)
         {
-            file.BigEndian = (FileFormat.IsXbox360 || FileFormat.IsPS3);
+            file.BigEndian = (FileType.IsXbox360 || FileType.IsPS3);
             LoadFileHeader(file);
 
-            int blockCount = (FileFormat.IsPS3) ? 33 : 32;
+            int blockCount = (FileType.IsPS3) ? 33 : 32;
             int index = 0;
 
             while (index < blockCount)
@@ -552,12 +552,12 @@ namespace GTASaveData.IV
             // TODO: size check
         }
 
-        protected override void SaveAllData(DataBuffer file)
+        protected override void Save(DataBuffer file)
         {
             throw new NotImplementedException();        // TODO
         }
 
-        protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
+        protected override bool DetectFileType(byte[] data, out FileFormat fmt)
         {
             using (DataBuffer b = new DataBuffer(data))
             {
@@ -610,7 +610,7 @@ namespace GTASaveData.IV
                 return false;
             }
 
-            return Name.Equals(other.Name)
+            return Title.Equals(other.Title)
                 && TimeStamp.Equals(other.TimeStamp)
                 && SaveVersion.Equals(other.SaveVersion)
                 && SaveSizeInBytes.Equals(other.SaveSizeInBytes)
@@ -660,17 +660,17 @@ namespace GTASaveData.IV
         {
             public static readonly FileFormat PC = new FileFormat(
                 "PC", "PC", "Windows",
-                GameConsole.Win32
+                GameSystem.Windows
             );
 
             public static readonly FileFormat PS3 = new FileFormat(
                 "PS3", "PS3", "PlayStation 3",
-                GameConsole.PS3
+                GameSystem.PS3
             );
 
             public static readonly FileFormat Xbox360 = new FileFormat(
                 "Xbox360", "Xbox 360", "Xbox 360",
-                GameConsole.Xbox360
+                GameSystem.Xbox360
             );
 
             public static FileFormat[] GetAll()

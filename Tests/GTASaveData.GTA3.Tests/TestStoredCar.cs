@@ -11,7 +11,7 @@ namespace GTASaveData.GTA3.Tests
             Faker<StoredCar> model = new Faker<StoredCar>()
                 .RuleFor(x => x.Model, f => f.Random.Int())
                 .RuleFor(x => x.Position, f => Generator.Vector3(f))
-                .RuleFor(x => x.Angle, f => Generator.Vector3(f))
+                .RuleFor(x => x.Heading, f => f.Random.Float())
                 .RuleFor(x => x.Flags, f => f.PickRandom<StoredCarFlags>())
                 .RuleFor(x => x.Color1, f => f.Random.Byte())
                 .RuleFor(x => x.Color2, f => f.Random.Byte())
@@ -32,7 +32,7 @@ namespace GTASaveData.GTA3.Tests
 
             Assert.Equal(x0.Model, x1.Model);
             Assert.Equal(x0.Position, x1.Position);
-            Assert.Equal(x0.Angle, x1.Angle);
+            Assert.Equal(x0.Heading, x1.Heading);
             Assert.Equal(x0.Flags, x1.Flags);
             Assert.Equal(x0.Color1, x1.Color1);
             Assert.Equal(x0.Color2, x1.Color2);

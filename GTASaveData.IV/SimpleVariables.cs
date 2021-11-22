@@ -425,7 +425,7 @@ namespace GTASaveData.IV
             UnknownA8h = buf.ReadInt32();
             UnknownACh = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOfType<SimpleVariables>());
+            Debug.Assert(buf.Offset == SizeOf<SimpleVariables>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -475,7 +475,7 @@ namespace GTASaveData.IV
             buf.Write(UnknownA8h);
             buf.Write(UnknownACh);
 
-            Debug.Assert(buf.Offset == SizeOfType<SimpleVariables>());
+            Debug.Assert(buf.Offset == SizeOf<SimpleVariables>());
         }
 
         protected override int GetSize(FileFormat fmt)

@@ -29,22 +29,22 @@ namespace GTASaveData.GTA3
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             base.ReadData(buf, fmt);
-            buf.Skip(SizeOfType<Boat>(fmt) - buf.Offset);
+            buf.Skip(SizeOf<Boat>(fmt) - buf.Offset);
 
-            Debug.Assert(buf.Offset == SizeOfType<Boat>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             base.WriteData(buf, fmt);
-            buf.Skip(SizeOfType<Boat>(fmt) - buf.Offset);
+            buf.Skip(SizeOf<Boat>(fmt) - buf.Offset);
 
-            Debug.Assert(buf.Offset == SizeOfType<Boat>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPS2 && fmt.IsJapanese) return 0x50C;
+            if (fmt.IsPS2 && fmt.FlagJapan) return 0x50C;
             if (fmt.IsPC || fmt.IsXbox) return 0x484;
             if (fmt.IsMobile) return 0x488;
             if (fmt.IsPS2) return 0x52C;

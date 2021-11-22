@@ -15,7 +15,7 @@ namespace GTASaveData.VC.Tests
                 .RuleFor(x => x.TimeStamp, f => (format.IsPC) ? new SystemTime(Generator.Date(f)) : SystemTime.MinValue)
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3(f))
-                .RuleFor(x => x.SteamMagicNumber, (format.IsPC && format.IsSteam) ? SimpleVariables.SteamMagic : 0)
+                .RuleFor(x => x.SteamMagicNumber, (format.IsPC && format.FlagSteam) ? SimpleVariables.SteamMagic : 0)
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
                 .RuleFor(x => x.GameClockHours, f => f.Random.Byte())

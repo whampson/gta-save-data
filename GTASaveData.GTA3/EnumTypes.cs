@@ -71,7 +71,7 @@ namespace GTASaveData.GTA3
         Japanese,
     }
 
-    public enum LevelName
+    public enum Level
     {
         [Description("(none)")]
         None,

@@ -189,7 +189,7 @@ namespace GTASaveData.VC
             EndOfLifeTime = buf.ReadUInt32();
             LoadEntityFlags(buf, fmt);
 
-            Debug.Assert(buf.Offset == SizeOfType<PhysicalObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -218,7 +218,7 @@ namespace GTASaveData.VC
             buf.Write(EndOfLifeTime);
             SaveEntityFlags(buf, fmt);
 
-            Debug.Assert(buf.Offset == SizeOfType<PhysicalObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

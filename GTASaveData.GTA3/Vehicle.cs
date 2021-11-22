@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Types;
+using System;
 
 namespace GTASaveData.GTA3
 {
@@ -274,7 +275,7 @@ namespace GTASaveData.GTA3
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(12);
             if (fmt.IsiOS) buf.Skip(15);
             if (fmt.IsAndroid) buf.Skip(16);
-            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(32);
+            if (fmt.IsPS2 && !fmt.FlagJapan) buf.Skip(32);
             LoadEntityFlags(buf, fmt);
             if (fmt.IsiOS) buf.Skip(1);
             if (fmt.IsPS2) buf.Skip(236);
@@ -325,7 +326,7 @@ namespace GTASaveData.GTA3
             if (fmt.IsPC || fmt.IsXbox) buf.Skip(12);
             if (fmt.IsiOS) buf.Skip(15);
             if (fmt.IsAndroid) buf.Skip(16);
-            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(32);
+            if (fmt.IsPS2 && !fmt.FlagJapan) buf.Skip(32);
             SaveEntityFlags(buf, fmt);
             if (fmt.IsiOS) buf.Skip(1);
             if (fmt.IsPS2) buf.Skip(236);

@@ -24,7 +24,7 @@ namespace GTASaveData.SA
         private const string BlockTagName = "BLOCK";
 
         private readonly DataBuffer m_workBuffer;
-        private int m_bufferSize => (FileFormat.IsMobile) ? 65000 : 51200;
+        private int m_bufferSize => (FileType.IsMobile) ? 65000 : 51200;
         private int m_checkSum;
         private bool m_disposed;
 
@@ -233,7 +233,7 @@ namespace GTASaveData.SA
             set { m_postEffects = value; }
         }
 
-        public override string Name
+        public override string Title
         {
             get { return SimpleVars.LastMissionPassedName; }
             set { SimpleVars.LastMissionPassedName = value; OnPropertyChanged(); }
@@ -389,7 +389,7 @@ namespace GTASaveData.SA
         {
             LoadDataFromWorkBuffer(size, out byte[] data);
             Dummy obj = new Dummy(size);
-            int count = Serializer.Read(obj, data, FileFormat);
+            int count = Serializer.Read(obj, data, FileType);
 
             Debug.Assert(count == size);
             return obj;
@@ -398,7 +398,7 @@ namespace GTASaveData.SA
         private T LoadObject<T>(int size) where T : SaveDataObject, new()
         {
             LoadDataFromWorkBuffer(size, out byte[] data);
-            int count = Serializer.Read(data, FileFormat, out T obj);
+            int count = Serializer.Read(data, FileType, out T obj);
 
             Debug.Assert(size == count);
             return obj;
@@ -407,7 +407,7 @@ namespace GTASaveData.SA
         private int SaveObject(SaveDataObject o)
         {
             // TODO: padding not applied
-            int count = Serializer.Write(o, FileFormat, out byte[] data);
+            int count = Serializer.Write(o, FileType, out byte[] data);
             int written = SaveDataToWorkBuffer(data, count);
 
             Debug.Assert(written == count);
@@ -498,7 +498,7 @@ namespace GTASaveData.SA
             m_workBuffer.Reset();
         }
 
-        protected override void LoadAllData(DataBuffer file)
+        protected override void Load(DataBuffer file)
         {
             List<int> blockSizes;
             byte[] fileData;
@@ -522,11 +522,11 @@ namespace GTASaveData.SA
 
                 // Padding after final block has no clear beginning marker,
                 // need to know exact size of last block
-                if (numCounted == 27 && !FileFormat.IsMobile)
+                if (numCounted == 27 && !FileType.IsMobile)
                 {
                     size = 0x8C;    // TODO: use SizeOf<C3dMarkers>()
                 }
-                else if (numCounted == 28 && FileFormat.IsMobile)
+                else if (numCounted == 28 && FileType.IsMobile)
                 {
                     size = 0x160;   // TODO: use SizeOf<PostEffects>();
                 }
@@ -539,7 +539,7 @@ namespace GTASaveData.SA
                 numCounted++;
             }
 
-            numBlocks = (FileFormat.IsMobile) ? BlockCountMobile : BlockCount;
+            numBlocks = (FileType.IsMobile) ? BlockCountMobile : BlockCount;
             Debug.Assert(numCounted >= numBlocks);
 
             // Init pointer at end so loader thinks buffer is full and refills it
@@ -588,7 +588,7 @@ namespace GTASaveData.SA
             // (mobile) TODO: briefs??
         }
 
-        protected override void SaveAllData(DataBuffer file)
+        protected override void Save(DataBuffer file)
         {
             int index;
             int size;
@@ -598,7 +598,7 @@ namespace GTASaveData.SA
             m_checkSum = 0;
             m_workBuffer.Seek(0);
 
-            count = (FileFormat.IsMobile) ? BlockCountMobile : BlockCount;
+            count = (FileType.IsMobile) ? BlockCountMobile : BlockCount;
             for (index = 0; index < count; index++)
             {
                 size = 0;
@@ -677,7 +677,7 @@ namespace GTASaveData.SA
             Debug.Assert(m_file.Position == SizeOfOneGameInBytes);
         }
 
-        protected override bool DetectFileFormat(byte[] data, out FileFormat fmt)
+        protected override bool DetectFileType(byte[] data, out FileFormat fmt)
         {
             // TODO
             fmt = FileFormats.PC;
@@ -784,26 +784,26 @@ namespace GTASaveData.SA
             // TODO: 1.05 and 1.06 different?
             public static readonly FileFormat Mobile = new FileFormat(
                 "Mobile", "Mobile", "Android, iOS",
-                GameConsole.Android,
-                GameConsole.iOS
+                GameSystem.Android,
+                GameSystem.iOS
             );
 
             public static readonly FileFormat PC = new FileFormat(
                 "PC", "PC", "Windows, macOS",
-                GameConsole.Win32,
-                GameConsole.MacOS,
-                GameConsole.Win32,
-                GameConsole.MacOS
+                GameSystem.Windows,
+                GameSystem.macOS,
+                GameSystem.Windows,
+                GameSystem.macOS
             );
 
             public static readonly FileFormat PS2 = new FileFormat(
                 "PS2", "PS2", "PlayStation 2",
-                GameConsole.PS2
+                GameSystem.PS2
             );
 
             public static readonly FileFormat Xbox = new FileFormat(
                 "Xbox", "Xbox", "Xbox",
-                GameConsole.Xbox
+                GameSystem.Xbox
             );
 
             public static FileFormat[] GetAll()

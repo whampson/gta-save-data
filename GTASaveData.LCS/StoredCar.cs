@@ -162,7 +162,7 @@ namespace GTASaveData.LCS
             Extra2 = buf.ReadSByte();
             buf.Skip(3);
 
-            Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -181,7 +181,7 @@ namespace GTASaveData.LCS
             buf.Write(Extra2);
             buf.Skip(3);
 
-            Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
         protected override int GetSize(FileFormat fmt)

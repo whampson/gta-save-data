@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Numerics;
+using GTASaveData.Types;
 using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
@@ -153,10 +153,10 @@ namespace GTASaveData.GTA3
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
             Matrix = buf.ReadStruct<CompressedMatrix>().Decompress();
-            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
+            if ((fmt.IsPS2 && fmt.FlagJapan) || !fmt.IsPS2) buf.Skip(4);
             UprootLimit = buf.ReadFloat();
             ObjectMatrix = buf.ReadStruct<CompressedMatrix>().Decompress();
-            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
+            if ((fmt.IsPS2 && fmt.FlagJapan) || !fmt.IsPS2) buf.Skip(4);
             CreatedBy = (ObjectCreatedBy) buf.ReadByte();
             IsPickup = buf.ReadBool();
             IsPickupInShop = buf.ReadBool();
@@ -171,7 +171,7 @@ namespace GTASaveData.GTA3
             EndOfLifeTime = buf.ReadUInt32();
             LoadEntityFlags(buf, fmt);
 
-            Debug.Assert(buf.Offset == SizeOfType<PhysicalObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -179,10 +179,10 @@ namespace GTASaveData.GTA3
             buf.Write(ModelIndex);
             buf.Write(Handle);
             buf.Write(Matrix.Compress());
-            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
+            if ((fmt.IsPS2 && fmt.FlagJapan) || !fmt.IsPS2) buf.Skip(4);
             buf.Write(UprootLimit);
             buf.Write(ObjectMatrix.Compress());
-            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
+            if ((fmt.IsPS2 && fmt.FlagJapan) || !fmt.IsPS2) buf.Skip(4);
             buf.Write((byte) CreatedBy);
             buf.Write(IsPickup);
             buf.Write(IsPickupInShop);
@@ -197,12 +197,12 @@ namespace GTASaveData.GTA3
             buf.Write(EndOfLifeTime);
             SaveEntityFlags(buf, fmt);
 
-            Debug.Assert(buf.Offset == SizeOfType<PhysicalObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPS2 && !fmt.IsJapanese) return 0x4C;
+            if (fmt.IsPS2 && !fmt.FlagJapan) return 0x4C;
             if (fmt.IsiOS) return 0x52;
             return 0x54;
         }

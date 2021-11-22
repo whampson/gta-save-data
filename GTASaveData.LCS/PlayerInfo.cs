@@ -145,7 +145,7 @@ namespace GTASaveData.LCS
                 buf.Skip(87 * sizeof(int));
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -197,7 +197,7 @@ namespace GTASaveData.LCS
                 buf.Write(new byte[87 * sizeof(int)]);
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

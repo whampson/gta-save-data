@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class PlayerInfo : SaveDataObject, IPlayerInfo,
+    public class PlayerInfo : SaveDataObject,
         IEquatable<PlayerInfo>, IDeepClonable<PlayerInfo>
     {
         public const int MaxPlayerNameLength = 70;
@@ -142,7 +142,7 @@ namespace GTASaveData.GTA3
             if (fmt.IsPS2) buf.Skip(175);
             else buf.Skip(215);
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -165,7 +165,7 @@ namespace GTASaveData.GTA3
             if (fmt.IsPS2) buf.Skip(175);
             else buf.Skip(215);
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)

@@ -94,7 +94,7 @@ namespace GTASaveData.GTA3
             PoolIndex = buf.ReadInt16();
             Position = buf.ReadStruct<Vector3>();
 
-            Debug.Assert(buf.Offset == SizeOfType<Pickup>());
+            Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -108,7 +108,7 @@ namespace GTASaveData.GTA3
             buf.Write(PoolIndex);
             buf.Write(Position);
 
-            Debug.Assert(buf.Offset == SizeOfType<Pickup>());
+            Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
         protected override int GetSize(FileFormat fmt)

@@ -40,9 +40,9 @@ namespace GTASaveData.GTA3
             base.ReadData(buf, fmt);
 
             Damage = buf.ReadObject<DamageManager>();
-            buf.Skip(SizeOfType<Automobile>(fmt) - buf.Offset);    // The rest is useless
+            buf.Skip(SizeOf<Automobile>(fmt) - buf.Offset);    // The rest is useless
 
-            Debug.Assert(buf.Offset == SizeOfType<Automobile>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Automobile>(fmt));
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
@@ -50,14 +50,14 @@ namespace GTASaveData.GTA3
             base.WriteData(buf, fmt);
 
             buf.Write(Damage);
-            buf.Skip(SizeOfType<Automobile>(fmt) - buf.Offset);
+            buf.Skip(SizeOf<Automobile>(fmt) - buf.Offset);
 
-            Debug.Assert(buf.Offset == SizeOfType<Automobile>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Automobile>(fmt));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            if (fmt.IsPS2 && fmt.IsJapanese) return 0x630;
+            if (fmt.IsPS2 && fmt.FlagJapan) return 0x630;
             if (fmt.IsPC || fmt.IsXbox) return 0x5A8;
             if (fmt.IsMobile) return 0x5AC;
             if (fmt.IsPS2) return 0x650;

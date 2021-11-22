@@ -37,28 +37,29 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "AUD");
+            int size = SaveFileGTA3VC.ReadBlockHeader(buf, out string tag);
+            Debug.Assert(tag == "AUD");
 
             int count = buf.ReadInt32();
             AudioScriptObjects = buf.ReadArray<AudioScriptObject>(count);
 
             Debug.Assert(buf.Offset == size + SaveFileGTA3VC.BlockHeaderSize);
-            Debug.Assert(size == SizeOfObject(this) - SaveFileGTA3VC.BlockHeaderSize);
+            Debug.Assert(size == SizeOf(this) - SaveFileGTA3VC.BlockHeaderSize);
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            SaveFileGTA3VC.WriteBlockHeader(buf, "AUD", SizeOfObject(this) - SaveFileGTA3VC.BlockHeaderSize);
+            SaveFileGTA3VC.WriteBlockHeader(buf, "AUD", SizeOf(this) - SaveFileGTA3VC.BlockHeaderSize);
 
             buf.Write(AudioScriptObjects.Count);
             buf.Write(AudioScriptObjects);
 
-            Debug.Assert(buf.Offset == SizeOfObject(this));
+            Debug.Assert(buf.Offset == SizeOf(this));
         }
 
         protected override int GetSize(FileFormat fmt)
         {
-            return SizeOfType<AudioScriptObject>() * AudioScriptObjects.Count
+            return SizeOf<AudioScriptObject>() * AudioScriptObjects.Count
                 + SaveFileGTA3VC.BlockHeaderSize
                 + sizeof(int);
         }

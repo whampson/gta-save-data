@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -12,7 +13,7 @@ namespace GTASaveData.GTA3.Tests
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
                 .RuleFor(x => x.LastMissionPassedName, f => (!format.IsPS2) ? Generator.Words(f, SimpleVariables.MaxMissionPassedNameLength - 1) : "")
                 .RuleFor(x => x.TimeStamp, f => (format.IsPC || format.IsXbox) ? new SystemTime(Generator.Date(f)) : SystemTime.MinValue)
-                .RuleFor(x => x.SizeOfGameInBytes, f => (format.IsPS2 && format.IsJapanese) ? 0x31400 : 0x31401)
+                .RuleFor(x => x.SizeOfGameInBytes, f => (format.IsPS2 && format.FlagJapan) ? 0x31400 : 0x31401)
                 .RuleFor(x => x.CurrentLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3(f))
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
@@ -35,7 +36,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.MusicVolume, f => (format.IsPS2) ? f.Random.Int() : default)
                 .RuleFor(x => x.SfxVolume, f => (format.IsPS2) ? f.Random.Int() : default)
                 .RuleFor(x => x.UseVibration, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.StereoOutput, f => (format.IsPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.StereoMono, f => (format.IsPS2) ? f.Random.Bool() : default)
                 .RuleFor(x => x.RadioStation, f => (format.IsPS2) ? f.PickRandom<RadioStation>() : default)
                 .RuleFor(x => x.Brightness, f => (format.IsPS2) ? f.Random.Int() : default)
                 .RuleFor(x => x.ShowSubtitles, f => (format.IsPS2) ? f.Random.Bool() : default)
@@ -83,7 +84,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.MusicVolume, x1.MusicVolume);
             Assert.Equal(x0.SfxVolume, x1.SfxVolume);
             Assert.Equal(x0.UseVibration, x1.UseVibration);
-            Assert.Equal(x0.StereoOutput, x1.StereoOutput);
+            Assert.Equal(x0.StereoMono, x1.StereoMono);
             Assert.Equal(x0.RadioStation, x1.RadioStation);
             Assert.Equal(x0.Brightness, x1.Brightness);
             Assert.Equal(x0.ShowSubtitles, x1.ShowSubtitles);

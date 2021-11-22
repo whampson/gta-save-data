@@ -11,7 +11,7 @@ namespace GTASaveData.SA.Tests
         public override SaveFileSA GenerateTestObject(FileFormat format)
         {
             Faker<SaveFileSA> model = new Faker<SaveFileSA>()
-                .RuleFor(x => x.FileFormat, format)
+                .RuleFor(x => x.FileType, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format));
             // TODO: the rest of the blocks
 
@@ -22,8 +22,8 @@ namespace GTASaveData.SA.Tests
         [MemberData(nameof(TestFiles))]
         public void FileFormatDetection(FileFormat expectedFormat, string filename)
         {
-            string path = TestData.GetTestDataPath(Game.SA, expectedFormat, filename);
-            SaveFile.GetFileFormat<SaveFileSA>(path, out FileFormat detectedFormat);
+            string path = TestData.GetTestDataPath(TestFramework.Game.SA, expectedFormat, filename);
+            SaveFile.TryGetFileType<SaveFileSA>(path, out FileFormat detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -46,7 +46,7 @@ namespace GTASaveData.SA.Tests
         [MemberData(nameof(TestFiles))]
         public void RealDataSerialization(FileFormat format, string filename)
         {
-            string path = TestData.GetTestDataPath(Game.SA, format, filename);
+            string path = TestData.GetTestDataPath(TestFramework.Game.SA, format, filename);
 
             using SaveFileSA x0 = SaveFile.Load<SaveFileSA>(path, format);
             using SaveFileSA x1 = CreateSerializedCopy(x0, format, out byte[] data);

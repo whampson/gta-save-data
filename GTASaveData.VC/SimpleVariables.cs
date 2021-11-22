@@ -343,7 +343,7 @@ namespace GTASaveData.VC
             SizeOfGameInBytes = buf.ReadInt32();
             CurrLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.ReadStruct<Vector3>();
-            if (fmt.IsPC && fmt.IsSteam) SteamMagicNumber = buf.ReadInt32();
+            if (fmt.IsPC && fmt.FlagSteam) SteamMagicNumber = buf.ReadInt32();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockHours = (byte) buf.ReadInt32();
@@ -398,7 +398,7 @@ namespace GTASaveData.VC
             buf.Write(SizeOfGameInBytes);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
-            if (fmt.IsPC && fmt.IsSteam) buf.Write(SteamMagicNumber);
+            if (fmt.IsPC && fmt.FlagSteam) buf.Write(SteamMagicNumber);
             buf.Write(MillisecondsPerGameMinute);
             buf.Write(LastClockTick);
             buf.Write(GameClockHours);
@@ -446,7 +446,7 @@ namespace GTASaveData.VC
             }
             else if (fmt.IsPC)
             {
-                if (fmt.IsSteam)
+                if (fmt.FlagSteam)
                 {
                     return 0xE8;
                 }
