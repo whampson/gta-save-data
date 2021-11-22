@@ -22,5 +22,10 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0), data.Length);
         }
+
+        public override int GetSizeOfTestObject(Quaternion obj)
+        {
+            return 16;
+        }
     }
 }

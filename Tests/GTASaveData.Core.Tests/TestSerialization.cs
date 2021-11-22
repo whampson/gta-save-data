@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData.Types;
 using System;
 using System.Linq;
 using TestFramework;
@@ -9,7 +10,17 @@ namespace GTASaveData.Core.Tests
     public class TestSerialization : TestBase
     {
         [Fact]
-        public void Alignment()
+        public void AlignedAddress()
+        {
+            Assert.Equal(0, DataBuffer.Align4(0));
+            Assert.Equal(4, DataBuffer.Align4(4));
+            Assert.Equal(8, DataBuffer.Align4(5));
+            Assert.Equal(8, DataBuffer.Align4(6));
+            Assert.Equal(8, DataBuffer.Align4(7));
+        }
+
+        [Fact]
+        public void AlignedData()
         {
             Faker f = new Faker();
 
@@ -45,11 +56,11 @@ namespace GTASaveData.Core.Tests
         }
 
         [Theory]
-        [InlineData(PaddingType.Zero, null)]
-        [InlineData(PaddingType.Random, null)]
-        [InlineData(PaddingType.Pattern, new byte[] { 0 })]
-        [InlineData(PaddingType.Pattern, new byte[] { 0xCA, 0xFE, 0xBA, 0xBE })]
-        public void Padding(PaddingType mode, byte[] seq)
+        [InlineData(PaddingScheme.Zero, null)]
+        [InlineData(PaddingScheme.Random, null)]
+        [InlineData(PaddingScheme.Pattern, new byte[] { 0 })]
+        [InlineData(PaddingScheme.Pattern, new byte[] { 0xCA, 0xFE, 0xBA, 0xBE })]
+        public void Padding(PaddingScheme mode, byte[] seq)
         {
             byte[] data;
             using (DataBuffer wb = new DataBuffer() { PaddingType = mode, PaddingBytes = seq })
@@ -61,17 +72,17 @@ namespace GTASaveData.Core.Tests
 
             switch (mode)
             {
-                case PaddingType.Zero:
+                case PaddingScheme.Zero:
                 {
                     Assert.Equal(0, data.Sum(x => x));
                     break;
                 }
-                case PaddingType.Random:
+                case PaddingScheme.Random:
                 {
                     Assert.NotEqual(0, data.Sum(x => x));
                     break;
                 }
-                case PaddingType.Pattern:
+                case PaddingScheme.Pattern:
                 {
                     for (int i = 0; i < data.Length; i++)
                     {
@@ -481,7 +492,7 @@ namespace GTASaveData.Core.Tests
             SystemTime x1 = Serializer.Read<SystemTime>(data);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(Serializer.SizeOfType<SystemTime>(), data.Length);
+            Assert.Equal(Serializer.SizeOf<SystemTime>(), data.Length);
         }
 
         [Fact]
@@ -496,7 +507,7 @@ namespace GTASaveData.Core.Tests
 
             Assert.Equal(count, x1.Length);
             Assert.Equal(x0, x1);
-            Assert.Equal(Serializer.SizeOfType<SystemTime>() * count, data.Length);
+            Assert.Equal(Serializer.SizeOf<SystemTime>() * count, data.Length);
         }
 
         [Theory]
@@ -514,7 +525,7 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(initialCount, x0.Length);
             Assert.Equal(expectedCount, x1.Length);
             Assert.Equal(x0.Take(Math.Min(bufferCount, initialCount)), x1.Take(Math.Min(bufferCount, initialCount)));
-            Assert.Equal(Serializer.SizeOfType<SystemTime>() * bufferCount, data.Length);
+            Assert.Equal(Serializer.SizeOf<SystemTime>() * bufferCount, data.Length);
         }
 
         [Theory]
@@ -527,7 +538,7 @@ namespace GTASaveData.Core.Tests
             TestObject x1 = Serializer.Read<TestObject>(data, bigEndian);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(Serializer.SizeOfType<TestObject>(), data.Length);
+            Assert.Equal(Serializer.SizeOf<TestObject>(), data.Length);
         }
 
         [Theory]
@@ -544,7 +555,7 @@ namespace GTASaveData.Core.Tests
 
             Assert.Equal(count, x1.Length);
             Assert.Equal(x0, x1);
-            Assert.Equal(Serializer.SizeOfType<TestObject>() * count, data.Length);
+            Assert.Equal(Serializer.SizeOf<TestObject>() * count, data.Length);
         }
 
         [Theory]
@@ -565,7 +576,7 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(initialCount, x0.Length);
             Assert.Equal(expectedCount, x1.Length);
             Assert.Equal(x0.Take(Math.Min(bufferCount, initialCount)), x1.Take(Math.Min(bufferCount, initialCount)));
-            Assert.Equal(Serializer.SizeOfType<TestObject>() * bufferCount, data.Length);
+            Assert.Equal(Serializer.SizeOf<TestObject>() * bufferCount, data.Length);
         }
 
         [Theory]

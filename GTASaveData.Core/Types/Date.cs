@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
     /// <summary>
     /// Date structure used by the GTA games.

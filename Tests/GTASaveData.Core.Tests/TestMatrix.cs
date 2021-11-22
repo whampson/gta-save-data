@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -20,6 +21,11 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+        }
+
+        public override int GetSizeOfTestObject(Matrix obj)
+        {
+            return 64;
         }
     }
 }

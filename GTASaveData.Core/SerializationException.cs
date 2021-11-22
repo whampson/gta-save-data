@@ -3,8 +3,7 @@
 namespace GTASaveData
 {
     /// <summary>
-    /// Represents an errors that occur during the
-    /// serialization and deserialization of savedata.
+    /// Represents an error that can occur during the serialization of save data.
     /// </summary>
     public class SerializationException : Exception
     {

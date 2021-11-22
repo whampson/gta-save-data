@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
     /// <summary>
     /// A .NET implementation of the Win32 <c>SYSTEMTIME</c> structure.
+    /// Used in some GTA saves.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 2, Size = 16)]
     public struct SystemTime : IEquatable<SystemTime>

@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -10,7 +11,7 @@ namespace GTASaveData.Core.Tests
         {
             Faker<Collective> model = new Faker<Collective>()
                 .RuleFor(x => x.Index, f => f.Random.Int())
-                .RuleFor(x => x.Field04h, f => f.Random.Int());
+                .RuleFor(x => x.PedIndex, f => f.Random.Int());
 
             return model.Generate();
         }
@@ -22,7 +23,7 @@ namespace GTASaveData.Core.Tests
             Collective x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Index, x1.Index);
-            Assert.Equal(x0.Field04h, x1.Field04h);
+            Assert.Equal(x0.PedIndex, x1.PedIndex);
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0), data.Length);
@@ -36,6 +37,11 @@ namespace GTASaveData.Core.Tests
             Collective x1 = new Collective(x0);
 
             Assert.Equal(x0, x1);
+        }
+
+        public override int GetSizeOfTestObject(Collective obj)
+        {
+            return 8;
         }
     }
 }

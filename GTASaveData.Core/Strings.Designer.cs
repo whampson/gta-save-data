@@ -88,6 +88,24 @@ namespace GTASaveData {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file is too large to be a valid Grand Theft Auto save file..
+        /// </summary>
+        internal static string Error_InvalidData_FileTooLarge {
+            get {
+                return ResourceManager.GetString("Error_InvalidData_FileTooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You weren&apos;t supposed to be able to get here, you know..
+        /// </summary>
+        internal static string Error_InvalidOperation_Generic {
+            get {
+                return ResourceManager.GetString("Error_InvalidOperation_Generic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The collection cannot be modified while being changed by another thread..
         /// </summary>
         internal static string Error_InvalidOperation_NoCollectionReentrancy {
@@ -129,6 +147,15 @@ namespace GTASaveData {
         internal static string Error_JsonSerialization_UnexpectedToken {
             get {
                 return ResourceManager.GetString("Error_JsonSerialization_UnexpectedToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The path does not exist: {0}.
+        /// </summary>
+        internal static string Error_PathNotFound {
+            get {
+                return ResourceManager.GetString("Error_PathNotFound", resourceCulture);
             }
         }
         

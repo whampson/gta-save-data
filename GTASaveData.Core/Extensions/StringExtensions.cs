@@ -15,7 +15,7 @@ namespace GTASaveData.Extensions
         }
 
         /// <summary>
-        /// Gets the Unicode (UTF-16) encoding of this string.
+        /// Gets the Unicode (UTF-16LE) encoding of this string.
         /// </summary>
         /// <param name="s">The string to encode.</param>
         /// <returns>The string as byte array representing UTF-16 characters.</returns>

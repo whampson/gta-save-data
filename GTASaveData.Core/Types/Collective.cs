@@ -1,15 +1,16 @@
 ﻿using System;
 using GTASaveData.Interfaces;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
+    /// <summary>
+    /// Unused data structure in some GTA save files.
+    /// </summary>
     public class Collective : SaveDataObject,
         IEquatable<Collective>, IDeepClonable<Collective>
     {
-        // No idea what this is but it's in some saves so ¯\_(ツ)_/¯
-
         private int m_index;
-        private int m_field04h;
+        private int m_pedIndex;
 
         public int Index
         {
@@ -17,34 +18,34 @@ namespace GTASaveData
             set { m_index = value; OnPropertyChanged(); }
         }
 
-        public int Field04h
+        public int PedIndex
         {
-            get { return m_field04h; }
-            set { m_field04h = value; OnPropertyChanged(); }
+            get { return m_pedIndex; }
+            set { m_pedIndex = value; OnPropertyChanged(); }
         }
 
         public Collective()
         {
             Index = -1;
-            Field04h = 0;
+            PedIndex = 0;
         }
 
         public Collective(Collective other)
         {
             Index = other.Index;
-            Field04h = other.Field04h;
+            PedIndex = other.PedIndex;
         }
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
             Index = buf.ReadInt32();
-            Field04h = buf.ReadInt32();
+            PedIndex = buf.ReadInt32();
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
             buf.Write(Index);
-            buf.Write(Field04h);
+            buf.Write(PedIndex);
         }
 
         protected override int GetSize(FileFormat fmt)
@@ -65,7 +66,7 @@ namespace GTASaveData
             }
 
             return Index.Equals(other.Index)
-                && Field04h.Equals(other.Field04h);
+                && PedIndex.Equals(other.PedIndex);
         }
 
         public Collective DeepClone()

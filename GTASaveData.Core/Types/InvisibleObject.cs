@@ -1,26 +1,30 @@
 ﻿using GTASaveData.Interfaces;
 using System;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
-    public class InvisibleObject : SaveDataObject, IInvisibleObject,
+    /// <summary>
+    /// Represents an object that should be invisible in the game.
+    /// </summary>
+    public class InvisibleObject : SaveDataObject,
         IEquatable<InvisibleObject>, IDeepClonable<InvisibleObject>
     {
-        private PoolType m_type;
+        private EntityClassType m_type;
         private int m_handle;
 
-        int IInvisibleObject.Type
-        {
-            get { return (int) Type; }
-            set { Type = (PoolType) Type; }
-        }
-
-        public PoolType Type
+        /// <summary>
+        /// Entity class type. Controls which entity pool the <see cref="InvisibleObject"/>
+        /// goes into when the game is loaded.
+        /// </summary>
+        public EntityClassType Type
         {
             get { return m_type; }
             set { m_type = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Entity handle; pool index + 1.
+        /// </summary>
         public int Handle
         {
             get { return m_handle; }
@@ -38,7 +42,7 @@ namespace GTASaveData
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            Type = (PoolType) buf.ReadInt32();
+            Type = (EntityClassType) buf.ReadInt32();
             Handle = buf.ReadInt32();
         }
 

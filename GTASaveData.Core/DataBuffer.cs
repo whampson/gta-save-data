@@ -5,17 +5,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 
 namespace GTASaveData
 {
     /// <summary>
-    /// A random-access byte buffer.
+    /// A fixed-size random-access byte buffer with sequential read/write capability.
     /// </summary>
+    /// <remarks>
+    /// When a read or write operation is performed, the data pointer is incremented
+    /// by the number of bytes operated on. The pointer may also be manually set forward
+    /// or back arbitrarily within the bounds of the buffer.
+    /// </remarks>
     public sealed class DataBuffer : IDisposable
     {
-        #region Fields & Properties
         private static readonly byte[] DefaultPaddingBytes = new byte[1] { 0 };
 
         private readonly MemoryStream m_buffer;
@@ -56,19 +59,17 @@ namespace GTASaveData
         /// <summary>
         /// Gets or sets the padding type.
         /// </summary>
-        public PaddingType PaddingType { get; set; }
+        public PaddingScheme PaddingType { get; set; }
 
         /// <summary>
-        /// Gets or sets the pattern used when the padding type is <see cref="PaddingType.Pattern"/>.
+        /// Gets or sets the pattern used when the padding type is <see cref="PaddingScheme.Pattern"/>.
         /// </summary>
         public byte[] PaddingBytes
         { 
             get { return m_paddingBytes; }
             set { m_paddingBytes = value ?? DefaultPaddingBytes; }
         }
-        #endregion
 
-        #region Constructors
         /// <summary>
         /// Creates a new expandable <see cref="DataBuffer"/>.
         /// </summary>
@@ -97,9 +98,7 @@ namespace GTASaveData
             m_buffer = buffer;
             PaddingBytes = DefaultPaddingBytes;
         }
-        #endregion
 
-        #region Read Functions
         /// <summary>
         /// Reads a generic value.
         /// </summary>
@@ -184,8 +183,8 @@ namespace GTASaveData
         /// <summary>
         /// Reads a block of bytes.
         /// </summary>
-        /// <param name="buffer">The buffer to which the block of bytes will be written.</param>
-        /// <param name="index">The index in the buffer at which to begin storing bytes.</param>
+        /// <param name="buffer">The output buffer.</param>
+        /// <param name="index">The index in the output buffer at which to begin storing bytes.</param>
         /// <param name="count">The number of bytes to read.</param>
         /// <returns>The actual number of bytes read, or -1 if the end of the stream has been reached.</returns>
         public int Read(byte[] buffer, int index, int count)
@@ -245,9 +244,11 @@ namespace GTASaveData
 
         /// <summary>
         /// Reads a true/false value.
-        /// A stream of zeros is considered false.
         /// </summary>
-        /// <param name="byteCount">The number of bytes to treat as true/false.</param>
+        /// <remarks>
+        /// A stream of zeros is considered false.
+        /// </remarks>
+        /// <param name="byteCount">The number of bytes to read and treat as true/false.</param>
         /// <exception cref="ArgumentOutOfRangeException"/>
         /// <exception cref="EndOfStreamException"/>
         public bool ReadBool(int byteCount = 1)
@@ -266,7 +267,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Reads an 8-bit or 16-bit character.
+        /// Reads an 8- or 16-bit character.
         /// </summary>
         /// <param name="unicode">A value indicating whether to read 16-bit characters.</param>
         /// <exception cref="EndOfStreamException"/>
@@ -394,8 +395,7 @@ namespace GTASaveData
         /// </summary>
         /// <remarks>
         /// The number of bytes necessary for <paramref name="length"/> characters
-        /// will be read. If a zero-character is found, the resulting string will
-        /// be truncated at that point.
+        /// will be read. If a zero is found, the resulting string will be truncated at that point.
         /// </remarks>
         /// <param name="unicode">A value indicating whether to read 16-bit characters.</param>
         /// <param name="length">The number of characters to read.</param>
@@ -464,10 +464,10 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Reads an <see cref="ISaveDataObject"/> using the specified data format.
+        /// Reads an <see cref="ISaveDataObject"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="ISaveDataObject"/> to read.</typeparam>
-        /// <param name="format">The data format.</param>
+        /// <param name="format">A <see cref="FileFormat"/> descriptor controlling how data is read.</param>
         /// <exception cref="EndOfStreamException"/>
         public T ReadObject<T>(FileFormat format) where T : ISaveDataObject, new()
         {
@@ -475,6 +475,18 @@ namespace GTASaveData
             obj.ReadData(this, format);
 
             return obj;
+        }
+
+        /// <summary>
+        /// Reads an <see cref="ISaveDataObject"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="ISaveDataObject"/> to read.</typeparam>
+        /// <param name="obj">the object to populate.</param>
+        /// <param name="format">A <see cref="FileFormat"/> descriptor controlling how data is read.</param>
+        /// <exception cref="EndOfStreamException"/>
+        public int ReadObject<T>(T obj, FileFormat format) where T : ISaveDataObject
+        {
+            return obj.ReadData(this, format);
         }
 
         /// <summary>
@@ -500,12 +512,11 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Reads an array of type <typeparamref name="T"/>
-        /// using the specified data format for each element.
+        /// Reads an array of type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The array element type.</typeparam>
         /// <param name="count">The number of elements to read.</param>
-        /// <param name="format">The element data format.</param>
+        /// <param name="format">A <see cref="FileFormat"/> descriptor controlling how data is read per element.</param>
         /// <param name="itemLength">
         /// The number of bytes/characters to read per element if <typeparamref name="T"/> is
         /// <see cref="byte"/>[], <see cref="bool"/>, or <see cref="string"/>.
@@ -529,9 +540,7 @@ namespace GTASaveData
 
             return items.ToArray();
         }
-        #endregion
 
-        #region Write Functions
         /// <summary>
         /// Writes a generic value.
         /// </summary>
@@ -600,8 +609,8 @@ namespace GTASaveData
         /// <summary>
         /// Writes a block of bytes.
         /// </summary>
-        /// <param name="buffer">The bytes to write.</param>
-        /// <param name="index">The starting index in the buffer.</param>
+        /// <param name="buffer">The input buffer containing data to write.</param>
+        /// <param name="index">The starting index in the input buffer.</param>
         /// <param name="count">The number of bytes to write.</param>
         /// <returns>The actual number of bytes written, or -1 if the end of the stream has been reached.</returns>
         /// <exception cref="EndOfStreamException"/>
@@ -685,8 +694,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Writes a true/false value using the specified number of bytes to
-        /// represent the value.
+        /// Writes a true/false value.
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <param name="byteCount">The number of bytes to write.</param>
@@ -716,7 +724,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Writes an 8-bit or 16-bit character.
+        /// Writes an 8- or 16-bit character.
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <param name="unicode">A value indicating whether to write 16-bit characters.</param>
@@ -891,18 +899,18 @@ namespace GTASaveData
         /// <param name="length">
         /// The number of characters to write. If this value exceeds the string
         /// length, the string will be truncated according to <paramref name="zeroTerminate"/>.
-        /// If this value is less than the string length, zero-characters will be written
-        /// until the length is reached. If this value is null, the entire string will be
-        /// written always.
+        /// If this value is less than the string length, zeros will be written
+        /// until the length is reached. If this value is null, the entire string
+        /// will be written.
         /// </param>
         /// <param name="unicode">
         /// A value indicating whether to write 16-bit characters.
         /// </param>
         /// <param name="zeroTerminate">
-        /// A value indicating whether to terminate the string with a zero-character.
+        /// A value indicating whether to terminate the string with a zero.
         /// If this value is true and the string length is greater than <paramref name="length"/>,
-        /// the string will be truncated and zero-character will be written as the final
-        /// character so as to not exceed <paramref name="length"/>.
+        /// the string will be truncated and a zero will be written as the final character so as
+        /// to not exceed <paramref name="length"/>.
         /// </param>
         /// <returns>The number of bytes written.</returns>
         /// <exception cref="ArgumentNullException"/>
@@ -1003,7 +1011,7 @@ namespace GTASaveData
         /// Writes an <see cref="ISaveDataObject"/> using the specified data format.
         /// </summary>
         /// <param name="value">The object to write.</param>
-        /// <param name="format">The data format.</param>
+        /// <param name="format">A <see cref="FileFormat"/> descriptor controlling how data is written.</param>
         /// <returns>The number of bytes written.</returns>
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="EndOfStreamException"/>
@@ -1045,7 +1053,7 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The array element type.</typeparam>
         /// <param name="items">The elements to write.</param>
-        /// <param name="format">The data format.</param>
+        /// <param name="format">A <see cref="FileFormat"/> descriptor controlling how data is written per element.</param>
         /// <param name="count">The number of elements to write. If this value is null, the entire array will be written.</param>
         /// <param name="itemLength">
         /// The number of bytes/characters to write per element if <typeparamref name="T"/> is
@@ -1114,7 +1122,7 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The array element type.</typeparam>
         /// <param name="items">The elements to write.</param>
-        /// <param name="format">The data format.</param>
+        /// <param name="format">A <see cref="FileFormat"/> descriptor controlling how data is written per element.</param>
         /// <param name="count">The number of elements to write. If this value is null, the entire array will be written.</param>
         /// <param name="itemLength">
         /// The number of bytes/characters to write per element if <typeparamref name="T"/> is
@@ -1138,9 +1146,7 @@ namespace GTASaveData
             if (items == null) throw new ArgumentNullException(nameof(items));
             return Write(items.ToArray(), format, count, itemLength, unicode);
         }
-        #endregion
 
-        #region Other Functions
         /// <summary>
         /// Dispose of this object.
         /// </summary>
@@ -1160,12 +1166,15 @@ namespace GTASaveData
         /// <returns>The aligned address.</returns>
         public static int Align4(int addr)
         {
+            if (addr < 0) throw new ArgumentOutOfRangeException(nameof(addr));
+
             const int WordSize = 4;
             return (addr + WordSize - 1) & ~(WordSize - 1);
         }
 
         /// <summary>
-        /// Sets the cursor to the next multiple of 4.
+        /// Sets the cursor to the next address that is a multiple of 4.
+        /// If the current address is a multiple of 4, the cursor is not moved.
         /// </summary>
         public void Align4()
         {
@@ -1216,26 +1225,26 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Writes the specified number of bytes for padding.
+        /// Writes padding bytes to the buffer based on the current
+        /// <see cref="PaddingType"/>.
         /// </summary>
-        /// <param name="count"></param>
+        /// <param name="count">The number of bytes to write.</param>
         public int Pad(int count)
         {
             switch (PaddingType)
             {
-                case PaddingType.Default:
+                case PaddingScheme.Skip:
                 {
                     Skip(count);
-                    break;
+                    return count;
                 }
 
-                case PaddingType.Zero:
+                case PaddingScheme.Zero:
                 {
-                    Write(new byte[count]);
-                    break;
+                    return Write(new byte[count]);
                 }
 
-                case PaddingType.Pattern:
+                case PaddingScheme.Pattern:
                 {
                     byte[] pad = new byte[count];
                     byte[] seq = PaddingBytes;
@@ -1244,53 +1253,46 @@ namespace GTASaveData
                         pad[i] = seq[i % seq.Length];
                     }
                     
-                    Write(pad);
-                    break;
+                    return Write(pad);
                 }
 
-                case PaddingType.Random:
+                case PaddingScheme.Random:
                 {
                     byte[] pad = new byte[count];
                     Random rand = new Random();
                     rand.NextBytes(pad);
                     
-                    Write(pad);
-                    break;
+                    return Write(pad);
                 }
             }
 
-            return count;
+            throw new InvalidOperationException(Strings.Error_InvalidOperation_Generic);
         }
 
         /// <summary>
-        /// Gets all data up to the current cursor position.
+        /// Gets a copy of the data in the buffer from the start up to the current cursor position.
         /// </summary>
-        /// <returns>The data up to the current position.</returns>
         public byte[] GetBytes()
         {
             return GetBuffer().Take(Position).ToArray();
         }
 
         /// <summary>
-        /// Gets all data from the marked position up to the current cursor position.
+        /// Gets a copy of the data in the buffer from the marked position up to the current cursor position.
         /// </summary>
-        /// <returns>The data from the marked position up to the current cursor position.</returns>
         public byte[] GetBytesFromMark()
         {
             return GetBuffer().Skip(MarkedPosition).Take(Position).ToArray();
         }
 
         /// <summary>
-        /// Gets all data in the buffer.
+        /// Gets a copy of all data in the buffer.
         /// </summary>
-        /// <returns>The data in the buffer.</returns>
         public byte[] GetBuffer()
         {
             return m_buffer.ToArray();
         }
-        #endregion
 
-        #region Exception Helpers
         private static NotSupportedException SerializationNotSupported(Type t)
         {
             return new NotSupportedException(string.Format(Strings.Error_Serialization_NotAllowed, t.Name));
@@ -1305,6 +1307,32 @@ namespace GTASaveData
         {
             return new EndOfStreamException(Strings.Error_EndOfStream, innerException);
         }
-        #endregion
     }
+
+    /// <summary>
+    /// Padding schemes are used to control the values written for data structure and buffer padding.
+    /// </summary>
+    public enum PaddingScheme
+    {
+        /// <summary>
+        /// Skips over the number of bytes neccessary for padding, preserving the existing data.
+        /// Behaves like a recycled C array.
+        /// </summary>
+        Skip,
+
+        /// <summary>
+        /// Zeros will be used as padding.
+        /// </summary>
+        Zero,
+
+        /// <summary>
+        /// A specific pattern will be used as padding.
+        /// </summary>
+        Pattern,
+
+        /// <summary>
+        /// Random bytes will be used as padding.
+        /// </summary>
+        Random,
+    };
 }

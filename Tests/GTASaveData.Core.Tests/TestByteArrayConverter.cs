@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using TestFramework;
 using Xunit;
 
-namespace GTASaveData.Core.Tests.JsonConverters
+namespace GTASaveData.Core.Tests
 {
     public class TestByteArrayConverter : TestBase
     {

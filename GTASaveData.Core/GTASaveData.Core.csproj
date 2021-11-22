@@ -8,13 +8,13 @@
     <Company>Wes Hampson</Company>
     <Product>GTASaveData</Product>
     <Description>GTASaveData core framework library.</Description>
-    <Copyright>(C) 2019-2020 Wes Hampson</Copyright>
-    <AssemblyVersion>1.5.0.1091</AssemblyVersion>
-    <FileVersion>1.5.0.1091</FileVersion>
-    <Version>1.5.0</Version>
+    <Copyright>(C) 2019-2022 Wes Hampson</Copyright>
+    <AssemblyVersion>2.0.0.1120</AssemblyVersion>
+    <FileVersion>2.0.0.1120</FileVersion>
+    <Version>2.0.0</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageTags>gta save data; gta save file; gta save; gta; savedata; savefile; gta savedata; gta savefile</PackageTags>
+    <PackageTags>gta grand theft auto save file data savefile savedata game gamesave</PackageTags>
     <RepositoryUrl>https://github.com/whampson/gta-save-data</RepositoryUrl>
     <PackageProjectUrl>https://github.com/whampson/gta-save-data</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

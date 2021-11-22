@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace GTASaveData.Core.Tests
         public override InvisibleObject GenerateTestObject(FileFormat format)
         {
             Faker<InvisibleObject> model = new Faker<InvisibleObject>()
-                .RuleFor(x => x.Type, f => f.PickRandom<PoolType>())
+                .RuleFor(x => x.Type, f => f.PickRandom<EntityClassType>())
                 .RuleFor(x => x.Handle, f => f.Random.Int());
 
             return model.Generate();

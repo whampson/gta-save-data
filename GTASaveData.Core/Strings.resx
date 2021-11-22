@@ -126,6 +126,12 @@
   <data name="Error_EndOfStream" xml:space="preserve">
     <value>End of stream reached.</value>
   </data>
+  <data name="Error_InvalidData_FileTooLarge" xml:space="preserve">
+    <value>The file is too large to be a valid Grand Theft Auto save file.</value>
+  </data>
+  <data name="Error_InvalidOperation_Generic" xml:space="preserve">
+    <value>You weren't supposed to be able to get here, you know.</value>
+  </data>
   <data name="Error_InvalidOperation_NoCollectionReentrancy" xml:space="preserve">
     <value>The collection cannot be modified while being changed by another thread.</value>
   </data>
@@ -143,6 +149,10 @@
   <data name="Error_JsonSerialization_UnexpectedToken" xml:space="preserve">
     <value>Unexpected token while parsing JSON: {0}</value>
     <comment>{0} = token type</comment>
+  </data>
+  <data name="Error_PathNotFound" xml:space="preserve">
+    <value>The path does not exist: {0}</value>
+    <comment>{0} = path</comment>
   </data>
   <data name="Error_Serialization_BadBlockSize" xml:space="preserve">
     <value>The block size exceeds the size of the buffer: {0}</value>

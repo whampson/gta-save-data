@@ -1,54 +1,27 @@
 ﻿using GTASaveData.Interfaces;
-using GTASaveData.JsonConverters;
-using Newtonsoft.Json;
 using System;
 using System.Linq;
 
 namespace GTASaveData
 {
     /// <summary>
-    /// A container for arbitraty data.
+    /// A serializable placeholder object.
     /// </summary>
-    public class Dummy : SaveDataObject,
+    public class Dummy : BufferedObject,
         IEquatable<Dummy>, IDeepClonable<Dummy>
     {
-        private ObservableArray<byte> m_data;
-
-        [JsonConverter(typeof(ByteArrayConverter))]
-        public ObservableArray<byte> Data
-        {
-            get { return m_data; }
-            set { m_data = value; OnPropertyChanged(); }
-        }
-
-        public Dummy()
-            : this(0)
-        { }
-
-        public Dummy(int size)
-        {
-            Data = new byte[size];
-        }
-
-        public Dummy(Dummy other)
-        {
-            Data = other.Data;
-        }
+        public Dummy() : this(0) { }
+        public Dummy(int size) : base(size) { }
+        public Dummy(Dummy other) : base(other) { }
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
-            int count = Data.Count;
-            Data = buf.ReadBytes(count);
+            FillWorkBuffer(buf);
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
-            buf.Write(Data.ToArray());
-        }
-
-        protected override int GetSize(FileFormat fmt)
-        {
-            return Data.Count;
+            WriteWorkBuffer(buf);
         }
 
         public override bool Equals(object obj)
@@ -63,7 +36,7 @@ namespace GTASaveData
                 return false;
             }
 
-            return Data.SequenceEqual(other.Data);
+            return WorkBuffer.SequenceEqual(other.WorkBuffer);
         }
 
         public Dummy DeepClone()

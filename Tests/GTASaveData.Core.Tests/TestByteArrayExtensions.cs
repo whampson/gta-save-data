@@ -1,7 +1,7 @@
 ﻿using GTASaveData.Extensions;
 using Xunit;
 
-namespace GTASaveData.Core.Tests.Extensions
+namespace GTASaveData.Core.Tests
 {
     public class TestByteArrayExtensions
     {

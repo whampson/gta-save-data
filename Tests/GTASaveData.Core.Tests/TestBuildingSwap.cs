@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace GTASaveData.Core.Tests
         public override BuildingSwap GenerateTestObject(FileFormat format)
         {
             Faker<BuildingSwap> model = new Faker<BuildingSwap>()
-                .RuleFor(x => x.Type, f => f.PickRandom<PoolType>())
+                .RuleFor(x => x.Type, f => f.PickRandom<EntityClassType>())
                 .RuleFor(x => x.Handle, f => f.Random.Int())
                 .RuleFor(x => x.NewModel, f => f.Random.Int())
                 .RuleFor(x => x.OldModel, f => f.Random.Int());
@@ -40,6 +41,11 @@ namespace GTASaveData.Core.Tests
             BuildingSwap x1 = new BuildingSwap(x0);
 
             Assert.Equal(x0, x1);
+        }
+
+        public override int GetSizeOfTestObject(BuildingSwap obj)
+        {
+            return 16;
         }
     }
 }

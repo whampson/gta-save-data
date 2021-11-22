@@ -10,7 +10,7 @@ using WpfEssentials;
 namespace GTASaveData
 {
     /// <summary>
-    /// A collection of objects with sequential and contiguous storage.
+    /// An observable collection of objects with sequential and contiguous storage.
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
     /// <remarks>

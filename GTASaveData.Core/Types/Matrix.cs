@@ -2,12 +2,11 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
     /// <summary>
     /// Represents a 3x3 view matrix.
     /// </summary>
-    /// <remarks>Code derived from GTA3.</remarks>
     [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 64)]
     public struct Matrix : IEquatable<Matrix>
     {

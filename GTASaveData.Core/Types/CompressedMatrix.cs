@@ -2,10 +2,10 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace GTASaveData
+namespace GTASaveData.Types
 {
     /// <summary>
-    /// A compressed form of the <see cref="Matrix"/> data structure.
+    /// A space-optimized <see cref="Matrix"/>.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 20)]
     public struct CompressedMatrix : IEquatable<CompressedMatrix>

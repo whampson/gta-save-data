@@ -18,7 +18,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Creates a deep clone of an array.
+        /// Creates a deep clone of an <see cref="ObservableArray{T}"/>.
         /// </summary>
         /// <typeparam name="T">The element type.</typeparam>
         /// <param name="array">The array to clone.</param>
