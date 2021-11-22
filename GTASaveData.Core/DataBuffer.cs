@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -167,7 +169,14 @@ namespace GTASaveData
             {
                 var p = new Type[] { typeof(FileFormat) };
                 var m = GetType().GetMethod(nameof(ReadObject), p).MakeGenericMethod(t);
-                o = m.Invoke(this, new object[] { format });
+                try
+                {
+                    o = m.Invoke(this, new object[] { format });
+                }
+                catch (TargetInvocationException ex)
+                {
+                    ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+                }
             }
             else if (t.IsValueType)
             {

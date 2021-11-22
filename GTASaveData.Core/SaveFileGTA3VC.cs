@@ -106,6 +106,7 @@ namespace GTASaveData
             src.Align4();
 
             Debug.Assert(src.Offset == size + 4);
+            Debug.WriteLine($"{size} bytes read into work buffer");
 
             WorkBuff.Reset();
             return size;
@@ -135,6 +136,7 @@ namespace GTASaveData
             // are 4 * numBlocks bytes larger than told by the 'SizeOfGameInBytes' constant
             // found in the file.
             Debug.Assert(dest.Offset - 4 == size);
+            Debug.WriteLine($"{size} bytes written out of work buffer");
 
             CheckSum += dest.GetBytesFromMark().Sum(x => x);
             WorkBuff.Reset();
@@ -181,8 +183,8 @@ namespace GTASaveData
             int bytesRead = WorkBuff.ReadObject(obj, FileType);
             WorkBuff.Align4();
 
-            DbgHelper.Print($"{typeof(T).Name}: {bytesRead} bytes read.");
-            Debug.Assert((bytesRead > DataBuffer.Align4(size) - 4) && (bytesRead <= DataBuffer.Align4(size)));
+            Debug.WriteLine($"{typeof(T).Name}: {bytesRead} bytes read");
+            Debug.Assert(bytesRead <= DataBuffer.Align4(size));
 
             return bytesRead;
         }
@@ -197,7 +199,7 @@ namespace GTASaveData
         /// <param name="obj">The object to write.</param>
         protected void Put<T>(T obj) where T : SaveDataObject
         {
-            int size, preSize, postData, bytesWritten;
+            int size, preSize, postData;
 
             preSize = WorkBuff.Position;
             WorkBuff.Skip(4);
@@ -206,12 +208,11 @@ namespace GTASaveData
             postData = WorkBuff.Position;
 
             WorkBuff.Seek(preSize);
-            bytesWritten = WorkBuff.Write(size);
+            WorkBuff.Write(size);
             WorkBuff.Seek(postData);
             WorkBuff.Align4();
 
-            DbgHelper.Print($"{typeof(T).Name}: {bytesWritten} bytes written.");
-            Debug.Assert(size == bytesWritten);
+            Debug.WriteLine($"{typeof(T).Name}: {size} bytes written");
         }
 
         protected override void OnReading(FileFormat fmt)

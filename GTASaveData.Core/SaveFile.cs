@@ -160,20 +160,7 @@ namespace GTASaveData
                 }
             }
 
-            T obj = new T() { FileType = fmt };
-            int bytesRead = obj.LoadFromBuffer(buf);
-
-            DbgHelper.Print($"{bytesRead} bytes read from buffer.");
-            return obj;
-        }
-
-        private int LoadFromBuffer(byte[] buf)
-        {
-            OnLoading();
-            int bytesRead = Serializer.Read(this, buf, FileType);
-            OnLoad();
-
-            return bytesRead;
+            return Serializer.Read<T>(buf, fmt);
         }
 
         /// <summary>
@@ -245,31 +232,28 @@ namespace GTASaveData
             }
 
             T obj = new T() { FileType = fmt };
-            int bytesRead = obj.LoadFromFile(path);
+            obj.LoadFromFile(path);
 
-            DbgHelper.Print($"{bytesRead} bytes read from file.");
             return obj;
         }
 
-        private int LoadFromFile(string path)
+        private void LoadFromFile(string path)
         {
-            if (File.Exists(path))
+            if (!File.Exists(path))
             {
-                FileInfo info = new FileInfo(path);
-                if (info.Length > FileSizeMax)
-                {
-                    throw new InvalidDataException(Strings.Error_InvalidData_FileTooLarge);
-                }
-
-                OnFileLoading(path);
-                byte[] data = File.ReadAllBytes(path);
-                int bytesRead = LoadFromBuffer(data);
-                OnFileLoad(path);
-
-                return bytesRead;
+                throw new DirectoryNotFoundException(string.Format(Strings.Error_PathNotFound, path));
             }
 
-            throw new DirectoryNotFoundException(string.Format(Strings.Error_PathNotFound, path));
+            FileInfo info = new FileInfo(path);
+            if (info.Length > FileSizeMax)
+            {
+                throw new InvalidDataException(Strings.Error_InvalidData_FileTooLarge);
+            }
+
+            OnFileLoading(path);
+            byte[] buf = File.ReadAllBytes(path);
+            _ = Serializer.Read(this, buf, FileType);
+            OnFileLoad(path);
         }
 
         /// <summary>
@@ -279,12 +263,7 @@ namespace GTASaveData
         /// <returns>The number of bytes written.</returns>
         public int Save(out byte[] buf)
         {
-            OnSaving();
-            int bytesWritten = Serializer.Write(this, FileType, out buf);
-            OnSave();
-
-            DbgHelper.Print($"{bytesWritten} bytes written.");
-            return bytesWritten;
+            return Serializer.Write(this, FileType, out buf);
         }
 
         /// <summary>
@@ -304,14 +283,28 @@ namespace GTASaveData
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
         {
+            int mark = buf.Position;
             FileType = fmt;
+
+            OnLoading();
             Load(buf);
+            OnLoad();
+
+            int bytesRead = buf.Position - mark;
+            Debug.WriteLine($"Load successful! {bytesRead} total bytes read");
         }
 
         protected override void WriteData(DataBuffer buf, FileFormat fmt)
         {
+            int mark = buf.Position;
             FileType = fmt;
+
+            OnSaving();
             Save(buf);
+            OnSave();
+
+            int bytesWritten = buf.Position - mark;
+            Debug.WriteLine($"Save successful! {bytesWritten} total bytes written");
         }
 
         /// <summary>

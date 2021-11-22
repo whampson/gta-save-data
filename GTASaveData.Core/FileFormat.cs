@@ -251,22 +251,22 @@ namespace GTASaveData
         /// <summary>
         /// Gets a value indicating whether this <see cref="FileFormat"/> has the Steam flag set.
         /// </summary>
-        [JsonIgnore] public bool IsSteam => HasFlag(FileFormatFlags.Steam);
+        [JsonIgnore] public bool FlagSteam => HasFlag(FileFormatFlags.Steam);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="FileFormat"/> has the Australia flag set.
         /// </summary>
-        [JsonIgnore] public bool IsAustralia => HasFlag(FileFormatFlags.Australia);
+        [JsonIgnore] public bool FlagAustralia => HasFlag(FileFormatFlags.Australia);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="FileFormat"/> has the Japan flag set.
         /// </summary>
-        [JsonIgnore] public bool IsJapan => HasFlag(FileFormatFlags.Japan);
+        [JsonIgnore] public bool FlagJapan => HasFlag(FileFormatFlags.Japan);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="FileFormat"/> has the Definitive Edition flag set.
         /// </summary>
-        [JsonIgnore] public bool IsDE => HasFlag(FileFormatFlags.DE);
+        [JsonIgnore] public bool FlagDE => HasFlag(FileFormatFlags.DE);
     }
 
     /// <summary>
