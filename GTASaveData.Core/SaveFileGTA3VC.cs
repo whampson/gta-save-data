@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Helpers;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -175,14 +176,13 @@ namespace GTASaveData
                     throw new SerializationException(Strings.Error_Serialization_NoPreAlloc, typeof(T));
                 }
                 obj = o;
-                Debug.WriteLine($"{typeof(T).Name}: {size} bytes read for buffer.");
             }
 
             int bytesRead = WorkBuff.ReadObject(obj, FileType);
             WorkBuff.Align4();
 
-            Debug.WriteLine($"{typeof(T).Name}: {bytesRead} bytes read.");
-            Debug.Assert(bytesRead <= DataBuffer.Align4(size));
+            DbgHelper.Print($"{typeof(T).Name}: {bytesRead} bytes read.");
+            Debug.Assert((bytesRead > DataBuffer.Align4(size) - 4) && (bytesRead <= DataBuffer.Align4(size)));
 
             return bytesRead;
         }
@@ -197,7 +197,7 @@ namespace GTASaveData
         /// <param name="obj">The object to write.</param>
         protected void Put<T>(T obj) where T : SaveDataObject
         {
-            int size, preSize, postData;
+            int size, preSize, postData, bytesWritten;
 
             preSize = WorkBuff.Position;
             WorkBuff.Skip(4);
@@ -206,11 +206,12 @@ namespace GTASaveData
             postData = WorkBuff.Position;
 
             WorkBuff.Seek(preSize);
-            WorkBuff.Write(size);
+            bytesWritten = WorkBuff.Write(size);
             WorkBuff.Seek(postData);
             WorkBuff.Align4();
 
-            Debug.WriteLine($"{obj.GetType().Name}: {size} bytes written.");
+            DbgHelper.Print($"{typeof(T).Name}: {bytesWritten} bytes written.");
+            Debug.Assert(size == bytesWritten);
         }
 
         protected override void OnReading(FileFormat fmt)

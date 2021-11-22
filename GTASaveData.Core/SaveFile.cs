@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Helpers;
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -160,20 +161,18 @@ namespace GTASaveData
             }
 
             T obj = new T() { FileType = fmt };
-            obj.LoadFromBuffer(buf);
+            int bytesRead = obj.LoadFromBuffer(buf);
+
+            DbgHelper.Print($"{bytesRead} bytes read from buffer.");
             return obj;
         }
 
         private int LoadFromBuffer(byte[] buf)
         {
-            //Title = "";
-            //TimeStamp = DateTime.Now;
-
             OnLoading();
             int bytesRead = Serializer.Read(this, buf, FileType);
             OnLoad();
 
-            Debug.WriteLine($"SaveData: Read {bytesRead} bytes for load.");
             return bytesRead;
         }
 
@@ -246,7 +245,9 @@ namespace GTASaveData
             }
 
             T obj = new T() { FileType = fmt };
-            _ = obj.LoadFromFile(path);
+            int bytesRead = obj.LoadFromFile(path);
+
+            DbgHelper.Print($"{bytesRead} bytes read from file.");
             return obj;
         }
 
@@ -282,7 +283,7 @@ namespace GTASaveData
             int bytesWritten = Serializer.Write(this, FileType, out buf);
             OnSave();
 
-            Debug.WriteLine($"SaveData: Wrote {bytesWritten} bytes for save.");
+            DbgHelper.Print($"{bytesWritten} bytes written.");
             return bytesWritten;
         }
 
