@@ -183,5 +183,13 @@ namespace GTASaveData
         {
             return new InvalidOperationException(string.Format(Strings.Error_InvalidOperation_SizeNotDefined, fmt.DisplayName));
         }
+
+        /// <summary>
+        /// Rounds an address up to the next multiple of 4.
+        /// </summary>
+        public int Align4(int addr)
+        {
+            return DataBuffer.Align4(addr);
+        }
     }
 }
