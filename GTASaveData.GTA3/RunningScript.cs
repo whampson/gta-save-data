@@ -1,12 +1,13 @@
 ﻿using GTASaveData.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
 {
+    /// <summary>
+    /// The saved state of a running mission thread.
+    /// </summary>
     public class RunningScript : SaveDataObject,
         IEquatable<RunningScript>, IDeepClonable<RunningScript>
     {
@@ -26,7 +27,7 @@ namespace GTASaveData.GTA3
         private uint m_timerB;
         private bool m_condResult;
         private bool m_isMissionScript;
-        private bool m_clearMessages;
+        private bool m_skipWakeTime;
         private uint m_wakeTime;
         private short m_andOrState;
         private bool m_notFlag;
@@ -34,110 +35,177 @@ namespace GTASaveData.GTA3
         private bool m_deathArrestExecuted;
         private bool m_missionFlag;
 
-        [Obsolete("Value overridden by the game.")]
+        /// <summary>
+        /// Pointer to the next CRunningScript in the list.
+        /// </summary>
+        /// <remarks>
+        /// Useless value. Game always re-creates the list and does not use
+        /// old pointers.
+        /// </remarks>
         public uint NextScriptPointer
         {
             get { return m_pNextScript; }
             set { m_pNextScript = value; OnPropertyChanged(); }
         }
 
-        [Obsolete("Value overridden by the game.")]
+        /// <summary>
+        /// Pointer to the previous CRunningScript in the list.
+        /// </summary>
+        /// <remarks>
+        /// Useless value. Game always re-creates the list and does not use
+        /// old pointers.
+        /// </remarks>
         public uint PrevScriptPointer
         {
             get { return m_pPrevScript; }
             set { m_pPrevScript = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Script name, as set by opcode 03A4. Length: 8 (NUL-terminated)
+        /// </summary>
         public string Name
         {
             get { return m_name; }
             set { m_name = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Current instruction pointer.
+        /// </summary>
         public int IP
         {
             get { return m_ip; }
             set { m_ip = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Return address stack. Size: 6 (4 on PS2).
+        /// </summary>
         public ObservableArray<int> Stack
         {
             get { return m_stack; }
             set { m_stack = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Current stack pointer.
+        /// </summary>
         public short StackIndex
         {
             get { return m_stackPointer; }
             set { m_stackPointer = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Local variables. Size: 16.
+        /// </summary>
         public ObservableArray<int> Locals
         {
             get { return m_localVariables; }
             set { m_localVariables = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Timer #1.
+        /// </summary>
         public uint TimerA
         {
             get { return m_timerA; }
             set { m_timerA = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Timer #2.
+        /// </summary>
         public uint TimerB
         {
             get { return m_timerB; }
             set { m_timerB = value; OnPropertyChanged(); }
         }
 
-        public bool ConditionResult
+        /// <summary>
+        /// Comparison flag.
+        /// </summary>
+        public bool CompareFlag
         {
             get { return m_condResult; }
             set { m_condResult = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Indiciates that this is a mission script.
+        /// </summary>
         public bool IsMissionScript
         {
             get { return m_isMissionScript; }
             set { m_isMissionScript = value; OnPropertyChanged(); }
         }
 
-        public bool ClearMessages
+        /// <summary>
+        /// When set, bypasses the wake timer, effectively breaking
+        /// the script from a wait loop.
+        /// </summary>
+        public bool SkipWakeTime
         {
-            get { return m_clearMessages; }
-            set { m_clearMessages = value; OnPropertyChanged(); }
+            get { return m_skipWakeTime; }
+            set { m_skipWakeTime = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// The wakeup timer. The script will resume execution after
+        /// the global timer has passed this value, otherwise the
+        /// script is considered to be in a wait state.
+        /// </summary>
         public uint WakeTime
         {
             get { return m_wakeTime; }
             set { m_wakeTime = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// The state of the current if..and or if..or chain.
+        /// 0 = none, 1-8 = and state, 21-28 = or state.
+        /// </summary>
         public short AndOrState
         {
             get { return m_andOrState; }
             set { m_andOrState = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Negated instruction flag. True if the MSB of the current opcode
+        /// is set.
+        /// </summary>
         public bool NotFlag
         {
             get { return m_notFlag; }
             set { m_notFlag = value; OnPropertyChanged(); }
         }
 
-        public bool WastedBustedCheckEnabled
+        /// <summary>
+        /// Sets whether the Wasted/Busted check is enabled. Only valid if
+        /// <see cref="IsMissionScript"/> is true and <c>$ONMISSION = 1</c>.
+        /// </summary>
+        public bool DeathArrestEnabled
         {
             get { return m_deathArrestEnabled; }
             set { m_deathArrestEnabled = value; OnPropertyChanged(); }
         }
 
-        public bool WastedBustedCheckResult
+        /// <summary>
+        /// Set if the Wasted/Busted check result was true (player is Wasted or Busted).
+        /// </summary>
+        public bool DeathArrestExecuted
         {
             get { return m_deathArrestExecuted; }
             set { m_deathArrestExecuted = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Similar to <see cref="IsMissionScript"/>. Not sure why R* used two
+        /// mission flags. Best to keep this in-line with <see cref="IsMissionScript"/>.
+        /// </summary>
         public bool MissionFlag
         {
             get { return m_missionFlag; }
@@ -146,9 +214,10 @@ namespace GTASaveData.GTA3
 
         public RunningScript()
         {
-            m_name = "noname";
-            m_stack = ArrayHelper.CreateArray<int>(MaxStackDepth);
-            m_localVariables = ArrayHelper.CreateArray<int>(NumLocalVariables);
+            Name = "noname";
+            Stack = ArrayHelper.CreateArray<int>(MaxStackDepth);
+            Locals = ArrayHelper.CreateArray<int>(NumLocalVariables);
+            DeathArrestEnabled = true;
         }
 
         public RunningScript(RunningScript other)
@@ -162,51 +231,85 @@ namespace GTASaveData.GTA3
             Locals = ArrayHelper.DeepClone(other.Locals);
             TimerA = other.TimerA;
             TimerB = other.TimerB;
-            ConditionResult = other.ConditionResult;
+            CompareFlag = other.CompareFlag;
             IsMissionScript = other.IsMissionScript;
-            ClearMessages = other.ClearMessages;
+            SkipWakeTime = other.SkipWakeTime;
             WakeTime = other.WakeTime;
             AndOrState = other.AndOrState;
             NotFlag = other.NotFlag;
-            WastedBustedCheckEnabled = other.WastedBustedCheckEnabled;
-            WastedBustedCheckResult = other.WastedBustedCheckResult;
+            DeathArrestEnabled = other.DeathArrestEnabled;
+            DeathArrestExecuted = other.DeathArrestExecuted;
             MissionFlag = other.MissionFlag;
         }
 
-        public void PushStack(int value)
+        /// <summary>
+        /// Checks whether the stack is empty.
+        /// </summary>
+        public bool IsStackEmpty()
         {
-            if (StackIndex + 1 >= Stack.Count)
-            {
-                Stack.Add(value);
-                StackIndex++;
-            }
-            else
-            {
-                Stack[StackIndex++] = value;
-            }
+            return StackIndex == 0;
         }
 
+        /// <summary>
+        /// Pushes a value onto the stack.
+        /// </summary>
+        public void PushStack(int value)
+        {
+            Stack[StackIndex++] = value;
+        }
+
+        /// <summary>
+        /// Pops a value from the stack.
+        /// </summary>
+        /// <remarks>
+        /// Check <see cref="IsStackEmpty"/> before calling.
+        /// </remarks>
         public int PopStack()
         {
-            if (StackIndex == 0)
-            {
-                throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
-            }
             return Stack[--StackIndex];
         }
 
+        /// <summary>
+        /// Gets the value on the top of the stack.
+        /// </summary>
+        /// <remarks>
+        /// Check <see cref="IsStackEmpty"/> before calling.
+        /// </remarks>
         public int PeekStack()
         {
-            if (StackIndex == 0)
-            {
-                throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty);
-            }
             return Stack[StackIndex - 1];
         }
 
+        /// <summary>
+        /// Gets the value of a local variable.
+        /// </summary>
+        public int GetLocal(int index)
+        {
+            return Locals[index];
+        }
+
+        /// <summary>
+        /// Gets the value of a local variable as a float.
+        /// </summary>
+        public float GetLocalAsFloat(int index)
+        {
+            return BitConverter.Int32BitsToSingle(Locals[index]);
+        }
+
+        /// <summary>
+        /// Sets the value of a local variable.
+        /// </summary>
         public void SetLocal(int index, int value)
         {
             Locals[index] = value;
+        }
+
+        /// <summary>
+        /// Sets the value of a local variable as a float.
+        /// </summary>
+        public void SetLocal(int index, float value)
+        {
+            Locals[index] = BitConverter.SingleToInt32Bits(value);
         }
 
         protected override void ReadData(DataBuffer buf, FileFormat fmt)
@@ -221,15 +324,15 @@ namespace GTASaveData.GTA3
             Locals = buf.ReadArray<int>(NumLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
-            ConditionResult = buf.ReadBool();
+            CompareFlag = buf.ReadBool();
             IsMissionScript = buf.ReadBool();
-            ClearMessages = buf.ReadBool();
+            SkipWakeTime = buf.ReadBool();
             buf.Align4();
             WakeTime = buf.ReadUInt32();
             AndOrState = buf.ReadInt16();
             NotFlag = buf.ReadBool();
-            WastedBustedCheckEnabled = buf.ReadBool();
-            WastedBustedCheckResult = buf.ReadBool();
+            DeathArrestEnabled = buf.ReadBool();
+            DeathArrestExecuted = buf.ReadBool();
             MissionFlag = buf.ReadBool();
             buf.Align4();
 
@@ -248,15 +351,15 @@ namespace GTASaveData.GTA3
             buf.Write(Locals, NumLocalVariables);
             buf.Write(TimerA);
             buf.Write(TimerB);
-            buf.Write(ConditionResult);
+            buf.Write(CompareFlag);
             buf.Write(IsMissionScript);
-            buf.Write(ClearMessages);
+            buf.Write(SkipWakeTime);
             buf.Align4();
             buf.Write(WakeTime);
             buf.Write(AndOrState);
             buf.Write(NotFlag);
-            buf.Write(WastedBustedCheckEnabled);
-            buf.Write(WastedBustedCheckResult);
+            buf.Write(DeathArrestEnabled);
+            buf.Write(DeathArrestExecuted);
             buf.Write(MissionFlag);
             buf.Align4();
 
@@ -294,14 +397,14 @@ namespace GTASaveData.GTA3
                 && Locals.SequenceEqual(other.Locals)
                 && TimerA.Equals(other.TimerA)
                 && TimerB.Equals(other.TimerB)
-                && ConditionResult.Equals(other.ConditionResult)
+                && CompareFlag.Equals(other.CompareFlag)
                 && IsMissionScript.Equals(other.IsMissionScript)
-                && ClearMessages.Equals(other.ClearMessages)
+                && SkipWakeTime.Equals(other.SkipWakeTime)
                 && WakeTime.Equals(other.WakeTime)
                 && AndOrState.Equals(other.AndOrState)
                 && NotFlag.Equals(other.NotFlag)
-                && WastedBustedCheckEnabled.Equals(other.WastedBustedCheckEnabled)
-                && WastedBustedCheckResult.Equals(other.WastedBustedCheckResult)
+                && DeathArrestEnabled.Equals(other.DeathArrestEnabled)
+                && DeathArrestExecuted.Equals(other.DeathArrestExecuted)
                 && MissionFlag.Equals(other.MissionFlag);
         }
 
@@ -309,6 +412,10 @@ namespace GTASaveData.GTA3
         {
             return new RunningScript(this);
         }
+
+        public override string ToString()
+        {
+            return $"{Name}, {IP}, Mission = {IsMissionScript}";
+        }
     }
 }
-#pragma warning restore CS0618 // Type or member is obsolete

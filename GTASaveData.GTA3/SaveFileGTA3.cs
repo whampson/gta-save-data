@@ -18,10 +18,10 @@ namespace GTASaveData.GTA3
         private const int MaxNumPaddingBlocks = 4;
         private const int NumOuterBlocks = 20;
         private const int NumOuterBlocksPS2 = 3;
-        private const int DataSize = 0x31400;
+        private const int SizeOfGameDataInBytes = 0x31400;
 
         private SimpleVariables m_simpleVars;
-        private ScriptData m_scripts;
+        private ScriptsBlock m_scripts;
         private PedPool m_pedPool;
         private GarageData m_garages;
         private VehiclePool m_vehiclePool;
@@ -42,13 +42,21 @@ namespace GTASaveData.GTA3
         private Streaming m_streaming;
         private PedTypeData m_pedType;
 
+        /// <summary>
+        /// Miscellaneous variables related to weather, time, the camera,
+        /// PS2 settings, and others.
+        /// </summary>
         public SimpleVariables SimpleVars
         {
             get { return m_simpleVars; }
             set { m_simpleVars = value; OnPropertyChanged(); }
         }
 
-        public ScriptData Scripts
+        /// <summary>
+        /// Mission script data like global variables, active mission scripts,
+        /// and swapped building model info.
+        /// </summary>
+        public ScriptsBlock Scripts
         {
             get { return m_scripts; }
             set { m_scripts = value; OnPropertyChanged(); }
@@ -194,7 +202,7 @@ namespace GTASaveData.GTA3
             : base(Game.GTA3)
         {
             SimpleVars = new SimpleVariables();
-            Scripts = new ScriptData();
+            Scripts = new ScriptsBlock();
             PlayerPeds = new PedPool();
             Garages = new GarageData();
             Vehicles = new VehiclePool();
@@ -222,7 +230,7 @@ namespace GTASaveData.GTA3
             : base(Game.GTA3)
         {
             SimpleVars = new SimpleVariables(other.SimpleVars);
-            Scripts = new ScriptData(other.Scripts);
+            Scripts = new ScriptsBlock(other.Scripts);
             PlayerPeds = new PedPool(other.PlayerPeds);
             Garages = new GarageData(other.Garages);
             Vehicles = new VehiclePool(other.Vehicles);
@@ -249,11 +257,17 @@ namespace GTASaveData.GTA3
             int dataSize = 0;
             int numOuterBlocks;
 
+            if (IsDefinitiveEdition)
+            {
+                LoadDefinitiveEdition(file);
+                return;
+            }
+
             if (IsPS2)
             {
                 dataSize += FillWorkBuffer(file);
                 SimpleVars = WorkBuff.ReadObject<SimpleVariables>(FileType);
-                Scripts = Get<ScriptData>();
+                Scripts = Get<ScriptsBlock>();
                 PlayerPeds = Get<PedPool>();
                 Garages = Get<GarageData>();
                 Vehicles = Get<VehiclePool>();
@@ -284,8 +298,7 @@ namespace GTASaveData.GTA3
             {
                 dataSize += FillWorkBuffer(file);
                 SimpleVars = WorkBuff.ReadObject<SimpleVariables>(FileType);
-                Scripts = Get<ScriptData>();
-
+                Scripts = Get<ScriptsBlock>();
                 dataSize += FillWorkBuffer(file); PlayerPeds = Get<PedPool>();
                 dataSize += FillWorkBuffer(file); Garages = Get<GarageData>();
                 dataSize += FillWorkBuffer(file); Vehicles = Get<VehiclePool>();
@@ -319,25 +332,42 @@ namespace GTASaveData.GTA3
                 numPaddingBlocks++;
             }
 
+#if DEBUG
             // Size checks
-            int expectedDataSize = DataSize;
+            int expectedDataSize = SizeOfGameDataInBytes;
             if (!IsPS2Japan) expectedDataSize += 1;
             expectedDataSize = (expectedDataSize - 1) & 0x7FFFFFFC;
             int expectedFileSize = expectedDataSize + ((numOuterBlocks + numPaddingBlocks) * sizeof(int)) + sizeof(int);
             if (IsXbox) expectedFileSize += XboxHelper.SignatureLength;
             Debug.Assert(expectedDataSize == dataSize);
             Debug.Assert(expectedFileSize == file.Length);
+#endif
+        }
+
+        private void LoadDefinitiveEdition(DataBuffer file)
+        {
+            long mark = file.Mark();
+            SimpleVars = file.ReadObject<SimpleVariables>(FileType);
+            Scripts = file.ReadObject<ScriptsBlock>(FileType);
+
+            long size = file.Position - mark;
+            Debug.WriteLine("Size: " + size);
         }
 
         protected override void Save(DataBuffer file)
         {
+            if (FileType.FlagDE)
+            {
+                throw new NotSupportedException("Definitive Edition not supported yet!");
+            }
+
             int dataSize = 0;
             int size;
             int numOuterBlocks;
 
             WorkBuff.Reset();
             CheckSum = 0;
-            SimpleVars.SizeOfGameInBytes = DataSize;
+            SimpleVars.SizeOfGameInBytes = SizeOfGameDataInBytes;   // TODO: consider not overwriting this
 
             if (IsPS2)
             {
@@ -424,15 +454,16 @@ namespace GTASaveData.GTA3
                 file.Write(sig);
             }
 
+#if DEBUG
             // Size checks
-            int expectedDataSize = DataSize;
+            int expectedDataSize = SizeOfGameDataInBytes;
             if (!IsPS2Japan) expectedDataSize += 1;
             expectedDataSize = (expectedDataSize - 1) & 0x7FFFFFFC;
             int expectedFileSize = expectedDataSize + ((numOuterBlocks + numPaddingBlocks) * sizeof(int)) + sizeof(int);
             if (IsXbox) expectedFileSize += XboxHelper.SignatureLength;
-
             Debug.Assert(expectedDataSize == dataSize);
             Debug.Assert(expectedFileSize == file.Length);
+#endif
         }
 
         protected override void OnFileLoad(string path)
@@ -470,8 +501,8 @@ namespace GTASaveData.GTA3
             bool isMobile = false;
             bool isPcOrXbox = false;
 
-            int saveSizeOffset = data.FindFirst(BitConverter.GetBytes(DataSize + 1));
-            int saveSizeOffsetJP = data.FindFirst(BitConverter.GetBytes(DataSize));
+            int saveSizeOffset = data.FindFirst(BitConverter.GetBytes(SizeOfGameDataInBytes + 1));
+            int saveSizeOffsetJP = data.FindFirst(BitConverter.GetBytes(SizeOfGameDataInBytes));
             int scrOffset = data.FindFirst("SCR\0".GetAsciiBytes());
 
             if ((saveSizeOffset < 0 && saveSizeOffsetJP < 0) || scrOffset < 0)
@@ -561,6 +592,11 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(FileFormat fmt)
         {
+            if (FileType.FlagDE)
+            {
+                throw new NotSupportedException("Definitive Edition not supported yet!");
+            }
+
             int size = 0;
 
             // data blocks
@@ -587,7 +623,7 @@ namespace GTASaveData.GTA3
             size += SizeOf(PedTypeInfo, fmt) + sizeof(int);
 
             // padding blocks
-            int totalDataSize = DataSize;
+            int totalDataSize = SizeOfGameDataInBytes;
             if (!(fmt.IsPS2 && fmt.FlagJapan)) totalDataSize += 1;
             int numRemaining = ((totalDataSize - 1) & 0x7FFFFFFC) - size;
             int numPadding = (numRemaining / (GetWorkBufferSize() - sizeof(int))) + 1;
@@ -659,45 +695,45 @@ namespace GTASaveData.GTA3
             );
 
             public static readonly FileFormat PC = new FileFormat(
-                nameof(PC),
+                nameof(PC), "Windows PC", "Microsoft Windows",
                 GameSystem.Windows
             );
 
             public static readonly FileFormat PS2 = new FileFormat(
-                nameof(PS2), "PS2", "PlayStation 2",
+                nameof(PS2), "PlayStation 2", "PlayStation 2",
                 GameSystem.PS2
             );
 
             public static readonly FileFormat PS2AU = new FileFormat(
-                nameof(PS2AU), "PS2 (Australia)", "PlayStation 2 (Australia Release)",
+                nameof(PS2AU), "PlayStation 2 (Australia)", "PlayStation 2 (Australia release)",
                 FileFormatFlags.Australia,
                 GameSystem.PS2
             );
 
             public static readonly FileFormat PS2JP = new FileFormat(
-                nameof(PS2JP), "PS2 (Japan)", "PlayStation 2 (Japan Release)",
+                nameof(PS2JP), "PlayStation 2 (Japan)", "PlayStation 2 (Japan release)",
                 FileFormatFlags.Japan,
                 GameSystem.PS2
             );
 
             public static readonly FileFormat Xbox = new FileFormat(
-                nameof(Xbox),
+                nameof(Xbox), "Xbox", "Microsoft Xbox",
                 GameSystem.Xbox
             );
 
-            //public static readonly FileFormat DefinitiveEdition = new FileFormat(
-            //    nameof(DefinitiveEdition), "Definitive Edition", "Grand Theft Auto: The Trilogy - The Definitive Edition",
-            //    FileFormatFlags.DE,
-            //    GameSystem.PS4,
-            //    GameSystem.PS5,
-            //    GameSystem.Switch,
-            //    GameSystem.XboxOne,
-            //    GameSystem.Windows
-            //);
+            public static readonly FileFormat DefinitiveEdition = new FileFormat(
+                nameof(DefinitiveEdition), "Definitive Edition", "Grand Theft Auto: The Trilogy - The Definitive Edition (all versions)",
+                FileFormatFlags.DE,
+                GameSystem.PS4,
+                GameSystem.PS5,
+                GameSystem.Switch,
+                GameSystem.XboxOne,
+                GameSystem.Windows
+            );
 
             public static FileFormat[] GetAll()
             {
-                return new FileFormat[] { Android, iOS, PC, PS2, PS2AU, PS2JP, Xbox };
+                return new FileFormat[] { Android, iOS, PC, PS2, PS2AU, PS2JP, Xbox, DefinitiveEdition };
             }
         }
 
