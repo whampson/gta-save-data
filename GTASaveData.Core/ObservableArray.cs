@@ -165,7 +165,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Copyies the elements of this <see cref="ObservableArray{T}"/> to a compatible
+        /// Copies the elements of this <see cref="ObservableArray{T}"/> to a compatible
         /// one-dimensional array.
         /// </summary>
         /// <param name="array">The one-dimensional array to copy to.</param>
@@ -175,7 +175,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Copyies the elements of this <see cref="ObservableArray{T}"/> to a compatible
+        /// Copies the elements of this <see cref="ObservableArray{T}"/> to a compatible
         /// one-dimensional array, starting at the specifed index of the target array.
         /// </summary>
         /// <param name="array">The one-dimensional array to copy to.</param>
@@ -191,7 +191,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Copyies the elements of this <see cref="ObservableArray{T}"/> to a compatible
+        /// Copies the elements of this <see cref="ObservableArray{T}"/> to a compatible
         /// one-dimensional array, starting at the specifed index of the target array.
         /// </summary>
         /// <param name="index">The zero-based index in the source at which copying begins.</param>
