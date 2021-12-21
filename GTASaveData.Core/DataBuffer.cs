@@ -12,7 +12,7 @@ using System.Text;
 namespace GTASaveData
 {
     /// <summary>
-    /// A fixed-size random-access byte buffer with sequential read/write capability.
+    /// A random-access byte buffer with sequential read/write capability.
     /// </summary>
     /// <remarks>
     /// When a read or write operation is performed, the data pointer is incremented
@@ -1187,7 +1187,7 @@ namespace GTASaveData
         /// </summary>
         public void Align4()
         {
-            Pad(Align4(Position) - Position);
+            Pad(Align4(Offset) - Offset);
         }
 
         /// <summary>
@@ -1221,16 +1221,15 @@ namespace GTASaveData
         /// Advances the cursor ahead or behind the specified number of bytes.
         /// </summary>
         /// <param name="count">The number of bytes to skip</param>
-        public void Skip(int count)
+        public int Skip(int count)
         {
             if (m_buffer.Position + count > m_buffer.Length)
             {
-                Write(new byte[count]);
+                return Write(new byte[count]);
             }
-            else
-            {
-                m_buffer.Position += count;
-            }
+
+            m_buffer.Position += count;
+            return (int) m_buffer.Position;
         }
 
         /// <summary>
@@ -1244,8 +1243,7 @@ namespace GTASaveData
             {
                 case PaddingScheme.Skip:
                 {
-                    Skip(count);
-                    return count;
+                    return Skip(count);
                 }
 
                 case PaddingScheme.Zero:
