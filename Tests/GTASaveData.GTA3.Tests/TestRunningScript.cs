@@ -20,14 +20,14 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Locals, f => Generator.Array(RunningScript.NumLocalVariables, g => f.Random.Int()))
                 .RuleFor(x => x.TimerA, f => f.Random.UInt())
                 .RuleFor(x => x.TimerB, f => f.Random.UInt())
-                .RuleFor(x => x.ConditionResult, f => f.Random.Bool())
+                .RuleFor(x => x.CompareFlag, f => f.Random.Bool())
                 .RuleFor(x => x.IsMissionScript, f => f.Random.Bool())
-                .RuleFor(x => x.ClearMessages, f => f.Random.Bool())
+                .RuleFor(x => x.SkipWakeTime, f => f.Random.Bool())
                 .RuleFor(x => x.WakeTime, f => f.Random.UInt())
                 .RuleFor(x => x.AndOrState, f => f.Random.Short())
                 .RuleFor(x => x.NotFlag, f => f.Random.Bool())
-                .RuleFor(x => x.WastedBustedCheckEnabled, f => f.Random.Bool())
-                .RuleFor(x => x.WastedBustedCheckResult, f => f.Random.Bool())
+                .RuleFor(x => x.DeathArrestEnabled, f => f.Random.Bool())
+                .RuleFor(x => x.DeathArrestExecuted, f => f.Random.Bool())
                 .RuleFor(x => x.MissionFlag, f => f.Random.Bool());
 
             return model.Generate();
@@ -49,14 +49,14 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Locals, x1.Locals);
             Assert.Equal(x0.TimerA, x1.TimerA);
             Assert.Equal(x0.TimerB, x1.TimerB);
-            Assert.Equal(x0.ConditionResult, x1.ConditionResult);
+            Assert.Equal(x0.CompareFlag, x1.CompareFlag);
             Assert.Equal(x0.IsMissionScript, x1.IsMissionScript);
-            Assert.Equal(x0.ClearMessages, x1.ClearMessages);
+            Assert.Equal(x0.SkipWakeTime, x1.SkipWakeTime);
             Assert.Equal(x0.WakeTime, x1.WakeTime);
             Assert.Equal(x0.AndOrState, x1.AndOrState);
             Assert.Equal(x0.NotFlag, x1.NotFlag);
-            Assert.Equal(x0.WastedBustedCheckEnabled, x1.WastedBustedCheckEnabled);
-            Assert.Equal(x0.WastedBustedCheckResult, x1.WastedBustedCheckResult);
+            Assert.Equal(x0.DeathArrestEnabled, x1.DeathArrestEnabled);
+            Assert.Equal(x0.DeathArrestExecuted, x1.DeathArrestExecuted);
             Assert.Equal(x0.MissionFlag, x1.MissionFlag);
 
             Assert.Equal(x0, x1);

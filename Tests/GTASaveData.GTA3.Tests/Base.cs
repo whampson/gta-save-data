@@ -15,6 +15,7 @@ namespace GTASaveData.GTA3.Tests
             new object[] { SaveFileGTA3.FileFormats.PS2AU },
             new object[] { SaveFileGTA3.FileFormats.PS2JP },
             new object[] { SaveFileGTA3.FileFormats.Xbox },
+            //new object[] { SaveFileGTA3.FileFormats.DefinitiveEdition },
         };
 
         public static IEnumerable<object[]> TestFiles => new[]
@@ -69,6 +70,13 @@ namespace GTASaveData.GTA3.Tests
             new object[] { SaveFileGTA3.FileFormats.Xbox, "LM1 VehiclePool" },
             new object[] { SaveFileGTA3.FileFormats.Xbox, "LM5" },
             new object[] { SaveFileGTA3.FileFormats.Xbox, "LOVE2" },
+            //new object[] { SaveFileGTA3.FileFormats.DefinitiveEdition, "CAT2" },
+            //new object[] { SaveFileGTA3.FileFormats.DefinitiveEdition, "HM_4" },
+            //new object[] { SaveFileGTA3.FileFormats.DefinitiveEdition, "LM1" },
+            //new object[] { SaveFileGTA3.FileFormats.DefinitiveEdition, "LOVE1" },
+            //new object[] { SaveFileGTA3.FileFormats.DefinitiveEdition, "LOVE7" },
+            //new object[] { SaveFileGTA3.FileFormats.DefinitiveEdition, "RC2" },
+            //new object[] { SaveFileGTA3.FileFormats.DefinitiveEdition, "YD2" },
         };
     }
 }

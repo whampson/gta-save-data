@@ -8,10 +8,16 @@ namespace TestFramework
     {
         public static string GetTestDataPath(Game game, FileFormat fileFormat, string fileName)
         {
-            string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../..");
-            string filePath = string.Format("TestData/{0}/{1}/{2}", game, fileFormat.Id, fileName);
-            
-            return Path.GetFullPath(Path.Combine(basePath, filePath));
+            string asmPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
+            int cutIndex = asmPath.IndexOf(nameof(GTASaveData)) + nameof(GTASaveData).Length;
+            string basePath = asmPath.Substring(0, cutIndex);
+            string filePath = Path.GetFullPath(@$"{basePath}\Tests\TestData\{game}\{fileFormat.Id}\{fileName}");
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException(filePath);
+            }
+
+            return filePath;
         }
     }
 }

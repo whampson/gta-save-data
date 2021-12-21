@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using TestFramework;
@@ -14,7 +15,7 @@ namespace GTASaveData.GTA3.Tests
             Faker<SaveFileGTA3> model = new Faker<SaveFileGTA3>()
                 .RuleFor(x => x.FileType, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
-                .RuleFor(x => x.Scripts, Generator.Generate<ScriptData, TestScriptData>(format))
+                .RuleFor(x => x.Scripts, Generator.Generate<ScriptsBlock, TestScriptBlock>(format))
                 .RuleFor(x => x.PlayerPeds, Generator.Generate<PedPool, TestPedPool>(format))
                 .RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData>(format))
                 .RuleFor(x => x.Vehicles, Generator.Generate<VehiclePool, TestVehiclePool>(format))
@@ -37,6 +38,19 @@ namespace GTASaveData.GTA3.Tests
                 ;
 
             return model.Generate();
+        }
+
+        [Theory]
+        [MemberData(nameof(TestFiles))]
+        public void DefinitiveEditionPlayground(FileFormat fmt, string path)
+        {
+            if (!fmt.FlagDE) return;
+
+            path = TestData.GetTestDataPath(Game.GTA3, fmt, path);
+            var save = SaveFile.Load<SaveFileGTA3>(path, fmt);
+
+            Debug.WriteLine($"Title: {save.Title}");
+            Debug.WriteLine($"TimeStamp: {save.TimeStamp}");
         }
 
         [Theory]

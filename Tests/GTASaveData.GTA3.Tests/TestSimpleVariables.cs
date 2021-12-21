@@ -3,7 +3,6 @@ using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
-#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3.Tests
 {
     public class TestSimpleVariables : Base<SimpleVariables>
@@ -45,8 +44,8 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.BlurOn, f => (format.IsPS2) ? f.Random.Bool() : default)
                 .RuleFor(x => x.CompileDateAndTime, f => new Date(Generator.Date(f)))
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
-                .RuleFor(x => x.CameraModeInCar, f => f.Random.Float())
-                .RuleFor(x => x.CameraModeOnFoot, f => f.Random.Float())
+                .RuleFor(x => x.CameraModeInCar, f => f.PickRandom<CameraMode>())
+                .RuleFor(x => x.CameraModeOnFoot, f => f.PickRandom<CameraMode>())
                 .RuleFor(x => x.IsQuickSave, f => (format.IsMobile) ? f.PickRandom<QuickSaveState>() : default);
 
             return model.Generate();
@@ -111,4 +110,3 @@ namespace GTASaveData.GTA3.Tests
         }
     }
 }
-#pragma warning restore CS0618 // Type or member is obsolete
