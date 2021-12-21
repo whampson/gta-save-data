@@ -79,7 +79,7 @@ namespace GTASaveData {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to End of stream reached..
+        ///   Looks up a localized string similar to An attempt was made to read or write past the end of the buffer..
         /// </summary>
         internal static string Error_EndOfStream {
             get {

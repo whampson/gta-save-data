@@ -124,7 +124,7 @@
     <value>The sequence length must be less than or equal to the length of the array.</value>
   </data>
   <data name="Error_EndOfStream" xml:space="preserve">
-    <value>End of stream reached.</value>
+    <value>An attempt was made to read or write past the end of the buffer.</value>
   </data>
   <data name="Error_InvalidData_FileTooLarge" xml:space="preserve">
     <value>The file is too large to be a valid Grand Theft Auto save file.</value>
