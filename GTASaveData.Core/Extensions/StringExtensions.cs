@@ -23,5 +23,21 @@ namespace GTASaveData.Extensions
         {
             return Encoding.Unicode.GetBytes(s);
         }
+
+        /// <summary>
+        /// Trims null terminators and any garbage that appears after.
+        /// </summary>
+        /// <param name="s">The string to trim.</param>
+        /// <returns>The trimmed string.</returns>
+        public static string TrimFromZero(this string s)
+        {
+            int index = s.IndexOf('\0');
+            if (index < 0)
+            {
+                return s;
+            }
+
+            return s.Substring(0, index);
+        }
     }
 }
