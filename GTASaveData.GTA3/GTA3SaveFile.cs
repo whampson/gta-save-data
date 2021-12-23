@@ -12,8 +12,8 @@ namespace GTASaveData.GTA3
     /// <summary>
     /// A saved <i>Grand Theft Auto III</i> game.
     /// </summary>
-    public class SaveFileGTA3 : SaveFileGTA3VC, ISaveFile,
-        IEquatable<SaveFileGTA3>, IDeepClonable<SaveFileGTA3>
+    public class GTA3SaveFile : SaveFileGTA3VC, ISaveFile,
+        IEquatable<GTA3SaveFile>, IDeepClonable<GTA3SaveFile>
     {
         private const int MaxNumPaddingBlocks = 4;
         private const int NumOuterBlocks = 20;
@@ -188,17 +188,17 @@ namespace GTASaveData.GTA3
             set { SimpleVars.TimeStamp = new SystemTime(value); OnPropertyChanged(); }
         }
 
-        public static SaveFileGTA3 Load(string path)
+        public static GTA3SaveFile Load(string path)
         {
-            return Load<SaveFileGTA3>(path);
+            return Load<GTA3SaveFile>(path);
         }
 
-        public static SaveFileGTA3 Load(string path, FileType fmt)
+        public static GTA3SaveFile Load(string path, FileType fmt)
         {
-            return Load<SaveFileGTA3>(path, fmt);
+            return Load<GTA3SaveFile>(path, fmt);
         }
 
-        public SaveFileGTA3()
+        public GTA3SaveFile()
             : base(Game.GTA3)
         {
             SimpleVars = new SimpleVariables();
@@ -226,7 +226,7 @@ namespace GTASaveData.GTA3
             TimeStamp = DateTime.Now;
         }
 
-        public SaveFileGTA3(SaveFileGTA3 other)
+        public GTA3SaveFile(GTA3SaveFile other)
             : base(Game.GTA3)
         {
             SimpleVars = new SimpleVariables(other.SimpleVars);
@@ -641,10 +641,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as SaveFileGTA3);
+            return Equals(obj as GTA3SaveFile);
         }
 
-        public bool Equals(SaveFileGTA3 other)
+        public bool Equals(GTA3SaveFile other)
         {
             if (other == null)
             {
@@ -674,9 +674,9 @@ namespace GTASaveData.GTA3
                 && PedTypeInfo.Equals(other.PedTypeInfo);
         }
 
-        public SaveFileGTA3 DeepClone()
+        public GTA3SaveFile DeepClone()
         {
-            return new SaveFileGTA3(this);
+            return new GTA3SaveFile(this);
         }
 
         public static class FileFormats

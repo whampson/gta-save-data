@@ -8,11 +8,11 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestSaveFileGTA3 : Base<SaveFileGTA3>
+    public class TestSaveFileGTA3 : Base<GTA3SaveFile>
     {
-        public override SaveFileGTA3 GenerateTestObject(FileType format)
+        public override GTA3SaveFile GenerateTestObject(FileType format)
         {
-            Faker<SaveFileGTA3> model = new Faker<SaveFileGTA3>()
+            Faker<GTA3SaveFile> model = new Faker<GTA3SaveFile>()
                 .RuleFor(x => x.FileType, format)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
                 .RuleFor(x => x.Scripts, Generator.Generate<ScriptsBlock, TestScriptBlock>(format))
@@ -47,7 +47,7 @@ namespace GTASaveData.GTA3.Tests
             if (!fmt.FlagDE) return;
 
             path = TestData.GetTestDataPath(Game.GTA3, fmt, path);
-            var save = SaveFile.Load<SaveFileGTA3>(path, fmt);
+            var save = SaveFile.Load<GTA3SaveFile>(path, fmt);
 
             Debug.WriteLine($"Title: {save.Title}");
             Debug.WriteLine($"TimeStamp: {save.TimeStamp}");
@@ -58,7 +58,7 @@ namespace GTASaveData.GTA3.Tests
         public void FileFormatDetection(FileType expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.GTA3, expectedFormat, filename);
-            SaveFile.TryGetFileType<SaveFileGTA3>(path, out FileType detectedFormat);
+            SaveFile.TryGetFileType<GTA3SaveFile>(path, out FileType detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
@@ -67,8 +67,8 @@ namespace GTASaveData.GTA3.Tests
         [MemberData(nameof(FileFormats))]
         public void RandomDataSerialization(FileType format)
         {
-            using SaveFileGTA3 x0 = GenerateTestObject(format);
-            using SaveFileGTA3 x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using GTA3SaveFile x0 = GenerateTestObject(format);
+            using GTA3SaveFile x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
             AssertCheckSumValid(data, format);
@@ -81,8 +81,8 @@ namespace GTASaveData.GTA3.Tests
         {
             string path = TestData.GetTestDataPath(Game.GTA3, format, filename);
 
-            using SaveFileGTA3 x0 = SaveFile.Load<SaveFileGTA3>(path, format);
-            using SaveFileGTA3 x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using GTA3SaveFile x0 = SaveFile.Load<GTA3SaveFile>(path, format);
+            using GTA3SaveFile x1 = CreateSerializedCopy(x0, format, out byte[] data);
 
             // Copy properties that don't actually get saved to the new buffer.
             if (format.IsPS2)
@@ -102,8 +102,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void CopyConstructor()
         {
-            SaveFileGTA3 x0 = GenerateTestObject();
-            SaveFileGTA3 x1 = new SaveFileGTA3(x0);
+            GTA3SaveFile x0 = GenerateTestObject();
+            GTA3SaveFile x1 = new GTA3SaveFile(x0);
 
             Assert.Equal(x0, x1);
         }
@@ -111,7 +111,7 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void BlockBounds()
         {
-            string path = TestData.GetTestDataPath(Game.GTA3, SaveFileGTA3.FileFormats.PC, "CAT2");
+            string path = TestData.GetTestDataPath(Game.GTA3, GTA3SaveFile.FileFormats.PC, "CAT2");
             byte[] data = File.ReadAllBytes(path);
 
             // Fudge the block size
@@ -119,15 +119,15 @@ namespace GTASaveData.GTA3.Tests
             data[1] = 0xBA;
             data[2] = 0xFE;
             data[3] = 0xCA;
-            Assert.Throws<SerializationException>(() => SaveFile.Load<SaveFileGTA3>(data, SaveFileGTA3.FileFormats.PC));
+            Assert.Throws<SerializationException>(() => SaveFile.Load<GTA3SaveFile>(data, GTA3SaveFile.FileFormats.PC));
 
             // Make the script space huge
-            SaveFileGTA3 x = SaveFile.Load<SaveFileGTA3>(path, SaveFileGTA3.FileFormats.PC);
+            GTA3SaveFile x = SaveFile.Load<GTA3SaveFile>(path, GTA3SaveFile.FileFormats.PC);
             x.Scripts.ScriptSpace = ArrayHelper.CreateArray<byte>(100000);
             Assert.Throws<EndOfStreamException>(() => x.Save(out byte[] _));
         }
 
-        private void AssertSavesAreEqual(SaveFileGTA3 x0, SaveFileGTA3 x1)
+        private void AssertSavesAreEqual(GTA3SaveFile x0, GTA3SaveFile x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);
