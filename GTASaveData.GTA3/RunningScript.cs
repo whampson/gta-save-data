@@ -261,23 +261,21 @@ namespace GTASaveData.GTA3
         /// <summary>
         /// Pops a value from the stack.
         /// </summary>
-        /// <remarks>
-        /// Check <see cref="IsStackEmpty"/> before calling.
-        /// </remarks>
         public int PopStack()
         {
-            return Stack[--StackIndex];
+            return IsStackEmpty()
+                ? throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty)
+                : Stack[--StackIndex];
         }
 
         /// <summary>
         /// Gets the value on the top of the stack.
         /// </summary>
-        /// <remarks>
-        /// Check <see cref="IsStackEmpty"/> before calling.
-        /// </remarks>
         public int PeekStack()
         {
-            return Stack[StackIndex - 1];
+            return IsStackEmpty()
+                ? throw new InvalidOperationException(Strings.Error_InvalidOperation_StackEmpty)
+                : Stack[StackIndex - 1];
         }
 
         /// <summary>
