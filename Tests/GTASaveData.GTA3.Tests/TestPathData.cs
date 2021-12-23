@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPathData : Base<PathData>
     {
-        public override PathData GenerateTestObject(FileFormat format)
+        public override PathData GenerateTestObject(FileType format)
         {
             int nodeCount = 8 * (new Faker().Random.Int(1, 1000) / 8);       // must be multiple of 8
             Faker<PathNode> nodeModel = new Faker<PathNode>()
@@ -21,7 +21,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             PathData x0 = GenerateTestObject(format);
             byte[] data = Serializer.Write(x0, format);

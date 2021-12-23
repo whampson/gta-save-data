@@ -75,10 +75,10 @@ namespace TestFramework
             where T : SaveDataObject, new()
             where U : SaveDataObjectTestBase<T>
         {
-            return Generate<T, U>(FileFormat.Default);
+            return Generate<T, U>(FileType.Default);
         }
 
-        public static T Generate<T, U>(FileFormat format)
+        public static T Generate<T, U>(FileType format)
             where T : SaveDataObject, new()
             where U : SaveDataObjectTestBase<T>
         {
@@ -87,7 +87,7 @@ namespace TestFramework
                 nameof(SaveDataObjectTestBase<T>.GenerateTestObject),
                 BindingFlags.Public | BindingFlags.Instance,
                 null,
-                new Type[] { typeof(FileFormat) },
+                new Type[] { typeof(FileType) },
                 null);
             
             return (T) m.Invoke(testGen, new object[] { format });

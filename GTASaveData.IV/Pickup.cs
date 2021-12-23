@@ -187,7 +187,7 @@ namespace GTASaveData.IV
             Unknown50h = other.Unknown50h;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             Index = buf.ReadInt32();
             Unknown04h = buf.ReadInt32();
@@ -224,7 +224,7 @@ namespace GTASaveData.IV
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(Index);
             buf.Write(Unknown04h);
@@ -255,7 +255,7 @@ namespace GTASaveData.IV
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0x54;
         }

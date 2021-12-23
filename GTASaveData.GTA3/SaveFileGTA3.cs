@@ -193,7 +193,7 @@ namespace GTASaveData.GTA3
             return Load<SaveFileGTA3>(path);
         }
 
-        public static SaveFileGTA3 Load(string path, FileFormat fmt)
+        public static SaveFileGTA3 Load(string path, FileType fmt)
         {
             return Load<SaveFileGTA3>(path, fmt);
         }
@@ -488,7 +488,7 @@ namespace GTASaveData.GTA3
             }
         }
 
-        protected override bool DetectFileType(byte[] data, out FileFormat fmt)
+        protected override bool DetectFileType(byte[] data, out FileType fmt)
         {
             if (data.Length < 0x10000)
             {
@@ -573,7 +573,7 @@ namespace GTASaveData.GTA3
             }
 
         DetectionFailed:
-            fmt = FileFormat.Default;
+            fmt = FileType.Default;
             return false;
         }
 
@@ -587,7 +587,7 @@ namespace GTASaveData.GTA3
             return 55000;
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (FileType.FlagDE)
             {
@@ -681,46 +681,46 @@ namespace GTASaveData.GTA3
 
         public static class FileFormats
         {
-            public static readonly FileFormat Android = new FileFormat(
+            public static readonly FileType Android = new FileType(
                 nameof(Android),
                 GameSystem.Android
             );
 
-            public static readonly FileFormat iOS = new FileFormat(
+            public static readonly FileType iOS = new FileType(
                 nameof(iOS),
                 GameSystem.iOS
             );
 
-            public static readonly FileFormat PC = new FileFormat(
+            public static readonly FileType PC = new FileType(
                 nameof(PC), "Windows PC", "Microsoft Windows",
                 GameSystem.Windows
             );
 
-            public static readonly FileFormat PS2 = new FileFormat(
+            public static readonly FileType PS2 = new FileType(
                 nameof(PS2), "PlayStation 2", "PlayStation 2",
                 GameSystem.PS2
             );
 
-            public static readonly FileFormat PS2AU = new FileFormat(
+            public static readonly FileType PS2AU = new FileType(
                 nameof(PS2AU), "PlayStation 2 (Australia)", "PlayStation 2 (Australia release)",
-                FileFormatFlags.Australia,
+                FileTypeFlags.Australia,
                 GameSystem.PS2
             );
 
-            public static readonly FileFormat PS2JP = new FileFormat(
+            public static readonly FileType PS2JP = new FileType(
                 nameof(PS2JP), "PlayStation 2 (Japan)", "PlayStation 2 (Japan release)",
-                FileFormatFlags.Japan,
+                FileTypeFlags.Japan,
                 GameSystem.PS2
             );
 
-            public static readonly FileFormat Xbox = new FileFormat(
+            public static readonly FileType Xbox = new FileType(
                 nameof(Xbox), "Xbox", "Microsoft Xbox",
                 GameSystem.Xbox
             );
 
-            public static readonly FileFormat DefinitiveEdition = new FileFormat(
+            public static readonly FileType DefinitiveEdition = new FileType(
                 nameof(DefinitiveEdition), "Definitive Edition", "Grand Theft Auto: The Trilogy - The Definitive Edition (all versions)",
-                FileFormatFlags.DE,
+                FileTypeFlags.DE,
                 GameSystem.PS4,
                 GameSystem.PS5,
                 GameSystem.Switch,
@@ -728,9 +728,9 @@ namespace GTASaveData.GTA3
                 GameSystem.Windows
             );
 
-            public static FileFormat[] GetAll()
+            public static FileType[] GetAll()
             {
-                return new FileFormat[] { Android, iOS, PC, PS2, PS2AU, PS2JP, Xbox, DefinitiveEdition };
+                return new FileType[] { Android, iOS, PC, PS2, PS2AU, PS2JP, Xbox, DefinitiveEdition };
             }
         }
 

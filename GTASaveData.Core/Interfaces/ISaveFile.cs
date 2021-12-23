@@ -20,7 +20,7 @@ namespace GTASaveData.Interfaces
         /// <summary>
         /// A descriptor for the file type which controls how data is serialized.
         /// </summary>
-        FileFormat FileType { get; set; }
+        FileType FileType { get; set; }
 
         /// <summary>
         /// The <i>Grand Theft Auto</i> game this save belongs to.

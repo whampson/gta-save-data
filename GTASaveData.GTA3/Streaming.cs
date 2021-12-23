@@ -27,21 +27,21 @@ namespace GTASaveData.GTA3
             ModelFlags = ArrayHelper.DeepClone(other.ModelFlags);
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             ModelFlags = buf.ReadArray<StreamingFlags>(NumModels);
 
             Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(ModelFlags, NumModels);
 
             Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 200;
         }

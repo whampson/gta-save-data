@@ -87,7 +87,7 @@ namespace GTASaveData.GTA3
             PedGroup = other.PedGroup;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             CarDensity = buf.ReadInt16();
             CarThreshold = buf.ReadArray<short>(CarThresholdCapacity);
@@ -101,7 +101,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<ZoneInfo>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(CarDensity);
             buf.Write(CarThreshold, CarThresholdCapacity);
@@ -115,7 +115,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<ZoneInfo>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 58;      // not aligned
         }

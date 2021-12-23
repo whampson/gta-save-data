@@ -6,7 +6,7 @@ namespace GTASaveData.VC.Tests
 {
     public class TestPlayerPed : Base<PlayerPed>
     {
-        public override PlayerPed GenerateTestObject(FileFormat format)
+        public override PlayerPed GenerateTestObject(FileType format)
         {
             int numTargetableObjects = (format.IsMobile) ? PlayerPed.NumTargetableObjectsMobile : PlayerPed.NumTargetableObjects;
             Faker<PlayerPed> model = new Faker<PlayerPed>()
@@ -35,7 +35,7 @@ namespace GTASaveData.VC.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             PlayerPed x0 = GenerateTestObject(format);
             PlayerPed x1 = CreateSerializedCopy(x0, format, out byte[] data);

@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestStreaming : Base<Streaming>
     {
-        public override Streaming GenerateTestObject(FileFormat format)
+        public override Streaming GenerateTestObject(FileType format)
         {
             Faker<Streaming> model = new Faker<Streaming>()
                 .RuleFor(x => x.ModelFlags, f => Generator.Array(Streaming.NumModels, g => f.PickRandom<StreamingFlags>()));
@@ -16,7 +16,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             Streaming x0 = GenerateTestObject(format);
             Streaming x1 = CreateSerializedCopy(x0, format, out byte[] data);

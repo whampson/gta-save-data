@@ -163,7 +163,7 @@ namespace GTASaveData.VC
             EndOfLifeTime = other.EndOfLifeTime;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
@@ -192,7 +192,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(ModelIndex);
             buf.Write(Handle);
@@ -221,7 +221,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPS2 && !fmt.IsJapanese) return 0x50;
             if (fmt.IsiOS) return 0x56;

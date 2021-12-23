@@ -7,7 +7,7 @@ namespace GTASaveData.LCS.Tests
 {
     public class TestRunningScript : Base<RunningScript>
     {
-        public override RunningScript GenerateTestObject(FileFormat format)
+        public override RunningScript GenerateTestObject(FileType format)
         {
             Faker<RunningScript> model = new Faker<RunningScript>()
                 .RuleFor(x => x.NextScriptPointer, f => f.Random.UInt())
@@ -37,7 +37,7 @@ namespace GTASaveData.LCS.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             RunningScript x0 = GenerateTestObject(format);
             RunningScript x1 = CreateSerializedCopy(x0, format, out byte[] data);

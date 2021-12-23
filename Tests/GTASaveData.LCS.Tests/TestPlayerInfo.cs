@@ -5,7 +5,7 @@ namespace GTASaveData.LCS.Tests
 {
     public class TestPlayerInfo : Base<PlayerInfo>
     {
-        public override PlayerInfo GenerateTestObject(FileFormat format)
+        public override PlayerInfo GenerateTestObject(FileType format)
         {
             Faker<PlayerInfo> model = new Faker<PlayerInfo>()
                 .RuleFor(x => x.Money, f => f.Random.Int())
@@ -23,7 +23,7 @@ namespace GTASaveData.LCS.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             PlayerInfo x0 = GenerateTestObject(format);
             PlayerInfo x1 = CreateSerializedCopy(x0, format, out byte[] data);

@@ -16,20 +16,20 @@ namespace TestFramework
     {
         public virtual int GetSizeOfTestObject(T obj)
         {
-            return Serializer.SizeOf(obj, FileFormat.Default);
+            return Serializer.SizeOf(obj, FileType.Default);
         }
 
-        public virtual int GetSizeOfTestObject(T obj, FileFormat format)
+        public virtual int GetSizeOfTestObject(T obj, FileType format)
         {
             return Serializer.SizeOf(obj, format);
         }
 
         public T CreateSerializedCopy(T obj, out byte[] bytes)
         {
-            return CreateSerializedCopy(obj, FileFormat.Default, out bytes);
+            return CreateSerializedCopy(obj, FileType.Default, out bytes);
         }
 
-        public T CreateSerializedCopy(T obj, FileFormat format, out byte[] bytes)
+        public T CreateSerializedCopy(T obj, FileType format, out byte[] bytes)
         {
             bytes = Serializer.Write(obj, format);
             return Serializer.Read<T>(bytes, format);
@@ -41,9 +41,9 @@ namespace TestFramework
     {
         public T GenerateTestObject()
         {
-            return GenerateTestObject(FileFormat.Default);
+            return GenerateTestObject(FileType.Default);
         }
 
-        public abstract T GenerateTestObject(FileFormat format);
+        public abstract T GenerateTestObject(FileType format);
     }
 }

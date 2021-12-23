@@ -72,7 +72,7 @@ namespace GTASaveData.GTA3
             CarGenerators = ArrayHelper.DeepClone(other.CarGenerators);
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             int size = SaveFileGTA3VC.ReadBlockHeader(buf, out string tag);
             Debug.Assert(tag == "CGN");
@@ -92,7 +92,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOf<CarGeneratorData>() - SaveFileGTA3VC.BlockHeaderSize);
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             SaveFileGTA3VC.WriteBlockHeader(buf, "CGN", SizeOf<CarGeneratorData>() - SaveFileGTA3VC.BlockHeaderSize);
 
@@ -108,7 +108,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<CarGeneratorData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0x2D1C;
         }

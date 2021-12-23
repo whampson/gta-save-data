@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestObjectPool : Base<ObjectPool>
     {
-        public override ObjectPool GenerateTestObject(FileFormat format)
+        public override ObjectPool GenerateTestObject(FileType format)
         {
             Faker<ObjectPool> model = new Faker<ObjectPool>()
                 .RuleFor(x => x.Objects,
@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             ObjectPool x0 = GenerateTestObject(format);
             ObjectPool x1 = CreateSerializedCopy(x0, format, out byte[] data);

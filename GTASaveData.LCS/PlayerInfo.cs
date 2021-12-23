@@ -96,7 +96,7 @@ namespace GTASaveData.LCS
             GetOutOfHospitalFree = other.GetOutOfHospitalFree;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             if (fmt.IsMobile) buf.Skip(128);
             Money = buf.ReadInt32();
@@ -148,7 +148,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             if (fmt.IsMobile) buf.Write(new byte[128]);
             buf.Write(Money);
@@ -200,7 +200,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPSP) return 0x170;
             if (fmt.IsPS2) return 0x190;

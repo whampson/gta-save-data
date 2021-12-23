@@ -35,7 +35,7 @@ namespace TestApp
         public event EventHandler<TabRefreshEventArgs> TabRefresh;
 
         private SaveFile m_currentSaveFile;
-        private FileFormat m_currentFileFormat;
+        private FileType m_currentFileFormat;
         private Game m_selectedGame;
         private string m_statusText;
         private ObservableCollection<TabPageViewModelBase> m_tabs;
@@ -59,7 +59,7 @@ namespace TestApp
             set { m_currentSaveFile = value; OnPropertyChanged(); }
         }
 
-        public FileFormat CurrentFileFormat
+        public FileType CurrentFileFormat
         {
             get { return m_currentFileFormat; }
             set { m_currentFileFormat = value; OnPropertyChanged(); }
@@ -81,9 +81,9 @@ namespace TestApp
             set { m_statusText = value; OnPropertyChanged(); }
         }
 
-        public static Dictionary<Game, IEnumerable<FileFormat>> FileFormats => new Dictionary<Game, IEnumerable<FileFormat>>()
+        public static Dictionary<Game, IEnumerable<FileType>> FileFormats => new Dictionary<Game, IEnumerable<FileType>>()
         {
-            { Game.None, new List<FileFormat>() },
+            { Game.None, new List<FileType>() },
             { Game.GTA3, SaveFileGTA3.FileFormats.GetAll() },
             { Game.VC, SaveFileVC.FileFormats.GetAll() },
             { Game.SA, SaveFileSA.FileFormats.GetAll() },
@@ -92,7 +92,7 @@ namespace TestApp
             { Game.IV, SaveFileIV.FileFormats.GetAll() },
         };
 
-        public IEnumerable<FileFormat> FileFormatsForCurrentGame
+        public IEnumerable<FileType> FileFormatsForCurrentGame
         {
             get { return FileFormats[SelectedGame]; }
         }
@@ -221,7 +221,7 @@ namespace TestApp
         {
             try
             {
-                bool detected = SaveFile.TryGetFileType<T>(path, out FileFormat fmt);
+                bool detected = SaveFile.TryGetFileType<T>(path, out FileType fmt);
                 if (!detected)
                 {
                     RequestMessageBoxError(string.Format("Unable to detect file type!"));
@@ -266,7 +266,7 @@ namespace TestApp
         {
             CleanupOldSaveData();
             CurrentSaveFile = null;
-            CurrentFileFormat = FileFormat.Default;
+            CurrentFileFormat = FileType.Default;
 
             OnTabRefresh(TabRefreshTrigger.FileClosed);
             StatusText = "File closed.";

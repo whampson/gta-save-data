@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPhone : Base<Phone>
     {
-        public override Phone GenerateTestObject(FileFormat format)
+        public override Phone GenerateTestObject(FileType format)
         {
             Faker<Phone> model = new Faker<Phone>()
                 .RuleFor(x => x.Position, f => Generator.Vector3(f))
@@ -21,7 +21,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             Phone x0 = GenerateTestObject(format);
             Phone x1 = CreateSerializedCopy(x0, format, out byte[] data);

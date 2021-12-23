@@ -141,7 +141,7 @@ namespace GTASaveData.VC
             ModelName = other.ModelName;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             // PC
 
@@ -170,7 +170,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             // CPed
             buf.Skip(52);
@@ -197,7 +197,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
 
         {
             if (fmt.IsAndroid) return 0x730;

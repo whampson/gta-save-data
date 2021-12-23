@@ -149,7 +149,7 @@ namespace GTASaveData.GTA3
             ModelName = other.ModelName;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             buf.Skip(48);
@@ -182,7 +182,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             buf.Skip(48);
@@ -215,7 +215,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPS2 && fmt.FlagJapan) return 0x590;
             if (fmt.IsPS2) return 0x5B0;

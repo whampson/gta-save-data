@@ -297,7 +297,7 @@ namespace GTASaveData.SA
             return Load<SaveFileSA>(path);
         }
 
-        public static SaveFileSA Load(string path, FileFormat fmt)
+        public static SaveFileSA Load(string path, FileType fmt)
         {
             return Load<SaveFileSA>(path, fmt);
         }
@@ -677,14 +677,14 @@ namespace GTASaveData.SA
             Debug.Assert(m_file.Position == SizeOfOneGameInBytes);
         }
 
-        protected override bool DetectFileType(byte[] data, out FileFormat fmt)
+        protected override bool DetectFileType(byte[] data, out FileType fmt)
         {
             // TODO
             fmt = FileFormats.PC;
             return true;
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             // TODO: calculate size
 
@@ -782,13 +782,13 @@ namespace GTASaveData.SA
         public static class FileFormats
         {
             // TODO: 1.05 and 1.06 different?
-            public static readonly FileFormat Mobile = new FileFormat(
+            public static readonly FileType Mobile = new FileType(
                 "Mobile", "Mobile", "Android, iOS",
                 GameSystem.Android,
                 GameSystem.iOS
             );
 
-            public static readonly FileFormat PC = new FileFormat(
+            public static readonly FileType PC = new FileFormat(
                 "PC", "PC", "Windows, macOS",
                 GameSystem.Windows,
                 GameSystem.macOS,
@@ -796,19 +796,19 @@ namespace GTASaveData.SA
                 GameSystem.macOS
             );
 
-            public static readonly FileFormat PS2 = new FileFormat(
+            public static readonly FileType PS2 = new FileType(
                 "PS2", "PS2", "PlayStation 2",
                 GameSystem.PS2
             );
 
-            public static readonly FileFormat Xbox = new FileFormat(
+            public static readonly FileType Xbox = new FileType(
                 "Xbox", "Xbox", "Xbox",
                 GameSystem.Xbox
             );
 
-            public static FileFormat[] GetAll()
+            public static FileType[] GetAll()
             {
-                return new FileFormat[] { Mobile, PC, PS2, Xbox };
+                return new FileType[] { Mobile, PC, PS2, Xbox };
             }
         }
     }

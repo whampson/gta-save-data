@@ -268,7 +268,7 @@ namespace GTASaveData.GTA3
             DoorLock = other.DoorLock;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             Matrix = buf.ReadStruct<Matrix>();
@@ -319,7 +319,7 @@ namespace GTASaveData.GTA3
             else buf.Skip(96);
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             buf.Write(Matrix);

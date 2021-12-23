@@ -236,7 +236,7 @@ namespace GTASaveData.LCS
             Locals[index] = value;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             NextScriptPointer = buf.ReadUInt32();
             if (fmt.IsiOS) buf.ReadInt32();
@@ -269,7 +269,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(NextScriptPointer);
             if (fmt.IsiOS) buf.Write(0);
@@ -302,7 +302,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return (fmt.IsiOS) ? 0x228 : 0x21C;
         }

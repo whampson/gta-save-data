@@ -215,14 +215,14 @@ namespace GTASaveData
             Debug.WriteLine($"{typeof(T).Name}: {size} bytes written");
         }
 
-        protected override void OnReading(FileFormat fmt)
+        protected override void OnReading(FileType fmt)
         {
             base.OnReading(fmt);
             FileType = fmt;
             InitWorkBuffer();
         }
 
-        protected override void OnWriting(FileFormat fmt)
+        protected override void OnWriting(FileType fmt)
         {
             base.OnWriting(fmt);
             FileType = fmt;

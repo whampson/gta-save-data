@@ -7,7 +7,7 @@ namespace GTASaveData.Core.Tests
 {
     public class TestBuildingSwap : SaveDataObjectTestBase<BuildingSwap>
     {
-        public override BuildingSwap GenerateTestObject(FileFormat format)
+        public override BuildingSwap GenerateTestObject(FileType format)
         {
             Faker<BuildingSwap> model = new Faker<BuildingSwap>()
                 .RuleFor(x => x.Type, f => f.PickRandom<EntityClassType>())

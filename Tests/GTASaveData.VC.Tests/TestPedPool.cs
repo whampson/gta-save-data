@@ -6,7 +6,7 @@ namespace GTASaveData.VC.Tests
 {
     public class TestPedPool : Base<PedPool>
     {
-        public override PedPool GenerateTestObject(FileFormat format)
+        public override PedPool GenerateTestObject(FileType format)
         {
             Faker<PedPool> model = new Faker<PedPool>()
                 .RuleFor(x => x.PlayerPeds, f => Generator.Array(f.Random.Int(1, 3),
@@ -27,7 +27,7 @@ namespace GTASaveData.VC.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             PedPool x0 = GenerateTestObject(format);
             PedPool x1 = CreateSerializedCopy(x0, format, out byte[] data);

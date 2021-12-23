@@ -6,7 +6,7 @@ namespace GTASaveData.LCS.Tests
 {
     public class TestStoredCar : Base<StoredCar>
     {
-        public override StoredCar GenerateTestObject(FileFormat format)
+        public override StoredCar GenerateTestObject(FileType format)
         {
             Faker<StoredCar> model = new Faker<StoredCar>()
                 .RuleFor(x => x.Model, f => f.Random.Int())
@@ -26,7 +26,7 @@ namespace GTASaveData.LCS.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             StoredCar x0 = GenerateTestObject(format);
             StoredCar x1 = CreateSerializedCopy(x0, format, out byte[] data);

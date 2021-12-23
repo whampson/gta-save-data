@@ -26,7 +26,7 @@ namespace GTASaveData.GTA3
             : base(other)
         { }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             base.ReadData(buf, fmt);
             buf.Skip(SizeOf<Boat>(fmt) - buf.Offset);
@@ -34,7 +34,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             base.WriteData(buf, fmt);
             buf.Skip(SizeOf<Boat>(fmt) - buf.Offset);
@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPS2 && fmt.FlagJapan) return 0x50C;
             if (fmt.IsPC || fmt.IsXbox) return 0x484;

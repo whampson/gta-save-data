@@ -337,7 +337,7 @@ namespace GTASaveData.LCS
             //CollectedCarsState = other.CollectedCarsState;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             if (fmt.IsPS2)
             {
@@ -474,7 +474,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOf<Garage>(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             if (fmt.IsPS2)
             {
@@ -621,7 +621,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOf<Garage>(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPS2) return 0x100;
             if (fmt.IsPSP) return 0xE0;

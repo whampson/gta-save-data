@@ -244,7 +244,7 @@ namespace GTASaveData.VC
             return Load<SaveFileVC>(path);
         }
 
-        public static SaveFileVC Load(string path, FileFormat fmt)
+        public static SaveFileVC Load(string path, FileType fmt)
         {
             return Load<SaveFileVC>(path, fmt);
         }
@@ -412,7 +412,7 @@ namespace GTASaveData.VC
             Debug.WriteLine("Save successful!");
         }
 
-        protected override bool DetectFileType(byte[] data, out FileFormat fmt)
+        protected override bool DetectFileType(byte[] data, out FileType fmt)
         {
             // TODO: PS2, Xbox
 
@@ -471,7 +471,7 @@ namespace GTASaveData.VC
             }
 
         DetectionFailed:
-            fmt = FileFormat.Default;
+            fmt = FileType.Default;
             return false;
         }
 
@@ -485,7 +485,7 @@ namespace GTASaveData.VC
             return 55000;
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             int size = 0;
 
@@ -574,39 +574,39 @@ namespace GTASaveData.VC
 
         public static class FileFormats
         {
-            public static readonly FileFormat Android = new FileFormat(
+            public static readonly FileType Android = new FileType(
                 "Android", GameSystem.Android
             );
 
-            public static readonly FileFormat iOS = new FileFormat(
+            public static readonly FileType iOS = new FileType(
                 "iOS", GameSystem.iOS
             );
 
-            public static readonly FileFormat PC = new FileFormat(
+            public static readonly FileType PC = new FileFormat(
                 "PC", "PC", "Windows (Retail Version), Mac OS",
                 GameSystem.Windows,
                 GameSystem.macOS
             );
 
-            public static readonly FileFormat PC_Steam = new FileFormat(
+            public static readonly FileType PC_Steam = new FileType(
                 "PC_Steam", "PC (Steam)", "Windows (Steam Version)",
-                FileFormatFlags.Steam,
+                FileTypeFlags.Steam,
                 GameSystem.Windows
             );
 
-            public static readonly FileFormat PS2 = new FileFormat(
+            public static readonly FileType PS2 = new FileType(
                 "PS2", "PS2", "PlayStation 2",
                 GameSystem.PS2
             );
 
-            public static readonly FileFormat Xbox = new FileFormat(
+            public static readonly FileType Xbox = new FileType(
                 "Xbox",
                 GameSystem.Xbox
             );
 
-            public static FileFormat[] GetAll()
+            public static FileType[] GetAll()
             {
-                return new FileFormat[] { Android, iOS, PC, PC_Steam, PS2, Xbox };
+                return new FileType[] { Android, iOS, PC, PC_Steam, PS2, Xbox };
             }
         }
     }

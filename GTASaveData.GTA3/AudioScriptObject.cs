@@ -50,7 +50,7 @@ namespace GTASaveData.GTA3
             AudioEntity = other.AudioEntity;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             Index = buf.ReadInt32();
             AudioId = buf.ReadInt16();
@@ -61,7 +61,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<AudioScriptObject>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(Index);
             buf.Write(AudioId);
@@ -72,7 +72,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<AudioScriptObject>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 24;
         }

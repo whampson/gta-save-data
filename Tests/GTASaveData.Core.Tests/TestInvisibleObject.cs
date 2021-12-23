@@ -7,7 +7,7 @@ namespace GTASaveData.Core.Tests
 {
     public class TestInvisibleObject : SaveDataObjectTestBase<InvisibleObject>
     {
-        public override InvisibleObject GenerateTestObject(FileFormat format)
+        public override InvisibleObject GenerateTestObject(FileType format)
         {
             Faker<InvisibleObject> model = new Faker<InvisibleObject>()
                 .RuleFor(x => x.Type, f => f.PickRandom<EntityClassType>())

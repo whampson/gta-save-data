@@ -10,7 +10,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestSaveFileGTA3 : Base<SaveFileGTA3>
     {
-        public override SaveFileGTA3 GenerateTestObject(FileFormat format)
+        public override SaveFileGTA3 GenerateTestObject(FileType format)
         {
             Faker<SaveFileGTA3> model = new Faker<SaveFileGTA3>()
                 .RuleFor(x => x.FileType, format)
@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void DefinitiveEditionPlayground(FileFormat fmt, string path)
+        public void DefinitiveEditionPlayground(FileType fmt, string path)
         {
             if (!fmt.FlagDE) return;
 
@@ -55,17 +55,17 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void FileFormatDetection(FileFormat expectedFormat, string filename)
+        public void FileFormatDetection(FileType expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.GTA3, expectedFormat, filename);
-            SaveFile.TryGetFileType<SaveFileGTA3>(path, out FileFormat detectedFormat);
+            SaveFile.TryGetFileType<SaveFileGTA3>(path, out FileType detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             using SaveFileGTA3 x0 = GenerateTestObject(format);
             using SaveFileGTA3 x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -77,7 +77,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealData(FileFormat format, string filename)
+        public void RealData(FileType format, string filename)
         {
             string path = TestData.GetTestDataPath(Game.GTA3, format, filename);
 
@@ -153,7 +153,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0, x1);
         }
 
-        private void AssertCheckSumValid(byte[] data, FileFormat format)
+        private void AssertCheckSumValid(byte[] data, FileType format)
         {
             int sumOffset = (format.IsXbox) ? data.Length - 24 : data.Length - 4;
             int calculatedSum = data.Take(sumOffset).Sum(x => x);

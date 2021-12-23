@@ -90,7 +90,7 @@ namespace GTASaveData.LCS
             return Load<SaveFileLCS>(path);
         }
 
-        public static SaveFileLCS Load(string path, FileFormat fmt)
+        public static SaveFileLCS Load(string path, FileType fmt)
         {
             return Load<SaveFileLCS>(path, fmt);
         }
@@ -196,7 +196,7 @@ namespace GTASaveData.LCS
             Debug.WriteLine("Save successful!");
         }
 
-        protected override bool DetectFileType(byte[] data, out FileFormat fmt)
+        protected override bool DetectFileType(byte[] data, out FileType fmt)
         {
             const int SimpSizePS2 = 0xF8;
             const int SimpSizePSP = 0xBC;
@@ -250,7 +250,7 @@ namespace GTASaveData.LCS
             }
 
         DetectionFailed:
-            fmt = FileFormat.Default;
+            fmt = FileType.Default;
             return false;
         }
 
@@ -259,7 +259,7 @@ namespace GTASaveData.LCS
             return (int) (addr + 3 & 0xFFFFFFFC);
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             int size = 0;
             size += Align4(SizeOf(SimpleVars, fmt)) + 8;
@@ -299,29 +299,29 @@ namespace GTASaveData.LCS
 
         public static class FileFormats
         {
-            public static readonly FileFormat Android = new FileFormat(
+            public static readonly FileType Android = new FileType(
                 "Android", "Android", "Android OS",
                 GameSystem.Android
             );
 
-            public static readonly FileFormat iOS = new FileFormat(
+            public static readonly FileType iOS = new FileType(
                 "iOS", "iOS", "Apple iOS",
                 GameSystem.iOS
             );
 
-            public static readonly FileFormat PS2 = new FileFormat(
+            public static readonly FileType PS2 = new FileType(
                 "PS2", "PS2", "PlayStation 2",
                 GameSystem.PS2
             );
 
-            public static readonly FileFormat PSP = new FileFormat(
+            public static readonly FileType PSP = new FileType(
                 "PSP", "PSP", "PlayStation Portable",
                 GameSystem.PSP
             );
 
-            public static FileFormat[] GetAll()
+            public static FileType[] GetAll()
             {
-                return new FileFormat[] { Android, iOS, PS2, PSP };
+                return new FileType[] { Android, iOS, PS2, PSP };
             }
         }
     }

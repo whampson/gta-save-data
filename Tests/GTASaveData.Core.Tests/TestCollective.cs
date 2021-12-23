@@ -7,7 +7,7 @@ namespace GTASaveData.Core.Tests
 {
     public class TestCollective : SaveDataObjectTestBase<Collective>
     {
-        public override Collective GenerateTestObject(FileFormat format)
+        public override Collective GenerateTestObject(FileType format)
         {
             Faker<Collective> model = new Faker<Collective>()
                 .RuleFor(x => x.Index, f => f.Random.Int())

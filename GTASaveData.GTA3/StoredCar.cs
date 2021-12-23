@@ -98,7 +98,7 @@ namespace GTASaveData.GTA3
             Bomb = other.Bomb;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             Model = buf.ReadInt32();
             Vector3 position = buf.ReadStruct<Vector3>();
@@ -122,7 +122,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(Model);
             buf.Write(Position);
@@ -139,7 +139,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0x28;
         }

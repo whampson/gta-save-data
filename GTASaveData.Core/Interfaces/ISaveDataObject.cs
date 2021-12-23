@@ -7,28 +7,28 @@
     {
         /// <summary>
         /// Populates this object's fields by deserializing its data from a 
-        /// <see cref="DataBuffer"/> using the specified <see cref="FileFormat"/>
+        /// <see cref="DataBuffer"/> using the specified <see cref="FileType"/>
         /// to control how data is read.
         /// </summary>
         /// <param name="buf">The buffer to read from.</param>
-        /// <param name="fmt">The <see cref="FileFormat"/> controlling how data is read.</param>
+        /// <param name="fmt">The <see cref="FileType"/> controlling how data is read.</param>
         /// <returns>The number of bytes read.</returns>
-        int ReadData(DataBuffer buf, FileFormat fmt);
+        int ReadData(DataBuffer buf, FileType fmt);
 
         /// <summary>
         /// Serializes the object by writing its fields to a <see cref="DataBuffer"/>
-        /// using the specified <see cref="FileFormat"/> to control how data is written.
+        /// using the specified <see cref="FileType"/> to control how data is written.
         /// </summary>
         /// <param name="buf">The buffer to write to.</param>
-        /// <param name="fmt">The <see cref="FileFormat"/> controlling how data is written.</param>
+        /// <param name="fmt">The <see cref="FileType"/> controlling how data is written.</param>
         /// <returns>The number of bytes written.</returns>
-        int WriteData(DataBuffer buf, FileFormat fmt);
+        int WriteData(DataBuffer buf, FileType fmt);
 
         /// <summary>
         /// Gets the size in bytes of this object.
         /// </summary>
-        /// <param name="fmt">The <see cref="FileFormat"/> controlling how data is written, which may affect the size.</param>
+        /// <param name="fmt">The <see cref="FileType"/> controlling how data is written, which may affect the size.</param>
         /// <returns>The size in bytes of the serialized object.</returns>
-        int GetSize(FileFormat fmt);
+        int GetSize(FileType fmt);
     }
 }

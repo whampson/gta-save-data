@@ -43,7 +43,7 @@ namespace GTASaveData.GTA3
             Gangs = ArrayHelper.DeepClone(other.Gangs);
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             int size = SaveFileGTA3VC.ReadBlockHeader(buf, out string tag);
             Debug.Assert(tag == "GNG");
@@ -54,7 +54,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOf<GangData>() - SaveFileGTA3VC.BlockHeaderSize);
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             SaveFileGTA3VC.WriteBlockHeader(buf, "GNG", SizeOf<GangData>() - SaveFileGTA3VC.BlockHeaderSize);
             buf.Write(Gangs, MaxNumGangs);
@@ -62,7 +62,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<GangData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0x98;
         }

@@ -37,7 +37,7 @@ namespace GTASaveData.GTA3
             RadarBlips = ArrayHelper.DeepClone(other.RadarBlips);
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             int size = SaveFileGTA3VC.ReadBlockHeader(buf, out string tag);
             Debug.Assert(tag == "RDR");
@@ -47,7 +47,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOf<RadarData>() - SaveFileGTA3VC.BlockHeaderSize);
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             SaveFileGTA3VC.WriteBlockHeader(buf, "RDR", SizeOf<RadarData>() - SaveFileGTA3VC.BlockHeaderSize);
             buf.Write(RadarBlips, MaxNumRadarBlips);
@@ -55,7 +55,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<RadarData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0x608;
         }

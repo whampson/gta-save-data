@@ -5,7 +5,7 @@ namespace GTASaveData.VC.Tests
 {
     public class TestWeapon : Base<Weapon>
     {
-        public override Weapon GenerateTestObject(FileFormat format)
+        public override Weapon GenerateTestObject(FileType format)
         {
             Faker<Weapon> model = new Faker<Weapon>()
                 .RuleFor(x => x.Type, f => f.PickRandom<WeaponType>())
@@ -19,7 +19,7 @@ namespace GTASaveData.VC.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             Weapon x0 = GenerateTestObject(format);
             Weapon x1 = CreateSerializedCopy(x0, format, out byte[] data);

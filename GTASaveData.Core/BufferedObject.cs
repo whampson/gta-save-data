@@ -43,7 +43,7 @@
             _ = dest.Write(WorkBuffer.ToArray());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return WorkBuffer.Count;
         }

@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestAutoPilot : Base<AutoPilot>
     {
-        public override AutoPilot GenerateTestObject(FileFormat format)
+        public override AutoPilot GenerateTestObject(FileType format)
         {
             Faker<AutoPilot> model = new Faker<AutoPilot>()
                 .RuleFor(x => x.CurrRouteNode, f => f.Random.Int())
@@ -43,7 +43,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             AutoPilot x0 = GenerateTestObject(format);
             AutoPilot x1 = CreateSerializedCopy(x0, format, out byte[] data);

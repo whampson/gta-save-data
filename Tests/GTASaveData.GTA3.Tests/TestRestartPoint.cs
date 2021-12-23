@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestRestartPoint : Base<RestartPoint>
     {
-        public override RestartPoint GenerateTestObject(FileFormat format)
+        public override RestartPoint GenerateTestObject(FileType format)
         {
             Faker<RestartPoint> model = new Faker<RestartPoint>()
                 .RuleFor(x => x.Position, f => Generator.Vector3(f))
@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             RestartPoint x0 = GenerateTestObject(format);
             RestartPoint x1 = CreateSerializedCopy(x0, format, out byte[] data);

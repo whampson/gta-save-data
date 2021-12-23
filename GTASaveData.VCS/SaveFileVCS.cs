@@ -91,7 +91,7 @@ namespace GTASaveData.VCS
             return Load<SaveFileVCS>(path);
         }
 
-        public static SaveFileVCS Load(string path, FileFormat fmt)
+        public static SaveFileVCS Load(string path, FileType fmt)
         {
             return Load<SaveFileVCS>(path, fmt);
         }
@@ -219,7 +219,7 @@ namespace GTASaveData.VCS
             Debug.WriteLine("Save successful!");
         }
 
-        protected override bool DetectFileType(byte[] data, out FileFormat fmt)
+        protected override bool DetectFileType(byte[] data, out FileType fmt)
         {
             const int SimpSizePS2 = 0x104;
             const int SimpSizePSP = 0xC8;
@@ -254,7 +254,7 @@ namespace GTASaveData.VCS
             }
 
         DetectionFailed:
-            fmt = FileFormat.Default;
+            fmt = FileType.Default;
             return false;
         }
 
@@ -263,7 +263,7 @@ namespace GTASaveData.VCS
             return (int) (addr + 3 & 0xFFFFFFFC);
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             int size = 0;
             size += Align4(SizeOf(SimpleVars, fmt)) + 8;
@@ -304,19 +304,19 @@ namespace GTASaveData.VCS
 
         public static class FileFormats
         {
-            public static readonly FileFormat PS2 = new FileFormat(
+            public static readonly FileType PS2 = new FileType(
                 "PS2", "PS2", "PlayStation 2",
                 GameSystem.PS2
             );
 
-            public static readonly FileFormat PSP = new FileFormat(
+            public static readonly FileType PSP = new FileType(
                 "PSP", "PSP", "PlayStation Portable",
                 GameSystem.PSP
             );
 
-            public static FileFormat[] GetAll()
+            public static FileType[] GetAll()
             {
-                return new FileFormat[] { PS2, PSP };
+                return new FileType[] { PS2, PSP };
             }
         }
     }

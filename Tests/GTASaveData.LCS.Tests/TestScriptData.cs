@@ -9,7 +9,7 @@ namespace GTASaveData.LCS.Tests
 {
     public class TestScriptData : Base<ScriptData>
     {
-        public override ScriptData GenerateTestObject(FileFormat format)
+        public override ScriptData GenerateTestObject(FileType format)
         {
             Faker faker = new Faker();
 
@@ -36,7 +36,7 @@ namespace GTASaveData.LCS.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             ScriptData x0 = GenerateTestObject(format);
             ScriptData x1 = CreateSerializedCopy(x0, format, out byte[] data);

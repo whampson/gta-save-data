@@ -53,7 +53,7 @@ namespace GTASaveData.GTA3
             Phones = ArrayHelper.DeepClone(other.Phones);
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             NumPhones = buf.ReadInt32();
             NumActivePhones = buf.ReadInt32();
@@ -62,7 +62,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PhoneData>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(NumPhones);
             buf.Write(NumActivePhones);
@@ -71,7 +71,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PhoneData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0xA30;
         }

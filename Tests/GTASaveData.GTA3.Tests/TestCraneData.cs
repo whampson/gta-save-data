@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestCraneData : Base<CraneData>
     {
-        public override CraneData GenerateTestObject(FileFormat format)
+        public override CraneData GenerateTestObject(FileType format)
         {
             Faker<CraneData> model = new Faker<CraneData>()
                 .RuleFor(x => x.NumCranes, f => f.Random.Int())
@@ -18,7 +18,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             CraneData x0 = GenerateTestObject(format);
             CraneData x1 = CreateSerializedCopy(x0, format, out byte[] data);

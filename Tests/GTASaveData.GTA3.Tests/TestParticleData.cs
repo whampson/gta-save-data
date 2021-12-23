@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestParticleData : Base<ParticleData>
     {
-        public override ParticleData GenerateTestObject(FileFormat format)
+        public override ParticleData GenerateTestObject(FileType format)
         {
             Faker<ParticleData> model = new Faker<ParticleData>()
                 .RuleFor(x => x.Objects,
@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             ParticleData x0 = GenerateTestObject(format);
             ParticleData x1 = CreateSerializedCopy(x0, format, out byte[] data);

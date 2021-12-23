@@ -6,37 +6,38 @@ using System.Linq;
 namespace GTASaveData
 {
     /// <summary>
-    /// A unique identifier for a structured ordering of data as bytes in a file.
-    /// A <see cref="FileFormat"/> consists of two parts: a list of supported <see cref="GameSystem"/>s,
-    /// and a set of <see cref="FileFormatFlags"/>.
+    /// A <see cref="FileType"/> is a specifier for the arrangement of bytes in a save file.
+    /// It consists of two parts: a list of supported <see cref="GameSystem"/>s, and a set
+    /// of <see cref="FileTypeFlags"/>.
     /// </summary>
     /// <remarks>
     /// Many games exhibit minor layout differences in the save files between platforms.
     /// For example, the data in GTA3's PS2 and PC save files are packaged differently in terms
-    /// of how the blocks are written. A <see cref="FileFormat"/> is designed to disambiguate
+    /// of how the blocks are written. A <see cref="FileType"/> is designed to disambiguate
     /// thesee differing data layouts. It does NOT reveal information about the game script version
     /// or other game differences.
     /// <para>
     /// Equality between file formats is determined by comparing the compatibility list and flags;
     /// ID, display name, and description are ignored as they may be shared between similar file
-    /// formats.
+    /// types.
     /// </para>
     /// </remarks>
-    public struct FileFormat : IEquatable<FileFormat>
+    public struct FileType : IEquatable<FileType>
     {
         /// <summary>
-        /// A boring, blank, and empty <see cref="FileFormat"/>.
+        /// Placeholder for areas where <see cref="FileType"/> is irrelevant;
+        /// do not use.
         /// </summary>
-        public static readonly FileFormat Default = new FileFormat("", "", "");
+        public static readonly FileType Default = new FileType("", "", "");
 
         private readonly string m_id;
         private readonly string m_displayName;
         private readonly string m_description;
-        private readonly FileFormatFlags m_flags;
+        private readonly FileTypeFlags m_flags;
         private readonly IEnumerable<GameSystem> m_compatibleWith;
 
         /// <summary>
-        /// A short identifier for this file format.
+        /// A short identifier for this file type.
         /// </summary>
         /// <remarks>
         /// Example: PC_STEAM
@@ -44,7 +45,7 @@ namespace GTASaveData
         public string Id => m_id ?? "";
 
         /// <summary>
-        /// A friendly name to use for this file format.
+        /// A friendly name to use for this file type.
         /// </summary>
         /// <remarks>
         /// Example: PC (Steam)
@@ -52,60 +53,60 @@ namespace GTASaveData
         public string DisplayName => m_displayName ?? "";
 
         /// <summary>
-        /// A long description of this file format.
+        /// A long description of this file type.
         /// </summary>
         public string Description => m_description ?? "";
 
         /// <summary>
-        ///  A set of <see cref="FileFormatFlags"/> used to further delineate file formats.
+        ///  A set of <see cref="FileTypeFlags"/> used to further delineate file formats.
         /// </summary>
-        public FileFormatFlags Flags => m_flags;
+        public FileTypeFlags Flags => m_flags;
 
         /// <summary>
-        /// Game systems which are compatible with this <see cref="FileFormat"/>.
+        /// Game systems which are compatible with this <see cref="FileType"/>.
         /// </summary>
         public IEnumerable<GameSystem> CompatibilityList => m_compatibleWith ?? new List<GameSystem>();
 
         /// <summary>
-        /// Creates a new <see cref="FileFormat"/>.
+        /// Creates a new <see cref="FileType"/>.
         /// </summary>
         /// <param name="id">A short identifier.</param>
         /// <param name="compatibleWith">A list of compatible <see cref="GameSystem"/>s.</param>
-        public FileFormat(string id, params GameSystem[] compatibleWith)
-            : this(id, id, id, FileFormatFlags.None, compatibleWith)
+        public FileType(string id, params GameSystem[] compatibleWith)
+            : this(id, id, id, FileTypeFlags.None, compatibleWith)
         { }
 
         /// <summary>
-        /// Creates a new <see cref="FileFormat"/>.
+        /// Creates a new <see cref="FileType"/>.
         /// </summary>
         /// <param name="id">A short identifier.</param>
-        /// <param name="flags">A set of <see cref="FileFormatFlags"/>.</param>
+        /// <param name="flags">A set of <see cref="FileTypeFlags"/>.</param>
         /// <param name="compatibleWith">A list of compatible <see cref="GameSystem"/>s.</param>
-        public FileFormat(string id, FileFormatFlags flags, params GameSystem[] compatibleWith)
+        public FileType(string id, FileTypeFlags flags, params GameSystem[] compatibleWith)
             : this(id, id, id, flags, compatibleWith)
         { }
 
         /// <summary>
-        /// Creates a new <see cref="FileFormat"/>.
+        /// Creates a new <see cref="FileType"/>.
         /// </summary>
         /// <param name="id">A short identifier.</param>
         /// <param name="displayName">A short friendly name.</param>
         /// <param name="description">A long description.</param>
         /// <param name="compatibleWith">A list of compatible <see cref="GameSystem"/>s.</param>
-        public FileFormat(string id, string displayName, string description,
+        public FileType(string id, string displayName, string description,
             params GameSystem[] compatibleWith)
-            : this(id, displayName, description, FileFormatFlags.None, compatibleWith)
+            : this(id, displayName, description, FileTypeFlags.None, compatibleWith)
         { }
 
         /// <summary>
-        /// Creates a new <see cref="FileFormat"/>.
+        /// Creates a new <see cref="FileType"/>.
         /// </summary>
         /// <param name="id">A short identifier.</param>
         /// <param name="displayName">A short friendly name.</param>
         /// <param name="description">A long description.</param>
-        /// <param name="flags">A set of <see cref="FileFormatFlags"/>.</param>
+        /// <param name="flags">A set of <see cref="FileTypeFlags"/>.</param>
         /// <param name="compatibleWith">A list of compatible <see cref="GameSystem"/>s.</param>
-        public FileFormat(string id, string displayName, string description, FileFormatFlags flags,
+        public FileType(string id, string displayName, string description, FileTypeFlags flags,
             params GameSystem[] compatibleWith)
         {
             m_id = id;
@@ -116,7 +117,7 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Checks whether this <see cref="FileFormat"/> is supported on the specified <see cref="GameSystem"/>.
+        /// Checks whether this <see cref="FileType"/> is supported on the specified <see cref="GameSystem"/>.
         /// </summary>
         public bool IsSupportedOn(GameSystem s)
         {
@@ -124,9 +125,9 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Checks wither this <see cref="FileFormat"/> has a specific <see cref="FileFormatFlags"/> value set.
+        /// Checks wither this <see cref="FileType"/> has a specific <see cref="FileTypeFlags"/> value set.
         /// </summary>
-        public bool HasFlag(FileFormatFlags f)
+        public bool HasFlag(FileTypeFlags f)
         {
             return Flags.HasFlag(f);
         }
@@ -145,15 +146,15 @@ namespace GTASaveData
 
         public override bool Equals(object obj)
         {
-            if (!(obj is FileFormat))
+            if (!(obj is FileType))
             {
                 return false;
             }
 
-            return Equals((FileFormat) obj);
+            return Equals((FileType) obj);
         }
 
-        public bool Equals(FileFormat other)
+        public bool Equals(FileType other)
         {
             // Deliberately ignoring Id/DisplayName/Description as they may not be unique
             return CompatibilityList.SequenceEqual(other.CompatibilityList)
@@ -165,108 +166,108 @@ namespace GTASaveData
             return DisplayName;
         }
 
-        public static bool operator ==(FileFormat left, FileFormat right)
+        public static bool operator ==(FileType left, FileType right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(FileFormat left, FileFormat right)
+        public static bool operator !=(FileType left, FileType right)
         {
             return !left.Equals(right);
         }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on the Android OS.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the Android OS.
         /// </summary>
         [JsonIgnore] public bool IsAndroid => IsSupportedOn(GameSystem.Android);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on Apple iOS.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on Apple iOS.
         /// </summary>
         [JsonIgnore] public bool IsiOS => IsSupportedOn(GameSystem.iOS);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on the PlayStation 2.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the PlayStation 2.
         /// </summary>
         [JsonIgnore] public bool IsPS2 => IsSupportedOn(GameSystem.PS2);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on the PlayStation 3.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the PlayStation 3.
         /// </summary>
         [JsonIgnore] public bool IsPS3 => IsSupportedOn(GameSystem.PS3);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on the PlayStation 4.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the PlayStation 4.
         /// </summary>
         [JsonIgnore] public bool IsPS4 => IsSupportedOn(GameSystem.PS4);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on the PlayStation 5.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the PlayStation 5.
         /// </summary>
         [JsonIgnore] public bool IsPS5 => IsSupportedOn(GameSystem.PS5);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on the PlayStation Portable.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the PlayStation Portable.
         /// </summary>
         [JsonIgnore] public bool IsPSP => IsSupportedOn(GameSystem.PSP);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on the Nintendo Switch.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the Nintendo Switch.
         /// </summary>
         [JsonIgnore] public bool IsSwitch => IsSupportedOn(GameSystem.Switch);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on the original Xbox.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the original Xbox.
         /// </summary>
         [JsonIgnore] public bool IsXbox => IsSupportedOn(GameSystem.Xbox);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on the Xbox 360.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the Xbox 360.
         /// </summary>
         [JsonIgnore] public bool IsXbox360 => IsSupportedOn(GameSystem.Xbox360);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on the Xbox One
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the Xbox One
         /// or Xbox Series X|S.
         /// </summary>
         [JsonIgnore] public bool IsXboxOne => IsSupportedOn(GameSystem.XboxOne);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on Microsoft Windows.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on Microsoft Windows.
         /// </summary>
         [JsonIgnore] public bool IsWindows => IsSupportedOn(GameSystem.Windows);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on
         /// Android or iOS.
         /// </summary>
         [JsonIgnore] public bool IsMobile => IsAndroid || IsiOS;
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> is supported on Microsoft Windows.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on Microsoft Windows.
         /// </summary>
         [JsonIgnore] public bool IsPC => IsWindows;
 
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> has the Steam flag set.
+        /// Gets a value indicating whether this <see cref="FileType"/> has the Steam flag set.
         /// </summary>
-        [JsonIgnore] public bool FlagSteam => HasFlag(FileFormatFlags.Steam);
+        [JsonIgnore] public bool FlagSteam => HasFlag(FileTypeFlags.Steam);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> has the Australia flag set.
+        /// Gets a value indicating whether this <see cref="FileType"/> has the Australia flag set.
         /// </summary>
-        [JsonIgnore] public bool FlagAustralia => HasFlag(FileFormatFlags.Australia);
+        [JsonIgnore] public bool FlagAustralia => HasFlag(FileTypeFlags.Australia);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> has the Japan flag set.
+        /// Gets a value indicating whether this <see cref="FileType"/> has the Japan flag set.
         /// </summary>
-        [JsonIgnore] public bool FlagJapan => HasFlag(FileFormatFlags.Japan);
+        [JsonIgnore] public bool FlagJapan => HasFlag(FileTypeFlags.Japan);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileFormat"/> has the Definitive Edition flag set.
+        /// Gets a value indicating whether this <see cref="FileType"/> has the Definitive Edition flag set.
         /// </summary>
-        [JsonIgnore] public bool FlagDE => HasFlag(FileFormatFlags.DE);
+        [JsonIgnore] public bool FlagDE => HasFlag(FileTypeFlags.DE);
     }
 
     /// <summary>
@@ -429,18 +430,18 @@ namespace GTASaveData
 
 
     /// <summary>
-    /// Modifier flags that may be used to further delineate a file format.
+    /// Modifier flags that may be used to further delineate a file type.
     /// </summary>
     /// <remarks>
     /// These typically align with different versions of the same game.
     /// </remarks>
     [Flags]
-    public enum FileFormatFlags
+    public enum FileTypeFlags
     {
         None = 0,
 
         /// <summary>
-        /// The Steam version of <i>Grand Theft Auto: Vice City</i>.
+        /// The PC Steam version of <i>Grand Theft Auto: Vice City</i>.
         /// </summary>
         Steam = 1 << 0,
 

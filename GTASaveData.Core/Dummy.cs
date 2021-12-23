@@ -14,12 +14,12 @@ namespace GTASaveData
         public Dummy(int size) : base(size) { }
         public Dummy(Dummy other) : base(other) { }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             FillWorkBuffer(buf);
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             WriteWorkBuffer(buf);
         }

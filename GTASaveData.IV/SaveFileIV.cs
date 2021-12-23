@@ -348,7 +348,7 @@ namespace GTASaveData.IV
             return Load<SaveFileIV>(path);
         }
 
-        public static SaveFileIV Load(string path, FileFormat fmt)
+        public static SaveFileIV Load(string path, FileType fmt)
         {
             return Load<SaveFileIV>(path, fmt);
         }
@@ -557,7 +557,7 @@ namespace GTASaveData.IV
             throw new NotImplementedException();        // TODO
         }
 
-        protected override bool DetectFileType(byte[] data, out FileFormat fmt)
+        protected override bool DetectFileType(byte[] data, out FileType fmt)
         {
             using (DataBuffer b = new DataBuffer(data))
             {
@@ -589,11 +589,11 @@ namespace GTASaveData.IV
                 }
             }
 
-            fmt = FileFormat.Default;
+            fmt = FileType.Default;
             return false;
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             throw new NotImplementedException();        // TODO
         }
@@ -658,24 +658,24 @@ namespace GTASaveData.IV
 
         public static class FileFormats
         {
-            public static readonly FileFormat PC = new FileFormat(
+            public static readonly FileType PC = new FileType(
                 "PC", "PC", "Windows",
                 GameSystem.Windows
             );
 
-            public static readonly FileFormat PS3 = new FileFormat(
+            public static readonly FileType PS3 = new FileType(
                 "PS3", "PS3", "PlayStation 3",
                 GameSystem.PS3
             );
 
-            public static readonly FileFormat Xbox360 = new FileFormat(
+            public static readonly FileType Xbox360 = new FileType(
                 "Xbox360", "Xbox 360", "Xbox 360",
                 GameSystem.Xbox360
             );
 
-            public static FileFormat[] GetAll()
+            public static FileType[] GetAll()
             {
-                return new FileFormat[] { PC, PS3, Xbox360 };
+                return new FileType[] { PC, PS3, Xbox360 };
             }
         }
     }

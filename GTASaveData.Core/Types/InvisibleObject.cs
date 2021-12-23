@@ -40,19 +40,19 @@ namespace GTASaveData.Types
             Handle = other.Handle;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             Type = (EntityClassType) buf.ReadInt32();
             Handle = buf.ReadInt32();
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write((int) Type);
             buf.Write(Handle);
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 8;
         }

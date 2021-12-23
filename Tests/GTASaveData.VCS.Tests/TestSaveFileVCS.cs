@@ -8,7 +8,7 @@ namespace GTASaveData.VCS.Tests
 {
     public class TestSaveFileVCS : Base<SaveFileVCS>
     {
-        public override SaveFileVCS GenerateTestObject(FileFormat format)
+        public override SaveFileVCS GenerateTestObject(FileType format)
         {
             Faker<SaveFileVCS> model = new Faker<SaveFileVCS>()
                 .RuleFor(x => x.FileType, format)
@@ -24,17 +24,17 @@ namespace GTASaveData.VCS.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void FileFormatDetection(FileFormat expectedFormat, string filename)
+        public void FileFormatDetection(FileType expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(TestFramework.Game.VCS, expectedFormat, filename);
-            SaveFile.TryGetFileType<SaveFileVCS>(path, out FileFormat detectedFormat);
+            SaveFile.TryGetFileType<SaveFileVCS>(path, out FileType detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             SaveFileVCS x0 = GenerateTestObject(format);
             SaveFileVCS x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -46,7 +46,7 @@ namespace GTASaveData.VCS.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealDataSerialization(FileFormat format, string filename)
+        public void RealDataSerialization(FileType format, string filename)
         {
             string path = TestData.GetTestDataPath(TestFramework.Game.VCS, format, filename);
 
@@ -77,7 +77,7 @@ namespace GTASaveData.VCS.Tests
             Assert.Equal(x0, x1);
         }
 
-        private void AssertCheckSumValid(byte[] data, FileFormat format)
+        private void AssertCheckSumValid(byte[] data, FileType format)
         {
             if (format.IsPS2)
             {

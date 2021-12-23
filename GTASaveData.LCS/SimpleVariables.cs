@@ -414,7 +414,7 @@ namespace GTASaveData.LCS
             TimeStamp = other.TimeStamp;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             buf.Skip(8); // unused
             if (fmt.IsMobile)
@@ -503,7 +503,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Skip(4); // unused
             if (fmt.IsPS2 || fmt.IsPSP) buf.Write(3);
@@ -595,7 +595,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPSP) return 0xBC;
             if (fmt.IsPS2) return 0xF8;

@@ -614,7 +614,7 @@ namespace GTASaveData.GTA3
             return ip;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             if (fmt.FlagDE)
             {
@@ -649,7 +649,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOf(this, fmt) - SaveFileGTA3VC.BlockHeaderSize);
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             int size = SizeOf(this, fmt);
             SaveFileGTA3VC.WriteBlockHeader(buf, "SCR", size - SaveFileGTA3VC.BlockHeaderSize);
@@ -676,7 +676,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == size);
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.FlagDE) throw new NotImplementedException();
 

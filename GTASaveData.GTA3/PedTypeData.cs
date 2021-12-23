@@ -110,7 +110,7 @@ namespace GTASaveData.GTA3
             return type >= PedTypeId.Player1 && type <= PedTypeId.Unused2;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             int size = SaveFileGTA3VC.ReadBlockHeader(buf, out string tag);
             Debug.Assert(tag == "PTP");
@@ -121,7 +121,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(size == SizeOf<PedTypeData>() - SaveFileGTA3VC.BlockHeaderSize);
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             SaveFileGTA3VC.WriteBlockHeader(buf, "PTP", SizeOf<PedTypeData>() - SaveFileGTA3VC.BlockHeaderSize);
 
@@ -130,7 +130,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PedTypeData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0x2E8;
         }

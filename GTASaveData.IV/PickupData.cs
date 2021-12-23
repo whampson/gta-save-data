@@ -52,7 +52,7 @@ namespace GTASaveData.IV
             Unknown = other.Unknown;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             PickupsCount = buf.ReadInt32();
             PickupsArray = buf.ReadArray<Pickup>(MaxPickupsCount);
@@ -62,7 +62,7 @@ namespace GTASaveData.IV
             Debug.Assert(buf.Offset == SizeOf<PickupData>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(PickupsCount);
             buf.Write(PickupsArray, MaxPickupsCount);
@@ -90,7 +90,7 @@ namespace GTASaveData.IV
                 && Unknown.Equals(other.Unknown);
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0xD551;  // TODO calculate
         }

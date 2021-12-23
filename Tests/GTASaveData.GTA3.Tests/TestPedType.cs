@@ -5,7 +5,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPedType : Base<PedType>
     {
-        public override PedType GenerateTestObject(FileFormat format)
+        public override PedType GenerateTestObject(FileType format)
         {
             Faker<PedType> model = new Faker<PedType>()
                 .RuleFor(x => x.Flag, f => f.PickRandom<PedTypeFlags>())
@@ -22,7 +22,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             PedType x0 = GenerateTestObject(format);
             PedType x1 = CreateSerializedCopy(x0, format, out byte[] data);

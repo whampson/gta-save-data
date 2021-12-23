@@ -1057,7 +1057,7 @@ namespace GTASaveData.LCS
             FavoriteRadioStationList = ArrayHelper.DeepClone(other.FavoriteRadioStationList);
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             PeopleKilledByPlayer = buf.ReadInt32();
             PeopleKilledByOthers = buf.ReadInt32();
@@ -1190,7 +1190,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(PeopleKilledByPlayer);
             buf.Write(PeopleKilledByOthers);
@@ -1323,7 +1323,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsMobile) return 0x385;
             if (fmt.IsPSP || fmt.IsPS2) return 0x381;

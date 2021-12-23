@@ -75,7 +75,7 @@ namespace GTASaveData.GTA3
             InfoText = Encoding.ASCII.GetString(expanded.ReadBytes(dataSize - 1));
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             int size = buf.ReadInt32();
             m_data = buf.ReadBytes(size);
@@ -83,13 +83,13 @@ namespace GTASaveData.GTA3
             Decompress();
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(m_data.Length);
             buf.Write(m_data);
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 4 + m_data.Length;
         }

@@ -471,7 +471,7 @@ namespace GTASaveData.SA
             ProstiutesPayYou = other.ProstiutesPayYou;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             VersionId = buf.ReadUInt32();
             LastMissionPassedName = buf.ReadString(MaxNameLength);
@@ -540,7 +540,7 @@ namespace GTASaveData.SA
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(VersionId);
             buf.Write(LastMissionPassedName, MaxNameLength);
@@ -609,7 +609,7 @@ namespace GTASaveData.SA
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPC)
             {

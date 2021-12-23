@@ -371,7 +371,7 @@ namespace GTASaveData.IV
             UnknownACh = other.UnknownACh;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             ClosestSafehouseIndex = buf.ReadInt32();
             FadeInAfterLoad = buf.ReadBool();
@@ -428,7 +428,7 @@ namespace GTASaveData.IV
             Debug.Assert(buf.Offset == SizeOf<SimpleVariables>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(ClosestSafehouseIndex);
             buf.Write(FadeInAfterLoad);
@@ -478,7 +478,7 @@ namespace GTASaveData.IV
             Debug.Assert(buf.Offset == SizeOf<SimpleVariables>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0xB0;
         }

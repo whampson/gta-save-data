@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestDamageManager : Base<DamageManager>
     {
-        public override DamageManager GenerateTestObject(FileFormat format)
+        public override DamageManager GenerateTestObject(FileType format)
         {
             Faker<DamageManager> model = new Faker<DamageManager>()
                 .RuleFor(x => x.WheelDamageEffect, f => f.Random.Float())
@@ -22,7 +22,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             DamageManager x0 = GenerateTestObject(format);
             DamageManager x1 = CreateSerializedCopy(x0, format, out byte[] data);

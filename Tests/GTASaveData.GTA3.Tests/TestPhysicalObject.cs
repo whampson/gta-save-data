@@ -7,7 +7,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPhysicalObject : Base<PhysicalObject>
     {
-        public override PhysicalObject GenerateTestObject(FileFormat format)
+        public override PhysicalObject GenerateTestObject(FileType format)
         {
             Faker<PhysicalObject> model = new Faker<PhysicalObject>()
                 .RuleFor(x => x.ModelIndex, f => f.Random.Short())
@@ -33,7 +33,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             PhysicalObject x0 = GenerateTestObject(format);
             PhysicalObject x1 = CreateSerializedCopy(x0, format, out byte[] data);

@@ -648,7 +648,7 @@ namespace GTASaveData.Core.Tests
             public TestObject()
             { }
 
-            protected override void ReadData(DataBuffer buf, FileFormat fmt)
+            protected override void ReadData(DataBuffer buf, FileType fmt)
             {
                 Ascii = buf.ReadChar();         // 0x00
                 Integer = buf.ReadInt32();      // 0x01
@@ -657,7 +657,7 @@ namespace GTASaveData.Core.Tests
                 Single = buf.ReadFloat();       // 0x08
             }
 
-            protected override void WriteData(DataBuffer buf, FileFormat fmt)
+            protected override void WriteData(DataBuffer buf, FileType fmt)
             {
                 buf.Write(Ascii);
                 buf.Write(Integer);
@@ -666,7 +666,7 @@ namespace GTASaveData.Core.Tests
                 buf.Write(Single);
             }
 
-            protected override int GetSize(FileFormat fmt)
+            protected override int GetSize(FileType fmt)
             {
                 return 1 + sizeof(int) + 1 + 2 + sizeof(float);
             }

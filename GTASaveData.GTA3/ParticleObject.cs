@@ -187,7 +187,7 @@ namespace GTASaveData.GTA3
             Color = (rgb << 8) | a;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             buf.Skip(48);
@@ -218,7 +218,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<ParticleObject>(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             if (!fmt.IsPS2) buf.Skip(4);
             buf.Skip(48);
@@ -249,7 +249,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<ParticleObject>(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPS2 && fmt.FlagJapan) return 0x80;
             if (fmt.IsPS2) return 0xA0;

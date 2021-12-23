@@ -56,7 +56,7 @@ namespace GTASaveData.VC
             return PlayerPeds[0];
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             PlayerPeds.Clear();
 
@@ -78,7 +78,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(PlayerPeds.Count);
 
@@ -97,7 +97,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             int headerSize = 2 * sizeof(int) + sizeof(short);
             int footerSize = 2 * sizeof(int) + PlayerPed.MaxModelNameLength;

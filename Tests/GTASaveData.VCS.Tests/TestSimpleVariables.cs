@@ -7,7 +7,7 @@ namespace GTASaveData.VCS.Tests
 {
     public class TestSimpleVariables : Base<SimpleVariables>
     {
-        public override SimpleVariables GenerateTestObject(FileFormat format)
+        public override SimpleVariables GenerateTestObject(FileType format)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
                 .RuleFor(x => x.CurrentLevel, f => f.Random.Int())
@@ -68,7 +68,7 @@ namespace GTASaveData.VCS.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             SimpleVariables x0 = GenerateTestObject(format);
             SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);

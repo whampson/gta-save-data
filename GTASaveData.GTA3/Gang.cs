@@ -50,7 +50,7 @@ namespace GTASaveData.GTA3
             Weapon2 = other.Weapon2;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             VehicleModel = buf.ReadInt32();
             PedModelOverride = buf.ReadSByte();
@@ -61,7 +61,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Gang>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(VehicleModel);
             buf.Write(PedModelOverride);
@@ -72,7 +72,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Gang>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 16;
         }

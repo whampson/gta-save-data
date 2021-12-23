@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPickupData : Base<PickupData>
     {
-        public override PickupData GenerateTestObject(FileFormat format)
+        public override PickupData GenerateTestObject(FileType format)
         {
             Faker<PickupData> model = new Faker<PickupData>()
                 .RuleFor(x => x.Pickups, f => Generator.Array(PickupData.MaxNumPickups, g => Generator.Generate<Pickup, TestPickup>()))
@@ -18,7 +18,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             PickupData x0 = GenerateTestObject(format);
             PickupData x1 = CreateSerializedCopy(x0, format, out byte[] data);

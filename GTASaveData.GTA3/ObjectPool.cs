@@ -35,7 +35,7 @@ namespace GTASaveData.GTA3
             Objects = ArrayHelper.DeepClone(other.Objects);
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             int numObjects = buf.ReadInt32();
             Objects = buf.ReadArray<PhysicalObject>(numObjects, fmt);
@@ -43,7 +43,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(Objects.Count);
             buf.Write(Objects, fmt);
@@ -51,7 +51,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf(this, fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return (SizeOf<PhysicalObject>(fmt) * Objects.Count) + sizeof(int);
         }

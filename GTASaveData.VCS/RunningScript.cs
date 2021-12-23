@@ -219,7 +219,7 @@ namespace GTASaveData.VCS
             Locals[index] = value;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             NextScriptPointer = buf.ReadUInt32();
             PrevScriptPointer = buf.ReadUInt32();
@@ -245,7 +245,7 @@ namespace GTASaveData.VCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(NextScriptPointer);
             buf.Write(PrevScriptPointer);
@@ -271,7 +271,7 @@ namespace GTASaveData.VCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0x218;
         }

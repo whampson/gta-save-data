@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestAudioScriptData : Base<AudioScriptData>
     {
-        public override AudioScriptData GenerateTestObject(FileFormat format)
+        public override AudioScriptData GenerateTestObject(FileType format)
         {
             Faker<AudioScriptData> model = new Faker<AudioScriptData>()
                 .RuleFor(x => x.AudioScriptObjects,
@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             AudioScriptData x0 = GenerateTestObject(format);
             AudioScriptData x1 = CreateSerializedCopy(x0, format, out byte[] data);

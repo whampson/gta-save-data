@@ -63,7 +63,7 @@ namespace GTASaveData.GTA3
             Unknown = other.Unknown;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             Type = (WeaponType) buf.ReadInt32();
             State = (WeaponState) buf.ReadInt32();
@@ -79,7 +79,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Weapon>(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write((uint) Type);
             buf.Write((uint) State);
@@ -95,7 +95,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Weapon>(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPS2)
             {

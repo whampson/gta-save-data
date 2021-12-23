@@ -179,7 +179,7 @@ namespace GTASaveData.LCS
             Garages = ArrayHelper.DeepClone(other.Garages);
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             NumGarages = buf.ReadInt32();
             FreeBombs = buf.ReadBool(4);
@@ -199,7 +199,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOf<GarageData>(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(NumGarages);
             buf.Write(FreeBombs, 4);
@@ -221,7 +221,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOf<GarageData>(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPS2) return 0x29C4;
             if (fmt.IsPSP || fmt.IsMobile) return 0x25C4;

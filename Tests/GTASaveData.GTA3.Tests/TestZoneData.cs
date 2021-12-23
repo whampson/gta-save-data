@@ -7,7 +7,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestZoneData : Base<ZoneData>
     {
-        public override ZoneData GenerateTestObject(FileFormat format)
+        public override ZoneData GenerateTestObject(FileType format)
         {
             Faker<ZoneData> model = new Faker<ZoneData>()
                 .RuleFor(x => x.CurrentZoneIndex, f => f.Random.Int())
@@ -27,7 +27,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             ZoneData x0 = GenerateTestObject(format);
             ZoneData x1 = CreateSerializedCopy(x0, format, out byte[] data);

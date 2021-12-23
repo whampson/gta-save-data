@@ -5,7 +5,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestContact : Base<Contact>
     {
-        public override Contact GenerateTestObject(FileFormat format)
+        public override Contact GenerateTestObject(FileType format)
         {
             Faker<Contact> model = new Faker<Contact>()
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
@@ -16,7 +16,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             Contact x0 = GenerateTestObject(format);
             Contact x1 = CreateSerializedCopy(x0, format, out byte[] data);

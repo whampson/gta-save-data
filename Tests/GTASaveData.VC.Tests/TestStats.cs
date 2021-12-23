@@ -7,7 +7,7 @@ namespace GTASaveData.VC.Tests
 {
     public class TestStats : Base<Stats>
     {
-        public override Stats GenerateTestObject(FileFormat format)
+        public override Stats GenerateTestObject(FileType format)
         {
             Faker<Stats> model = new Faker<Stats>()
                 .RuleFor(x => x.PeopleKilledByPlayer, f => f.Random.Int())
@@ -104,7 +104,7 @@ namespace GTASaveData.VC.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             Stats x0 = GenerateTestObject(format);
             Stats x1 = CreateSerializedCopy(x0, format, out byte[] data);

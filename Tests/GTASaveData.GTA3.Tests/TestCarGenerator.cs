@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestCarGenerator : Base<CarGenerator>
     {
-        public override CarGenerator GenerateTestObject(FileFormat format)
+        public override CarGenerator GenerateTestObject(FileType format)
         {
             Faker<CarGenerator> model = new Faker<CarGenerator>()
                 .RuleFor(x => x.Model, f => f.Random.Int())
@@ -32,7 +32,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             CarGenerator x0 = GenerateTestObject(format);
             CarGenerator x1 = CreateSerializedCopy(x0, format, out byte[] data);

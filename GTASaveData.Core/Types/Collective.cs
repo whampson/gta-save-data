@@ -36,19 +36,19 @@ namespace GTASaveData.Types
             PedIndex = other.PedIndex;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             Index = buf.ReadInt32();
             PedIndex = buf.ReadInt32();
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(Index);
             buf.Write(PedIndex);
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 8;
         }

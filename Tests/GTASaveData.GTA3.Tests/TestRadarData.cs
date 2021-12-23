@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestRadarData : Base<RadarData>
     {
-        public override RadarData GenerateTestObject(FileFormat format)
+        public override RadarData GenerateTestObject(FileType format)
         {
             Faker<RadarData> model = new Faker<RadarData>()
                 .RuleFor(x => x.RadarBlips,
@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             RadarData x0 = GenerateTestObject(format);
             RadarData x1 = CreateSerializedCopy(x0, format, out byte[] data);

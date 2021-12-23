@@ -172,7 +172,7 @@ namespace GTASaveData.LCS
             Globals[index] = BitConverter.ToInt32(floatBits, 0);
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             int size = SaveFileGTA3VC.ReadBlockHeader(buf, "SCR");
 
@@ -201,7 +201,7 @@ namespace GTASaveData.LCS
             Debug.Assert(size == SizeOf(this, fmt) - SaveFileGTA3VC.BlockHeaderSize);
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             int size = SizeOf(this, fmt);
             SaveFileGTA3VC.WriteBlockHeader(buf, "SCR", size - SaveFileGTA3VC.BlockHeaderSize);
@@ -229,7 +229,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == size);
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return SizeOf<RunningScript>(fmt) * Threads.Count
                 + Globals.Count * sizeof(int)

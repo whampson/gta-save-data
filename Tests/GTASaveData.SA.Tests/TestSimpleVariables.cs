@@ -6,7 +6,7 @@ namespace GTASaveData.SA.Tests
 {
     public class TestSimpleVariables : Base<SimpleVariables>
     {
-        public override SimpleVariables GenerateTestObject(FileFormat format)
+        public override SimpleVariables GenerateTestObject(FileType format)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
                 .RuleFor(x => x.VersionId, f => f.Random.UInt())
@@ -67,7 +67,7 @@ namespace GTASaveData.SA.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void Serialization(FileFormat format)
+        public void Serialization(FileType format)
         {
             SimpleVariables x0 = GenerateTestObject(format);
             SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);

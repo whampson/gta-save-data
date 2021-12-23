@@ -16,7 +16,7 @@ namespace GTASaveData
         /// </summary>
         private const int FileSizeMax = 0x200000;
 
-        private FileFormat m_fileFormat;
+        private FileType m_fileFormat;
         private Game m_game;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace GTASaveData
         /// <summary>
         /// A descriptor for the file type which controls how data is serialized.
         /// </summary>
-        public FileFormat FileType
+        public FileType FileType
         {
             get { return m_fileFormat; }
             set { m_fileFormat = value; OnPropertyChanged(); }
@@ -55,25 +55,25 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Attempts to determine the <see cref="FileFormat"/> of the data in the specified buffer.
+        /// Attempts to determine the <see cref="GTASaveData.FileType"/> of the data in the specified buffer.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="SaveFile"/> to.</typeparam>
         /// <param name="buf">The buffer to parse.</param>
-        /// <param name="fmt">The detected <see cref="FileFormat"/>, if successful.</param>
+        /// <param name="fmt">The detected <see cref="GTASaveData.FileType"/>, if successful.</param>
         /// <returns>True if the detection was successful, false otherwise.</returns>
-        public static bool TryGetFileType<T>(byte[] buf, out FileFormat fmt) where T : SaveFile, new()
+        public static bool TryGetFileType<T>(byte[] buf, out FileType fmt) where T : SaveFile, new()
         {
             return new T().DetectFileType(buf, out fmt);
         }
 
         /// <summary>
-        /// Attempts to determine the <see cref="FileFormat"/> of the specified save file.
+        /// Attempts to determine the <see cref="GTASaveData.FileType"/> of the specified save file.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="SaveFile"/> to.</typeparam>
         /// <param name="path">The path to the file to parse.</param>
-        /// <param name="fmt">The detected <see cref="FileFormat"/>, if successful.</param>
+        /// <param name="fmt">The detected <see cref="GTASaveData.FileType"/>, if successful.</param>
         /// <returns>True if the detection was successful, false otherwise.</returns>
-        public static bool TryGetFileType<T>(string path, out FileFormat fmt) where T : SaveFile, new()
+        public static bool TryGetFileType<T>(string path, out FileType fmt) where T : SaveFile, new()
         {
             if (File.Exists(path))
             {
@@ -88,7 +88,7 @@ namespace GTASaveData
             }
 
         Fail:
-            fmt = FileFormat.Default;
+            fmt = FileType.Default;
             return false;
         }
 
@@ -131,28 +131,28 @@ namespace GTASaveData
         /// <exception cref="SerializationException"/>
         public static T Load<T>(byte[] buf) where T : SaveFile, new()
         {
-            return Load<T>(buf, FileFormat.Default);
+            return Load<T>(buf, FileType.Default);
         }
 
         /// <summary>
         /// Loads a <see cref="SaveFile"/> from the specified buffer.
         /// </summary>
         /// /// <remarks>
-        /// If the <paramref name="fmt"/> is <see cref="FileFormat.Default"/>, the
+        /// If the <paramref name="fmt"/> is <see cref="FileType.Default"/>, the
         /// file type will be detected automatically.
         /// </remarks>
         /// <typeparam name="T">The type of <see cref="SaveFile"/> to load.</typeparam>
         /// <param name="buf">The buffer to read.</param>
-        /// <param name="fmt">A <see cref="FileFormat"/> descriptor controlling how data is read.</param>
+        /// <param name="fmt">A <see cref="GTASaveData.FileType"/> descriptor controlling how data is read.</param>
         /// <returns>
         /// A new <see cref="SaveFile"/> object containing the deserialized save data,
         /// or null if loading was not successful.
         /// </returns>
         /// <exception cref="InvalidDataException"/>
         /// <exception cref="SerializationException"/>
-        public static T Load<T>(byte[] buf, FileFormat fmt) where T : SaveFile, new()
+        public static T Load<T>(byte[] buf, FileType fmt) where T : SaveFile, new()
         {
-            if (fmt == FileFormat.Default)
+            if (fmt == FileType.Default)
             {
                 if (!TryGetFileType<T>(buf, out fmt))
                 {
@@ -202,28 +202,28 @@ namespace GTASaveData
         /// <exception cref="SerializationException"/>
         public static T Load<T>(string path) where T : SaveFile, new()
         {
-            return Load<T>(path, FileFormat.Default);
+            return Load<T>(path, FileType.Default);
         }
 
         /// <summary>
         /// Loads a <see cref="SaveFile"/> from the specified buffer.
         /// </summary>
         /// <remarks>
-        /// If the <paramref name="fmt"/> is <see cref="FileFormat.Default"/>, the
+        /// If the <paramref name="fmt"/> is <see cref="FileType.Default"/>, the
         /// file type will be detected automatically.
         /// </remarks>
         /// <typeparam name="T">The type of <see cref="SaveFile"/> to load.</typeparam>
         /// <param name="path">The path to the file to read.</param>
-        /// <param name="fmt">A <see cref="FileFormat"/> descriptor controlling how data is read.</param>
+        /// <param name="fmt">A <see cref="GTASaveData.FileType"/> descriptor controlling how data is read.</param>
         /// <returns>
         /// A new <see cref="SaveFile"/> object containing the deserialized save data,
         /// or null if loading was not successful.
         /// </returns>
         /// <exception cref="InvalidDataException"/>
         /// <exception cref="SerializationException"/>
-        public static T Load<T>(string path, FileFormat fmt) where T : SaveFile, new()
+        public static T Load<T>(string path, FileType fmt) where T : SaveFile, new()
         {
-            if (fmt == FileFormat.Default)
+            if (fmt == FileType.Default)
             {
                 if (!TryGetFileType<T>(path, out fmt))
                 {
@@ -281,7 +281,7 @@ namespace GTASaveData
             return bytesWritten;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             int mark = buf.Position;
             FileType = fmt;
@@ -294,7 +294,7 @@ namespace GTASaveData
             Debug.WriteLine($"Load successful! {bytesRead} total bytes read");
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             int mark = buf.Position;
             FileType = fmt;
@@ -320,7 +320,7 @@ namespace GTASaveData
         protected abstract void Save(DataBuffer buf);
 
 
-        protected abstract bool DetectFileType(byte[] buf, out FileFormat fmt);
+        protected abstract bool DetectFileType(byte[] buf, out FileType fmt);
 
         /// <summary>
         /// Called immediately before data is deserialized.

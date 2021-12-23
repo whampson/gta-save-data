@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestScriptBlock : Base<ScriptsBlock>
     {
-        public override ScriptsBlock GenerateTestObject(FileFormat format)
+        public override ScriptsBlock GenerateTestObject(FileType format)
         {
             Faker faker = new Faker();
 
@@ -35,7 +35,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             ScriptsBlock x0 = GenerateTestObject(format);
             ScriptsBlock x1 = CreateSerializedCopy(x0, format, out byte[] data);

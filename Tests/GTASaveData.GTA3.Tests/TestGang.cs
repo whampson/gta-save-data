@@ -5,7 +5,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestGang : Base<Gang>
     {
-        public override Gang GenerateTestObject(FileFormat format)
+        public override Gang GenerateTestObject(FileType format)
         {
             Faker<Gang> model = new Faker<Gang>()
                 .RuleFor(x => x.VehicleModel, f => f.Random.Int())
@@ -18,7 +18,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             Gang x0 = GenerateTestObject(format);
             Gang x1 = CreateSerializedCopy(x0, format, out byte[] data);

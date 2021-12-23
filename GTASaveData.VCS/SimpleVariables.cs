@@ -467,7 +467,7 @@ namespace GTASaveData.VCS
             UnknownD9hPS2 = other.UnknownD9hPS2;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             buf.Skip(8); // unused
             CurrentLevel = buf.ReadInt32();
@@ -556,7 +556,7 @@ namespace GTASaveData.VCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Skip(4);    // unused
             buf.Write(3);   // always 3
@@ -646,7 +646,7 @@ namespace GTASaveData.VCS
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPSP) return 0xC8;
             if (fmt.IsPS2) return 0x104;

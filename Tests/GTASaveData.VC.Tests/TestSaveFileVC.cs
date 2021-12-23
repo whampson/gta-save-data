@@ -9,7 +9,7 @@ namespace GTASaveData.VC.Tests
 {
     public class TestSaveFileVC : Base<SaveFileVC>
     {
-        public override SaveFileVC GenerateTestObject(FileFormat format)
+        public override SaveFileVC GenerateTestObject(FileType format)
         {
             Faker<SaveFileVC> model = new Faker<SaveFileVC>()
                 .RuleFor(x => x.FileType, format)
@@ -41,17 +41,17 @@ namespace GTASaveData.VC.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void FileFormatDetection(FileFormat expectedFormat, string filename)
+        public void FileFormatDetection(FileType expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(TestFramework.Game.VC, expectedFormat, filename);
-            SaveFile.TryGetFileType<SaveFileVC>(path, out FileFormat detectedFormat);
+            SaveFile.TryGetFileType<SaveFileVC>(path, out FileType detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             using SaveFileVC x0 = GenerateTestObject(format);
             using SaveFileVC x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -63,7 +63,7 @@ namespace GTASaveData.VC.Tests
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealDataSerialization(FileFormat format, string filename)
+        public void RealDataSerialization(FileType format, string filename)
         {
             string path = TestData.GetTestDataPath(TestFramework.Game.VC, format, filename);
 
@@ -133,7 +133,7 @@ namespace GTASaveData.VC.Tests
             Assert.Equal(x0, x1);
         }
 
-        private void AssertCheckSumValid(byte[] data, FileFormat format)
+        private void AssertCheckSumValid(byte[] data, FileType format)
         {
             int sumOffset = (format.IsXbox) ? data.Length - 24 : data.Length - 4;
             int calculatedSum = data.Take(sumOffset).Sum(x => x);

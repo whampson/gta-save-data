@@ -261,7 +261,7 @@ namespace GTASaveData.GTA3
             IsTop = other.IsTop;
         }
 
-        protected override void ReadData(DataBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             Handle = buf.ReadUInt32();
             HookHandle = buf.ReadUInt32();
@@ -298,7 +298,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Crane>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(Handle);
             buf.Write(HookHandle);
@@ -335,7 +335,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Crane>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0x80;
         }

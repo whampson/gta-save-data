@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestBoat : Base<Boat>
     {
-        public override Boat GenerateTestObject(FileFormat format)
+        public override Boat GenerateTestObject(FileType format)
         {
             Faker<Boat> model = new Faker<Boat>()
                 .RuleFor(x => x.Matrix, f => Generator.Matrix(f))
@@ -44,7 +44,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             Boat x0 = GenerateTestObject(format);
             Boat x1 = CreateSerializedCopy(x0, format, out byte[] data);

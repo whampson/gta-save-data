@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestRadarBlip : Base<RadarBlip>
     {
-        public override RadarBlip GenerateTestObject(FileFormat format)
+        public override RadarBlip GenerateTestObject(FileType format)
         {
             Faker<RadarBlip> model = new Faker<RadarBlip>()
                 .RuleFor(x => x.Color, f => f.Random.Int())
@@ -27,7 +27,7 @@ namespace GTASaveData.GTA3.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             RadarBlip x0 = GenerateTestObject(format);
             RadarBlip x1 = CreateSerializedCopy(x0, format, out byte[] data);

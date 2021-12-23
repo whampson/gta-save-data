@@ -6,7 +6,7 @@ namespace TestFramework
 {
     public static class TestData
     {
-        public static string GetTestDataPath(Game game, FileFormat fileFormat, string fileName)
+        public static string GetTestDataPath(Game game, FileType fileFormat, string fileName)
         {
             string asmPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
             int cutIndex = asmPath.IndexOf(nameof(GTASaveData)) + nameof(GTASaveData).Length;
