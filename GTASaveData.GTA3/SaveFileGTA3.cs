@@ -367,11 +367,9 @@ namespace GTASaveData.GTA3
 
             WorkBuff.Reset();
             CheckSum = 0;
-            SimpleVars.SizeOfGameInBytes = SizeOfGameDataInBytes;   // TODO: consider not overwriting this
 
             if (IsPS2)
             {
-                if (!IsPS2Japan) SimpleVars.SizeOfGameInBytes += 1;
                 WorkBuff.Write(SimpleVars, FileType);
                 Put(Scripts);
                 Put(PlayerPeds);
@@ -403,7 +401,6 @@ namespace GTASaveData.GTA3
             }
             else
             {
-                SimpleVars.SizeOfGameInBytes += 1;
                 WorkBuff.Write(SimpleVars, FileType);
                 Put(Scripts); dataSize += FlushWorkBuffer(file);
                 Put(PlayerPeds); dataSize += FlushWorkBuffer(file);
