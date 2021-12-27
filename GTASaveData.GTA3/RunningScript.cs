@@ -77,7 +77,7 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// Return address stack. Size: 6 (4 on PS2).
+        /// Return address stack.
         /// </summary>
         public ObservableArray<int> Stack
         {
@@ -95,7 +95,7 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// Local variables. Size: 16.
+        /// Local variables.
         /// </summary>
         public ObservableArray<int> Locals
         {

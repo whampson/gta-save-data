@@ -627,7 +627,13 @@ namespace GTASaveData.GTA3
             int varSpace = buf.ReadInt32();
             ScriptSpace = buf.ReadArray<byte>(varSpace);
             int unusedSize = buf.ReadInt32();
-            Debug.Assert(unusedSize == ScriptDataSize);
+            Debug.Assert(unusedSize == sizeof(int)
+                + SizeOf<Contact>(prm) * p.NumContacts
+                + SizeOf<Collective>(prm) * p.NumCollectives
+                + sizeof(int)
+                + SizeOf<BuildingSwap>(prm) * p.NumBuildingSwaps
+                + SizeOf<InvisibleObject>(prm) * p.NumInvisibilitySettings
+                + 4 * sizeof(int));
             OnAMissionFlag = buf.ReadInt32();
             Contacts = buf.ReadArray<Contact>(p.NumContacts);
             Collectives = buf.ReadArray<Collective>(p.NumCollectives);
@@ -651,14 +657,21 @@ namespace GTASaveData.GTA3
         protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             var p = (GTA3SaveParams) prm;
-            var t = p.FileType;
 
             int size = SizeOf(this, p);
+            int unusedSize = sizeof(int)
+                + SizeOf<Contact>(prm) * p.NumContacts
+                + SizeOf<Collective>(prm) * p.NumCollectives
+                + sizeof(int)
+                + SizeOf<BuildingSwap>(prm) * p.NumBuildingSwaps
+                + SizeOf<InvisibleObject>(prm) * p.NumInvisibilitySettings
+                + 4 * sizeof(int);
+
             GTA3Save.WriteBlockHeader(buf, "SCR", size - GTA3Save.BlockHeaderSize);
 
             buf.Write(ScriptSpace.Count);
             buf.Write(ScriptSpace);
-            buf.Write(ScriptDataSize);
+            buf.Write(unusedSize);
             buf.Write(OnAMissionFlag);
             buf.Write(Contacts, p.NumContacts);
             buf.Write(Collectives, p.NumCollectives);
@@ -680,13 +693,21 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(SerializationParams prm)
         {
+            var p = (GTA3SaveParams) prm;
             if (prm.FileType.FlagDE) throw new NotImplementedException();
 
             return GTA3Save.BlockHeaderSize
+                + sizeof(int)
                 + ScriptSpace.Count
-                + ScriptDataSize
-                + SizeOf<RunningScript>(prm) * RunningScripts.Count
-                + 3 * sizeof(int);
+                + sizeof(int)
+                + sizeof(int)
+                + SizeOf<Contact>(prm) * p.NumContacts
+                + SizeOf<Collective>(prm) * p.NumCollectives
+                + sizeof(int)
+                + SizeOf<BuildingSwap>(prm) * p.NumBuildingSwaps
+                + SizeOf<InvisibleObject>(prm) * p.NumInvisibilitySettings
+                + 5 * sizeof(int)
+                + SizeOf<RunningScript>(prm) * RunningScripts.Count;
         }
 
         public override bool Equals(object obj)

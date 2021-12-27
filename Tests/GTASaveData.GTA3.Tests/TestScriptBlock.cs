@@ -74,6 +74,24 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Fact]
+        public void SerializationParams()
+        {
+            Faker faker = new Faker();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults();
+
+            p.NumContacts = faker.Random.Int(0, 100);
+            p.NumCollectives = faker.Random.Int(0, 100);
+            p.NumBuildingSwaps = faker.Random.Int(0, 100);
+            p.NumInvisibilitySettings = faker.Random.Int(0, 100);
+
+            ScriptsBlock x0 = GenerateTestObject(p);
+            ScriptsBlock x1 = CreateSerializedCopy(x0, p, out byte[] data);
+
+            Assert.Equal(x0, x1);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
+        }
+
+        [Fact]
         public void GlobalVariables()
         {
             Faker f = new Faker();

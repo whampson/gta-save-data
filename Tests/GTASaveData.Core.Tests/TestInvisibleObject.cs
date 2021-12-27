@@ -38,5 +38,10 @@ namespace GTASaveData.Core.Tests
 
             Assert.Equal(x0, x1);
         }
+
+        public override int GetSizeOfTestObject(InvisibleObject obj)
+        {
+            return 8;
+        }
     }
 }
