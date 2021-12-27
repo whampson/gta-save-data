@@ -30,19 +30,19 @@ namespace GTASaveData.GTA3
             BaseBriefId = other.BaseBriefId;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             OnAMissionFlag = buf.ReadInt32();
             BaseBriefId = buf.ReadInt32();
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(OnAMissionFlag);
             buf.Write(BaseBriefId);
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 8;
         }

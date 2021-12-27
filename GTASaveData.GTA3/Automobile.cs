@@ -35,33 +35,34 @@ namespace GTASaveData.GTA3
             Damage = new DamageManager(other.Damage);
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            base.ReadData(buf, fmt);
+            base.ReadData(buf, prm);
 
             Damage = buf.ReadObject<DamageManager>();
-            buf.Skip(SizeOf<Automobile>(fmt) - buf.Offset);    // The rest is useless
+            buf.Skip(SizeOf<Automobile>(prm) - buf.Offset);    // The rest is useless
 
-            Debug.Assert(buf.Offset == SizeOf<Automobile>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Automobile>(prm));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            base.WriteData(buf, fmt);
+            base.WriteData(buf, prm);
 
             buf.Write(Damage);
-            buf.Skip(SizeOf<Automobile>(fmt) - buf.Offset);
+            buf.Skip(SizeOf<Automobile>(prm) - buf.Offset);
 
-            Debug.Assert(buf.Offset == SizeOf<Automobile>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Automobile>(prm));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2 && fmt.FlagJapan) return 0x630;
-            if (fmt.IsPC || fmt.IsXbox) return 0x5A8;
-            if (fmt.IsMobile) return 0x5AC;
-            if (fmt.IsPS2) return 0x650;
-            throw SizeNotDefined(fmt);
+            var t = prm.FileType;
+            if (t.IsPS2 && t.FlagJapan) return 0x630;
+            if (t.IsPC || t.IsXbox) return 0x5A8;
+            if (t.IsMobile) return 0x5AC;
+            if (t.IsPS2) return 0x650;
+            throw SizeNotDefined(t);
         }
 
         public override bool Equals(object obj)

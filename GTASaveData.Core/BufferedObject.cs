@@ -43,7 +43,7 @@
             _ = dest.Write(WorkBuffer.ToArray());
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
             return WorkBuffer.Count;
         }

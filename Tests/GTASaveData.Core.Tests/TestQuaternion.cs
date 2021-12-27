@@ -5,7 +5,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestQuaternion : TestBase<Quaternion>
+    public class TestQuaternion : TestBase<Quaternion, SerializationParams>
     {
         [Fact]
         public void RandomDataSerialization()

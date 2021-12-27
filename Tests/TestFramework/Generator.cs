@@ -71,26 +71,28 @@ namespace TestFramework
             return new string(f.Random.Chars('\u0000', '\uD7FF', length));
         }
 
-        public static T Generate<T, U>()
+        public static T Generate<T, U, P>()
             where T : SaveDataObject, new()
-            where U : SaveDataObjectTestBase<T>
+            where U : SaveDataObjectTestBase<T, P>
+            where P : SerializationParams, new()
         {
-            return Generate<T, U>(FileType.Default);
+            return Generate<T, U, P>(new P());
         }
 
-        public static T Generate<T, U>(FileType format)
+        public static T Generate<T, U, P>(P p)
             where T : SaveDataObject, new()
-            where U : SaveDataObjectTestBase<T>
+            where U : SaveDataObjectTestBase<T, P>
+            where P : SerializationParams, new()
         {
             var testGen = Activator.CreateInstance(typeof(U));
             MethodInfo m = typeof(U).GetMethod(
-                nameof(SaveDataObjectTestBase<T>.GenerateTestObject),
+                nameof(SaveDataObjectTestBase<T, P>.GenerateTestObject),
                 BindingFlags.Public | BindingFlags.Instance,
                 null,
-                new Type[] { typeof(FileType) },
+                new Type[] { typeof(P) },
                 null);
             
-            return (T) m.Invoke(testGen, new object[] { format });
+            return (T) m.Invoke(testGen, new object[] { p });
         }
     }
 }

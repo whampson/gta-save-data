@@ -5,9 +5,9 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestCollective : SaveDataObjectTestBase<Collective>
+    public class TestCollective : SaveDataObjectTestBase<Collective, SerializationParams>
     {
-        public override Collective GenerateTestObject(FileType format)
+        public override Collective GenerateTestObject(SerializationParams p)
         {
             Faker<Collective> model = new Faker<Collective>()
                 .RuleFor(x => x.Index, f => f.Random.Int())

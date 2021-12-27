@@ -187,14 +187,16 @@ namespace GTASaveData.GTA3
             Color = (rgb << 8) | a;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            if (!fmt.IsPS2) buf.Skip(4);
+            var t = prm.FileType;
+
+            if (!t.IsPS2) buf.Skip(4);
             buf.Skip(48);
             Position = buf.ReadStruct<Vector3>();
             buf.Skip(4);
-            if (!(fmt.IsPS2 && fmt.FlagJapan)) buf.Skip(8);
-            if (fmt.IsPS2 && !fmt.FlagJapan) buf.Skip(24);
+            if (!(t.IsPS2 && t.FlagJapan)) buf.Skip(8);
+            if (t.IsPS2 && !t.FlagJapan) buf.Skip(24);
             NextParticleObjectPointer = buf.ReadUInt32();
             PrevParticleObjectPointer = buf.ReadUInt32();
             ParticlePointer = buf.ReadUInt32();
@@ -213,19 +215,21 @@ namespace GTASaveData.GTA3
             DestroyWhenFar = buf.ReadBool();
             CreationChance = buf.ReadSByte();
             buf.Align4();
-            if (fmt.IsPS2) Unknown = buf.ReadInt32();
+            if (t.IsPS2) Unknown = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOf<ParticleObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<ParticleObject>(prm));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            if (!fmt.IsPS2) buf.Skip(4);
+            var t = prm.FileType;
+
+            if (!t.IsPS2) buf.Skip(4);
             buf.Skip(48);
             buf.Write(Position);
             buf.Skip(4);
-            if (!(fmt.IsPS2 && fmt.FlagJapan)) buf.Skip(8);
-            if (fmt.IsPS2 && !fmt.FlagJapan) buf.Skip(24);
+            if (!(t.IsPS2 && t.FlagJapan)) buf.Skip(8);
+            if (t.IsPS2 && !t.FlagJapan) buf.Skip(24);
             buf.Write(NextParticleObjectPointer);
             buf.Write(PrevParticleObjectPointer);
             buf.Write(ParticlePointer);
@@ -244,15 +248,16 @@ namespace GTASaveData.GTA3
             buf.Write(DestroyWhenFar);
             buf.Write(CreationChance);
             buf.Align4();
-            if (fmt.IsPS2) buf.Write(Unknown);
+            if (t.IsPS2) buf.Write(Unknown);
 
-            Debug.Assert(buf.Offset == SizeOf<ParticleObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<ParticleObject>(prm));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2 && fmt.FlagJapan) return 0x80;
-            if (fmt.IsPS2) return 0xA0;
+            var t = prm.FileType;
+            if (t.IsPS2 && t.FlagJapan) return 0x80;
+            if (t.IsPS2) return 0xA0;
 
             return 0x88;
         }

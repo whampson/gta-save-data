@@ -35,25 +35,25 @@ namespace GTASaveData.GTA3
             Objects = ArrayHelper.DeepClone(other.Objects);
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             int numObjects = buf.ReadInt32();
-            Objects = buf.ReadArray<PhysicalObject>(numObjects, fmt);
+            Objects = buf.ReadArray<PhysicalObject>(numObjects, prm);
 
-            Debug.Assert(buf.Offset == SizeOf(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(Objects.Count);
-            buf.Write(Objects, fmt);
+            buf.Write(Objects, prm);
 
-            Debug.Assert(buf.Offset == SizeOf(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            return (SizeOf<PhysicalObject>(fmt) * Objects.Count) + sizeof(int);
+            return (SizeOf<PhysicalObject>(prm) * Objects.Count) + sizeof(int);
         }
 
         public override bool Equals(object obj)

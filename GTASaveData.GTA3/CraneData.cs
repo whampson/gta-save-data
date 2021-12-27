@@ -53,7 +53,7 @@ namespace GTASaveData.GTA3
             Cranes = ArrayHelper.DeepClone(other.Cranes);
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             NumCranes = buf.ReadInt32();
             CarsCollectedMilitaryCrane = (CollectCarsMilitaryCrane) buf.ReadInt32();
@@ -62,7 +62,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<CraneData>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(NumCranes);
             buf.Write((int) CarsCollectedMilitaryCrane);
@@ -71,7 +71,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<CraneData>());
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x408;
         }

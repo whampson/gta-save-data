@@ -6,9 +6,9 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestSaveDataObject : SaveDataObjectTestBase<DummySaveDataObject>
+    public class TestSaveDataObject : SaveDataObjectTestBase<DummySaveDataObject, SerializationParams>
     {
-        public override DummySaveDataObject GenerateTestObject(FileType format)
+        public override DummySaveDataObject GenerateTestObject(SerializationParams p)
         {
             Faker<DummySaveDataObject2> model2 = new Faker<DummySaveDataObject2>()
                 .RuleFor(x => x.Value, f => f.Random.Int());
@@ -113,7 +113,7 @@ namespace GTASaveData.Core.Tests
             m_objectArray = new ObservableArray<DummySaveDataObject2>();
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             Value = buf.ReadInt32();
             Object = buf.ReadObject<DummySaveDataObject2>();
@@ -121,7 +121,7 @@ namespace GTASaveData.Core.Tests
             ObjectArray = buf.ReadArray<DummySaveDataObject2>(ObjectArrayCount);
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             buf.Write(Value);
             buf.Write(Object);
@@ -130,7 +130,7 @@ namespace GTASaveData.Core.Tests
 
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
             return sizeof(int)
                 + sizeof(int) * ValueArrayCount
@@ -170,17 +170,17 @@ namespace GTASaveData.Core.Tests
         public DummySaveDataObject2()
         { }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             Value = buf.ReadInt32();
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             buf.Write(Value);
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
             return 4;
         }

@@ -80,10 +80,10 @@ namespace GTASaveData.GTA3
             Matrix = m;
         }
 
-        protected void LoadEntityFlags(DataBuffer buf, FileType fmt)
+        protected void LoadEntityFlags(DataBuffer buf, SerializationParams prm)
         {
             long eFlags = buf.ReadUInt32();
-            eFlags |= (fmt.IsiOS)
+            eFlags |= (prm.FileType.IsiOS)
                 ? ((long) buf.ReadUInt16()) << 32
                 : ((long) buf.ReadUInt32()) << 32;
 
@@ -92,13 +92,13 @@ namespace GTASaveData.GTA3
             EntityStatus = (EntityStatus) ((eFlags & 0xF8) >> 3);
         }
 
-        protected void SaveEntityFlags(DataBuffer buf, FileType fmt)
+        protected void SaveEntityFlags(DataBuffer buf, SerializationParams prm)
         {
             long eFlags = (long) EntityFlags;
             eFlags |= ((long) EntityType) & 0x07;
             eFlags |= (((long) EntityStatus) & 0x1F) << 3;
             buf.Write((uint) (eFlags & 0xFFFFFFFF));
-            if (fmt.IsiOS)
+            if (prm.FileType.IsiOS)
                 buf.Write((ushort) (eFlags >> 32));
             else
                 buf.Write((uint) (eFlags >> 32));

@@ -84,7 +84,7 @@ namespace GTASaveData.GTA3
             Avoids = other.Avoids;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             Flag = (PedTypeFlags) buf.ReadInt32();
             Unknown0 = buf.ReadFloat();
@@ -98,7 +98,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PedType>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write((int) Flag);
             buf.Write(Unknown0);
@@ -112,7 +112,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<PedType>());
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 32;
         }

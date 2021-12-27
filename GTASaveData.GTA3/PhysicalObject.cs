@@ -148,15 +148,17 @@ namespace GTASaveData.GTA3
             EndOfLifeTime = other.EndOfLifeTime;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
+            var t = prm.FileType;
+
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
             Matrix = buf.ReadStruct<CompressedMatrix>().Decompress();
-            if ((fmt.IsPS2 && fmt.FlagJapan) || !fmt.IsPS2) buf.Skip(4);
+            if ((t.IsPS2 && t.FlagJapan) || !t.IsPS2) buf.Skip(4);
             UprootLimit = buf.ReadFloat();
             ObjectMatrix = buf.ReadStruct<CompressedMatrix>().Decompress();
-            if ((fmt.IsPS2 && fmt.FlagJapan) || !fmt.IsPS2) buf.Skip(4);
+            if ((t.IsPS2 && t.FlagJapan) || !t.IsPS2) buf.Skip(4);
             CreatedBy = (ObjectCreatedBy) buf.ReadByte();
             IsPickup = buf.ReadBool();
             IsPickupInShop = buf.ReadBool();
@@ -169,20 +171,22 @@ namespace GTASaveData.GTA3
             CollisionDamageEffect = buf.ReadByte();
             SpecialCollisionResponseCases = buf.ReadByte();
             EndOfLifeTime = buf.ReadUInt32();
-            LoadEntityFlags(buf, fmt);
+            LoadEntityFlags(buf, prm);
 
-            Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(prm));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
+            var t = prm.FileType;
+
             buf.Write(ModelIndex);
             buf.Write(Handle);
             buf.Write(Matrix.Compress());
-            if ((fmt.IsPS2 && fmt.FlagJapan) || !fmt.IsPS2) buf.Skip(4);
+            if ((t.IsPS2 && t.FlagJapan) || !t.IsPS2) buf.Skip(4);
             buf.Write(UprootLimit);
             buf.Write(ObjectMatrix.Compress());
-            if ((fmt.IsPS2 && fmt.FlagJapan) || !fmt.IsPS2) buf.Skip(4);
+            if ((t.IsPS2 && t.FlagJapan) || !t.IsPS2) buf.Skip(4);
             buf.Write((byte) CreatedBy);
             buf.Write(IsPickup);
             buf.Write(IsPickupInShop);
@@ -195,15 +199,16 @@ namespace GTASaveData.GTA3
             buf.Write(CollisionDamageEffect);
             buf.Write(SpecialCollisionResponseCases);
             buf.Write(EndOfLifeTime);
-            SaveEntityFlags(buf, fmt);
+            SaveEntityFlags(buf, prm);
 
-            Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(prm));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2 && !fmt.FlagJapan) return 0x4C;
-            if (fmt.IsiOS) return 0x52;
+            var t = prm.FileType;
+            if (t.IsPS2 && !t.FlagJapan) return 0x4C;
+            if (t.IsiOS) return 0x52;
             return 0x54;
         }
 

@@ -6,15 +6,15 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestRestartData : Base<RestartData>
     {
-        public override RestartData GenerateTestObject(FileType format)
+        public override RestartData GenerateTestObject(GTA3SaveParams p)
         {
             Faker<RestartData> model = new Faker<RestartData>()
-                .RuleFor(x => x.WastedRestartPoints, Generator.Array(RestartData.MaxNumWastedRestarts, g => Generator.Generate<RestartPoint, TestRestartPoint>()))
-                .RuleFor(x => x.BustedRestartPoints, Generator.Array(RestartData.MaxNumBustedRestarts, g => Generator.Generate<RestartPoint, TestRestartPoint>()))
+                .RuleFor(x => x.WastedRestartPoints, Generator.Array(RestartData.MaxNumWastedRestarts, g => Generator.Generate<RestartPoint, TestRestartPoint, GTA3SaveParams>(p)))
+                .RuleFor(x => x.BustedRestartPoints, Generator.Array(RestartData.MaxNumBustedRestarts, g => Generator.Generate<RestartPoint, TestRestartPoint, GTA3SaveParams>(p)))
                 .RuleFor(x => x.NumberOfWastedRestartPoints, f => f.Random.Short())
                 .RuleFor(x => x.NumberOfBustedRestartPoints, f => f.Random.Short())
                 .RuleFor(x => x.OverrideNextRestart, f => f.Random.Bool())
-                .RuleFor(x => x.OverrideRestartPoint, f => Generator.Generate<RestartPoint, TestRestartPoint>())
+                .RuleFor(x => x.OverrideRestartPoint, f => Generator.Generate<RestartPoint, TestRestartPoint, GTA3SaveParams>(p))
                 .RuleFor(x => x.FadeInAfteNextDeath, f => f.Random.Bool())
                 .RuleFor(x => x.FadeInAfteNextArrest, f => f.Random.Bool())
                 .RuleFor(x => x.OverrideHospitalLevel, f => f.PickRandom<Level>())
@@ -24,11 +24,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            RestartData x0 = GenerateTestObject(format);
-            RestartData x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            RestartData x0 = GenerateTestObject(p);
+            RestartData x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.WastedRestartPoints, x1.WastedRestartPoints);
             Assert.Equal(x0.BustedRestartPoints, x1.BustedRestartPoints);
@@ -42,14 +43,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.OverridePoliceStationLevel, x1.OverridePoliceStationLevel);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            RestartData x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            RestartData x0 = GenerateTestObject(p);
             RestartData x1 = new RestartData(x0);
 
             Assert.Equal(x0, x1);

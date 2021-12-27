@@ -40,21 +40,22 @@ namespace GTASaveData.Types
             Handle = other.Handle;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             Type = (EntityClassType) buf.ReadInt32();
             Handle = buf.ReadInt32();
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             buf.Write((int) Type);
             buf.Write(Handle);
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            return 8;
+            return sizeof(int)
+                + sizeof(int);
         }
 
         public override bool Equals(object obj)

@@ -12,9 +12,6 @@ namespace GTASaveData.GTA3
         IEquatable<RunningScript>, IDeepClonable<RunningScript>
     {
         public const int MaxNameLength = 8;
-        public const int MaxStackDepth = 6;
-        public const int MaxStackDepthPS2 = 4;
-        public const int NumLocalVariables = 16;
 
         private uint m_pNextScript; // not loaded
         private uint m_pPrevScript; // not loaded
@@ -215,8 +212,8 @@ namespace GTASaveData.GTA3
         public RunningScript()
         {
             Name = "noname";
-            Stack = ArrayHelper.CreateArray<int>(MaxStackDepth);
-            Locals = ArrayHelper.CreateArray<int>(NumLocalVariables);
+            Stack = new ObservableArray<int>();
+            Locals = new ObservableArray<int>();
             DeathArrestEnabled = true;
         }
 
@@ -255,7 +252,15 @@ namespace GTASaveData.GTA3
         /// </summary>
         public void PushStack(int value)
         {
-            Stack[StackIndex++] = value;
+            if (Stack.Count <= StackIndex)
+            {
+                Stack.Add(value);
+            }
+            else
+            {
+                Stack[StackIndex] = value;
+            }
+            StackIndex++;
         }
 
         /// <summary>
@@ -310,16 +315,18 @@ namespace GTASaveData.GTA3
             Locals[index] = BitConverter.SingleToInt32Bits(value);
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
+            var p = (GTA3SaveParams) prm;
+
             NextScriptPointer = buf.ReadUInt32();
             PrevScriptPointer = buf.ReadUInt32();
             Name = buf.ReadString(MaxNameLength);
             IP = buf.ReadInt32();
-            Stack = buf.ReadArray<int>(GetMaxStackDepth(fmt));
+            Stack = buf.ReadArray<int>(p.MaxStackDepth);
             StackIndex = buf.ReadInt16();
             buf.Align4();
-            Locals = buf.ReadArray<int>(NumLocalVariables);
+            Locals = buf.ReadArray<int>(p.NumLocalVariables);
             TimerA = buf.ReadUInt32();
             TimerB = buf.ReadUInt32();
             CompareFlag = buf.ReadBool();
@@ -334,19 +341,21 @@ namespace GTASaveData.GTA3
             MissionFlag = buf.ReadBool();
             buf.Align4();
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(p));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
+            var p = (GTA3SaveParams) prm;
+
             buf.Write(NextScriptPointer);
             buf.Write(PrevScriptPointer);
             buf.Write(Name, MaxNameLength);
             buf.Write(IP);
-            buf.Write(Stack, GetMaxStackDepth(fmt));
+            buf.Write(Stack, p.MaxStackDepth);
             buf.Write(StackIndex);
             buf.Align4();
-            buf.Write(Locals, NumLocalVariables);
+            buf.Write(Locals, p.NumLocalVariables);
             buf.Write(TimerA);
             buf.Write(TimerB);
             buf.Write(CompareFlag);
@@ -361,17 +370,12 @@ namespace GTASaveData.GTA3
             buf.Write(MissionFlag);
             buf.Align4();
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(p));
         }
 
-        public static int GetMaxStackDepth(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            return (fmt.IsPS2) ? MaxStackDepthPS2 : MaxStackDepth;
-        }
-
-        protected override int GetSize(FileType fmt)
-        {
-            return (fmt.IsPS2) ? 0x80 : 0x88;
+            return (prm.FileType.IsPS2) ? 0x80 : 0x88;
         }
 
         public override bool Equals(object obj)

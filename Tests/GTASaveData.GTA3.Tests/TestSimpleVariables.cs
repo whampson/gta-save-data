@@ -7,12 +7,18 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestSimpleVariables : Base<SimpleVariables>
     {
-        public override SimpleVariables GenerateTestObject(FileType format)
+        public override SimpleVariables GenerateTestObject(GTA3SaveParams p)
         {
+            bool isPC = p.FileType.IsPC;
+            bool isPS2 = p.FileType.IsPS2;
+            bool isPS2JP = p.FileType.IsPS2 && p.FileType.FlagJapan;
+            bool isXbox = p.FileType.IsXbox;
+            bool isMobile = p.FileType.IsMobile;
+
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.LastMissionPassedName, f => (!format.IsPS2) ? Generator.Words(f, SimpleVariables.MaxMissionPassedNameLength - 1) : "")
-                .RuleFor(x => x.TimeStamp, f => (format.IsPC || format.IsXbox) ? new SystemTime(Generator.Date(f)) : SystemTime.MinValue)
-                .RuleFor(x => x.SizeOfGameInBytes, f => (format.IsPS2 && format.FlagJapan) ? 0x31400 : 0x31401)
+                .RuleFor(x => x.LastMissionPassedName, f => (!isPS2) ? Generator.Words(f, p.MaxLastMissionPassedNameLength - 1) : "")
+                .RuleFor(x => x.TimeStamp, f => (isPC || isXbox) ? new SystemTime(Generator.Date(f)) : SystemTime.MinValue)
+                .RuleFor(x => x.SizeOfGameInBytes, f => (isPS2JP) ? 0x31400 : 0x31401)
                 .RuleFor(x => x.CurrentLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.CameraPosition, f => Generator.Vector3(f))
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
@@ -32,31 +38,32 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.NewWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.ForcedWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.WeatherInterpolation, f => f.Random.Float())
-                .RuleFor(x => x.MusicVolume, f => (format.IsPS2) ? f.Random.Int() : default)
-                .RuleFor(x => x.SfxVolume, f => (format.IsPS2) ? f.Random.Int() : default)
-                .RuleFor(x => x.UseVibration, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.StereoMono, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.RadioStation, f => (format.IsPS2) ? f.PickRandom<RadioStation>() : default)
-                .RuleFor(x => x.Brightness, f => (format.IsPS2) ? f.Random.Int() : default)
-                .RuleFor(x => x.ShowSubtitles, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.Language, f => (format.IsPS2) ? f.PickRandom<Language>() : default)
-                .RuleFor(x => x.UseWideScreen, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.BlurOn, f => (format.IsPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.MusicVolume, f => (isPS2) ? f.Random.Int() : default)
+                .RuleFor(x => x.SfxVolume, f => (isPS2) ? f.Random.Int() : default)
+                .RuleFor(x => x.UseVibration, f => (isPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.StereoMono, f => (isPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.RadioStation, f => (isPS2) ? f.PickRandom<RadioStation>() : default)
+                .RuleFor(x => x.Brightness, f => (isPS2) ? f.Random.Int() : default)
+                .RuleFor(x => x.ShowSubtitles, f => (isPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.Language, f => (isPS2) ? f.PickRandom<Language>() : default)
+                .RuleFor(x => x.UseWideScreen, f => (isPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.BlurOn, f => (isPS2) ? f.Random.Bool() : default)
                 .RuleFor(x => x.CompileDateAndTime, f => new Date(Generator.Date(f)))
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
                 .RuleFor(x => x.CameraModeInCar, f => f.PickRandom<CameraMode>())
                 .RuleFor(x => x.CameraModeOnFoot, f => f.PickRandom<CameraMode>())
-                .RuleFor(x => x.IsQuickSave, f => (format.IsMobile) ? f.PickRandom<QuickSaveState>() : default);
+                .RuleFor(x => x.IsQuickSave, f => (isMobile) ? f.PickRandom<QuickSaveState>() : default);
 
             return model.Generate();
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            SimpleVariables x0 = GenerateTestObject(format);
-            SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            SimpleVariables x0 = GenerateTestObject(p);
+            SimpleVariables x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
             Assert.Equal(x0.TimeStamp, x1.TimeStamp);
@@ -97,13 +104,15 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.IsQuickSave, x1.IsQuickSave);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            SimpleVariables x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            SimpleVariables x0 = GenerateTestObject(p);
             SimpleVariables x1 = new SimpleVariables(x0);
 
             Assert.Equal(x0, x1);

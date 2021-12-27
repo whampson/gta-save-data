@@ -35,28 +35,28 @@ namespace GTASaveData.GTA3
             Objects = ArrayHelper.DeepClone(other.Objects);
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             int numObjects = buf.ReadInt32();
-            Objects = buf.ReadArray<ParticleObject>(numObjects, fmt);
-            buf.Skip(SizeOf<ParticleObject>(fmt));
+            Objects = buf.ReadArray<ParticleObject>(numObjects, prm);
+            buf.Skip(SizeOf<ParticleObject>(prm));
 
-            Debug.Assert(buf.Offset == SizeOf(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             int numObjects = Objects.Count;
             buf.Write(numObjects);
-            buf.Write(Objects, fmt, numObjects);
-            buf.Skip(SizeOf<ParticleObject>(fmt));  // game writes extra ParticleObject for some reason
+            buf.Write(Objects, prm, numObjects);
+            buf.Skip(SizeOf<ParticleObject>(prm));  // game writes extra ParticleObject for some reason
 
-            Debug.Assert(buf.Offset == SizeOf(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            return (SizeOf<ParticleObject>(fmt) * (Objects.Count + 1)) + sizeof(int);
+            return (SizeOf<ParticleObject>(prm) * (Objects.Count + 1)) + sizeof(int);
         }
 
         public override bool Equals(object obj)

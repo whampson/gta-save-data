@@ -63,41 +63,41 @@ namespace GTASaveData.GTA3
             Unknown = other.Unknown;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             Type = (WeaponType) buf.ReadInt32();
             State = (WeaponState) buf.ReadInt32();
             AmmoInClip = buf.ReadUInt32();
             AmmoTotal = buf.ReadUInt32();
             Timer = buf.ReadUInt32();
-            if (!fmt.IsPS2)
+            if (!prm.FileType.IsPS2)
             {
                 Unknown = buf.ReadBool();
                 buf.ReadBytes(3);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<Weapon>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Weapon>(prm));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write((uint) Type);
             buf.Write((uint) State);
             buf.Write(AmmoInClip);
             buf.Write(AmmoTotal);
             buf.Write(Timer);
-            if (!fmt.IsPS2)
+            if (!prm.FileType.IsPS2)
             {
                 buf.Write(Unknown);
                 buf.Write(new byte[3]);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<Weapon>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Weapon>(prm));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2)
+            if (prm.FileType.IsPS2)
             {
                 return 20;
             }

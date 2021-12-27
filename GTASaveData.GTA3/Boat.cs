@@ -26,29 +26,30 @@ namespace GTASaveData.GTA3
             : base(other)
         { }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            base.ReadData(buf, fmt);
-            buf.Skip(SizeOf<Boat>(fmt) - buf.Offset);
+            base.ReadData(buf, prm);
+            buf.Skip(SizeOf<Boat>(prm) - buf.Offset);
 
-            Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Boat>(prm));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            base.WriteData(buf, fmt);
-            buf.Skip(SizeOf<Boat>(fmt) - buf.Offset);
+            base.WriteData(buf, prm);
+            buf.Skip(SizeOf<Boat>(prm) - buf.Offset);
 
-            Debug.Assert(buf.Offset == SizeOf<Boat>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Boat>(prm));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2 && fmt.FlagJapan) return 0x50C;
-            if (fmt.IsPC || fmt.IsXbox) return 0x484;
-            if (fmt.IsMobile) return 0x488;
-            if (fmt.IsPS2) return 0x52C;
-            throw SizeNotDefined(fmt);
+            var t = prm.FileType;
+            if (t.IsPS2 && t.FlagJapan) return 0x50C;
+            if (t.IsPC || t.IsXbox) return 0x484;
+            if (t.IsMobile) return 0x488;
+            if (t.IsPS2) return 0x52C;
+            throw SizeNotDefined(t);
         }
 
         public override bool Equals(object obj)

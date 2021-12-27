@@ -13,15 +13,13 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The type to read.</typeparam>
         /// <param name="buf">The buffer to read from.</param>
-        /// <param name="bigEndian">A value indicating whether to read data in big-endian byte order.</param>
         /// <returns>An instance of <typeparamref name="T"/> containing data deserialized from the input buffer.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static T Read<T>(byte[] buf,
-            bool bigEndian = false)
+        public static T Read<T>(byte[] buf)
         {
-            Read(buf, FileType.Default, out T obj, bigEndian);
+            Read(buf, new SerializationParams(), out T obj);
             return obj;
         }
 
@@ -30,16 +28,14 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The type to read.</typeparam>
         /// <param name="buf">The buffer to read from.</param>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is read.</param>
-        /// <param name="bigEndian">A value indicating whether to read data in big-endian byte order.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is read.</param>
         /// <returns>An instance of <typeparamref name="T"/> containing data deserialized from the input buffer.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static T Read<T>(byte[] buf, FileType fmt,
-            bool bigEndian = false)
+        public static T Read<T>(byte[] buf, SerializationParams p)
         {
-            Read(buf, fmt, out T obj, bigEndian);
+            Read(buf, p, out T obj);
             return obj;
         }
 
@@ -48,20 +44,16 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The type to read.</typeparam>
         /// <param name="buf">The buffer to read from.</param>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is read.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is read.</param>
         /// <param name="obj">An instance of <typeparamref name="T"/> containing data deserialized from the input buffer.</param>
-        /// <param name="bigEndian">A value indicating whether to read data in big-endian byte order.</param>
         /// <returns>The number of bytes read.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(byte[] buf, FileType fmt, out T obj,
-            bool bigEndian = false)
+        public static int Read<T>(byte[] buf, SerializationParams p, out T obj)
         {
-            using (DataBuffer stream = new DataBuffer(buf) { BigEndian = bigEndian })
-            {
-                return Read(stream, fmt, out obj);
-            }
+            using DataBuffer stream = CreateDataBufferStream(buf, p);
+            return Read(stream, p, out obj);
         }
 
         /// <summary>
@@ -70,19 +62,16 @@ namespace GTASaveData
         /// <typeparam name="T">The type to read.</typeparam>
         /// <param name="obj">The object to populate.</param>
         /// <param name="buf">The buffer to read from.</param>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is read.</param>
-        /// <param name="bigEndian">A value indicating whether to read data in big-endian byte order.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is read.</param>
         /// <returns>The number of bytes read.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(T obj, byte[] buf, FileType fmt,
-            bool bigEndian = false) where T : ISaveDataObject
+        public static int Read<T>(T obj, byte[] buf, SerializationParams p)
+            where T : ISaveDataObject
         {
-            using (DataBuffer stream = new DataBuffer(buf) { BigEndian = bigEndian })
-            {
-                return Read(obj, stream, fmt);
-            }
+            using DataBuffer stream = CreateDataBufferStream(buf, p);
+            return Read(obj, stream, p);
         }
 
         /// <summary>
@@ -91,14 +80,15 @@ namespace GTASaveData
         /// <typeparam name="T">The type to read.</typeparam>
         /// <param name="obj">The object to populate.</param>
         /// <param name="buf">The buffer to read from.</param>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is read.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is read.</param>
         /// <returns>The number of bytes read.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(T obj, DataBuffer buf, FileType fmt) where T : ISaveDataObject
+        public static int Read<T>(T obj, DataBuffer buf, SerializationParams p)
+            where T : ISaveDataObject
         {
-            return obj.ReadData(buf, fmt);
+            return obj.ReadData(buf, p);
         }
 
         /// <summary>
@@ -106,15 +96,15 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The type to read.</typeparam>
         /// <param name="buf">The buffer to read from.</param>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is read.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is read.</param>
         /// <param name="obj">An instance of <typeparamref name="T"/> containing data deserialized from the input buffer.</param>
         /// <returns>The number of bytes read.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(DataBuffer buf, FileType fmt, out T obj)
+        public static int Read<T>(DataBuffer buf, SerializationParams p, out T obj)
         {
-            return buf.GenericRead(fmt, out obj);
+            return buf.GenericRead(p, out obj);
         }
 
         /// <summary>
@@ -122,15 +112,13 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The type to write.</typeparam>
         /// <param name="obj">The object to write.</param>
-        /// <param name="bigEndian">A value indicating whether to read data in big-endian byte order.</param>
         /// <returns>The serialized object.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static byte[] Write<T>(T obj,
-            bool bigEndian = false)
+        public static byte[] Write<T>(T obj)
         {
-            Write(obj, FileType.Default, out byte[] data, bigEndian);
+            Write(obj, new SerializationParams(), out byte[] data);
             return data;
         }
 
@@ -139,16 +127,14 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The type to write.</typeparam>
         /// <param name="obj">The object to write.</param>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is written.</param>
-        /// <param name="bigEndian">A value indicating whether to read data in big-endian byte order.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written.</param>
         /// <returns>The serialized object.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static byte[] Write<T>(T obj, FileType fmt,
-            bool bigEndian = false)
+        public static byte[] Write<T>(T obj, SerializationParams p)
         {
-            Write(obj, fmt, out byte[] data, bigEndian);
+            Write(obj, p, out byte[] data);
             return data;
         }
 
@@ -157,30 +143,18 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The type to write.</typeparam>
         /// <param name="obj">The object to write.</param>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is written.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written.</param>
         /// <param name="data">The serialized object.</param>
-        /// <param name="bigEndian">A value indicating whether to read data in big-endian byte order.</param>
-        /// <param name="padding">The <see cref="PaddingScheme"/> to use for data alignment.</param>
-        /// <param name="paddingBytes">The byte sequence to use for padding if the padding scheme is set to <see cref="PaddingScheme.Pattern"/>.</param>
         /// <returns>The number of bytes written.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Write<T>(T obj, FileType fmt, out byte[] data,
-            bool bigEndian = false,
-            PaddingScheme padding = PaddingScheme.Skip,
-            byte[] paddingBytes = null)
+        public static int Write<T>(T obj, SerializationParams p, out byte[] data)
         {
-            using (DataBuffer stream = new DataBuffer() {
-                BigEndian = bigEndian,
-                PaddingType = padding,
-                PaddingBytes = paddingBytes
-            })
-            {
-                int bytesWritten = stream.GenericWrite(obj, fmt);
-                data = stream.GetBuffer();
-                return bytesWritten;
-            }
+            using DataBuffer stream = CreateDataBufferStream(p);
+            int bytesWritten = stream.GenericWrite(obj, p);
+            data = stream.GetBuffer();
+            return bytesWritten;
         }
 
         /// <summary>
@@ -189,14 +163,15 @@ namespace GTASaveData
         /// <typeparam name="T">The type to write.</typeparam>
         /// <param name="buf">The buffer to write into.</param>
         /// <param name="obj">The object to write.</param>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is written.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written.</param>
         /// <returns>The number of bytes written.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Write<T>(DataBuffer buf, T obj, FileType fmt) where T : ISaveDataObject
+        public static int Write<T>(DataBuffer buf, T obj, SerializationParams p)
+            where T : ISaveDataObject
         {
-            return obj.WriteData(buf, fmt);
+            return obj.WriteData(buf, p);
         }
 
         /// <summary>
@@ -206,22 +181,24 @@ namespace GTASaveData
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int SizeOf<T>() where T : new()
+        public static int SizeOf<T>()
+            where T : new()
         {
-            return SizeOf(new T(), FileType.Default);
+            return SizeOf(new T(), new SerializationParams());
         }
 
         /// <summary>
         /// Gets the size of a type when serialized.
         /// </summary>
         /// <typeparam name="T">The type to get the size of.</typeparam>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is written, which may affect the size.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written, which may affect the size.</param>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int SizeOf<T>(FileType fmt) where T : new()
+        public static int SizeOf<T>(SerializationParams p)
+            where T : new()
         {
-            return SizeOf(new T(), fmt);
+            return SizeOf(new T(), p);
         }
 
         /// <summary>
@@ -233,22 +210,42 @@ namespace GTASaveData
         /// </exception>
         public static int SizeOf<T>(T obj)
         {
-            return SizeOf(obj, FileType.Default);
+            return SizeOf(obj, new SerializationParams());
         }
 
         /// <summary>
         /// Gets the size of an object when serialized.
         /// </summary>
         /// <param name="obj">The object to get the size of.</param>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is written, which may affect the size.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written, which may affect the size.</param>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int SizeOf<T>(T obj, FileType fmt)
+        public static int SizeOf<T>(T obj, SerializationParams p)
         {
             return typeof(T).Implements(typeof(ISaveDataObject))
-                ? ((ISaveDataObject) obj).GetSize(fmt)
-                : Write(obj, fmt, out byte[] _);
+                ? ((ISaveDataObject) obj).GetSize(p)
+                : Write(obj, p, out byte[] _);
+        }
+
+        private static DataBuffer CreateDataBufferStream(SerializationParams p)
+        {
+            return new DataBuffer()
+            {
+                BigEndian = p.BigEndian,
+                PaddingType = p.PaddingType,
+                PaddingBytes = p.PaddingBytes
+            };
+        }
+
+        private static DataBuffer CreateDataBufferStream(byte[] buf, SerializationParams p)
+        {
+            return new DataBuffer(buf)
+            {
+                BigEndian = p.BigEndian,
+                PaddingType = p.PaddingType,
+                PaddingBytes = p.PaddingBytes
+            };
         }
     }
 }

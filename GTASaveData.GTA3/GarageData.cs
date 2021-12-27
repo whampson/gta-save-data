@@ -167,7 +167,7 @@ namespace GTASaveData.GTA3
             Garages = ArrayHelper.DeepClone(other.Garages);
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             NumGarages = buf.ReadInt32();
             FreeBombs = buf.ReadBool(4);
@@ -186,7 +186,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(NumGarages);
             buf.Write(FreeBombs, 4);
@@ -207,7 +207,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<GarageData>());
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x156C;
         }

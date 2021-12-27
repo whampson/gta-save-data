@@ -11,10 +11,10 @@ namespace TestConsoleApp
         static void Main(string[] args)
         {
             var game = Game.GTA3;
-            var plat = GTA3SaveFile.FileFormats.PC;
+            var plat = GTA3Save.FileTypes.PC;
             var name = "JM4";
             var path = TestData.GetTestDataPath(game, plat, name);
-            var save = GTA3SaveFile.Load(path);
+            var save = GTA3Save.Load(path);
             if (save == null)
             {
                 Console.WriteLine("File not found: " + path);

@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPathData : Base<PathData>
     {
-        public override PathData GenerateTestObject(FileType format)
+        public override PathData GenerateTestObject(GTA3SaveParams p)
         {
             int nodeCount = 8 * (new Faker().Random.Int(1, 1000) / 8);       // must be multiple of 8
             Faker<PathNode> nodeModel = new Faker<PathNode>()
@@ -20,24 +20,27 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            PathData x0 = GenerateTestObject(format);
-            byte[] data = Serializer.Write(x0, format);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            PathData x0 = GenerateTestObject(p);
+            byte[] data = Serializer.Write(x0, p);
             PathData x1 = PathData.Load(data);
 
             Assert.Equal(x0.PathNodes, x1.PathNodes);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            PathData x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            PathData x0 = GenerateTestObject(p);
             PathData x1 = new PathData(x0);
 
             Assert.Equal(x0, x1);

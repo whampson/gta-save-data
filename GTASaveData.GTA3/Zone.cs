@@ -102,7 +102,7 @@ namespace GTASaveData.GTA3
             NextZoneIndex = other.NextZoneIndex;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             Name = buf.ReadString(MaxNameLength);
             Min = buf.ReadStruct<Vector3>();
@@ -118,7 +118,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Zone>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(Name.PadRight(MaxNameLength, '\0'), MaxNameLength);
             buf.Write(Min);
@@ -134,7 +134,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Zone>());
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 56;
         }

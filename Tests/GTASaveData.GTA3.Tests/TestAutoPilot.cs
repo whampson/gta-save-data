@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestAutoPilot : Base<AutoPilot>
     {
-        public override AutoPilot GenerateTestObject(FileType format)
+        public override AutoPilot GenerateTestObject(GTA3SaveParams p)
         {
             Faker<AutoPilot> model = new Faker<AutoPilot>()
                 .RuleFor(x => x.CurrRouteNode, f => f.Random.Int())
@@ -42,11 +42,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            AutoPilot x0 = GenerateTestObject(format);
-            AutoPilot x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            AutoPilot x0 = GenerateTestObject(p);
+            AutoPilot x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.CurrRouteNode, x1.CurrRouteNode);
             Assert.Equal(x0.NextRouteNode, x1.NextRouteNode);
@@ -78,14 +79,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.PathFindNodesCount, x1.PathFindNodesCount);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            AutoPilot x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            AutoPilot x0 = GenerateTestObject(p);
             AutoPilot x1 = new AutoPilot(x0);
 
             Assert.Equal(x0, x1);

@@ -69,7 +69,7 @@ namespace GTASaveData.Types
             OldModel = other.OldModel;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             Type = (EntityClassType) buf.ReadInt32();
             Handle = buf.ReadInt32();
@@ -79,7 +79,7 @@ namespace GTASaveData.Types
             Debug.Assert(buf.Offset == SizeOf<BuildingSwap>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             buf.Write((int) Type);
             buf.Write(Handle);
@@ -89,9 +89,12 @@ namespace GTASaveData.Types
             Debug.Assert(buf.Offset == SizeOf<BuildingSwap>());
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            return 16;
+            return sizeof(int)
+                + sizeof(int)
+                + sizeof(int)
+                + sizeof(int);
         }
 
         public override bool Equals(object obj)

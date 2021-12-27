@@ -56,7 +56,7 @@ namespace GTASaveData.GTA3
             return PlayerPeds[0];
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             int numPeds = buf.ReadInt32();
 
@@ -67,45 +67,45 @@ namespace GTASaveData.GTA3
                 PedTypeId type = (PedTypeId) buf.ReadInt32();
                 short model = buf.ReadInt16();
                 int handle = buf.ReadInt32();
-                PlayerPed p = new PlayerPed(model, handle) { Type = type };
-                Serializer.Read(p, buf, fmt);
-                p.MaxWantedLevel = buf.ReadInt32();
-                p.MaxChaosLevel = buf.ReadInt32();
-                p.ModelName = buf.ReadString(PlayerPed.MaxModelNameLength);
-                PlayerPeds.Add(p);
+                PlayerPed ped = new PlayerPed(model, handle) { Type = type };
+                Serializer.Read(ped, buf, prm);
+                ped.MaxWantedLevel = buf.ReadInt32();
+                ped.MaxChaosLevel = buf.ReadInt32();
+                ped.ModelName = buf.ReadString(PlayerPed.MaxModelNameLength);
+                PlayerPeds.Add(ped);
             }
 
-            Debug.Assert(buf.Offset == SizeOf(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(PlayerPeds.Count);
 
-            foreach (PlayerPed p in PlayerPeds)
+            foreach (PlayerPed ped in PlayerPeds)
             {
-                buf.Write((int) p.Type);
-                buf.Write(p.ModelIndex);
-                buf.Write(p.Handle);
-                buf.Write(p, fmt);
-                buf.Write(p.MaxWantedLevel);
-                buf.Write(p.MaxChaosLevel);
-                buf.Write(p.ModelName, PlayerPed.MaxModelNameLength);
+                buf.Write((int) ped.Type);
+                buf.Write(ped.ModelIndex);
+                buf.Write(ped.Handle);
+                buf.Write(ped, prm);
+                buf.Write(ped.MaxWantedLevel);
+                buf.Write(ped.MaxChaosLevel);
+                buf.Write(ped.ModelName, PlayerPed.MaxModelNameLength);
             }
 
-            Debug.Assert(buf.Offset == SizeOf(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             int headerSize = 2 * sizeof(int) + sizeof(short);
             int footerSize = 2 * sizeof(int) + PlayerPed.MaxModelNameLength;
 
             int size = 0;
-            foreach (PlayerPed p in PlayerPeds)
+            foreach (PlayerPed ped in PlayerPeds)
             {
                 size += headerSize;
-                size += SizeOf(p, fmt);
+                size += SizeOf(ped, prm);
                 size += footerSize;
             }
 

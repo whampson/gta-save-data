@@ -100,8 +100,10 @@ namespace GTASaveData.Core.Tests
         [InlineData(false, true)]
         public void Bool(bool value, bool bigEndian)
         {
+            var p = new SerializationParams() { BigEndian = bigEndian };
+
             bool x0 = value;
-            byte[] data = Serializer.Write(x0, bigEndian);
+            byte[] data = Serializer.Write(x0, p);
             bool x1 = Serializer.Read<bool>(data);
 
             Assert.Equal(x0, x1);
@@ -188,10 +190,11 @@ namespace GTASaveData.Core.Tests
         public void Char(bool bigEndian)
         {
             Faker f = new Faker();
+            var p = new SerializationParams() { BigEndian = bigEndian };
 
             char x0 = f.Random.Char('\u0000', '\u00FF');
-            byte[] data = Serializer.Write(x0, bigEndian);
-            char x1 = Serializer.Read<char>(data, bigEndian);
+            byte[] data = Serializer.Write(x0, p);
+            char x1 = Serializer.Read<char>(data, p);
 
             Assert.Equal(x0, x1);
             Assert.Single(data);
@@ -229,10 +232,11 @@ namespace GTASaveData.Core.Tests
         public void Double(bool bigEndian)
         {
             Faker f = new Faker();
+            var p = new SerializationParams() { BigEndian = bigEndian };
 
             double x0 = f.Random.Double();
-            byte[] data = Serializer.Write(x0, bigEndian);
-            double x1 = Serializer.Read<double>(data, bigEndian);
+            byte[] data = Serializer.Write(x0, p);
+            double x1 = Serializer.Read<double>(data, p);
 
             Assert.Equal(x0, x1);
             Assert.Equal(8, data.Length);
@@ -244,10 +248,11 @@ namespace GTASaveData.Core.Tests
         public void Float(bool bigEndian)
         {
             Faker f = new Faker();
+            var p = new SerializationParams() { BigEndian = bigEndian };
 
             float x0 = f.Random.Float();
-            byte[] data = Serializer.Write(x0, bigEndian);
-            float x1 = Serializer.Read<float>(data, bigEndian);
+            byte[] data = Serializer.Write(x0, p);
+            float x1 = Serializer.Read<float>(data, p);
 
             Assert.Equal(x0, x1);
             Assert.Equal(4, data.Length);
@@ -259,10 +264,11 @@ namespace GTASaveData.Core.Tests
         public void Int16(bool bigEndian)
         {
             Faker f = new Faker();
+            var p = new SerializationParams() { BigEndian = bigEndian };
 
             short x0 = f.Random.Short();
-            byte[] data = Serializer.Write(x0, bigEndian);
-            short x1 = Serializer.Read<short>(data, bigEndian);
+            byte[] data = Serializer.Write(x0, p);
+            short x1 = Serializer.Read<short>(data, p);
 
             Assert.Equal(x0, x1);
             Assert.Equal(2, data.Length);
@@ -274,10 +280,11 @@ namespace GTASaveData.Core.Tests
         public void UInt16(bool bigEndian)
         {
             Faker f = new Faker();
+            var p = new SerializationParams() { BigEndian = bigEndian };
 
             ushort x0 = f.Random.UShort();
-            byte[] data = Serializer.Write(x0, bigEndian);
-            ushort x1 = Serializer.Read<ushort>(data, bigEndian);
+            byte[] data = Serializer.Write(x0, p);
+            ushort x1 = Serializer.Read<ushort>(data, p);
 
             Assert.Equal(x0, x1);
             Assert.Equal(2, data.Length);
@@ -289,10 +296,11 @@ namespace GTASaveData.Core.Tests
         public void Int32(bool bigEndian)
         {
             Faker f = new Faker();
+            var p = new SerializationParams() { BigEndian = bigEndian };
 
             int x0 = f.Random.Int();
-            byte[] data = Serializer.Write(x0, bigEndian);
-            int x1 = Serializer.Read<int>(data, bigEndian);
+            byte[] data = Serializer.Write(x0, p);
+            int x1 = Serializer.Read<int>(data, p);
 
             Assert.Equal(x0, x1);
             Assert.Equal(4, data.Length);
@@ -304,10 +312,11 @@ namespace GTASaveData.Core.Tests
         public void UInt32(bool bigEndian)
         {
             Faker f = new Faker();
+            var p = new SerializationParams() { BigEndian = bigEndian };
 
             uint x0 = f.Random.UInt();
-            byte[] data = Serializer.Write(x0, bigEndian);
-            uint x1 = Serializer.Read<uint>(data, bigEndian);
+            byte[] data = Serializer.Write(x0, p);
+            uint x1 = Serializer.Read<uint>(data, p);
 
             Assert.Equal(x0, x1);
             Assert.Equal(4, data.Length);
@@ -319,10 +328,11 @@ namespace GTASaveData.Core.Tests
         public void Int64(bool bigEndian)
         {
             Faker f = new Faker();
+            var p = new SerializationParams() { BigEndian = bigEndian };
 
             long x0 = f.Random.Long();
-            byte[] data = Serializer.Write(x0, bigEndian);
-            long x1 = Serializer.Read<long>(data, bigEndian);
+            byte[] data = Serializer.Write(x0, p);
+            long x1 = Serializer.Read<long>(data, p);
 
             Assert.Equal(x0, x1);
             Assert.Equal(8, data.Length);
@@ -334,10 +344,11 @@ namespace GTASaveData.Core.Tests
         public void UInt64(bool bigEndian)
         {
             Faker f = new Faker();
+            var p = new SerializationParams() { BigEndian = bigEndian };
 
             ulong x0 = f.Random.ULong();
-            byte[] data = Serializer.Write(x0, bigEndian);
-            ulong x1 = Serializer.Read<ulong>(data, bigEndian);
+            byte[] data = Serializer.Write(x0, p);
+            ulong x1 = Serializer.Read<ulong>(data, p);
 
             Assert.Equal(x0, x1);
             Assert.Equal(8, data.Length);
@@ -533,9 +544,11 @@ namespace GTASaveData.Core.Tests
         [InlineData(true)]
         public void Object(bool bigEndian)
         {
+            var p = new SerializationParams() { BigEndian = bigEndian };
+
             TestObject x0 = TestObject.Generate();
-            byte[] data = Serializer.Write(x0, bigEndian);
-            TestObject x1 = Serializer.Read<TestObject>(data, bigEndian);
+            byte[] data = Serializer.Write(x0, p);
+            TestObject x1 = Serializer.Read<TestObject>(data, p);
 
             Assert.Equal(x0, x1);
             Assert.Equal(Serializer.SizeOf<TestObject>(), data.Length);
@@ -648,7 +661,7 @@ namespace GTASaveData.Core.Tests
             public TestObject()
             { }
 
-            protected override void ReadData(DataBuffer buf, FileType fmt)
+            protected override void ReadData(DataBuffer buf, SerializationParams p)
             {
                 Ascii = buf.ReadChar();         // 0x00
                 Integer = buf.ReadInt32();      // 0x01
@@ -657,7 +670,7 @@ namespace GTASaveData.Core.Tests
                 Single = buf.ReadFloat();       // 0x08
             }
 
-            protected override void WriteData(DataBuffer buf, FileType fmt)
+            protected override void WriteData(DataBuffer buf, SerializationParams p)
             {
                 buf.Write(Ascii);
                 buf.Write(Integer);
@@ -666,7 +679,7 @@ namespace GTASaveData.Core.Tests
                 buf.Write(Single);
             }
 
-            protected override int GetSize(FileType fmt)
+            protected override int GetSize(SerializationParams p)
             {
                 return 1 + sizeof(int) + 1 + 2 + sizeof(float);
             }

@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestDamageManager : Base<DamageManager>
     {
-        public override DamageManager GenerateTestObject(FileType format)
+        public override DamageManager GenerateTestObject(GTA3SaveParams p)
         {
             Faker<DamageManager> model = new Faker<DamageManager>()
                 .RuleFor(x => x.WheelDamageEffect, f => f.Random.Float())
@@ -21,11 +21,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            DamageManager x0 = GenerateTestObject(format);
-            DamageManager x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            DamageManager x0 = GenerateTestObject(p);
+            DamageManager x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.WheelDamageEffect, x1.WheelDamageEffect);
             Assert.Equal(x0.Engine, x1.Engine);
@@ -36,14 +37,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Field24h, x1.Field24h);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            DamageManager x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            DamageManager x0 = GenerateTestObject(p);
             DamageManager x1 = new DamageManager(x0);
 
             Assert.Equal(x0, x1);

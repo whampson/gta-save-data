@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPhone : Base<Phone>
     {
-        public override Phone GenerateTestObject(FileType format)
+        public override Phone GenerateTestObject(GTA3SaveParams p)
         {
             Faker<Phone> model = new Faker<Phone>()
                 .RuleFor(x => x.Position, f => Generator.Vector3(f))
@@ -20,11 +20,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            Phone x0 = GenerateTestObject(format);
-            Phone x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Phone x0 = GenerateTestObject(p);
+            Phone x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0.Messages, x1.Messages);
@@ -34,13 +35,15 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.VisibleToCam, x1.VisibleToCam);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            Phone x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Phone x0 = GenerateTestObject(p);
             Phone x1 = new Phone(x0);
 
             Assert.Equal(x0, x1);

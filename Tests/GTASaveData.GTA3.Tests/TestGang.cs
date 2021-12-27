@@ -5,7 +5,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestGang : Base<Gang>
     {
-        public override Gang GenerateTestObject(FileType format)
+        public override Gang GenerateTestObject(GTA3SaveParams p)
         {
             Faker<Gang> model = new Faker<Gang>()
                 .RuleFor(x => x.VehicleModel, f => f.Random.Int())
@@ -17,11 +17,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            Gang x0 = GenerateTestObject(format);
-            Gang x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Gang x0 = GenerateTestObject(p);
+            Gang x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.VehicleModel, x1.VehicleModel);
             Assert.Equal(x0.PedModelOverride, x1.PedModelOverride);
@@ -29,14 +30,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Weapon2, x1.Weapon2);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            Gang x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Gang x0 = GenerateTestObject(p);
             Gang x1 = new Gang(x0);
 
             Assert.Equal(x0, x1);

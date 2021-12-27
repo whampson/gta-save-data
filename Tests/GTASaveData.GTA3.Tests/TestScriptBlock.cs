@@ -9,7 +9,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestScriptBlock : Base<ScriptsBlock>
     {
-        public override ScriptsBlock GenerateTestObject(FileType format)
+        public override ScriptsBlock GenerateTestObject(GTA3SaveParams p)
         {
             Faker faker = new Faker();
 
@@ -19,26 +19,27 @@ namespace GTASaveData.GTA3.Tests
             Faker<ScriptsBlock> model = new Faker<ScriptsBlock>()
                 .RuleFor(x => x.ScriptSpace, f => Generator.Array(varSpace, g => f.Random.Byte()))
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
-                .RuleFor(x => x.Contacts, f => Generator.Array(ScriptsBlock.NumContacts, g => Generator.Generate<Contact, TestContact>()))
-                .RuleFor(x => x.Collectives, f => Generator.Array(ScriptsBlock.NumCollectives, g => Generator.Generate<Collective, TestCollective>()))
+                .RuleFor(x => x.Contacts, f => Generator.Array(p.NumContacts, g => Generator.Generate<Contact, TestContact, GTA3SaveParams>(p)))
+                .RuleFor(x => x.Collectives, f => Generator.Array(p.NumCollectives, g => Generator.Generate<Collective, TestCollective, SerializationParams>(p)))
                 .RuleFor(x => x.NextFreeCollectiveIndex, f => f.Random.Int())
-                .RuleFor(x => x.BuildingSwaps, f => Generator.Array(ScriptsBlock.NumBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
-                .RuleFor(x => x.InvisibilitySettings, f => Generator.Array(ScriptsBlock.NumInvisibilitySettings, g => Generator.Generate<InvisibleObject, TestInvisibleObject>()))
+                .RuleFor(x => x.BuildingSwaps, f => Generator.Array(p.NumBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap, SerializationParams>(p)))
+                .RuleFor(x => x.InvisibilitySettings, f => Generator.Array(p.NumInvisibilitySettings, g => Generator.Generate<InvisibleObject, TestInvisibleObject, SerializationParams>(p)))
                 .RuleFor(x => x.UsingAMultiScriptFile, f => f.Random.Bool())
                 .RuleFor(x => x.MainScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.LargestMissionScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.NumberOfMissionScripts, f => f.Random.Short())
-                .RuleFor(x => x.RunningScripts, f => Generator.Array(runningScripts, g => Generator.Generate<RunningScript, TestRunningScript>(format)));
+                .RuleFor(x => x.RunningScripts, f => Generator.Array(runningScripts, g => Generator.Generate<RunningScript, TestRunningScript, GTA3SaveParams>(p)));
 
             return model.Generate();
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            ScriptsBlock x0 = GenerateTestObject(format);
-            ScriptsBlock x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            ScriptsBlock x0 = GenerateTestObject(p);
+            ScriptsBlock x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.ScriptSpace, x1.ScriptSpace);
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
@@ -54,13 +55,15 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.RunningScripts, x1.RunningScripts);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            ScriptsBlock x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            ScriptsBlock x0 = GenerateTestObject(p);
             ScriptsBlock x1 = new ScriptsBlock(x0);
 
             Assert.Equal(x0, x1);
@@ -74,8 +77,8 @@ namespace GTASaveData.GTA3.Tests
         public void GlobalVariables()
         {
             Faker f = new Faker();
-            string path = TestData.GetTestDataPath(Game.GTA3, GTA3SaveFile.FileFormats.PC, "CAT2");
-            using GTA3SaveFile x = SaveFile.Load<GTA3SaveFile>(path, GTA3SaveFile.FileFormats.PC);
+            string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileTypes.PC, "CAT2");
+            using GTA3Save x = GTA3Save.Load(path, GTA3Save.FileTypes.PC);
 
             Assert.Equal(987.5, x.Scripts.GetGlobalAsFloat(804));
 
@@ -98,8 +101,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void ScriptSpaceReadWrite()
         {
-            string path = TestData.GetTestDataPath(Game.GTA3, GTA3SaveFile.FileFormats.PC, "CAT2");
-            using GTA3SaveFile x = SaveFile.Load<GTA3SaveFile>(path, GTA3SaveFile.FileFormats.PC);
+            string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileTypes.PC, "CAT2");
+            using GTA3Save x = GTA3Save.Load(path, GTA3Save.FileTypes.PC);
 
             byte b = 0xA5;
             short s = unchecked((short) 0xCCEE);
@@ -132,8 +135,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void GrowShrinkScriptSpace()
         {
-            string path = TestData.GetTestDataPath(Game.GTA3, GTA3SaveFile.FileFormats.PC, "CAT2");
-            using GTA3SaveFile x = SaveFile.Load<GTA3SaveFile>(path, GTA3SaveFile.FileFormats.PC);
+            string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileTypes.PC, "CAT2");
+            using GTA3Save x = GTA3Save.Load(path, GTA3Save.FileTypes.PC);
 
             var origScriptSpace = x.Scripts.ScriptSpace;
             int origSize = origScriptSpace.Count;

@@ -8,33 +8,33 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestSaveFileGTA3 : Base<GTA3SaveFile>
+    public class TestSaveFileGTA3 : Base<GTA3Save>
     {
-        public override GTA3SaveFile GenerateTestObject(FileType format)
+        public override GTA3Save GenerateTestObject(GTA3SaveParams p)
         {
-            Faker<GTA3SaveFile> model = new Faker<GTA3SaveFile>()
-                .RuleFor(x => x.FileType, format)
-                .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables>(format))
-                .RuleFor(x => x.Scripts, Generator.Generate<ScriptsBlock, TestScriptBlock>(format))
-                .RuleFor(x => x.PlayerPeds, Generator.Generate<PedPool, TestPedPool>(format))
-                .RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData>(format))
-                .RuleFor(x => x.Vehicles, Generator.Generate<VehiclePool, TestVehiclePool>(format))
-                .RuleFor(x => x.Objects, Generator.Generate<ObjectPool, TestObjectPool>(format))
-                .RuleFor(x => x.Paths, Generator.Generate<PathData, TestPathData>(format))
-                .RuleFor(x => x.Cranes, Generator.Generate<CraneData, TestCraneData>(format))
-                .RuleFor(x => x.Pickups, Generator.Generate<PickupData, TestPickupData>(format))
-                .RuleFor(x => x.PhoneInfo, Generator.Generate<PhoneData, TestPhoneData>(format))
-                .RuleFor(x => x.RestartPoints, Generator.Generate<RestartData, TestRestartData>(format))
-                .RuleFor(x => x.RadarBlips, Generator.Generate<RadarData, TestRadarData>(format))
-                .RuleFor(x => x.Zones, Generator.Generate<ZoneData, TestZoneData>(format))
-                .RuleFor(x => x.Gangs, Generator.Generate<GangData, TestGangData>(format))
-                .RuleFor(x => x.CarGenerators, Generator.Generate<CarGeneratorData, TestCarGeneratorData>(format))
-                .RuleFor(x => x.ParticleObjects, Generator.Generate<ParticleData, TestParticleData>(format))
-                .RuleFor(x => x.AudioScriptObjects, Generator.Generate<AudioScriptData, TestAudioScriptData>(format))
-                .RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo>(format))
-                .RuleFor(x => x.Stats, Generator.Generate<Stats, TestStats>(format))
-                .RuleFor(x => x.Streaming, Generator.Generate<Streaming, TestStreaming>(format))
-                .RuleFor(x => x.PedTypeInfo, Generator.Generate<PedTypeData, TestPedTypeData>(format))
+            Faker<GTA3Save> model = new Faker<GTA3Save>()
+                .RuleFor(x => x.Params, p)
+                .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables, GTA3SaveParams>(p))
+                .RuleFor(x => x.Scripts, Generator.Generate<ScriptsBlock, TestScriptBlock, GTA3SaveParams>(p))
+                .RuleFor(x => x.PlayerPeds, Generator.Generate<PedPool, TestPedPool, GTA3SaveParams>(p))
+                .RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData, GTA3SaveParams>(p))
+                .RuleFor(x => x.Vehicles, Generator.Generate<VehiclePool, TestVehiclePool, GTA3SaveParams>(p))
+                .RuleFor(x => x.Objects, Generator.Generate<ObjectPool, TestObjectPool, GTA3SaveParams>(p))
+                .RuleFor(x => x.Paths, Generator.Generate<PathData, TestPathData, GTA3SaveParams>(p))
+                .RuleFor(x => x.Cranes, Generator.Generate<CraneData, TestCraneData, GTA3SaveParams>(p))
+                .RuleFor(x => x.Pickups, Generator.Generate<PickupData, TestPickupData, GTA3SaveParams>(p))
+                .RuleFor(x => x.PhoneInfo, Generator.Generate<PhoneData, TestPhoneData, GTA3SaveParams>(p))
+                .RuleFor(x => x.RestartPoints, Generator.Generate<RestartData, TestRestartData, GTA3SaveParams>(p))
+                .RuleFor(x => x.RadarBlips, Generator.Generate<RadarData, TestRadarData, GTA3SaveParams>(p))
+                .RuleFor(x => x.Zones, Generator.Generate<ZoneData, TestZoneData, GTA3SaveParams>(p))
+                .RuleFor(x => x.Gangs, Generator.Generate<GangData, TestGangData, GTA3SaveParams>(p))
+                .RuleFor(x => x.CarGenerators, Generator.Generate<CarGeneratorData, TestCarGeneratorData, GTA3SaveParams>(p))
+                .RuleFor(x => x.ParticleObjects, Generator.Generate<ParticleData, TestParticleData, GTA3SaveParams>(p))
+                .RuleFor(x => x.AudioScriptObjects, Generator.Generate<AudioScriptData, TestAudioScriptData, GTA3SaveParams>(p))
+                .RuleFor(x => x.PlayerInfo, Generator.Generate<PlayerInfo, TestPlayerInfo, GTA3SaveParams>(p))
+                .RuleFor(x => x.Stats, Generator.Generate<Stats, TestStats, GTA3SaveParams>(p))
+                .RuleFor(x => x.Streaming, Generator.Generate<Streaming, TestStreaming, GTA3SaveParams>(p))
+                .RuleFor(x => x.PedTypeInfo, Generator.Generate<PedTypeData, TestPedTypeData, GTA3SaveParams>(p))
                 ;
 
             return model.Generate();
@@ -47,7 +47,7 @@ namespace GTASaveData.GTA3.Tests
             if (!fmt.FlagDE) return;
 
             path = TestData.GetTestDataPath(Game.GTA3, fmt, path);
-            var save = SaveFile.Load<GTA3SaveFile>(path, fmt);
+            var save = GTA3Save.Load(path, fmt);
 
             Debug.WriteLine($"Title: {save.Title}");
             Debug.WriteLine($"TimeStamp: {save.TimeStamp}");
@@ -58,52 +58,55 @@ namespace GTASaveData.GTA3.Tests
         public void FileFormatDetection(FileType expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.GTA3, expectedFormat, filename);
-            SaveFile.TryGetFileType<GTA3SaveFile>(path, out FileType detectedFormat);
+            GTA3Save.TryGetFileType<GTA3Save>(path, out FileType detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            using GTA3SaveFile x0 = GenerateTestObject(format);
-            using GTA3SaveFile x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            using GTA3Save x0 = GenerateTestObject(p);
+            using GTA3Save x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             AssertSavesAreEqual(x0, x1);
-            AssertCheckSumValid(data, format);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            AssertCheckSumValid(data, p.FileType);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
         [Theory]
         [MemberData(nameof(TestFiles))]
-        public void RealData(FileType format, string filename)
+        public void RealData(FileType t, string filename)
         {
-            string path = TestData.GetTestDataPath(Game.GTA3, format, filename);
+            string path = TestData.GetTestDataPath(Game.GTA3, t, filename);
 
-            using GTA3SaveFile x0 = SaveFile.Load<GTA3SaveFile>(path, format);
-            using GTA3SaveFile x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            using GTA3Save x0 = GTA3Save.Load(path, t);
+            using GTA3Save x1 = CreateSerializedCopy(x0, x0.Params, out byte[] data);
 
             // Copy properties that don't actually get saved to the new buffer.
-            if (format.IsPS2)
+            if (t.IsPS2)
             {
                 x1.Title = x0.Title;
             }
-            if (!format.IsPC && !format.IsXbox)
+            if (!t.IsPC && !t.IsXbox)
             {
                 x1.TimeStamp = x0.TimeStamp;
             }
 
             AssertSavesAreEqual(x0, x1);
-            AssertCheckSumValid(data, format);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            AssertCheckSumValid(data, t);
+            Assert.Equal(GetSizeOfTestObject(x0, x0.Params), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            GTA3SaveFile x0 = GenerateTestObject();
-            GTA3SaveFile x1 = new GTA3SaveFile(x0);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            GTA3Save x0 = GenerateTestObject(p);
+            GTA3Save x1 = new GTA3Save(x0);
 
             Assert.Equal(x0, x1);
         }
@@ -111,7 +114,8 @@ namespace GTASaveData.GTA3.Tests
         [Fact]
         public void BlockBounds()
         {
-            string path = TestData.GetTestDataPath(Game.GTA3, GTA3SaveFile.FileFormats.PC, "CAT2");
+            FileType t = GTA3Save.FileTypes.PC;
+            string path = TestData.GetTestDataPath(Game.GTA3, t, "CAT2");
             byte[] data = File.ReadAllBytes(path);
 
             // Fudge the block size
@@ -119,15 +123,15 @@ namespace GTASaveData.GTA3.Tests
             data[1] = 0xBA;
             data[2] = 0xFE;
             data[3] = 0xCA;
-            Assert.Throws<SerializationException>(() => SaveFile.Load<GTA3SaveFile>(data, GTA3SaveFile.FileFormats.PC));
+            Assert.Throws<SerializationException>(() => GTA3Save.Load(data, GTA3SaveParams.GetDefaults(t)));
 
             // Make the script space huge
-            GTA3SaveFile x = SaveFile.Load<GTA3SaveFile>(path, GTA3SaveFile.FileFormats.PC);
+            GTA3Save x = GTA3Save.Load(path, t);
             x.Scripts.ScriptSpace = ArrayHelper.CreateArray<byte>(100000);
             Assert.Throws<EndOfStreamException>(() => x.Save(out byte[] _));
         }
 
-        private void AssertSavesAreEqual(GTA3SaveFile x0, GTA3SaveFile x1)
+        private void AssertSavesAreEqual(GTA3Save x0, GTA3Save x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Scripts, x1.Scripts);
@@ -153,9 +157,9 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0, x1);
         }
 
-        private void AssertCheckSumValid(byte[] data, FileType format)
+        private void AssertCheckSumValid(byte[] data, FileType t)
         {
-            int sumOffset = (format.IsXbox) ? data.Length - 24 : data.Length - 4;
+            int sumOffset = (t.IsXbox) ? data.Length - 24 : data.Length - 4;
             int calculatedSum = data.Take(sumOffset).Sum(x => x);
             int storedSum = BitConverter.ToInt32(data, sumOffset);
             Assert.Equal(calculatedSum, storedSum);

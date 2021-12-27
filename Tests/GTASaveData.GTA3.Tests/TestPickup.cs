@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPickup : Base<Pickup>
     {
-        public override Pickup GenerateTestObject(FileType format)
+        public override Pickup GenerateTestObject(GTA3SaveParams p)
         {
             Faker<Pickup> model = new Faker<Pickup>()
                 .RuleFor(x => x.Type, f => f.PickRandom<PickupType>())
@@ -22,11 +22,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            Pickup x0 = GenerateTestObject(format);
-            Pickup x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Pickup x0 = GenerateTestObject(p);
+            Pickup x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Type, x1.Type);
             Assert.Equal(x0.HasBeenPickedUp, x1.HasBeenPickedUp);
@@ -37,13 +38,15 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.PoolIndex, x1.PoolIndex);
             Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            Pickup x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Pickup x0 = GenerateTestObject(p);
             Pickup x1 = new Pickup(x0);
 
             Assert.Equal(x0, x1);

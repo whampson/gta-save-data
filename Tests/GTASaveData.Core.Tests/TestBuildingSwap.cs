@@ -5,9 +5,9 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestBuildingSwap : SaveDataObjectTestBase<BuildingSwap>
+    public class TestBuildingSwap : SaveDataObjectTestBase<BuildingSwap, SerializationParams>
     {
-        public override BuildingSwap GenerateTestObject(FileType format)
+        public override BuildingSwap GenerateTestObject(SerializationParams p)
         {
             Faker<BuildingSwap> model = new Faker<BuildingSwap>()
                 .RuleFor(x => x.Type, f => f.PickRandom<EntityClassType>())

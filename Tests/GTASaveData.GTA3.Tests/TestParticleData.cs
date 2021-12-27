@@ -6,33 +6,36 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestParticleData : Base<ParticleData>
     {
-        public override ParticleData GenerateTestObject(FileType format)
+        public override ParticleData GenerateTestObject(GTA3SaveParams p)
         {
             Faker<ParticleData> model = new Faker<ParticleData>()
                 .RuleFor(x => x.Objects,
-                    f => Generator.Array(f.Random.Int(1, 50), g => Generator.Generate<ParticleObject, TestParticleObject>(format)));
+                    f => Generator.Array(f.Random.Int(1, 50), g => Generator.Generate<ParticleObject, TestParticleObject, GTA3SaveParams>(p)));
 
             return model.Generate();
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            ParticleData x0 = GenerateTestObject(format);
-            ParticleData x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            ParticleData x0 = GenerateTestObject(p);
+            ParticleData x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Objects, x1.Objects);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            ParticleData x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            ParticleData x0 = GenerateTestObject(p);
             ParticleData x1 = new ParticleData(x0);
 
             Assert.Equal(x0, x1);

@@ -1,5 +1,4 @@
-﻿using GTASaveData.Helpers;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -8,7 +7,8 @@ namespace GTASaveData
     /// <summary>
     /// Represents the saved state of a <i>Grand Theft Auto</i> game.
     /// </summary>
-    public abstract class SaveFile : SaveDataObject
+    public abstract class SaveFile<P> : SaveDataObject
+        where P : SerializationParams, new()
     {
         /// <summary>
         /// Arbitrary limit that should be larger than any GTA save file
@@ -16,8 +16,8 @@ namespace GTASaveData
         /// </summary>
         private const int FileSizeMax = 0x200000;
 
-        private FileType m_fileFormat;
         private Game m_game;
+        private P m_params;
 
         /// <summary>
         /// The internal name of the save file.
@@ -30,15 +30,6 @@ namespace GTASaveData
         public abstract DateTime TimeStamp { get; set; }
 
         /// <summary>
-        /// A descriptor for the file type which controls how data is serialized.
-        /// </summary>
-        public FileType FileType
-        {
-            get { return m_fileFormat; }
-            set { m_fileFormat = value; OnPropertyChanged(); }
-        }
-
-        /// <summary>
         /// The <i>Grand Theft Auto</i> game this save belongs to.
         /// </summary>
         public Game Game
@@ -47,33 +38,41 @@ namespace GTASaveData
             set { m_game = value; OnPropertyChanged(); }
         }
 
-        // TODO: other useful/common structres?
+        /// <summary>
+        /// The serialization parameters used to read and write this save.
+        /// </summary>
+        public P Params
+        {
+            get { return m_params; }
+            set { m_params = value ?? new P(); OnPropertyChanged(); }
+        }
 
         protected SaveFile(Game game)
         {
             Game = game;
+            Params = new P();
         }
 
         /// <summary>
-        /// Attempts to determine the <see cref="GTASaveData.FileType"/> of the data in the specified buffer.
+        /// Gets the current <see cref="FileType"/> for this save.
         /// </summary>
-        /// <typeparam name="T">The type of <see cref="SaveFile"/> to.</typeparam>
-        /// <param name="buf">The buffer to parse.</param>
-        /// <param name="fmt">The detected <see cref="GTASaveData.FileType"/>, if successful.</param>
-        /// <returns>True if the detection was successful, false otherwise.</returns>
-        public static bool TryGetFileType<T>(byte[] buf, out FileType fmt) where T : SaveFile, new()
+        /// <remarks>
+        /// The file type is stored in the serialization parameters.
+        /// </remarks>
+        public FileType GetFileType()
         {
-            return new T().DetectFileType(buf, out fmt);
+            return Params.FileType;
         }
 
         /// <summary>
-        /// Attempts to determine the <see cref="GTASaveData.FileType"/> of the specified save file.
+        /// Attempts to determine the <see cref="FileType"/> of the specified save file.
         /// </summary>
-        /// <typeparam name="T">The type of <see cref="SaveFile"/> to.</typeparam>
+        /// <typeparam name="T">The type of <see cref="SaveFile{P}"/> to.</typeparam>
         /// <param name="path">The path to the file to parse.</param>
-        /// <param name="fmt">The detected <see cref="GTASaveData.FileType"/>, if successful.</param>
+        /// <param name="t">The detected <see cref="FileType"/>, if successful.</param>
         /// <returns>True if the detection was successful, false otherwise.</returns>
-        public static bool TryGetFileType<T>(string path, out FileType fmt) where T : SaveFile, new()
+        public static bool TryGetFileType<T>(string path, out FileType t)
+            where T : SaveFile<P>, new()
         {
             if (File.Exists(path))
             {
@@ -84,27 +83,42 @@ namespace GTASaveData
                 }
 
                 byte[] data = File.ReadAllBytes(path);
-                return TryGetFileType<T>(data, out fmt);
+                return TryGetFileType<T>(data, out t);
             }
 
         Fail:
-            fmt = FileType.Default;
+            t = FileType.Default;
             return false;
         }
 
         /// <summary>
-        /// Attempts to load a <see cref="SaveFile"/> from the data in the specified buffer.
+        /// Attempts to determine the <see cref="FileType"/> of the data in the specified buffer.
         /// </summary>
-        /// <typeparam name="T">The type of <see cref="SaveFile"/> to load.</typeparam>
-        /// <param name="buf">The buffer to read.</param>
-        /// <param name="saveFile">The deserialized <see cref="SaveFile"/>, if successful.</param>
-        /// <returns>True if the load was sucessful, false otherwise.</returns>
-        public static bool TryLoad<T>(byte[] buf, out T saveFile) where T : SaveFile, new()
+        /// <typeparam name="T">The type of <see cref="SaveFile{P}"/> to.</typeparam>
+        /// <param name="buf">The buffer to parse.</param>
+        /// <param name="t">The detected <see cref="FileType"/>, if successful.</param>
+        /// <returns>True if the detection was successful, false otherwise.</returns>
+        public static bool TryGetFileType<T>(byte[] buf, out FileType t)
+            where T : SaveFile<P>, new()
         {
+            return new T().DetectFileType(buf, out t);
+        }
+
+        public static bool TryLoad<T>(string path, out T saveFile)
+            where T : SaveFile<P>, new()
+        {
+            return TryLoad(path, FileType.Default, out saveFile);
+        }
+
+        public static bool TryLoad<T>(string path, FileType t, out T saveFile)
+            where T : SaveFile<P>, new()
+        {
+            if (path == null) throw new ArgumentNullException(nameof(path));
+
             try
             {
-                saveFile = Load<T>(buf);
-                return saveFile != null;
+                saveFile = Load<T>(path, t);
+                return true;
             }
             catch (Exception e)
             {
@@ -114,68 +128,20 @@ namespace GTASaveData
                 }
             }
 
-            saveFile = default;
+            saveFile = null;
             return false;
         }
 
-        /// <summary>
-        /// Loads a <see cref="SaveFile"/> from the specified buffer.
-        /// </summary>
-        /// <typeparam name="T">The type of <see cref="SaveFile"/> to load.</typeparam>
-        /// <param name="buf">The buffer to read.</param>
-        /// <returns>
-        /// A new <see cref="SaveFile"/> object containing the deserialized save data,
-        /// or null if loading was not successful.
-        /// </returns>
-        /// <exception cref="InvalidDataException"/>
-        /// <exception cref="SerializationException"/>
-        public static T Load<T>(byte[] buf) where T : SaveFile, new()
+        public static bool TryLoad<T>(string path, P param, out T saveFile)
+            where T : SaveFile<P>, new()
         {
-            return Load<T>(buf, FileType.Default);
-        }
+            if (path == null) throw new ArgumentNullException(nameof(path));
+            if (param == null) throw new ArgumentNullException(nameof(param));
 
-        /// <summary>
-        /// Loads a <see cref="SaveFile"/> from the specified buffer.
-        /// </summary>
-        /// /// <remarks>
-        /// If the <paramref name="fmt"/> is <see cref="FileType.Default"/>, the
-        /// file type will be detected automatically.
-        /// </remarks>
-        /// <typeparam name="T">The type of <see cref="SaveFile"/> to load.</typeparam>
-        /// <param name="buf">The buffer to read.</param>
-        /// <param name="fmt">A <see cref="GTASaveData.FileType"/> descriptor controlling how data is read.</param>
-        /// <returns>
-        /// A new <see cref="SaveFile"/> object containing the deserialized save data,
-        /// or null if loading was not successful.
-        /// </returns>
-        /// <exception cref="InvalidDataException"/>
-        /// <exception cref="SerializationException"/>
-        public static T Load<T>(byte[] buf, FileType fmt) where T : SaveFile, new()
-        {
-            if (fmt == FileType.Default)
-            {
-                if (!TryGetFileType<T>(buf, out fmt))
-                {
-                    return null;
-                }
-            }
-
-            return Serializer.Read<T>(buf, fmt);
-        }
-
-        /// <summary>
-        /// Attempts to load a <see cref="SaveFile"/> from the file at the specified path.
-        /// </summary>
-        /// <typeparam name="T">The type of <see cref="SaveFile"/> to load.</typeparam>
-        /// <param name="path">The path to the file to read.</param>
-        /// <param name="saveFile">The deserialized <see cref="SaveFile"/>, if successful.</param>
-        /// <returns>True if the load was sucessful, false otherwise.</returns>
-        public static bool TryLoad<T>(string path, out T saveFile) where T : SaveFile, new()
-        {
             try
             {
-                saveFile = Load<T>(path);
-                return saveFile != null;
+                saveFile = Load<T>(path, param);
+                return true;
             }
             catch (Exception e)
             {
@@ -185,56 +151,106 @@ namespace GTASaveData
                 }
             }
 
-            saveFile = default;
+            saveFile = null;
             return false;
         }
 
-        /// <summary>
-        /// Loads a <see cref="SaveFile"/> from the specified buffer.
-        /// </summary>
-        /// <typeparam name="T">The type of <see cref="SaveFile"/> to load.</typeparam>
-        /// <param name="path">The path to the file to read.</param>
-        /// <returns>
-        /// A new <see cref="SaveFile"/> object containing the deserialized save data,
-        /// or null if loading was not successful.
-        /// </returns>
-        /// <exception cref="InvalidDataException"/>
-        /// <exception cref="SerializationException"/>
-        public static T Load<T>(string path) where T : SaveFile, new()
+        public static bool TryLoad<T>(byte[] buf, P param, out T saveFile)
+            where T : SaveFile<P>, new()
+        {
+            if (buf == null) throw new ArgumentNullException(nameof(buf));
+            if (param == null) throw new ArgumentNullException(nameof(param));
+
+            try
+            {
+                saveFile = Load<T>(buf, param);
+                return true;
+            }
+            catch (Exception e)
+            {
+                if (!(e is InvalidDataException && e is SerializationException))
+                {
+                    throw;
+                }
+            }
+
+            saveFile = null;
+            return false;
+        }
+
+        public static T Load<T>(string path)
+            where T : SaveFile<P>, new()
         {
             return Load<T>(path, FileType.Default);
         }
 
         /// <summary>
-        /// Loads a <see cref="SaveFile"/> from the specified buffer.
+        /// Opens a <see cref="SaveFile{P}"/> from the specified file path.
         /// </summary>
         /// <remarks>
-        /// If the <paramref name="fmt"/> is <see cref="FileType.Default"/>, the
-        /// file type will be detected automatically.
+        /// If <paramref name="t"/> is <see cref="FileType.Default"/>,
+        /// <see cref="TryGetFileType{T}(string, out FileType)"/> will be used
+        /// to determine the file type. If unsuccessful, <c>null</c> will be returned.
         /// </remarks>
-        /// <typeparam name="T">The type of <see cref="SaveFile"/> to load.</typeparam>
-        /// <param name="path">The path to the file to read.</param>
-        /// <param name="fmt">A <see cref="GTASaveData.FileType"/> descriptor controlling how data is read.</param>
+        /// <typeparam name="T">
+        /// The type of <see cref="SaveFile{P}"/> to load.
+        /// </typeparam>
         /// <returns>
-        /// A new <see cref="SaveFile"/> object containing the deserialized save data,
-        /// or null if loading was not successful.
+        /// A new <see cref="SaveFile{P}"/> instance containing deserialized data from
+        /// the specified file, if successful. <c>null</c> if the file type could not
+        /// be determined or if no <see cref="SerializationParams"/> could be found for
+        /// the given file type.
         /// </returns>
-        /// <exception cref="InvalidDataException"/>
         /// <exception cref="SerializationException"/>
-        public static T Load<T>(string path, FileType fmt) where T : SaveFile, new()
+        /// <exception cref="InvalidDataException"/>
+        public static T Load<T>(string path, FileType t)
+            where T : SaveFile<P>, new()
         {
-            if (fmt == FileType.Default)
+            if (path == null) throw new ArgumentNullException(nameof(path));
+
+            if (t == FileType.Default)
             {
-                if (!TryGetFileType<T>(path, out fmt))
+                if (!TryGetFileType<T>(path, out t))
                 {
                     return null;
                 }
             }
 
-            T obj = new T() { FileType = fmt };
-            obj.LoadFromFile(path);
+            var s = new T();
+            var p = SerializationParams.GetDefaults<P>(t);
+            if (p == null)
+            {
+                return null;
+            }
 
-            return obj;
+            s.Params = p;
+            s.LoadFromFile(path);
+
+            return s;
+        }
+
+        public static T Load<T>(string path, P param)
+            where T : SaveFile<P>, new()
+        {
+            if (path == null) throw new ArgumentNullException(nameof(path));
+            if (param == null) throw new ArgumentNullException(nameof(param));
+
+            T s = new T { Params = param };
+            s.LoadFromFile(path);
+
+            return s;
+        }
+
+        public static T Load<T>(byte[] buf, P param)
+            where T : SaveFile<P>, new()
+        {
+            if (buf == null) throw new ArgumentNullException(nameof(buf));
+            if (param == null) throw new ArgumentNullException(nameof(param));
+
+            T s = Serializer.Read<T>(buf, param);
+            s.Params = param;
+
+            return s;
         }
 
         private void LoadFromFile(string path)
@@ -252,19 +268,10 @@ namespace GTASaveData
 
             OnFileLoading(path);
             byte[] buf = File.ReadAllBytes(path);
-            _ = Serializer.Read(this, buf, FileType);
+            _ = Serializer.Read(this, buf, Params);
             OnFileLoad(path);
         }
 
-        /// <summary>
-        /// Saves all data to a buffer.
-        /// </summary>
-        /// <param name="buf">The output buffer.</param>
-        /// <returns>The number of bytes written.</returns>
-        public int Save(out byte[] buf)
-        {
-            return Serializer.Write(this, FileType, out buf);
-        }
 
         /// <summary>
         /// Saves all data to a file.
@@ -281,10 +288,19 @@ namespace GTASaveData
             return bytesWritten;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        /// <summary>
+        /// Saves all data to a buffer.
+        /// </summary>
+        /// <param name="buf">The output buffer.</param>
+        /// <returns>The number of bytes written.</returns>
+        public int Save(out byte[] buf)
+        {
+            return Serializer.Write(this, Params, out buf);
+        }
+
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             int mark = buf.Position;
-            FileType = fmt;
 
             OnLoading();
             Load(buf);
@@ -294,10 +310,9 @@ namespace GTASaveData
             Debug.WriteLine($"Load successful! {bytesRead} total bytes read");
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             int mark = buf.Position;
-            FileType = fmt;
 
             OnSaving();
             Save(buf);
@@ -310,16 +325,17 @@ namespace GTASaveData
         /// <summary>
         /// Deserializes all data from the buffer.
         /// </summary>
-        /// <param name="buf">The buffer to read from.</param>
         protected abstract void Load(DataBuffer buf);
 
         /// <summary>
         /// Serializes all data to the buffer.
         /// </summary>
-        /// <param name="buf">The buffer to write into.</param>
         protected abstract void Save(DataBuffer buf);
 
-
+        /// <summary>
+        /// Detects the <see cref="FileType"/> of the buffer and returns a value
+        /// indicating whether detection was successful.
+        /// </summary>
         protected abstract bool DetectFileType(byte[] buf, out FileType fmt);
 
         /// <summary>

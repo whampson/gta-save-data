@@ -84,7 +84,7 @@ namespace TestApp
         public static Dictionary<Game, IEnumerable<FileType>> FileFormats => new Dictionary<Game, IEnumerable<FileType>>()
         {
             { Game.None, new List<FileType>() },
-            { Game.GTA3, GTA3SaveFile.FileFormats.GetAll() },
+            { Game.GTA3, GTA3Save.FileTypes.GetAll() },
             { Game.VC, SaveFileVC.FileFormats.GetAll() },
             { Game.SA, SaveFileSA.FileFormats.GetAll() },
             { Game.LCS, SaveFileLCS.FileFormats.GetAll() },
@@ -189,7 +189,7 @@ namespace TestApp
         public void LoadSaveData(string path)
         {
             // lol
-            if (OpenIfValid<GTA3SaveFile>(path, Game.GTA3)) { }
+            if (OpenIfValid<GTA3Save>(path, Game.GTA3)) { }
             else if (OpenIfValid<SaveFileVC>(path, Game.VC)) { }
             else if (OpenIfValid<SaveFileSA>(path, Game.SA)) { }
             else if (OpenIfValid<SaveFileLCS>(path, Game.LCS)) { }
@@ -248,9 +248,9 @@ namespace TestApp
 
         private void CleanupOldSaveData()
         {
-            if (CurrentSaveFile is GTA3SaveFile)
+            if (CurrentSaveFile is GTA3Save)
             {
-                (CurrentSaveFile as GTA3SaveFile).Dispose();
+                (CurrentSaveFile as GTA3Save).Dispose();
             }
             else if (CurrentSaveFile is SaveFileVC)
             {

@@ -2,12 +2,11 @@
 using TestFramework;
 using Xunit;
 
-#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3.Tests
 {
     public class TestGarage : Base<Garage>
     {
-        public override Garage GenerateTestObject(FileType format)
+        public override Garage GenerateTestObject(GTA3SaveParams p)
         {
             Faker<Garage> model = new Faker<Garage>()
                 .RuleFor(x => x.Type, f => f.PickRandom<GarageType>())
@@ -44,17 +43,18 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.CollectedCarsState, f => f.Random.Byte())
                 .RuleFor(x => x.TargetCarPointer, f => f.Random.UInt())
                 .RuleFor(x => x.Field96h, f => f.Random.Int())
-                .RuleFor(x => x.StoredCar, f => Generator.Generate<StoredCar, TestStoredCar>());
+                .RuleFor(x => x.StoredCar, f => Generator.Generate<StoredCar, TestStoredCar, GTA3SaveParams>(p));
 
             return model.Generate();
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            Garage x0 = GenerateTestObject(format);
-            Garage x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Garage x0 = GenerateTestObject(p);
+            Garage x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Type, x1.Type);
             Assert.Equal(x0.State, x1.State);
@@ -93,18 +93,19 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.StoredCar, x1.StoredCar);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            Garage x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Garage x0 = GenerateTestObject(p);
             Garage x1 = new Garage(x0);
 
             Assert.Equal(x0, x1);
         }
     }
 }
-#pragma warning restore CS0618 // Type or member is obsolete

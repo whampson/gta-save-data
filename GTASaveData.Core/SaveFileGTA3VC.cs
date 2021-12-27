@@ -1,5 +1,4 @@
-﻿using GTASaveData.Helpers;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,16 +6,15 @@ using System.Linq;
 namespace GTASaveData
 {
     /// <summary>
-    /// A <see cref="SaveFile"/> generalizing the structure shared by
+    /// A <see cref="SaveFile{P}"/> generalizing the structure shared by
     /// <i>Grand Theft Auto III</i> and <i>Grand Theft Auto: Vice City</i>.
     /// </summary>
     /// <remarks>
     /// The Load/Save functionality mimics that of the games themselves for the best data accuracy.
     /// </remarks>
-    public abstract class SaveFileGTA3VC : SaveFile, IDisposable
+    public abstract class SaveFileGTA3VC<P> : SaveFile<P>, IDisposable
+        where P : SerialiationParamsGTA3VC, new()
     {
-        private PaddingScheme m_paddingType;
-        private byte[] m_paddingBytes;
         private bool m_disposed;
 
         /// <summary>
@@ -33,25 +31,6 @@ namespace GTASaveData
         /// <remarks>
         /// The checksum is calculated by summing all preceding bytes in the file.</remarks>
         protected int CheckSum { get; set; }
-
-        /// <summary>
-        /// The data padding scheme, which controls the bytes written for data structure alignment and padding.
-        /// </summary>
-        public PaddingScheme PaddingType
-        {
-            get { return m_paddingType; }
-            set { m_paddingType = value; OnPropertyChanged(); }
-        }
-
-        /// <summary>
-        /// The bytes to use for padding when the <see cref="PaddingType"/> is set to
-        /// <see cref="PaddingScheme.Pattern"/>.
-        /// </summary>
-        public byte[] PaddingBytes
-        {
-            get { return m_paddingBytes; }
-            set { m_paddingBytes = value; OnPropertyChanged(); }
-        }
 
         protected SaveFileGTA3VC(Game game) : base(game) { }
 
@@ -100,7 +79,7 @@ namespace GTASaveData
             WorkBuff.Reset();
 
             int size = src.ReadInt32();
-            if ((uint) size > WorkBuff.Length) throw new SerializationException(Strings.Error_Serialization_BadBlockSize, (uint) size);
+            if ((uint) size > WorkBuff.Length) throw new SerializationException(Strings.Error_Serialization_BadBlockSize, (uint) size, WorkBuff.Length);
 
             WorkBuff.Write(src.ReadBytes(size));
             src.Align4();
@@ -180,7 +159,7 @@ namespace GTASaveData
                 obj = o;
             }
 
-            int bytesRead = WorkBuff.ReadObject(obj, FileType);
+            int bytesRead = WorkBuff.ReadObject(obj, Params);
             WorkBuff.Align4();
 
             Debug.WriteLine($"{typeof(T).Name}: {bytesRead} bytes read");
@@ -204,7 +183,7 @@ namespace GTASaveData
             preSize = WorkBuff.Position;
             WorkBuff.Skip(4);
 
-            size = WorkBuff.Write(obj, FileType);
+            size = WorkBuff.Write(obj, Params);
             postData = WorkBuff.Position;
 
             WorkBuff.Seek(preSize);
@@ -215,17 +194,17 @@ namespace GTASaveData
             Debug.WriteLine($"{typeof(T).Name}: {size} bytes written");
         }
 
-        protected override void OnReading(FileType fmt)
+        protected override void OnReading(SerializationParams p)
         {
-            base.OnReading(fmt);
-            FileType = fmt;
+            base.OnReading(p);
+            Params = (P) p;
             InitWorkBuffer();
         }
 
-        protected override void OnWriting(FileType fmt)
+        protected override void OnWriting(SerializationParams p)
         {
-            base.OnWriting(fmt);
-            FileType = fmt;
+            base.OnWriting(p);
+            Params = (P) p;
             InitWorkBuffer();
         }
 
@@ -233,7 +212,8 @@ namespace GTASaveData
         {
             base.OnFileLoad(path);
 
-            if (FileType.IsPS2 || FileType.IsMobile)
+            var t = GetFileType();
+            if (t.IsPS2 || t.IsMobile)
             {
                 TimeStamp = File.GetLastWriteTime(path);
             }
@@ -246,20 +226,14 @@ namespace GTASaveData
                 WorkBuff.Dispose();
             }
 
-            WorkBuff = new DataBuffer(GetWorkBufferSize())
+            var p = Params;
+            WorkBuff = new DataBuffer(p.WorkBufferSize)
             {
                 BigEndian = false,
-                PaddingType = PaddingType,
-                PaddingBytes = PaddingBytes
+                PaddingType = p.PaddingType,
+                PaddingBytes = p.PaddingBytes
             };
         }
-
-        /// <summary>
-        /// Returns the work buffer size.
-        /// </summary>
-        /// <remarks>
-        /// The work buffer size may be dependent on the file type.</remarks>
-        protected abstract int GetWorkBufferSize();
 
         /// <summary>
         /// Dispose of this object.

@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestRadarBlip : Base<RadarBlip>
     {
-        public override RadarBlip GenerateTestObject(FileType format)
+        public override RadarBlip GenerateTestObject(GTA3SaveParams p)
         {
             Faker<RadarBlip> model = new Faker<RadarBlip>()
                 .RuleFor(x => x.Color, f => f.Random.Int())
@@ -26,11 +26,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            RadarBlip x0 = GenerateTestObject(format);
-            RadarBlip x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            RadarBlip x0 = GenerateTestObject(p);
+            RadarBlip x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Color, x1.Color);
             Assert.Equal(x0.Type, x1.Type);
@@ -46,14 +47,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Sprite, x1.Sprite);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            RadarBlip x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            RadarBlip x0 = GenerateTestObject(p);
             RadarBlip x1 = new RadarBlip(x0);
 
             Assert.Equal(x0, x1);

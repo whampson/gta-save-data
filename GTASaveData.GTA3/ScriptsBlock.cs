@@ -17,10 +17,6 @@ namespace GTASaveData.GTA3
     public class ScriptsBlock : SaveDataObject,
         IEquatable<ScriptsBlock>, IDeepClonable<ScriptsBlock>
     {
-        public const int NumContacts = 16;
-        public const int NumCollectives = 32;
-        public const int NumBuildingSwaps = 25;
-        public const int NumInvisibilitySettings = 20;
         private const int KeyLengthInScript = 8;
 
         private const int ScriptDataSize = 968;
@@ -204,10 +200,10 @@ namespace GTASaveData.GTA3
         {
             ScriptInfo = new ScriptInfo();
             ScriptSpace = new ObservableArray<byte>();
-            Contacts = ArrayHelper.CreateArray<Contact>(NumContacts);
-            Collectives = ArrayHelper.CreateArray<Collective>(NumCollectives);
-            BuildingSwaps = ArrayHelper.CreateArray<BuildingSwap>(NumBuildingSwaps);
-            InvisibilitySettings = ArrayHelper.CreateArray<InvisibleObject>(NumInvisibilitySettings);
+            Contacts = new ObservableArray<Contact>();
+            Collectives = new ObservableArray<Collective>();
+            BuildingSwaps = new ObservableArray<BuildingSwap>();
+            InvisibilitySettings = new ObservableArray<InvisibleObject>();
             RunningScripts = new ObservableArray<RunningScript>();
         }
 
@@ -614,15 +610,18 @@ namespace GTASaveData.GTA3
             return ip;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            if (fmt.FlagDE)
+            var p = (GTA3SaveParams) prm;
+            var t = p.FileType;
+
+            if (t.FlagDE)
             {
                 ScriptInfo = buf.ReadObject<ScriptInfo>();
             }
 
             buf.Mark();
-            int size = SaveFileGTA3VC.ReadBlockHeader(buf, out string tag);
+            int size = GTA3Save.ReadBlockHeader(buf, out string tag);
             Debug.Assert(tag == "SCR");
 
             int varSpace = buf.ReadInt32();
@@ -630,11 +629,11 @@ namespace GTASaveData.GTA3
             int unusedSize = buf.ReadInt32();
             Debug.Assert(unusedSize == ScriptDataSize);
             OnAMissionFlag = buf.ReadInt32();
-            Contacts = buf.ReadArray<Contact>(NumContacts);
-            Collectives = buf.ReadArray<Collective>(NumCollectives);
+            Contacts = buf.ReadArray<Contact>(p.NumContacts);
+            Collectives = buf.ReadArray<Collective>(p.NumCollectives);
             NextFreeCollectiveIndex = buf.ReadInt32();
-            BuildingSwaps = buf.ReadArray<BuildingSwap>(NumBuildingSwaps);
-            InvisibilitySettings = buf.ReadArray<InvisibleObject>(NumInvisibilitySettings);
+            BuildingSwaps = buf.ReadArray<BuildingSwap>(p.NumBuildingSwaps);
+            InvisibilitySettings = buf.ReadArray<InvisibleObject>(p.NumInvisibilitySettings);
             UsingAMultiScriptFile = buf.ReadBool();
             buf.ReadByte();
             buf.ReadUInt16();
@@ -643,26 +642,29 @@ namespace GTASaveData.GTA3
             NumberOfMissionScripts = buf.ReadInt16();
             buf.ReadUInt16();
             int runningScripts = buf.ReadInt32();
-            RunningScripts = buf.ReadArray<RunningScript>(runningScripts, fmt);
+            RunningScripts = buf.ReadArray<RunningScript>(runningScripts, p);
 
-            Debug.Assert(buf.Offset == size + SaveFileGTA3VC.BlockHeaderSize);
-            Debug.Assert(size == SizeOf(this, fmt) - SaveFileGTA3VC.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
+            Debug.Assert(size == SizeOf(this, p) - GTA3Save.BlockHeaderSize);
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            int size = SizeOf(this, fmt);
-            SaveFileGTA3VC.WriteBlockHeader(buf, "SCR", size - SaveFileGTA3VC.BlockHeaderSize);
+            var p = (GTA3SaveParams) prm;
+            var t = p.FileType;
+
+            int size = SizeOf(this, p);
+            GTA3Save.WriteBlockHeader(buf, "SCR", size - GTA3Save.BlockHeaderSize);
 
             buf.Write(ScriptSpace.Count);
             buf.Write(ScriptSpace);
             buf.Write(ScriptDataSize);
             buf.Write(OnAMissionFlag);
-            buf.Write(Contacts, NumContacts);
-            buf.Write(Collectives, NumCollectives);
+            buf.Write(Contacts, p.NumContacts);
+            buf.Write(Collectives, p.NumCollectives);
             buf.Write(NextFreeCollectiveIndex);
-            buf.Write(BuildingSwaps, NumBuildingSwaps);
-            buf.Write(InvisibilitySettings, NumInvisibilitySettings);
+            buf.Write(BuildingSwaps, p.NumBuildingSwaps);
+            buf.Write(InvisibilitySettings, p.NumInvisibilitySettings);
             buf.Write(UsingAMultiScriptFile);
             buf.Write((byte) 0);
             buf.Write((short) 0);
@@ -671,19 +673,19 @@ namespace GTASaveData.GTA3
             buf.Write(NumberOfMissionScripts);
             buf.Write((short) 0);
             buf.Write(RunningScripts.Count);
-            buf.Write(RunningScripts, fmt);
+            buf.Write(RunningScripts, p);
 
             Debug.Assert(buf.Offset == size);
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.FlagDE) throw new NotImplementedException();
+            if (prm.FileType.FlagDE) throw new NotImplementedException();
 
-            return SaveFileGTA3VC.BlockHeaderSize
+            return GTA3Save.BlockHeaderSize
                 + ScriptSpace.Count
                 + ScriptDataSize
-                + SizeOf<RunningScript>(fmt) * RunningScripts.Count
+                + SizeOf<RunningScript>(prm) * RunningScripts.Count
                 + 3 * sizeof(int);
         }
 

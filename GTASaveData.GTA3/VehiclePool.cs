@@ -36,7 +36,7 @@ namespace GTASaveData.GTA3
             Boats = ArrayHelper.DeepClone(other.Boats);
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             int numCars = buf.ReadInt32();
             int numBoats = buf.ReadInt32();
@@ -52,21 +52,21 @@ namespace GTASaveData.GTA3
                 if (type == VehicleType.Car)
                 {
                     Automobile a = new Automobile(model, handle);
-                    Serializer.Read(a, buf, fmt);
+                    Serializer.Read(a, buf, prm);
                     Cars.Add(a);
                 }
                 else if (type == VehicleType.Boat)
                 {
                     Boat b = new Boat(model, handle);
-                    Serializer.Read(b, buf, fmt);
+                    Serializer.Read(b, buf, prm);
                     Boats.Add(b);
                 }
             }
 
-            Debug.Assert(buf.Offset == SizeOf(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             List<Vehicle> vehicles = Cars.Select(x => x as Vehicle).Concat(Boats.Select(x => x as Vehicle)).ToList();
 
@@ -78,17 +78,17 @@ namespace GTASaveData.GTA3
                 buf.Write((int) v.Type);
                 buf.Write(v.ModelIndex);
                 buf.Write(v.Handle);
-                buf.Write(v, fmt);
+                buf.Write(v, prm);
             }
 
-            Debug.Assert(buf.Offset == SizeOf(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             int headerSize = 2 * sizeof(int) + sizeof(short);
-            int sizeOfCars = (SizeOf<Automobile>(fmt) + headerSize) * Cars.Count;
-            int sizeOfBoats = (SizeOf<Boat>(fmt) + headerSize) * Boats.Count;
+            int sizeOfCars = (SizeOf<Automobile>(prm) + headerSize) * Cars.Count;
+            int sizeOfBoats = (SizeOf<Boat>(prm) + headerSize) * Boats.Count;
 
             return 2 * sizeof(int) + sizeOfCars + sizeOfBoats;
         }

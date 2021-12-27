@@ -2,22 +2,21 @@
 using TestFramework;
 using Xunit;
 
-#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3.Tests
 {
     public class TestZoneData : Base<ZoneData>
     {
-        public override ZoneData GenerateTestObject(FileType format)
+        public override ZoneData GenerateTestObject(GTA3SaveParams p)
         {
             Faker<ZoneData> model = new Faker<ZoneData>()
                 .RuleFor(x => x.CurrentZoneIndex, f => f.Random.Int())
                 .RuleFor(x => x.CurrentLevel, f => f.PickRandom<Level>())
                 .RuleFor(x => x.FindIndex, f => f.Random.Short())
-                .RuleFor(x => x.Zones, f => Generator.Array(ZoneData.MaxNumZones, g => Generator.Generate<Zone, TestZone>()))
-                .RuleFor(x => x.ZoneInfo, f => Generator.Array(ZoneData.MaxNumZoneInfos, g => Generator.Generate<ZoneInfo, TestZoneInfo>()))
+                .RuleFor(x => x.Zones, f => Generator.Array(ZoneData.MaxNumZones, g => Generator.Generate<Zone, TestZone, GTA3SaveParams>(p)))
+                .RuleFor(x => x.ZoneInfo, f => Generator.Array(ZoneData.MaxNumZoneInfos, g => Generator.Generate<ZoneInfo, TestZoneInfo, GTA3SaveParams>(p)))
                 .RuleFor(x => x.NumberOfZones, f => f.Random.Short())
                 .RuleFor(x => x.NumberOfZoneInfos, f => f.Random.Short())
-                .RuleFor(x => x.MapZones, f => Generator.Array(ZoneData.MaxNumMapZones, g => Generator.Generate<Zone, TestZone>()))
+                .RuleFor(x => x.MapZones, f => Generator.Array(ZoneData.MaxNumMapZones, g => Generator.Generate<Zone, TestZone, GTA3SaveParams>(p)))
                 .RuleFor(x => x.AudioZones, f => Generator.Array(ZoneData.MaxNumAudioZones, g => f.Random.Short()))
                 .RuleFor(x => x.NumberOfMapZones, f => f.Random.Short())
                 .RuleFor(x => x.NumberOfAudioZones, f => f.Random.Short());
@@ -26,11 +25,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            ZoneData x0 = GenerateTestObject(format);
-            ZoneData x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            ZoneData x0 = GenerateTestObject(p);
+            ZoneData x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.CurrentZoneIndex, x1.CurrentZoneIndex);
             Assert.Equal(x0.CurrentLevel, x1.CurrentLevel);
@@ -45,17 +45,18 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.NumberOfAudioZones, x1.NumberOfAudioZones);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            ZoneData x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            ZoneData x0 = GenerateTestObject(p);
             ZoneData x1 = new ZoneData(x0);
 
             Assert.Equal(x0, x1);
         }
     }
 }
-#pragma warning restore CS0618 // Type or member is obsolete

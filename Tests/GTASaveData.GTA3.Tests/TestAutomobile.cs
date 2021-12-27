@@ -6,14 +6,14 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestAutomobile : Base<Automobile>
     {
-        public override Automobile GenerateTestObject(FileType format)
+        public override Automobile GenerateTestObject(GTA3SaveParams p)
         {
             Faker<Automobile> model = new Faker<Automobile>()
                 .RuleFor(x => x.Matrix, f => Generator.Matrix(f))
                 .RuleFor(x => x.EntityType, f => f.PickRandom<EntityType>())
                 .RuleFor(x => x.EntityStatus, f => f.PickRandom<EntityStatus>())
                 .RuleFor(x => x.EntityFlags, f => f.PickRandom<EntityFlags>())
-                .RuleFor(x => x.AutoPilot, f => Generator.Generate<AutoPilot, TestAutoPilot>())
+                .RuleFor(x => x.AutoPilot, f => Generator.Generate<AutoPilot, TestAutoPilot, GTA3SaveParams>(p))
                 .RuleFor(x => x.Color1, f => f.Random.Byte())
                 .RuleFor(x => x.Color2, f => f.Random.Byte())
                 .RuleFor(x => x.AlarmState, f => f.Random.Short())
@@ -38,17 +38,18 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.TimeOfDeath, f => f.Random.UInt())
                 .RuleFor(x => x.BombTimer, f => f.Random.Short())
                 .RuleFor(x => x.DoorLock, f => f.PickRandom<CarLock>())
-                .RuleFor(x => x.Damage, Generator.Generate<DamageManager, TestDamageManager>());
+                .RuleFor(x => x.Damage, Generator.Generate<DamageManager, TestDamageManager, GTA3SaveParams>(p));
 
             return model.Generate();
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            Automobile x0 = GenerateTestObject(format);
-            Automobile x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Automobile x0 = GenerateTestObject(p);
+            Automobile x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(VehicleType.Car, x1.Type);
             Assert.Equal(x0.Matrix, x1.Matrix);
@@ -83,14 +84,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Damage, x1.Damage);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            Automobile x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Automobile x0 = GenerateTestObject(p);
             Automobile x1 = new Automobile(x0);
 
             Assert.Equal(x0, x1);

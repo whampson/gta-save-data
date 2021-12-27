@@ -83,7 +83,7 @@ namespace GTASaveData.GTA3
             Position = other.Position;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             Type = (PickupType) buf.ReadByte();
             HasBeenPickedUp = buf.ReadBool();
@@ -97,7 +97,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write((byte) Type);
             buf.Write(HasBeenPickedUp);
@@ -111,7 +111,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Pickup>());
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x1C;
         }

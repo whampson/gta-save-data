@@ -5,7 +5,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestSystemTime : TestBase<SystemTime>
+    public class TestSystemTime : TestBase<SystemTime, SerializationParams>
     {
         [Fact]
         public void RandomDataSerialization()

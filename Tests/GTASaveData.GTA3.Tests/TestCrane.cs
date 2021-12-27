@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestCrane : Base<Crane>
     {
-        public override Crane GenerateTestObject(FileType format)
+        public override Crane GenerateTestObject(GTA3SaveParams p)
         {
             Faker<Crane> model = new Faker<Crane>()
                 .RuleFor(x => x.Handle, f => f.Random.UInt())
@@ -44,11 +44,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            Crane x0 = GenerateTestObject(format);
-            Crane x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Crane x0 = GenerateTestObject(p);
+            Crane x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Handle, x1.Handle);
             Assert.Equal(x0.HookHandle, x1.HookHandle);
@@ -82,14 +83,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.IsTop, x1.IsTop);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            Crane x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Crane x0 = GenerateTestObject(p);
             Crane x1 = new Crane(x0);
 
             Assert.Equal(x0, x1);

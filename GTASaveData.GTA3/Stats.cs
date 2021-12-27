@@ -442,7 +442,7 @@ namespace GTASaveData.GTA3
             LastMissionPassedName = other.LastMissionPassedName;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             PeopleKilledByPlayer = buf.ReadInt32();
             PeopleKilledByOthers = buf.ReadInt32();
@@ -500,7 +500,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Stats>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(PeopleKilledByPlayer);
             buf.Write(PeopleKilledByOthers);
@@ -558,7 +558,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<Stats>());
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 420;
         }

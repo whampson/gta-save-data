@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestRestartPoint : Base<RestartPoint>
     {
-        public override RestartPoint GenerateTestObject(FileType format)
+        public override RestartPoint GenerateTestObject(GTA3SaveParams p)
         {
             Faker<RestartPoint> model = new Faker<RestartPoint>()
                 .RuleFor(x => x.Position, f => Generator.Vector3(f))
@@ -16,24 +16,27 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            RestartPoint x0 = GenerateTestObject(format);
-            RestartPoint x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            RestartPoint x0 = GenerateTestObject(p);
+            RestartPoint x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0.Angle, x1.Angle);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            RestartPoint x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            RestartPoint x0 = GenerateTestObject(p);
             RestartPoint x1 = new RestartPoint(x0);
 
             Assert.Equal(x0, x1);

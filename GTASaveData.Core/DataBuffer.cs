@@ -33,7 +33,7 @@ namespace GTASaveData
         /// <remarks>
         /// The endianness of serialized structs is determined by the host CPU. If you need to control
         /// the endianness of a structure, consider implementing <see cref="ISaveDataObject"/> and using
-        /// <see cref="ReadObject{T}(FileType)"/> and <see cref="Write(ISaveDataObject, FileType)"/>
+        /// <see cref="ReadObject{T}(SerializationParams)"/> and <see cref="Write(ISaveDataObject, SerializationParams)"/>
         /// to serialize your struct.
         /// </remarks>
         public bool BigEndian { get; set; }
@@ -105,7 +105,7 @@ namespace GTASaveData
         /// Reads a generic value.
         /// </summary>
         /// <typeparam name="T">The type of data to read.</typeparam>
-        /// <param name="format">The data format, if applicable.</param>
+        /// <param name="p">The <see cref="SerializationParams"/>, if applicable.</param>
         /// <param name="obj">
         /// An object of type <typeparamref name="T"/> extracted from the
         /// buffer.
@@ -138,11 +138,13 @@ namespace GTASaveData
         /// <see cref="string"/>,
         /// <see cref="ISaveDataObject"/>.
         /// </exception>
-        internal int GenericRead<T>(FileType format,
+        internal int GenericRead<T>(SerializationParams p,
             out T obj,
             int length = 0,
             bool unicode = false)
         {
+            p ??= new SerializationParams();
+
             Type t = typeof(T);
             if (t.IsEnum) t = Enum.GetUnderlyingType(t);
 
@@ -167,11 +169,11 @@ namespace GTASaveData
             else if (t == typeof(string)) o = (length == 0) ? ReadString(unicode) : ReadString(length, unicode);
             else if (t.Implements(typeof(ISaveDataObject)))
             {
-                var p = new Type[] { typeof(FileType) };
-                var m = GetType().GetMethod(nameof(ReadObject), p).MakeGenericMethod(t);
+                var tp = new Type[] { typeof(SerializationParams) };
+                var m = GetType().GetMethod(nameof(ReadObject), tp).MakeGenericMethod(t);
                 try
                 {
-                    o = m.Invoke(this, new object[] { format });
+                    o = m.Invoke(this, new object[] { p });
                 }
                 catch (TargetInvocationException ex)
                 {
@@ -441,7 +443,7 @@ namespace GTASaveData
         /// <remarks>
         /// The endianness of serialized structs is determined by the host CPU. If you need to control
         /// the endianness of a structure, consider implementing <see cref="ISaveDataObject"/> and using
-        /// <see cref="ReadObject{T}(FileType)"/> and <see cref="Write(ISaveDataObject, FileType)"/>
+        /// <see cref="ReadObject{T}(SerializationParams)"/> and <see cref="Write(ISaveDataObject, SerializationParams)"/>
         /// to serialize your struct.
         /// </remarks>
         /// <typeparam name="T">The type of struct to read.</typeparam>
@@ -467,7 +469,7 @@ namespace GTASaveData
         public T ReadObject<T>() where T : ISaveDataObject, new()
         {
             T obj = new T();
-            obj.ReadData(this, FileType.Default);
+            obj.ReadData(this, new SerializationParams());
 
             return obj;
         }
@@ -476,12 +478,12 @@ namespace GTASaveData
         /// Reads an <see cref="ISaveDataObject"/>.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="ISaveDataObject"/> to read.</typeparam>
-        /// <param name="format">A <see cref="FileType"/> descriptor controlling how data is read.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is read.</param>
         /// <exception cref="EndOfStreamException"/>
-        public T ReadObject<T>(FileType format) where T : ISaveDataObject, new()
+        public T ReadObject<T>(SerializationParams p) where T : ISaveDataObject, new()
         {
             T obj = new T();
-            obj.ReadData(this, format);
+            obj.ReadData(this, p);
 
             return obj;
         }
@@ -491,11 +493,11 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The type of <see cref="ISaveDataObject"/> to read.</typeparam>
         /// <param name="obj">the object to populate.</param>
-        /// <param name="format">A <see cref="FileType"/> descriptor controlling how data is read.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is read.</param>
         /// <exception cref="EndOfStreamException"/>
-        public int ReadObject<T>(T obj, FileType format) where T : ISaveDataObject
+        public int ReadObject<T>(T obj, SerializationParams p) where T : ISaveDataObject
         {
-            return obj.ReadData(this, format);
+            return obj.ReadData(this, p);
         }
 
         /// <summary>
@@ -517,7 +519,7 @@ namespace GTASaveData
             int itemLength = 0,
             bool unicode = false)
         {
-            return ReadArray<T>(count, FileType.Default, itemLength, unicode);
+            return ReadArray<T>(count, new SerializationParams(), itemLength, unicode);
         }
 
         /// <summary>
@@ -525,7 +527,7 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The array element type.</typeparam>
         /// <param name="count">The number of elements to read.</param>
-        /// <param name="format">A <see cref="FileType"/> descriptor controlling how data is read per element.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is read per element.</param>
         /// <param name="itemLength">
         /// The number of bytes/characters to read per element if <typeparamref name="T"/> is
         /// <see cref="byte"/>[], <see cref="bool"/>, or <see cref="string"/>.
@@ -536,14 +538,14 @@ namespace GTASaveData
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException"/>
         /// <exception cref="EndOfStreamException"/>
-        public T[] ReadArray<T>(int count, FileType format,
+        public T[] ReadArray<T>(int count, SerializationParams p,
             int itemLength = 0,
             bool unicode = false)
         {
             List<T> items = new List<T>();
             for (int i = 0; i < count; i++)
             {
-                GenericRead(format, out T obj, itemLength, unicode);
+                GenericRead(p, out T obj, itemLength, unicode);
                 items.Add(obj);
             }
 
@@ -555,7 +557,7 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The type of data to write.</typeparam>
         /// <param name="value">The <typeparamref name="T"/> value to write.</param>
-        /// <param name="format">The data format, if applicable.</param>
+        /// <param name="p">The <see cref="SerializationParams"/>, if applicable.</param>
         /// <param name="length">
         /// The number of bytes/characters to write if <paramref name="value"/> is a
         /// <see cref="byte"/>[], <see cref="bool"/> or <see cref="string"/>.
@@ -585,10 +587,12 @@ namespace GTASaveData
         /// <see cref="string"/>,
         /// <see cref="ISaveDataObject"/>.
         /// </exception>
-        internal int GenericWrite<T>(T value, FileType format,
+        internal int GenericWrite<T>(T value, SerializationParams p,
             int length = 0,
             bool unicode = false)
         {
+            p ??= new SerializationParams();
+
             Type t = typeof(T);
             if (t.IsEnum) t = Enum.GetUnderlyingType(t);
 
@@ -610,7 +614,7 @@ namespace GTASaveData
             else if (t == typeof(short)) return Write(Convert.ToInt16(value));
             else if (t == typeof(ushort)) return Write(Convert.ToUInt16(value));
             else if (t == typeof(string)) return Write(Convert.ToString(value), length, unicode);
-            else if (t.Implements(typeof(ISaveDataObject))) return Write((ISaveDataObject) value, format);
+            else if (t.Implements(typeof(ISaveDataObject))) return Write((ISaveDataObject) value, p);
             else if (t.IsValueType) return Write(t, value);
             else throw SerializationNotSupported(typeof(T));
         }
@@ -979,7 +983,7 @@ namespace GTASaveData
         /// <remarks>
         /// The endianness of serialized structs is determined by the host CPU. If you need to control
         /// the endianness of a structure, consider implementing <see cref="ISaveDataObject"/> and using
-        /// <see cref="ReadObject{T}(FileType)"/> and <see cref="Write(ISaveDataObject, FileType)"/>
+        /// <see cref="ReadObject{T}(SerializationParams)"/> and <see cref="Write(ISaveDataObject, SerializationParams)"/>
         /// to serialize your struct.
         /// </remarks>
         /// <typeparam name="T">The type of struct to write.</typeparam>
@@ -1013,21 +1017,21 @@ namespace GTASaveData
         /// <exception cref="EndOfStreamException"/>
         public int Write(ISaveDataObject value)
         {
-            return Write(value, FileType.Default);
+            return Write(value, new SerializationParams());
         }
 
         /// <summary>
         /// Writes an <see cref="ISaveDataObject"/> using the specified data format.
         /// </summary>
         /// <param name="value">The object to write.</param>
-        /// <param name="format">A <see cref="FileType"/> descriptor controlling how data is written.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is written.</param>
         /// <returns>The number of bytes written.</returns>
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="EndOfStreamException"/>
-        public int Write(ISaveDataObject value, FileType format)
+        public int Write(ISaveDataObject value, SerializationParams p)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
-            return value.WriteData(this, format);
+            return value.WriteData(this, p);
         }
 
         /// <summary>
@@ -1054,7 +1058,7 @@ namespace GTASaveData
             bool unicode = false)
             where T : new()
         {
-            return Write(items, FileType.Default, count, itemLength, unicode);
+            return Write(items, new SerializationParams(), count, itemLength, unicode);
         }
 
         /// <summary>
@@ -1062,7 +1066,7 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The array element type.</typeparam>
         /// <param name="items">The elements to write.</param>
-        /// <param name="format">A <see cref="FileType"/> descriptor controlling how data is written per element.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is written per element.</param>
         /// <param name="count">The number of elements to write. If this value is null, the entire array will be written.</param>
         /// <param name="itemLength">
         /// The number of bytes/characters to write per element if <typeparamref name="T"/> is
@@ -1077,7 +1081,7 @@ namespace GTASaveData
         /// <exception cref="ArgumentOutOfRangeException"/>
         /// <exception cref="EndOfStreamException"/>
         public int Write<T>(T[] items,
-            FileType format,
+            SerializationParams p,
             int? count = null,
             int itemLength = 0,
             bool unicode = false)
@@ -1092,8 +1096,8 @@ namespace GTASaveData
             for (int i = 0; i < (count ?? capacity); i++)
             {
                 bytesWritten += (i < capacity)
-                    ? GenericWrite(items.ElementAt(i), format, itemLength, unicode)
-                    : GenericWrite(new T(), format, itemLength, unicode);
+                    ? GenericWrite(items.ElementAt(i), p, itemLength, unicode)
+                    : GenericWrite(new T(), p, itemLength, unicode);
             }
 
             return bytesWritten;
@@ -1123,7 +1127,7 @@ namespace GTASaveData
             bool unicode = false)
             where T : new()
         {
-            return Write(items, FileType.Default, count, itemLength, unicode);
+            return Write(items, new SerializationParams(), count, itemLength, unicode);
         }
 
         /// <summary>
@@ -1131,7 +1135,7 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The array element type.</typeparam>
         /// <param name="items">The elements to write.</param>
-        /// <param name="format">A <see cref="FileType"/> descriptor controlling how data is written per element.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is written per element.</param>
         /// <param name="count">The number of elements to write. If this value is null, the entire array will be written.</param>
         /// <param name="itemLength">
         /// The number of bytes/characters to write per element if <typeparamref name="T"/> is
@@ -1146,14 +1150,14 @@ namespace GTASaveData
         /// <exception cref="ArgumentOutOfRangeException"/>
         /// <exception cref="EndOfStreamException"/>
         public int Write<T>(ObservableArray<T> items,
-            FileType format,
+            SerializationParams p,
             int? count = null,
             int itemLength = 0,
             bool unicode = false)
             where T : new()
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
-            return Write(items.ToArray(), format, count, itemLength, unicode);
+            return Write(items.ToArray(), p, count, itemLength, unicode);
         }
 
         /// <summary>

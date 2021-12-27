@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPlayerPed : Base<PlayerPed>
     {
-        public override PlayerPed GenerateTestObject(FileType format)
+        public override PlayerPed GenerateTestObject(GTA3SaveParams p)
         {
             Faker<PlayerPed> model = new Faker<PlayerPed>()
 
@@ -20,7 +20,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.CreatedBy, f => f.PickRandom<CharCreatedBy>())
                 .RuleFor(x => x.Health, f => f.Random.Float())
                 .RuleFor(x => x.Armor, f => f.Random.Float())
-                .RuleFor(x => x.Weapons, f => Generator.Array(PlayerPed.NumWeapons, g => Generator.Generate<Weapon, TestWeapon>(format)))
+                .RuleFor(x => x.Weapons, f => Generator.Array(PlayerPed.NumWeapons, g => Generator.Generate<Weapon, TestWeapon, GTA3SaveParams>(p)))
                 .RuleFor(x => x.MaxWeaponTypeAllowed, f => f.Random.Byte())
                 .RuleFor(x => x.MaxStamina, f => f.Random.Float())
                 .RuleFor(x => x.TargetableObjects, f => Generator.Array(PlayerPed.NumTargetableObjects, g => f.Random.Int()));
@@ -34,11 +34,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            PlayerPed x0 = GenerateTestObject(format);
-            PlayerPed x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            PlayerPed x0 = GenerateTestObject(p);
+            PlayerPed x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0.CreatedBy, x1.CreatedBy);
@@ -50,13 +51,15 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.TargetableObjects, x1.TargetableObjects);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            PlayerPed x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            PlayerPed x0 = GenerateTestObject(p);
             PlayerPed x1 = new PlayerPed(x0);
 
             Assert.Equal(x0, x1);

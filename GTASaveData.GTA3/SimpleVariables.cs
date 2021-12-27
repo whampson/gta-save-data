@@ -12,8 +12,6 @@ namespace GTASaveData.GTA3
     public class SimpleVariables : SaveDataObject,
         IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
-        public const int MaxMissionPassedNameLength = 24;
-
         private string m_lastMissionPassedName;
         private SystemTime m_timeStamp;
         private int m_sizeOfGameInBytes;
@@ -55,7 +53,6 @@ namespace GTASaveData.GTA3
 
         /// <summary>
         /// The name of the last mission passed; the name of the save as shown in-game.
-        /// Length: 24.
         /// </summary>
         /// <remarks>
         /// Not available on PS2. Name is a GXT key if prefixed by \uFFFF on Android and iOS only.
@@ -529,9 +526,12 @@ namespace GTASaveData.GTA3
             CheatedFlag = other.CheatedFlag;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            if (fmt.FlagDE)
+            var p = (GTA3SaveParams) prm;
+            var t = p.FileType;
+
+            if (t.FlagDE)
             {
                 uint unk00 = buf.ReadUInt32();       // probably padding
                 Debug.Assert(unk00 == 0xFF00FF00U);
@@ -545,15 +545,21 @@ namespace GTASaveData.GTA3
             }
             else
             {
-                if (!fmt.IsPS2) LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
-                if (fmt.IsPC || fmt.IsXbox) TimeStamp = buf.ReadStruct<SystemTime>();
+                if (!t.IsPS2)
+                {
+                    LastMissionPassedName = buf.ReadString(p.MaxLastMissionPassedNameLength, unicode: true);
+                }
+                if (t.IsPC || t.IsXbox)
+                {
+                    TimeStamp = buf.ReadStruct<SystemTime>();
+                }
             }
             SizeOfGameInBytes = buf.ReadInt32();
             CurrentLevel = (Level) buf.ReadInt32();
             CameraPosition = buf.ReadStruct<Vector3>();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
-            if (fmt.FlagDE)
+            if (t.FlagDE)
             {
                 GameClockHours = buf.ReadByte();
                 GameClockMinutes = buf.ReadByte();
@@ -577,17 +583,17 @@ namespace GTASaveData.GTA3
             FramesPerUpdate = buf.ReadFloat();
             TimeScale2 = buf.ReadFloat();
             OldWeatherType = (WeatherType) buf.ReadInt16();
-            if (!fmt.FlagDE) buf.Align4();
+            if (!t.FlagDE) buf.Align4();
             NewWeatherType = (WeatherType) buf.ReadInt16();
-            if (!fmt.FlagDE) buf.Align4();
+            if (!t.FlagDE) buf.Align4();
             ForcedWeatherType = (WeatherType) buf.ReadInt16();
-            if (!fmt.FlagDE) buf.Align4();
+            if (!t.FlagDE) buf.Align4();
             WeatherInterpolation = buf.ReadFloat();
-            if (fmt.IsPS2)
+            if (t.IsPS2)
             {
                 MusicVolume = buf.ReadInt32();
                 SfxVolume = buf.ReadInt32();
-                if (!fmt.FlagAustralia)
+                if (!t.FlagAustralia)
                 {
                     CurrPadMode = buf.ReadInt16();  // duplicate of CurrPadMode
                     buf.Align4();
@@ -599,7 +605,7 @@ namespace GTASaveData.GTA3
                 RadioStation = (RadioStation) buf.ReadByte();
                 buf.Align4();
                 Brightness = buf.ReadInt32();
-                if (!fmt.FlagAustralia)
+                if (!t.FlagAustralia)
                 {
                     BlurOn = buf.ReadBool();        // duplicate of BlurOn
                     buf.Align4();
@@ -616,7 +622,7 @@ namespace GTASaveData.GTA3
             }
             CompileDateAndTime = buf.ReadStruct<Date>();
             WeatherTypeInList = buf.ReadInt32();
-            if (fmt.FlagDE)
+            if (t.FlagDE)
             {
                 CameraModeInCar = (CameraMode) buf.ReadInt32();
                 CameraModeOnFoot = (CameraMode) buf.ReadInt32();
@@ -626,28 +632,31 @@ namespace GTASaveData.GTA3
                 CameraModeInCar = (CameraMode) (int) buf.ReadFloat();
                 CameraModeOnFoot = (CameraMode) (int) buf.ReadFloat();
             }
-            if (fmt.IsMobile || fmt.FlagDE)
+            if (t.IsMobile || t.FlagDE)
             {
                 IsQuickSave = (QuickSaveState) buf.ReadInt32();
             }
-            if (fmt.FlagDE)
+            if (t.FlagDE)
             {
                 _ = buf.ReadBytes(3);   // unused
                 CheatedFlag = buf.ReadBool();
             }
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(p));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            if (fmt.FlagDE)
+            var p = (GTA3SaveParams) prm;
+            var t = p.FileType;
+
+            if (t.FlagDE)
             {
                 throw new NotSupportedException("Definitive Edition not supported yet!!");
             }
 
-            if (!fmt.IsPS2) buf.Write($"{LastMissionPassedName}\0", MaxMissionPassedNameLength, unicode: true, zeroTerminate: false);
-            if (fmt.IsPC || fmt.IsXbox) buf.Write(TimeStamp);
+            if (!t.IsPS2) buf.Write($"{LastMissionPassedName}\0", p.MaxLastMissionPassedNameLength, unicode: true, zeroTerminate: false);
+            if (t.IsPC || t.IsXbox) buf.Write(TimeStamp);
             buf.Write(SizeOfGameInBytes);
             buf.Write((int) CurrentLevel);
             buf.Write(CameraPosition);
@@ -674,11 +683,11 @@ namespace GTASaveData.GTA3
             buf.Write((short) ForcedWeatherType);
             buf.Align4();
             buf.Write(WeatherInterpolation);
-            if (fmt.IsPS2)
+            if (t.IsPS2)
             {
                 buf.Write(MusicVolume);
                 buf.Write(SfxVolume);
-                if (!fmt.FlagAustralia)
+                if (!t.FlagAustralia)
                 {
                     buf.Write(CurrPadMode);
                     buf.Align4();
@@ -690,7 +699,7 @@ namespace GTASaveData.GTA3
                 buf.Write((byte) RadioStation);
                 buf.Align4();
                 buf.Write(Brightness);
-                if (!fmt.FlagAustralia)
+                if (!t.FlagAustralia)
                 {
                     buf.Write(BlurOn);
                     buf.Align4();
@@ -714,24 +723,25 @@ namespace GTASaveData.GTA3
             buf.Write(WeatherTypeInList);
             buf.Write((float) CameraModeInCar);     // stored as a float for some reason
             buf.Write((float) CameraModeOnFoot);    // stored as a float for some reason
-            if (fmt.IsMobile) buf.Write((int) IsQuickSave);
+            if (t.IsMobile) buf.Write((int) IsQuickSave);
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(p));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.FlagDE)
+            var t = prm.FileType;
+            if (t.FlagDE)
             {
                 return 0x9E + (LastMissionPassedName.Length + 1);
             }
 
-            if (fmt.IsPS2 && fmt.FlagAustralia) return 0xA8;
-            if (fmt.IsPS2) return 0xB0;
-            if (fmt.IsMobile) return 0xB0;
-            if (fmt.IsPC || fmt.IsXbox) return 0xBC;
+            if (t.IsPS2 && t.FlagAustralia) return 0xA8;
+            if (t.IsPS2) return 0xB0;
+            if (t.IsMobile) return 0xB0;
+            if (t.IsPC || t.IsXbox) return 0xBC;
 
-            throw SizeNotDefined(fmt);
+            throw SizeNotDefined(t);
         }
 
         public override bool Equals(object obj)

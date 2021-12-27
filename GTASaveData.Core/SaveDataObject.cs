@@ -41,60 +41,61 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Called immediately before <see cref="ReadData(DataBuffer, FileType)"/> is executed.
+        /// Called immediately before <see cref="ReadData(DataBuffer, SerializationParams)"/> is executed.
         /// </summary>
-        protected virtual void OnReading(FileType fmt) { }
+        protected virtual void OnReading(SerializationParams p) { }
 
         /// <summary>
-        /// Called immediately after <see cref="ReadData(DataBuffer, FileType)"/> is executed.
+        /// Called immediately after <see cref="ReadData(DataBuffer, SerializationParams)"/> is executed.
         /// </summary>
-        protected virtual void OnRead(FileType fmt) { }
+        protected virtual void OnRead(SerializationParams p) { }
 
         /// <summary>
-        /// Called immediately before <see cref="WriteData(DataBuffer, FileType)"/> is executed.
+        /// Called immediately before <see cref="WriteData(DataBuffer, SerializationParams)"/> is executed.
         /// </summary>
-        protected virtual void OnWriting(FileType fmt) { }
+        protected virtual void OnWriting(SerializationParams p) { }
 
         /// <summary>
-        /// Called immediately after <see cref="WriteData(DataBuffer, FileType)"/> is executed.
+        /// Called immediately after <see cref="WriteData(DataBuffer, SerializationParams)"/> is executed.
         /// </summary>
-        protected virtual void OnWrite(FileType fmt) { }
+        protected virtual void OnWrite(SerializationParams p) { }
 
         /// <summary>
         /// Populates this object's fields by deserializing its data from a 
-        /// <see cref="DataBuffer"/> using the specified <see cref="FileType"/>
+        /// <see cref="DataBuffer"/> using the specified <see cref="SerializationParams"/>
         /// to control how data is read.
         /// </summary>
         /// <remarks>
-        /// This method is called by <see cref="ISaveDataObject.ReadData(DataBuffer, FileType)"/>;
+        /// This method is called by <see cref="ISaveDataObject.ReadData(DataBuffer, SerializationParams)"/>;
         /// it should not be called directly.
         /// </remarks>
         /// <param name="buf">The buffer to read from.</param>
-        /// <param name="fmt">The <see cref="FileType"/> controlling how data is read.</param>
+        /// <param name="p">The <see cref="SerializationParams"/> controlling how data is read.</param>
         /// <returns>The number of bytes read.</returns>
-        protected abstract void ReadData(DataBuffer buf, FileType fmt);
+        protected abstract void ReadData(DataBuffer buf, SerializationParams p);
 
         /// <summary>
         /// Serializes the object by writing its fields to a <see cref="DataBuffer"/>
-        /// using the specified <see cref="FileType"/> to control how data is written.
+        /// using the specified <see cref="SerializationParams"/> to control how data is written.
         /// </summary>
         /// <remarks>
-        /// This method is called by <see cref="ISaveDataObject.WriteData(DataBuffer, FileType)"/>;
+        /// This method is called by <see cref="ISaveDataObject.WriteData(DataBuffer, SerializationParams)"/>;
         /// it should not be called directly.
         /// </remarks>
         /// <param name="buf">The buffer to write to.</param>
-        /// <param name="fmt">The <see cref="FileType"/> controlling how data is written.</param>
+        /// <param name="p">The <see cref="SerializationParams"/> controlling how data is written.</param>
         /// <returns>The number of bytes written.</returns>
-        protected abstract void WriteData(DataBuffer buf, FileType fmt);
+        protected abstract void WriteData(DataBuffer buf, SerializationParams p);
 
         /// <summary>
         /// Gets the size in bytes of this object.
         /// </summary>
-        /// <param name="fmt">The <see cref="FileType"/> controlling how data is written, which may affect the size.</param>
+        /// <param name="p">The <see cref="SerializationParams"/> controlling how data is written,
+        /// which may affect the size.</param>
         /// <returns>The size in bytes of the serialized object.</returns>
-        protected abstract int GetSize(FileType fmt);
+        protected abstract int GetSize(SerializationParams p);
 
-        int ISaveDataObject.ReadData(DataBuffer buf, FileType fmt)
+        int ISaveDataObject.ReadData(DataBuffer buf, SerializationParams p)
         {
             int oldMark, start, len;
 
@@ -102,9 +103,9 @@ namespace GTASaveData
             buf.Mark();
             start = buf.Position;
 
-            OnReading(fmt);
-            ReadData(buf, fmt);
-            OnRead(fmt);
+            OnReading(p);
+            ReadData(buf, p);
+            OnRead(p);
 
             len = buf.Position - start;
             buf.MarkedPosition = oldMark;
@@ -112,7 +113,7 @@ namespace GTASaveData
             return len;
         }
 
-        int ISaveDataObject.WriteData(DataBuffer buf, FileType fmt)
+        int ISaveDataObject.WriteData(DataBuffer buf, SerializationParams p)
         {
             int oldMark, start, len;
 
@@ -120,9 +121,9 @@ namespace GTASaveData
             buf.Mark();
             start = buf.Position;
 
-            OnWriting(fmt);
-            WriteData(buf, fmt);
-            OnWrite(fmt);
+            OnWriting(p);
+            WriteData(buf, p);
+            OnWrite(p);
 
             len = buf.Position - start;
             buf.MarkedPosition = oldMark;
@@ -130,9 +131,9 @@ namespace GTASaveData
             return len;
         }
 
-        int ISaveDataObject.GetSize(FileType fmt)
+        int ISaveDataObject.GetSize(SerializationParams p)
         {
-            return GetSize(fmt);
+            return GetSize(p);
         }
 
         /// <summary>
@@ -148,10 +149,11 @@ namespace GTASaveData
         /// Gets the size of a type when serialized.
         /// </summary>
         /// <typeparam name="T">The type to get the size of.</typeparam>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is written, which may affect the size.</param>
-        protected static int SizeOf<T>(FileType fmt) where T : new()
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written,
+        /// which may affect the size.</param>
+        protected static int SizeOf<T>(SerializationParams p) where T : new()
         {
-            return Serializer.SizeOf<T>(fmt);
+            return Serializer.SizeOf<T>(p);
         }
 
         /// <summary>
@@ -167,21 +169,20 @@ namespace GTASaveData
         /// Gets the size of an object when serialized.
         /// </summary>
         /// <param name="obj">The object to get the size of.</param>
-        /// <param name="fmt">A <see cref="FileType"/> descriptor controlling how data is written, which may affect the size.</param>
-        protected static int SizeOf<T>(T obj, FileType fmt)
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written,
+        /// which may affect the size.</param>
+        protected static int SizeOf<T>(T obj, SerializationParams p)
         {
-            return Serializer.SizeOf(obj, fmt);
+            return Serializer.SizeOf(obj, p);
         }
 
         /// <summary>
         /// Returns an exception for scenarios when there is no
-        /// defined size for the specified file format.
+        /// defined size for the specified file typr.
         /// </summary>
-        /// <param name="fmt">The file format to use.</param>
-        /// <returns>An <see cref="InvalidOperationException"/>.</returns>
-        protected InvalidOperationException SizeNotDefined(FileType fmt)
+        protected InvalidOperationException SizeNotDefined(FileType t)
         {
-            return new InvalidOperationException(string.Format(Strings.Error_InvalidOperation_SizeNotDefined, fmt.DisplayName));
+            return new InvalidOperationException(string.Format(Strings.Error_InvalidOperation_SizeNotDefined, t.DisplayName));
         }
 
         /// <summary>

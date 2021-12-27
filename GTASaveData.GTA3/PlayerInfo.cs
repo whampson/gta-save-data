@@ -123,7 +123,7 @@ namespace GTASaveData.GTA3
             PlayerName = other.PlayerName;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             Money = buf.ReadInt32();
             WastedBustedState = (WastedBustedState) buf.ReadByte();
@@ -139,13 +139,13 @@ namespace GTASaveData.GTA3
             GetOutOfHospitalFree = buf.ReadBool();
             PlayerName = buf.ReadString(MaxPlayerNameLength);
 
-            if (fmt.IsPS2) buf.Skip(175);
+            if (prm.FileType.IsPS2) buf.Skip(175);
             else buf.Skip(215);
 
-            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(prm));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(Money);
             buf.Write((byte) WastedBustedState);
@@ -162,15 +162,15 @@ namespace GTASaveData.GTA3
             buf.Write(PlayerName, MaxPlayerNameLength);
 
             // Game writes some garbage here due to incorrect size calculation
-            if (fmt.IsPS2) buf.Skip(175);
+            if (prm.FileType.IsPS2) buf.Skip(175);
             else buf.Skip(215);
 
-            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(prm));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2) return 0x114;
+            if (prm.FileType.IsPS2) return 0x114;
             return 0x13C;
         }
 

@@ -155,8 +155,8 @@
     <comment>{0} = path</comment>
   </data>
   <data name="Error_Serialization_BadBlockSize" xml:space="preserve">
-    <value>The block size exceeds the size of the buffer: {0}</value>
-    <comment>{0} = block size value</comment>
+    <value>The block size exceeds the size of the buffer. (block size = {0}, buffer size = {1})</value>
+    <comment>{0} = block size; {1} = buffer size</comment>
   </data>
   <data name="Error_Serialization_NoPreAlloc" xml:space="preserve">
     <value>The type '{0}' cannot be pre-allocated.</value>

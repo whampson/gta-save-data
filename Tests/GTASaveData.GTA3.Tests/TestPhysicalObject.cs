@@ -7,7 +7,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPhysicalObject : Base<PhysicalObject>
     {
-        public override PhysicalObject GenerateTestObject(FileType format)
+        public override PhysicalObject GenerateTestObject(GTA3SaveParams p)
         {
             Faker<PhysicalObject> model = new Faker<PhysicalObject>()
                 .RuleFor(x => x.ModelIndex, f => f.Random.Short())
@@ -32,11 +32,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            PhysicalObject x0 = GenerateTestObject(format);
-            PhysicalObject x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            PhysicalObject x0 = GenerateTestObject(p);
+            PhysicalObject x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.ModelIndex, x1.ModelIndex);
             Assert.Equal(x0.Handle, x1.Handle);
@@ -57,14 +58,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.EntityFlags, x1.EntityFlags);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            PhysicalObject x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            PhysicalObject x0 = GenerateTestObject(p);
             PhysicalObject x1 = new PhysicalObject(x0);
 
             Assert.Equal(x0, x1);

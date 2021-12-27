@@ -149,81 +149,86 @@ namespace GTASaveData.GTA3
             ModelName = other.ModelName;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            if (!fmt.IsPS2) buf.Skip(4);
+            var t = prm.FileType;
+
+            if (!t.IsPS2) buf.Skip(4);
             buf.Skip(48);
             Position = buf.ReadStruct<Vector3>();
-            if(fmt.IsPC || fmt.IsXbox) buf.Skip(288);
-            if (fmt.IsiOS) buf.Skip(292);
-            if (fmt.IsAndroid) buf.Skip(296);
-            if (fmt.IsPS2 && fmt.FlagJapan) buf.Skip(324);
-            else if (fmt.IsPS2) buf.Skip(356);
+            if(t.IsPC || t.IsXbox) buf.Skip(288);
+            if (t.IsiOS) buf.Skip(292);
+            if (t.IsAndroid) buf.Skip(296);
+            if (t.IsPS2 && t.FlagJapan) buf.Skip(324);
+            else if (t.IsPS2) buf.Skip(356);
             CreatedBy = (CharCreatedBy) buf.ReadByte();
             buf.Skip(351);
-            if (fmt.IsXbox) buf.Skip(4);
+            if (t.IsXbox) buf.Skip(4);
             Health = buf.ReadFloat();
             Armor = buf.ReadFloat();
-            if (fmt.IsPS2) buf.Skip(164);
+            if (t.IsPS2) buf.Skip(164);
             else buf.Skip(148);
-            Weapons = buf.ReadArray<Weapon>(NumWeapons, fmt);
+            Weapons = buf.ReadArray<Weapon>(NumWeapons, prm);
             buf.Skip(5);
             MaxWeaponTypeAllowed = buf.ReadByte();
             buf.Skip(178);
-            if (fmt.IsMobile) buf.Skip(4);
-            if (fmt.IsPS2) buf.Skip(8);
+            if (t.IsMobile) buf.Skip(4);
+            if (t.IsPS2) buf.Skip(8);
             MaxStamina = buf.ReadFloat();
             buf.Skip(28);
             TargetableObjects = buf.ReadArray<int>(NumTargetableObjects);
-            if (fmt.IsPC || fmt.IsXbox) buf.Skip(116);
-            if (fmt.IsMobile) buf.Skip(144);
-            if (fmt.IsPS2) buf.Skip(16);
+            if (t.IsPC || t.IsXbox) buf.Skip(116);
+            if (t.IsMobile) buf.Skip(144);
+            if (t.IsPS2) buf.Skip(16);
 
-            Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerPed>(prm));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            if (!fmt.IsPS2) buf.Skip(4);
+            var t = prm.FileType;
+
+            if (!t.IsPS2) buf.Skip(4);
             buf.Skip(48);
             buf.Write(Position);
-            if (fmt.IsPC || fmt.IsXbox) buf.Skip(288);
-            if (fmt.IsiOS) buf.Skip(292);
-            if (fmt.IsAndroid) buf.Skip(296);
-            if (fmt.IsPS2 && fmt.FlagJapan) buf.Skip(324);
-            else if (fmt.IsPS2) buf.Skip(356);
+            if (t.IsPC || t.IsXbox) buf.Skip(288);
+            if (t.IsiOS) buf.Skip(292);
+            if (t.IsAndroid) buf.Skip(296);
+            if (t.IsPS2 && t.FlagJapan) buf.Skip(324);
+            else if (t.IsPS2) buf.Skip(356);
             buf.Write((byte) CreatedBy);
             buf.Skip(351);
-            if (fmt.IsXbox) buf.Skip(4);
+            if (t.IsXbox) buf.Skip(4);
             buf.Write(Health);
             buf.Write(Armor);
-            if (fmt.IsPS2) buf.Skip(164);
+            if (t.IsPS2) buf.Skip(164);
             else buf.Skip(148);
-            buf.Write(Weapons, fmt, NumWeapons);
+            buf.Write(Weapons, prm, NumWeapons);
             buf.Skip(5);
             buf.Write(MaxWeaponTypeAllowed);
             buf.Skip(178);
-            if (fmt.IsMobile) buf.Skip(4);
-            if (fmt.IsPS2) buf.Skip(8);
+            if (t.IsMobile) buf.Skip(4);
+            if (t.IsPS2) buf.Skip(8);
             buf.Write(MaxStamina);
             buf.Skip(28);
             buf.Write(TargetableObjects, NumTargetableObjects);
-            if (fmt.IsPC || fmt.IsXbox) buf.Skip(116);
-            if (fmt.IsMobile) buf.Skip(144);
-            if (fmt.IsPS2) buf.Skip(16);
+            if (t.IsPC || t.IsXbox) buf.Skip(116);
+            if (t.IsMobile) buf.Skip(144);
+            if (t.IsPS2) buf.Skip(16);
 
-            Debug.Assert(buf.Offset == SizeOf<PlayerPed>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerPed>(prm));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2 && fmt.FlagJapan) return 0x590;
-            if (fmt.IsPS2) return 0x5B0;
-            if (fmt.IsPC) return 0x5F0;
-            if (fmt.IsXbox) return 0x5F4;
-            if (fmt.IsiOS) return 0x614;
-            if (fmt.IsAndroid) return 0x618;
-            throw SizeNotDefined(fmt);
+            var t = prm.FileType;
+            if (t.IsPS2 && t.FlagJapan) return 0x590;
+            if (t.IsPS2) return 0x5B0;
+            if (t.IsPC) return 0x5F0;
+            if (t.IsXbox) return 0x5F4;
+            if (t.IsiOS) return 0x614;
+            if (t.IsAndroid) return 0x618;
+            throw SizeNotDefined(t);
         }
 
         public override bool Equals(object obj)

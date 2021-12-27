@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestStats : Base<Stats>
     {
-        public override Stats GenerateTestObject(FileType format)
+        public override Stats GenerateTestObject(GTA3SaveParams p)
         {
             Faker<Stats> model = new Faker<Stats>()
                 .RuleFor(x => x.PeopleKilledByPlayer, f => f.Random.Int())
@@ -66,11 +66,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            Stats x0 = GenerateTestObject(format);
-            Stats x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Stats x0 = GenerateTestObject(p);
+            Stats x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.PeopleKilledByPlayer, x1.PeopleKilledByPlayer);
             Assert.Equal(x0.PeopleKilledByOthers, x1.PeopleKilledByOthers);
@@ -126,13 +127,15 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            Stats x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Stats x0 = GenerateTestObject(p);
             Stats x1 = new Stats(x0);
 
             Assert.Equal(x0, x1);

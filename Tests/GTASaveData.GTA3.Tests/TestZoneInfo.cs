@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestZoneInfo : Base<ZoneInfo>
     {
-        public override ZoneInfo GenerateTestObject(FileType format)
+        public override ZoneInfo GenerateTestObject(GTA3SaveParams p)
         {
             Faker<ZoneInfo> model = new Faker<ZoneInfo>()
                 .RuleFor(x => x.CarDensity, f => f.Random.Short())
@@ -22,11 +22,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            ZoneInfo x0 = GenerateTestObject(format);
-            ZoneInfo x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            ZoneInfo x0 = GenerateTestObject(p);
+            ZoneInfo x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.CarDensity, x1.CarDensity);
             Assert.Equal(x0.CarThreshold, x1.CarThreshold);
@@ -38,13 +39,15 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.PedGroup, x1.PedGroup);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            ZoneInfo x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            ZoneInfo x0 = GenerateTestObject(p);
             ZoneInfo x1 = new ZoneInfo(x0);
 
             Assert.Equal(x0, x1);

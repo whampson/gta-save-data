@@ -34,7 +34,7 @@ namespace GTASaveData.GTA3
             Angle = other.Angle;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             Position = buf.ReadStruct<Vector3>();
             Angle = buf.ReadFloat();
@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<RestartPoint>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(Position);
             buf.Write(Angle);
@@ -50,7 +50,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == SizeOf<RestartPoint>());
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 16;
         }

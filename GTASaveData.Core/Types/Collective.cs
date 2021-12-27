@@ -36,21 +36,21 @@ namespace GTASaveData.Types
             PedIndex = other.PedIndex;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             Index = buf.ReadInt32();
             PedIndex = buf.ReadInt32();
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             buf.Write(Index);
             buf.Write(PedIndex);
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            return 8;
+            return sizeof(int) + sizeof(int);
         }
 
         public override bool Equals(object obj)

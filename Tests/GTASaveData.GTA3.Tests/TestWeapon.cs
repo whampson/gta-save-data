@@ -5,24 +5,25 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestWeapon : Base<Weapon>
     {
-        public override Weapon GenerateTestObject(FileType format)
+        public override Weapon GenerateTestObject(GTA3SaveParams p)
         {
             Faker<Weapon> model = new Faker<Weapon>()
                 .RuleFor(x => x.Type, f => f.PickRandom<WeaponType>())
                 .RuleFor(x => x.State, f => f.PickRandom<WeaponState>())
                 .RuleFor(x => x.AmmoInClip, f => f.Random.UInt())
                 .RuleFor(x => x.AmmoInClip, f => f.Random.UInt())
-                .RuleFor(x => x.Unknown, f => (!format.IsPS2) ? f.Random.Bool() : default);
+                .RuleFor(x => x.Unknown, f => (!p.FileType.IsPS2) ? f.Random.Bool() : default);
 
             return model.Generate();
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            Weapon x0 = GenerateTestObject(format);
-            Weapon x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Weapon x0 = GenerateTestObject(p);
+            Weapon x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Type, x1.Type);
             Assert.Equal(x0.State, x1.State);
@@ -31,13 +32,15 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Unknown, x1.Unknown);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            Weapon x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Weapon x0 = GenerateTestObject(p);
             Weapon x1 = new Weapon(x0);
 
             Assert.Equal(x0, x1);

@@ -5,7 +5,7 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestVector2 : TestBase<Vector2>
+    public class TestVector2 : TestBase<Vector2, SerializationParams>
     {
         [Fact]
         public void RandomDataSerialization()

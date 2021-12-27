@@ -3,21 +3,20 @@ using System;
 using TestFramework;
 using Xunit;
 
-#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3.Tests
 {
     public class TestRunningScript : Base<RunningScript>
     {
-        public override RunningScript GenerateTestObject(FileType format)
+        public override RunningScript GenerateTestObject(GTA3SaveParams p)
         {
             Faker<RunningScript> model = new Faker<RunningScript>()
                 .RuleFor(x => x.NextScriptPointer, f => f.Random.UInt())
                 .RuleFor(x => x.PrevScriptPointer, f => f.Random.UInt())
                 .RuleFor(x => x.Name, f => Generator.Words(f, RunningScript.MaxNameLength - 1))
                 .RuleFor(x => x.IP, f => f.Random.Int())
-                .RuleFor(x => x.Stack, f => Generator.Array(RunningScript.GetMaxStackDepth(format), g => f.Random.Int()))
+                .RuleFor(x => x.Stack, f => Generator.Array(((GTA3SaveParams) p).MaxStackDepth, g => f.Random.Int()))
                 .RuleFor(x => x.StackIndex, f => f.Random.Short())
-                .RuleFor(x => x.Locals, f => Generator.Array(RunningScript.NumLocalVariables, g => f.Random.Int()))
+                .RuleFor(x => x.Locals, f => Generator.Array(((GTA3SaveParams) p).NumLocalVariables, g => f.Random.Int()))
                 .RuleFor(x => x.TimerA, f => f.Random.UInt())
                 .RuleFor(x => x.TimerB, f => f.Random.UInt())
                 .RuleFor(x => x.CompareFlag, f => f.Random.Bool())
@@ -34,11 +33,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            RunningScript x0 = GenerateTestObject(format);
-            RunningScript x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            RunningScript x0 = GenerateTestObject(p);
+            RunningScript x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.NextScriptPointer, x1.NextScriptPointer);
             Assert.Equal(x0.PrevScriptPointer, x1.PrevScriptPointer);
@@ -60,14 +60,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.MissionFlag, x1.MissionFlag);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            RunningScript x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            RunningScript x0 = GenerateTestObject(p);
             RunningScript x1 = new RunningScript(x0);
 
             Assert.Equal(x0, x1);
@@ -103,4 +105,3 @@ namespace GTASaveData.GTA3.Tests
         }
     }
 }
-#pragma warning restore CS0618 // Type or member is obsolete

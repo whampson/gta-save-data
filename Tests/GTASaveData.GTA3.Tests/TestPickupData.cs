@@ -6,10 +6,10 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestPickupData : Base<PickupData>
     {
-        public override PickupData GenerateTestObject(FileType format)
+        public override PickupData GenerateTestObject(GTA3SaveParams p)
         {
             Faker<PickupData> model = new Faker<PickupData>()
-                .RuleFor(x => x.Pickups, f => Generator.Array(PickupData.MaxNumPickups, g => Generator.Generate<Pickup, TestPickup>()))
+                .RuleFor(x => x.Pickups, f => Generator.Array(PickupData.MaxNumPickups, g => Generator.Generate<Pickup, TestPickup, GTA3SaveParams>(p)))
                 .RuleFor(x => x.LastCollectedIndex, f => f.Random.Short())
                 .RuleFor(x => x.PickupsCollected, f => Generator.Array(PickupData.MaxNumCollectedPickups, g => f.Random.Int()));
 
@@ -17,23 +17,26 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            PickupData x0 = GenerateTestObject(format);
-            PickupData x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            PickupData x0 = GenerateTestObject(p);
+            PickupData x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Pickups, x1.Pickups);
             Assert.Equal(x0.LastCollectedIndex, x1.LastCollectedIndex);
             Assert.Equal(x0.PickupsCollected, x1.PickupsCollected);
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            PickupData x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            PickupData x0 = GenerateTestObject(p);
             PickupData x1 = new PickupData(x0);
 
             Assert.Equal(x0, x1);
