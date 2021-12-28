@@ -224,6 +224,14 @@ namespace GTASaveData.GTA3
             RunningScripts = ArrayHelper.DeepClone(other.RunningScripts);
         }
 
+        public RunningScript StartNewScript(int ip)
+        {
+            RunningScript script = new RunningScript() { IP = ip };
+            RunningScripts.Add(script);
+
+            return script;
+        }
+
         /// <summary>
         /// Returns the <see cref="RunningScript"/> with the specified name,
         /// or null if none can be found. NOTE: if multiple scripts share
@@ -365,7 +373,7 @@ namespace GTASaveData.GTA3
         /// The value read.
         /// </param>
         /// <returns>
-        /// The instruction pointer after the value is read.
+        /// The number of bytes read.
         /// </returns>
         public int Read4BytesFromScript(int ip, out int value)
         {
@@ -373,7 +381,7 @@ namespace GTASaveData.GTA3
                 | ScriptSpace[ip++] << 8
                 | ScriptSpace[ip++] << 16
                 | ScriptSpace[ip++] << 24;
-            return ip;
+            return 4;
         }
 
         /// <summary>
@@ -398,12 +406,12 @@ namespace GTASaveData.GTA3
         /// The value read.
         /// </param>
         /// <returns>
-        /// The instruction pointer after the value is read.
+        /// The number of bytes read.
         /// </returns>
         public int Read2BytesFromScript(int ip, out short value)
         {
             value = (short) (ScriptSpace[ip++] | ScriptSpace[ip++] << 8);
-            return ip;
+            return 2;
         }
 
         /// <summary>
@@ -428,12 +436,12 @@ namespace GTASaveData.GTA3
         /// The value read.
         /// </param>
         /// <returns>
-        /// The instruction pointer after the value is read.
+        /// The number of bytes read.
         /// </returns>
         public int Read1ByteFromScript(int ip, out byte value)
         {
             value = ScriptSpace[ip++];
-            return ip;
+            return 1;
         }
 
         /// <summary>
@@ -464,13 +472,13 @@ namespace GTASaveData.GTA3
         /// The value read.
         /// </param>
         /// <returns>
-        /// The instruction pointer after the value is read.
+        /// The number of bytes read.
         /// </returns>
         public int ReadFloatFromScript(int ip, out float value)
         {
-            ip = Read2BytesFromScript(ip, out short s);
+            int ret = Read2BytesFromScript(ip, out short s);
             value = s / 16.0f;
-            return ip;
+            return ret;
 
         }
 
@@ -496,7 +504,7 @@ namespace GTASaveData.GTA3
         /// The value read.
         /// </param>
         /// <returns>
-        /// The instruction pointer after the value is read.
+        /// The number of bytes read.
         /// </returns>
         public int ReadTextLabelFromScript(int ip, out string value)
         {
@@ -504,7 +512,7 @@ namespace GTASaveData.GTA3
             ScriptSpace.CopyTo(ip, data, 0, KeyLengthInScript);
 
             value = Encoding.ASCII.GetString(data).TrimFromZero();
-            return ip + KeyLengthInScript;
+            return KeyLengthInScript;
         }
 
         /// <summary>
@@ -517,7 +525,7 @@ namespace GTASaveData.GTA3
         /// The value to write.
         /// </param>
         /// <returns>
-        /// The instruction pointer after the value is written.
+        /// The number of bytes read.
         /// </returns>
         public int Write4BytesToScript(int ip, int value)
         {
@@ -525,7 +533,7 @@ namespace GTASaveData.GTA3
             ScriptSpace[ip++] = (byte) ((value >> 8) & 0xFF);
             ScriptSpace[ip++] = (byte) ((value >> 16) & 0xFF);
             ScriptSpace[ip++] = (byte) ((value >> 24) & 0xFF);
-            return ip;
+            return 4;
         }
 
         /// <summary>
@@ -538,13 +546,13 @@ namespace GTASaveData.GTA3
         /// The value to write.
         /// </param>
         /// <returns>
-        /// The instruction pointer after the value is written.
+        /// The number of bytes read.
         /// </returns>
         public int Write2BytesToScript(int ip, short value)
         {
             ScriptSpace[ip++] = (byte) (value & 0xFF);
             ScriptSpace[ip++] = (byte) ((value >> 8) & 0xFF);
-            return ip;
+            return 2;
         }
 
         /// <summary>
@@ -557,12 +565,12 @@ namespace GTASaveData.GTA3
         /// The value to write.
         /// </param>
         /// <returns>
-        /// The instruction pointer after the value is written.
+        /// The number of bytes read.
         /// </returns>
         public int Write1ByteToScript(int ip, byte value)
         {
             ScriptSpace[ip++] = value;
-            return ip;
+            return 1;
         }
 
         /// <summary>
@@ -578,7 +586,7 @@ namespace GTASaveData.GTA3
         /// The value to write.
         /// </param>
         /// <returns>
-        /// The instruction pointer after the value is written.
+        /// The number of bytes read.
         /// </returns>
         public int WriteFloatToScript(int ip, float value)
         {
@@ -595,7 +603,7 @@ namespace GTASaveData.GTA3
         /// The text value to write. Max length: 8 (NUL-terminated)
         /// </param>
         /// <returns>
-        /// The instruction pointer after the value is written.
+        /// The number of bytes read.
         /// </returns>
         public int WriteTextLabelToScript(int ip, string label)
         {
@@ -607,7 +615,7 @@ namespace GTASaveData.GTA3
                     : (byte) 0;
             }
 
-            return ip;
+            return KeyLengthInScript;
         }
 
         protected override void ReadData(DataBuffer buf, SerializationParams prm)

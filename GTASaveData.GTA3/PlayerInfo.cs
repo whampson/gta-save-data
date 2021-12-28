@@ -123,6 +123,14 @@ namespace GTASaveData.GTA3
             PlayerName = other.PlayerName;
         }
 
+        public int GiveMoney(int amount, bool animate = false)
+        {
+            Money += amount;
+            if (!animate) MoneyOnScreen = Money;
+
+            return Money;
+        }
+
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             Money = buf.ReadInt32();

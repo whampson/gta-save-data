@@ -37,6 +37,19 @@ namespace GTASaveData.GTA3
             RadarBlips = ArrayHelper.DeepClone(other.RadarBlips);
         }
 
+        public void DisableBlip(int index)
+        {
+            if (index < 0) return;
+
+            RadarBlip b = RadarBlips[index];
+            Debug.Assert(b.Index == index);
+
+            b.IsInUse = false;
+            b.Type = RadarBlipType.None;
+            b.Display = RadarBlipDisplay.None;
+            b.Sprite = RadarBlipSprite.None;
+        }
+
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             int size = GTA3Save.ReadBlockHeader(buf, out string tag);
