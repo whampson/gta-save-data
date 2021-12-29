@@ -188,7 +188,7 @@ namespace GTASaveData
         /// <summary>
         /// Rounds an address up to the next multiple of 4.
         /// </summary>
-        public int Align4(int addr)
+        protected int Align4(int addr)
         {
             return DataBuffer.Align4(addr);
         }
