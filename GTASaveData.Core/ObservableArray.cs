@@ -165,42 +165,79 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Copies the elements of this <see cref="ObservableArray{T}"/> to a compatible
+        /// Copies all elements of this <see cref="ObservableArray{T}"/> to a compatible
         /// one-dimensional array.
         /// </summary>
-        /// <param name="array">The one-dimensional array to copy to.</param>
-        public void CopyTo(T[] array)
+        /// <param name="dest">The one-dimensional array to copy to.</param>
+        public void CopyTo(T[] dest)
         {
-            m_items.CopyTo(array);
+            m_items.CopyTo(dest);
         }
 
         /// <summary>
-        /// Copies the elements of this <see cref="ObservableArray{T}"/> to a compatible
-        /// one-dimensional array, starting at the specifed index of the target array.
+        /// Copies all elements of this <see cref="ObservableArray{T}"/> to a compatible
+        /// one-dimensional array, starting at the specifed index in the destination array.
         /// </summary>
-        /// <param name="array">The one-dimensional array to copy to.</param>
-        /// <param name="arrayIndex">The zero-based index in the target array at which copying begins.</param>
-        public void CopyTo(T[] array, int arrayIndex)
+        /// <param name="dest">The one-dimensional array to copy to.</param>
+        /// <param name="destIndex">The zero-based index in the destination array at which copying begins.</param>
+        public void CopyTo(T[] dest, int destIndex)
         {
-            m_items.CopyTo(array, arrayIndex);
+            m_items.CopyTo(dest, destIndex);
         }
 
-        void ICollection.CopyTo(Array array, int arrayIndex)
+        void ICollection.CopyTo(Array dest, int destIndex)
         {
-            (m_items as IList).CopyTo(array, arrayIndex);
+            (m_items as IList).CopyTo(dest, destIndex);
         }
 
         /// <summary>
-        /// Copies the elements of this <see cref="ObservableArray{T}"/> to a compatible
-        /// one-dimensional array, starting at the specifed index of the target array.
+        /// Copies the specified number of elements of this <see cref="ObservableArray{T}"/>
+        /// to a compatible one-dimensional array, starting at the specifed index in the destination array.
         /// </summary>
         /// <param name="index">The zero-based index in the source at which copying begins.</param>
-        /// <param name="array">The one-dimensional array to copy to.</param>
-        /// <param name="arrayIndex">The zero-based index in the target array at which copying begins.</param>
+        /// <param name="dest">The one-dimensional array to copy to.</param>
+        /// <param name="destIndex">The zero-based index in the destination array at which copying begins.</param>
         /// <param name="count">The number of elements to copy.</param>
-        public void CopyTo(int index, T[] array, int arrayIndex, int count)
+        public void CopyTo(int index, T[] dest, int destIndex, int count)
         {
-            m_items.CopyTo(index, array, arrayIndex, count);
+            m_items.CopyTo(index, dest, destIndex, count);
+        }
+
+        /// <summary>
+        /// Copies all elemets from the source array to this <see cref="ObservableArray{T}"/>.
+        /// </summary>
+        /// <param name="src">The array to copy from.</param>
+        public void CopyFrom(T[] src)
+        {
+            CopyFrom(src, 0, 0, src.Length);
+        }
+
+        /// <summary>
+        /// Copies all elemets from the source array to this <see cref="ObservableArray{T}"/>,
+        /// placing elements at the specified index.
+        /// </summary>
+        /// <param name="src">The array to copy from.</param>
+        /// <param name="index">The index in this array to begin placing copied items.</param>
+        public void CopyFrom(T[] src, int index)
+        {
+            CopyFrom(src, 0, index, src.Length);
+        }
+
+        /// <summary>
+        /// Copies the specified number of elements from the source array to this
+        /// <see cref="ObservableArray{T}"/>, placing elements at the specified index.
+        /// </summary>
+        /// <param name="src">The array to copy from.</param>
+        /// <param name="srcIndex">The index in the source array to begin copying from.</param>
+        /// <param name="index">The index in this array to begin placing copied items.</param>
+        /// <param name="count">The number of items to copy.</param>
+        public void CopyFrom(T[] src, int srcIndex, int index, int count)
+        {
+            T[] dest = m_items.ToArray();
+            Array.Copy(src, srcIndex, dest, index, count);
+
+            m_items.Clear();
+            m_items.AddRange(dest);
         }
 
         /// <summary>
