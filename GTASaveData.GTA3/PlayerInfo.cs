@@ -131,6 +131,12 @@ namespace GTASaveData.GTA3
             return Money;
         }
 
+        public void SetMoney(int amount)
+        {
+            Money = amount;
+            MoneyOnScreen = amount;
+        }
+
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             Money = buf.ReadInt32();

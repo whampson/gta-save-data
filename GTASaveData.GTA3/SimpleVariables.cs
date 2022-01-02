@@ -252,6 +252,11 @@ namespace GTASaveData.GTA3
         /// <summary>
         /// The previous weather type in the weather cycle.
         /// </summary>
+        /// <remarks>
+        /// Changing this value doesn't actually affect the weather.
+        /// Set <see cref="ForcedWeatherType"/> or <see cref="WeatherTypeInList"/>
+        /// to change the weather.
+        /// </remarks>
         public WeatherType OldWeatherType
         {
             get { return m_oldWeatherType; }
@@ -261,6 +266,11 @@ namespace GTASaveData.GTA3
         /// <summary>
         /// The next weather type in the weather cycle.
         /// </summary>
+        /// <remarks>
+        /// Changing this value doesn't actually affect the weather.
+        /// Set <see cref="ForcedWeatherType"/> or <see cref="WeatherTypeInList"/>
+        /// to change the weather.
+        /// </remarks>
         public WeatherType NewWeatherType
         {
             get { return m_newWeatherType; }
@@ -279,6 +289,11 @@ namespace GTASaveData.GTA3
         /// <summary>
         /// The current blend level between the previous and next weather type.
         /// </summary>
+        /// <remarks>
+        /// Changing this value doesn't actually affect the weather.
+        /// Set <see cref="ForcedWeatherType"/> or <see cref="WeatherTypeInList"/>
+        /// to change the weather.
+        /// </remarks>
         public float WeatherInterpolation
         {
             get { return m_weatherInterpolationValue; }
@@ -327,7 +342,7 @@ namespace GTASaveData.GTA3
         /// <remarks>
         /// This setting is only present on PS2.
         /// </remarks>
-        public bool StereoMono
+        public bool UseMono
         {
             get { return m_prefsStereoMono; }
             set { m_prefsStereoMono = value; OnPropertyChanged(); }
@@ -400,7 +415,7 @@ namespace GTASaveData.GTA3
         /// <remarks>
         /// This setting is only present on PS2.
         /// </remarks>
-        public bool BlurOn
+        public bool Trails
         {
             get { return m_blurOn; }
             set { m_blurOn = value; OnPropertyChanged(); }
@@ -416,11 +431,11 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// The current index in the weather cycle.
+        /// The current index in the weather cycle (0-63).
         /// </summary>
         /// <remarks>
-        /// The weather cycle is hardcoded as 64 weather types with the next
-        /// weather type in the sequence beginning at the top of the hour.
+        /// The game's weather cycle is hardcoded as 64 weather types. The next
+        /// weather type in the sequence begins at the top of the hour.
         /// </remarks>
         public int WeatherTypeInList
         {
@@ -456,7 +471,7 @@ namespace GTASaveData.GTA3
         /// Indicates whether this is an autosaved game.
         /// </summary>
         /// <remarks>
-        /// Only present on the mobile version.
+        /// Only present on the mobile version and Definitive Edition.
         /// </remarks>
         public QuickSaveState IsQuickSave
         {
@@ -511,13 +526,13 @@ namespace GTASaveData.GTA3
             MusicVolume = other.MusicVolume;
             SfxVolume = other.SfxVolume;
             UseVibration = other.UseVibration;
-            StereoMono = other.StereoMono;
+            UseMono = other.UseMono;
             RadioStation = other.RadioStation;
             Brightness = other.Brightness;
             ShowSubtitles = other.ShowSubtitles;
             Language = other.Language;
             UseWideScreen = other.UseWideScreen;
-            BlurOn = other.BlurOn;
+            Trails = other.Trails;
             CompileDateAndTime = other.CompileDateAndTime;
             WeatherTypeInList = other.WeatherTypeInList;
             CameraModeInCar = other.CameraModeInCar;
@@ -600,14 +615,14 @@ namespace GTASaveData.GTA3
                 }
                 UseVibration = buf.ReadBool();
                 buf.Align4();
-                StereoMono = buf.ReadBool();
+                UseMono = buf.ReadBool();
                 buf.Align4();
                 RadioStation = (RadioStation) buf.ReadByte();
                 buf.Align4();
                 Brightness = buf.ReadInt32();
                 if (!t.FlagAustralia)
                 {
-                    BlurOn = buf.ReadBool();        // duplicate of BlurOn
+                    Trails = buf.ReadBool();        // duplicate of BlurOn
                     buf.Align4();
                 }
                 ShowSubtitles = buf.ReadBool();
@@ -617,7 +632,7 @@ namespace GTASaveData.GTA3
                 buf.Align4();
                 CurrPadMode = buf.ReadInt16();      // duplicate of CurrPadMode
                 buf.Align4();
-                BlurOn = buf.ReadBool();
+                Trails = buf.ReadBool();
                 buf.Align4();
             }
             CompileDateAndTime = buf.ReadStruct<Date>();
@@ -694,14 +709,14 @@ namespace GTASaveData.GTA3
                 }
                 buf.Write(UseVibration);
                 buf.Align4();
-                buf.Write(StereoMono);
+                buf.Write(UseMono);
                 buf.Align4();
                 buf.Write((byte) RadioStation);
                 buf.Align4();
                 buf.Write(Brightness);
                 if (!t.FlagAustralia)
                 {
-                    buf.Write(BlurOn);
+                    buf.Write(Trails);
                     buf.Align4();
                 }
                 buf.Write(ShowSubtitles);
@@ -711,7 +726,7 @@ namespace GTASaveData.GTA3
                 buf.Align4();
                 buf.Write(CurrPadMode);
                 buf.Align4();
-                buf.Write(BlurOn);
+                buf.Write(Trails);
                 buf.Align4();
             }
             buf.Write(CompileDateAndTime.Second);
@@ -781,13 +796,13 @@ namespace GTASaveData.GTA3
                 && MusicVolume.Equals(other.MusicVolume)
                 && SfxVolume.Equals(other.SfxVolume)
                 && UseVibration.Equals(other.UseVibration)
-                && StereoMono.Equals(other.StereoMono)
+                && UseMono.Equals(other.UseMono)
                 && RadioStation.Equals(other.RadioStation)
                 && Brightness.Equals(other.Brightness)
                 && ShowSubtitles.Equals(other.ShowSubtitles)
                 && Language.Equals(other.Language)
                 && UseWideScreen.Equals(other.UseWideScreen)
-                && BlurOn.Equals(other.BlurOn)
+                && Trails.Equals(other.Trails)
                 && CompileDateAndTime.Equals(other.CompileDateAndTime)
                 && WeatherTypeInList.Equals(other.WeatherTypeInList)
                 && CameraModeInCar.Equals(other.CameraModeInCar)

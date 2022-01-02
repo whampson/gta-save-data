@@ -94,7 +94,6 @@ namespace GTASaveData.GTA3
             set { m_targetableObjects = value; OnPropertyChanged(); }
         }
 
-
         public int MaxWantedLevel
         {
             get { return m_maxWantedLevel; }
@@ -147,6 +146,38 @@ namespace GTASaveData.GTA3
             MaxWantedLevel = other.MaxWantedLevel;
             MaxChaosLevel = other.MaxChaosLevel;
             ModelName = other.ModelName;
+        }
+
+        public Weapon GetWeapon(WeaponType wt)
+        {
+            return Weapons[(int) wt];
+        }
+
+        public Weapon GiveWeapon(WeaponType wt, int ammo)
+        {
+            Weapon w = Weapons[(int) wt];
+            w.AmmoTotal += ammo;
+
+            // Fix weapon type and state
+            if (w.Type != wt)
+            {
+                w.Type = wt;
+            }
+            if (w.State != WeaponState.Ready)
+            {
+                w.State = WeaponState.Ready;
+            }
+
+            return w;
+        }
+
+        public void SetWeapon(WeaponType wt, Weapon w)
+        {
+            if (w.Type != wt)
+            {
+                w.Type = wt;
+            }
+            Weapons[(int) wt] = w;
         }
 
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
@@ -263,12 +294,5 @@ namespace GTASaveData.GTA3
         {
             return new PlayerPed(this);
         }
-    }
-
-    public enum CharCreatedBy
-    {
-        Unknown,
-        Random,
-        Mission
     }
 }

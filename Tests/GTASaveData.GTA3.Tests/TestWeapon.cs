@@ -10,9 +10,9 @@ namespace GTASaveData.GTA3.Tests
             Faker<Weapon> model = new Faker<Weapon>()
                 .RuleFor(x => x.Type, f => f.PickRandom<WeaponType>())
                 .RuleFor(x => x.State, f => f.PickRandom<WeaponState>())
-                .RuleFor(x => x.AmmoInClip, f => f.Random.UInt())
-                .RuleFor(x => x.AmmoInClip, f => f.Random.UInt())
-                .RuleFor(x => x.Unknown, f => (!p.FileType.IsPS2) ? f.Random.Bool() : default);
+                .RuleFor(x => x.AmmoInClip, f => f.Random.Int())
+                .RuleFor(x => x.AmmoInClip, f => f.Random.Int())
+                .RuleFor(x => x.AddRotOffset, f => (!p.FileType.IsPS2) ? f.Random.Bool() : default);
 
             return model.Generate();
         }
@@ -29,7 +29,7 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.State, x1.State);
             Assert.Equal(x0.AmmoInClip, x1.AmmoInClip);
             Assert.Equal(x0.AmmoInClip, x1.AmmoInClip);
-            Assert.Equal(x0.Unknown, x1.Unknown);
+            Assert.Equal(x0.AddRotOffset, x1.AddRotOffset);
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);

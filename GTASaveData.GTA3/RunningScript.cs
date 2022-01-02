@@ -26,7 +26,7 @@ namespace GTASaveData.GTA3
         private bool m_isMissionScript;
         private bool m_skipWakeTime;
         private uint m_wakeTime;
-        private short m_andOrState;
+        private AndOrState m_andOrState;
         private bool m_notFlag;
         private bool m_deathArrestEnabled;
         private bool m_deathArrestExecuted;
@@ -162,9 +162,8 @@ namespace GTASaveData.GTA3
 
         /// <summary>
         /// The state of the current if..and or if..or chain.
-        /// 0 = none, 1-8 = and state, 21-28 = or state.
         /// </summary>
-        public short AndOrState
+        public AndOrState AndOrState
         {
             get { return m_andOrState; }
             set { m_andOrState = value; OnPropertyChanged(); }
@@ -284,6 +283,14 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
+        /// Checks whether a given local varialble index is valid.
+        /// </summary>
+        public bool HasLocal(int index)
+        {
+            return index >= 0 && index < Locals.Count;
+        }
+
+        /// <summary>
         /// Gets the value of a local variable.
         /// </summary>
         public int GetLocal(int index)
@@ -334,7 +341,7 @@ namespace GTASaveData.GTA3
             SkipWakeTime = buf.ReadBool();
             buf.Align4();
             WakeTime = buf.ReadUInt32();
-            AndOrState = buf.ReadInt16();
+            AndOrState = (AndOrState) buf.ReadInt16();
             NotFlag = buf.ReadBool();
             DeathArrestEnabled = buf.ReadBool();
             DeathArrestExecuted = buf.ReadBool();
@@ -363,7 +370,7 @@ namespace GTASaveData.GTA3
             buf.Write(SkipWakeTime);
             buf.Align4();
             buf.Write(WakeTime);
-            buf.Write(AndOrState);
+            buf.Write((short) AndOrState);
             buf.Write(NotFlag);
             buf.Write(DeathArrestEnabled);
             buf.Write(DeathArrestExecuted);

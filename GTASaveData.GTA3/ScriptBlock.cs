@@ -14,12 +14,10 @@ namespace GTASaveData.GTA3
     /// <summary>
     /// The data block in GTA3 save files that stores mission script state.
     /// </summary>
-    public class ScriptsBlock : SaveDataObject,
-        IEquatable<ScriptsBlock>, IDeepClonable<ScriptsBlock>
+    public class ScriptBlock : SaveDataObject,
+        IEquatable<ScriptBlock>, IDeepClonable<ScriptBlock>
     {
         private const int KeyLengthInScript = 8;
-
-        private const int ScriptDataSize = 968;
 
         private ScriptInfo m_scriptInfo;
         private ObservableArray<byte> m_scriptSpace;
@@ -68,14 +66,14 @@ namespace GTASaveData.GTA3
         /// </summary>
         /// <remarks>
         /// Each global variable is a DWORD from the <see cref="ScriptSpace"/>.
-        /// Control the number of globals by calling <see cref="SetSizeOfVariableSpace(int)"/>.
+        /// Control the number of globals by calling <see cref="SetGlobalVariableSpaceSize(int)"/>.
         /// </remarks>
         [JsonIgnore]
         public IEnumerable<int> Globals
         {
             get
             {
-                for (int i = 0; i < GetSizeOfVariableSpace() / 4; i++)
+                for (int i = 0; i < GetGlobalVariableSpaceSize() / 4; i++)
                 {
                     yield return GetGlobal(i);
                 }
@@ -196,7 +194,7 @@ namespace GTASaveData.GTA3
             set { m_activeScripts = value; OnPropertyChanged(); }
         }
 
-        public ScriptsBlock()
+        public ScriptBlock()
         {
             ScriptInfo = new ScriptInfo();
             ScriptSpace = new ObservableArray<byte>();
@@ -207,7 +205,7 @@ namespace GTASaveData.GTA3
             RunningScripts = new ObservableArray<RunningScript>();
         }
 
-        public ScriptsBlock(ScriptsBlock other)
+        public ScriptBlock(ScriptBlock other)
         {
             ScriptInfo = new ScriptInfo(other.ScriptInfo);
             ScriptSpace = ArrayHelper.DeepClone(other.ScriptSpace);
@@ -224,6 +222,11 @@ namespace GTASaveData.GTA3
             RunningScripts = ArrayHelper.DeepClone(other.RunningScripts);
         }
 
+        /// <summary>
+        /// Adds a new <see cref="RunningScript"/> to the running scripts array.
+        /// </summary>
+        /// <param name="ip">The initial instruction pointer.</param>
+        /// <returns>The newly-created <see cref="RunningScript"/>.</returns>
         public RunningScript StartNewScript(int ip)
         {
             RunningScript script = new RunningScript() { IP = ip };
@@ -253,7 +256,31 @@ namespace GTASaveData.GTA3
         /// The game may crash or fail to load the save file if the
         /// script space is too large.
         /// </remarks>
-        public int ResizeScriptSpace(int amount)
+        public int GrowScriptSpace(int amount)
+        {
+            return amount >= 0
+                ? ResizeScriptSpace(amount)
+                : throw new ArgumentOutOfRangeException(nameof(amount));
+        }
+
+        /// <summary>
+        /// Grows or shrinks the <see cref="ScriptSpace"/> by the
+        /// specified amount. An <paramref name="amount"/> greater
+        /// than zero will expand, while an <paramref name="amount"/>
+        /// less than zero will shrink.
+        /// </summary>
+        /// <remarks>
+        /// The game may crash or fail to load the save file if the
+        /// script space is too large.
+        /// </remarks>
+        public int ShrinkScriptSpace(int amount)
+        {
+            return amount >= 0
+                ? ResizeScriptSpace(-amount)
+                : throw new ArgumentOutOfRangeException(nameof(amount));
+        }
+
+        private int ResizeScriptSpace(int amount)
         {
             int oldSize = ScriptSpace.Count;
             int newSize = oldSize + amount;
@@ -265,6 +292,15 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
+        /// Gets the total size of the saved script space.
+        /// </summary>
+        /// <returns></returns>
+        public int GetScriptSpaceSize()
+        {
+            return ScriptSpace.Count;
+        }
+
+        /// <summary>
         /// Gets the size of the global variable pool in the <see cref="ScriptSpace"/>.
         /// </summary>
         /// <remarks>
@@ -273,7 +309,7 @@ namespace GTASaveData.GTA3
         /// space from injected script code. This value occupies global variable
         /// indices 0 and 1, hence why these are not valid global variables.
         /// </remarks>
-        public int GetSizeOfVariableSpace()
+        public int GetGlobalVariableSpaceSize()
         {
             return Read4BytesFromScript(3);
         }
@@ -287,7 +323,7 @@ namespace GTASaveData.GTA3
         /// space from injected script code. This value occupies global variable
         /// indices 0 and 1, hence why these are not valid global variables.
         /// </remarks>
-        public void SetSizeOfVariableSpace(int size)
+        public void SetGlobalVariableSpaceSize(int size)
         {
             // Globals, object names, and some script info are stored in MAIN.SCM
             // in header chunks before any actual script code. Each chunk starts with a
@@ -298,7 +334,7 @@ namespace GTASaveData.GTA3
             // global variables 0 and 1). The GOTO opcode takes up the first two bytes,
             // followed by the operand type for one byte, and finally a four-byte address
             // beginning at offset 3. (02 00 01 xx xx xx xx)
-            Write4BytesToScript(size, 3);
+            Write4BytesToScript(3, size);
         }
 
         /// <summary>
@@ -720,10 +756,10 @@ namespace GTASaveData.GTA3
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as ScriptsBlock);
+            return Equals(obj as ScriptBlock);
         }
 
-        public bool Equals(ScriptsBlock other)
+        public bool Equals(ScriptBlock other)
         {
             if (other == null)
             {
@@ -744,9 +780,9 @@ namespace GTASaveData.GTA3
                 && RunningScripts.SequenceEqual(other.RunningScripts);
         }
 
-        public ScriptsBlock DeepClone()
+        public ScriptBlock DeepClone()
         {
-            return new ScriptsBlock(this);
+            return new ScriptBlock(this);
         }
     }
 }

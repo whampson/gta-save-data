@@ -41,13 +41,13 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.MusicVolume, f => (isPS2) ? f.Random.Int() : default)
                 .RuleFor(x => x.SfxVolume, f => (isPS2) ? f.Random.Int() : default)
                 .RuleFor(x => x.UseVibration, f => (isPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.StereoMono, f => (isPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.UseMono, f => (isPS2) ? f.Random.Bool() : default)
                 .RuleFor(x => x.RadioStation, f => (isPS2) ? f.PickRandom<RadioStation>() : default)
                 .RuleFor(x => x.Brightness, f => (isPS2) ? f.Random.Int() : default)
                 .RuleFor(x => x.ShowSubtitles, f => (isPS2) ? f.Random.Bool() : default)
                 .RuleFor(x => x.Language, f => (isPS2) ? f.PickRandom<Language>() : default)
                 .RuleFor(x => x.UseWideScreen, f => (isPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.BlurOn, f => (isPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.Trails, f => (isPS2) ? f.Random.Bool() : default)
                 .RuleFor(x => x.CompileDateAndTime, f => new Date(Generator.Date(f)))
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
                 .RuleFor(x => x.CameraModeInCar, f => f.PickRandom<CameraMode>())
@@ -90,13 +90,13 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.MusicVolume, x1.MusicVolume);
             Assert.Equal(x0.SfxVolume, x1.SfxVolume);
             Assert.Equal(x0.UseVibration, x1.UseVibration);
-            Assert.Equal(x0.StereoMono, x1.StereoMono);
+            Assert.Equal(x0.UseMono, x1.UseMono);
             Assert.Equal(x0.RadioStation, x1.RadioStation);
             Assert.Equal(x0.Brightness, x1.Brightness);
             Assert.Equal(x0.ShowSubtitles, x1.ShowSubtitles);
             Assert.Equal(x0.Language, x1.Language);
             Assert.Equal(x0.UseWideScreen, x1.UseWideScreen);
-            Assert.Equal(x0.BlurOn, x1.BlurOn);
+            Assert.Equal(x0.Trails, x1.Trails);
             Assert.Equal(x0.CompileDateAndTime, x1.CompileDateAndTime);
             Assert.Equal(x0.WeatherTypeInList, x1.WeatherTypeInList);
             Assert.Equal(x0.CameraModeInCar, x1.CameraModeInCar);

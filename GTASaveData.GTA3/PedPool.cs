@@ -8,29 +8,14 @@ using GTASaveData.Interfaces;
 namespace GTASaveData.GTA3
 {
     public class PedPool : SaveDataObject,
-        IEquatable<PedPool>, IDeepClonable<PedPool>,
-        IEnumerable<PlayerPed>
+        IEquatable<PedPool>, IDeepClonable<PedPool>
     {
-        // Yes, you can have multiple player peds
-        // You get some weird behavior though...
-
         private ObservableArray<PlayerPed> m_playerPeds;
 
         public ObservableArray<PlayerPed> PlayerPeds
         {
             get { return m_playerPeds; }
             set { m_playerPeds = value; OnPropertyChanged(); }
-        }
-
-        public PlayerPed this[int i]
-        {
-            get { return PlayerPeds[i]; }
-            set { PlayerPeds[i] = value; OnPropertyChanged(); }
-        }
-
-        public int NumPlayerPeds
-        {
-            get { return PlayerPeds.Count; }
         }
 
         public PedPool()
@@ -48,12 +33,9 @@ namespace GTASaveData.GTA3
 
         public PlayerPed GetPlayerPed()
         {
-            if (PlayerPeds.Count == 0)
-            {
-                throw new InvalidOperationException(Strings.Error_InvalidOperation_NoPlayerPed);
-            }
-
-            return PlayerPeds[0];
+            return PlayerPeds.Count != 0
+                ? PlayerPeds[0]
+                : throw new InvalidOperationException(Strings.Error_InvalidOperation_NoPlayerPed);
         }
 
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
@@ -130,16 +112,6 @@ namespace GTASaveData.GTA3
         public PedPool DeepClone()
         {
             return new PedPool(this);
-        }
-
-        public IEnumerator<PlayerPed> GetEnumerator()
-        {
-            return PlayerPeds.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

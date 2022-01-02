@@ -7,16 +7,16 @@ using Xunit;
 
 namespace GTASaveData.GTA3.Tests
 {
-    public class TestScriptBlock : Base<ScriptsBlock>
+    public class TestScriptBlock : Base<ScriptBlock>
     {
-        public override ScriptsBlock GenerateTestObject(GTA3SaveParams p)
+        public override ScriptBlock GenerateTestObject(GTA3SaveParams p)
         {
             Faker faker = new Faker();
 
             int varSpace = faker.Random.Int(4, 8000);
             int runningScripts = faker.Random.Int(1, 20);
 
-            Faker<ScriptsBlock> model = new Faker<ScriptsBlock>()
+            Faker<ScriptBlock> model = new Faker<ScriptBlock>()
                 .RuleFor(x => x.ScriptSpace, f => Generator.Array(varSpace, g => f.Random.Byte()))
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
                 .RuleFor(x => x.Contacts, f => Generator.Array(p.NumContacts, g => Generator.Generate<Contact, TestContact, GTA3SaveParams>(p)))
@@ -38,8 +38,8 @@ namespace GTASaveData.GTA3.Tests
         public void RandomDataSerialization(FileType t)
         {
             GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
-            ScriptsBlock x0 = GenerateTestObject(p);
-            ScriptsBlock x1 = CreateSerializedCopy(x0, p, out byte[] data);
+            ScriptBlock x0 = GenerateTestObject(p);
+            ScriptBlock x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.ScriptSpace, x1.ScriptSpace);
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
@@ -63,8 +63,8 @@ namespace GTASaveData.GTA3.Tests
         public void CopyConstructor(FileType t)
         {
             GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
-            ScriptsBlock x0 = GenerateTestObject(p);
-            ScriptsBlock x1 = new ScriptsBlock(x0);
+            ScriptBlock x0 = GenerateTestObject(p);
+            ScriptBlock x1 = new ScriptBlock(x0);
 
             Assert.Equal(x0, x1);
 
@@ -84,8 +84,8 @@ namespace GTASaveData.GTA3.Tests
             p.NumBuildingSwaps = faker.Random.Int(0, 100);
             p.NumInvisibilitySettings = faker.Random.Int(0, 100);
 
-            ScriptsBlock x0 = GenerateTestObject(p);
-            ScriptsBlock x1 = CreateSerializedCopy(x0, p, out byte[] data);
+            ScriptBlock x0 = GenerateTestObject(p);
+            ScriptBlock x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
@@ -98,19 +98,19 @@ namespace GTASaveData.GTA3.Tests
             string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileTypes.PC, "CAT2");
             using GTA3Save x = GTA3Save.Load(path, GTA3Save.FileTypes.PC);
 
-            Assert.Equal(987.5, x.Scripts.GetGlobalAsFloat(804));
+            Assert.Equal(987.5, x.Script.GetGlobalAsFloat(804));
 
-            int numGlobals = x.Scripts.Globals.Count();
+            int numGlobals = x.Script.Globals.Count();
             int i0 = f.Random.Int(0, numGlobals - 1);
             int i1 = f.Random.Int(0, numGlobals - 1);
             int v0 = f.Random.Int();
             float v1 = f.Random.Float();
 
-            x.Scripts.SetGlobal(i0, v0);
-            x.Scripts.SetGlobal(i1, v1);
+            x.Script.SetGlobal(i0, v0);
+            x.Script.SetGlobal(i1, v1);
 
-            int r0 = x.Scripts.GetGlobal(i0);
-            float r1 = x.Scripts.GetGlobalAsFloat(i1);
+            int r0 = x.Script.GetGlobal(i0);
+            float r1 = x.Script.GetGlobalAsFloat(i1);
 
             Assert.Equal(v0, r0);
             Assert.Equal(v1, r1);
@@ -127,22 +127,22 @@ namespace GTASaveData.GTA3.Tests
             int i = unchecked((int) 0xCAFEBABE);
             float f = 435.5625f;
             string l = "FUCKER";
-            int offset = 420;
+            int addr = 420;
 
-            offset = x.Scripts.Write1ByteToScript(offset, b);
-            offset = x.Scripts.Write2BytesToScript(offset, s);
-            offset = x.Scripts.Write4BytesToScript(offset, i);
-            offset = x.Scripts.WriteFloatToScript(offset, f);
-            offset = x.Scripts.WriteTextLabelToScript(offset, l);
-            Assert.Equal(437, offset);
+            addr += x.Script.Write1ByteToScript(addr, b);
+            addr += x.Script.Write2BytesToScript(addr, s);
+            addr += x.Script.Write4BytesToScript(addr, i);
+            addr += x.Script.WriteFloatToScript(addr, f);
+            addr += x.Script.WriteTextLabelToScript(addr, l);
+            Assert.Equal(437, addr);
 
-            offset = 420;
-            offset = x.Scripts.Read1ByteFromScript(offset, out byte b2);
-            offset = x.Scripts.Read2BytesFromScript(offset, out short s2);
-            offset = x.Scripts.Read4BytesFromScript(offset, out int i2);
-            offset = x.Scripts.ReadFloatFromScript(offset, out float f2);
-            offset = x.Scripts.ReadTextLabelFromScript(offset, out string l2);
-            Assert.Equal(437, offset);
+            addr = 420;
+            addr += x.Script.Read1ByteFromScript(addr, out byte b2);
+            addr += x.Script.Read2BytesFromScript(addr, out short s2);
+            addr += x.Script.Read4BytesFromScript(addr, out int i2);
+            addr += x.Script.ReadFloatFromScript(addr, out float f2);
+            addr += x.Script.ReadTextLabelFromScript(addr, out string l2);
+            Assert.Equal(437, addr);
             Assert.Equal(b, b2);
             Assert.Equal(s, s2);
             Assert.Equal(i, i2);
@@ -156,20 +156,20 @@ namespace GTASaveData.GTA3.Tests
             string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileTypes.PC, "CAT2");
             using GTA3Save x = GTA3Save.Load(path, GTA3Save.FileTypes.PC);
 
-            var origScriptSpace = x.Scripts.ScriptSpace;
+            var origScriptSpace = x.Script.ScriptSpace;
             int origSize = origScriptSpace.Count;
             int amount = 1000;
 
-            int newSize = x.Scripts.ResizeScriptSpace(amount);    // grow
-            Assert.Equal(origSize + amount, x.Scripts.ScriptSpace.Count);
+            int newSize = x.Script.GrowScriptSpace(amount);
+            Assert.Equal(origSize + amount, x.Script.ScriptSpace.Count);
             Assert.Equal(origSize + amount, newSize);
 
-            newSize = x.Scripts.ResizeScriptSpace(-amount);   // shrink
-            Assert.Equal(origSize, x.Scripts.ScriptSpace.Count);
+            newSize = x.Script.ShrinkScriptSpace(amount);
+            Assert.Equal(origSize, x.Script.ScriptSpace.Count);
             Assert.Equal(origSize, newSize);
 
-            Assert.Equal(origScriptSpace, x.Scripts.ScriptSpace);
-            Assert.True(origScriptSpace != x.Scripts.ScriptSpace);
+            Assert.Equal(origScriptSpace, x.Script.ScriptSpace);
+            Assert.True(origScriptSpace != x.Script.ScriptSpace);
         }
     }
 }

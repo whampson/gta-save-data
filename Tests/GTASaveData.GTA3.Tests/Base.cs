@@ -43,6 +43,7 @@ namespace GTASaveData.GTA3.Tests
             new object[] { GTA3Save.FileTypes.PC, "CAT2 SpecialVehicles3" },
             new object[] { GTA3Save.FileTypes.PC, "CAT2 VehiclePool" },
             new object[] { GTA3Save.FileTypes.PC, "JM4" },
+            new object[] { GTA3Save.FileTypes.PC, "LM1" },
             new object[] { GTA3Save.FileTypes.PC, "RC1" },
             new object[] { GTA3Save.FileTypes.PC, "RC3" },
             new object[] { GTA3Save.FileTypes.PC, "T4X4_1" },

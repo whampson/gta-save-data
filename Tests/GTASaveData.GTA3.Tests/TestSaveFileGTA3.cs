@@ -15,7 +15,7 @@ namespace GTASaveData.GTA3.Tests
             Faker<GTA3Save> model = new Faker<GTA3Save>()
                 .RuleFor(x => x.Params, p)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables, GTA3SaveParams>(p))
-                .RuleFor(x => x.Scripts, Generator.Generate<ScriptsBlock, TestScriptBlock, GTA3SaveParams>(p))
+                .RuleFor(x => x.Script, Generator.Generate<ScriptBlock, TestScriptBlock, GTA3SaveParams>(p))
                 .RuleFor(x => x.PlayerPeds, Generator.Generate<PedPool, TestPedPool, GTA3SaveParams>(p))
                 .RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData, GTA3SaveParams>(p))
                 .RuleFor(x => x.Vehicles, Generator.Generate<VehiclePool, TestVehiclePool, GTA3SaveParams>(p))
@@ -127,14 +127,14 @@ namespace GTASaveData.GTA3.Tests
 
             // Make the script space huge
             GTA3Save x = GTA3Save.Load(path, t);
-            x.Scripts.ScriptSpace = ArrayHelper.CreateArray<byte>(100000);
+            x.Script.ScriptSpace = ArrayHelper.CreateArray<byte>(100000);
             Assert.Throws<EndOfStreamException>(() => x.Save(out byte[] _));
         }
 
         private void AssertSavesAreEqual(GTA3Save x0, GTA3Save x1)
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
-            Assert.Equal(x0.Scripts, x1.Scripts);
+            Assert.Equal(x0.Script, x1.Script);
             Assert.Equal(x0.PlayerPeds, x1.PlayerPeds);
             Assert.Equal(x0.Garages, x1.Garages);
             Assert.Equal(x0.Vehicles, x1.Vehicles);

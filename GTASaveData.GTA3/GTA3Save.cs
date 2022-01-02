@@ -6,7 +6,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
-using System.Linq;
 
 namespace GTASaveData.GTA3
 {
@@ -21,7 +20,7 @@ namespace GTASaveData.GTA3
         private const int SizeOfGameDataInBytes = 0x31400;
 
         private SimpleVariables m_simpleVars;
-        private ScriptsBlock m_scripts;
+        private ScriptBlock m_theScripts;
         private PedPool m_pedPool;
         private GarageData m_garages;
         private VehiclePool m_vehiclePool;
@@ -56,10 +55,10 @@ namespace GTASaveData.GTA3
         /// Mission script data like global variables, active mission scripts,
         /// and swapped building model info.
         /// </summary>
-        public ScriptsBlock Scripts
+        public ScriptBlock Script
         {
-            get { return m_scripts; }
-            set { m_scripts = value; OnPropertyChanged(); }
+            get { return m_theScripts; }
+            set { m_theScripts = value; OnPropertyChanged(); }
         }
 
         public PedPool PlayerPeds
@@ -242,7 +241,7 @@ namespace GTASaveData.GTA3
             : base(Game.GTA3)
         {
             SimpleVars = new SimpleVariables();
-            Scripts = new ScriptsBlock();
+            Script = new ScriptBlock();
             PlayerPeds = new PedPool();
             Garages = new GarageData();
             Vehicles = new VehiclePool();
@@ -270,7 +269,7 @@ namespace GTASaveData.GTA3
             : base(Game.GTA3)
         {
             SimpleVars = new SimpleVariables(other.SimpleVars);
-            Scripts = new ScriptsBlock(other.Scripts);
+            Script = new ScriptBlock(other.Script);
             PlayerPeds = new PedPool(other.PlayerPeds);
             Garages = new GarageData(other.Garages);
             Vehicles = new VehiclePool(other.Vehicles);
@@ -307,7 +306,7 @@ namespace GTASaveData.GTA3
             {
                 dataSize += FillWorkBuffer(file);
                 SimpleVars = WorkBuff.ReadObject<SimpleVariables>(Params);
-                Scripts = Get<ScriptsBlock>();
+                Script = Get<ScriptBlock>();
                 PlayerPeds = Get<PedPool>();
                 Garages = Get<GarageData>();
                 Vehicles = Get<VehiclePool>();
@@ -338,7 +337,7 @@ namespace GTASaveData.GTA3
             {
                 dataSize += FillWorkBuffer(file);
                 SimpleVars = WorkBuff.ReadObject<SimpleVariables>(Params);
-                Scripts = Get<ScriptsBlock>();
+                Script = Get<ScriptBlock>();
                 dataSize += FillWorkBuffer(file); PlayerPeds = Get<PedPool>();
                 dataSize += FillWorkBuffer(file); Garages = Get<GarageData>();
                 dataSize += FillWorkBuffer(file); Vehicles = Get<VehiclePool>();
@@ -387,7 +386,7 @@ namespace GTASaveData.GTA3
         {
             long mark = file.Mark();
             SimpleVars = file.ReadObject<SimpleVariables>(Params);
-            Scripts = file.ReadObject<ScriptsBlock>(Params);
+            Script = file.ReadObject<ScriptBlock>(Params);
 
             long size = file.Position - mark;
             Debug.WriteLine("Size: " + size);
@@ -410,7 +409,7 @@ namespace GTASaveData.GTA3
             if (IsPS2)
             {
                 WorkBuff.Write(SimpleVars, Params);
-                Put(Scripts);
+                Put(Script);
                 Put(PlayerPeds);
                 Put(Garages);
                 Put(Vehicles);
@@ -441,7 +440,7 @@ namespace GTASaveData.GTA3
             else
             {
                 WorkBuff.Write(SimpleVars, Params);
-                Put(Scripts); dataSize += FlushWorkBuffer(file);
+                Put(Script); dataSize += FlushWorkBuffer(file);
                 Put(PlayerPeds); dataSize += FlushWorkBuffer(file);
                 Put(Garages); dataSize += FlushWorkBuffer(file);
                 Put(Vehicles); dataSize += FlushWorkBuffer(file);
@@ -632,7 +631,7 @@ namespace GTASaveData.GTA3
 
             // data blocks
             size += SizeOf(SimpleVars, prm);
-            size += SizeOf(Scripts, prm) + sizeof(int);
+            size += SizeOf(Script, prm) + sizeof(int);
             size += SizeOf(PlayerPeds, prm) + sizeof(int);
             size += SizeOf(Garages, prm) + sizeof(int);
             size += SizeOf(Vehicles, prm) + sizeof(int);
@@ -686,7 +685,7 @@ namespace GTASaveData.GTA3
             }
 
             return SimpleVars.Equals(other.SimpleVars)
-                && Scripts.Equals(other.Scripts)
+                && Script.Equals(other.Script)
                 && PlayerPeds.Equals(other.PlayerPeds)
                 && Garages.Equals(other.Garages)
                 && Vehicles.Equals(other.Vehicles)
