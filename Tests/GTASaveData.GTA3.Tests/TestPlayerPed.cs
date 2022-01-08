@@ -17,7 +17,7 @@ namespace GTASaveData.GTA3.Tests
                 //.RuleFor(x => x.Handle, f => f.Random.Int())
 
                 .RuleFor(x => x.Position, f => Generator.Vector3(f))
-                .RuleFor(x => x.CreatedBy, f => f.PickRandom<CharCreatedBy>())
+                .RuleFor(x => x.CharCreatedBy, f => f.PickRandom<CharCreatedBy>())
                 .RuleFor(x => x.Health, f => f.Random.Float())
                 .RuleFor(x => x.Armor, f => f.Random.Float())
                 .RuleFor(x => x.Weapons, f => Generator.Array(PlayerPed.NumWeapons, g => Generator.Generate<Weapon, TestWeapon, GTA3SaveParams>(p)))
@@ -42,7 +42,7 @@ namespace GTASaveData.GTA3.Tests
             PlayerPed x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Position, x1.Position);
-            Assert.Equal(x0.CreatedBy, x1.CreatedBy);
+            Assert.Equal(x0.CharCreatedBy, x1.CharCreatedBy);
             Assert.Equal(x0.Health, x1.Health);
             Assert.Equal(x0.Armor, x1.Armor);
             Assert.Equal(x0.Weapons, x1.Weapons);

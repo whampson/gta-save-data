@@ -16,7 +16,7 @@ namespace GTASaveData.GTA3.Tests
             bool isMobile = p.FileType.IsMobile;
 
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.LastMissionPassedName, f => (!isPS2) ? Generator.Words(f, p.MaxLastMissionPassedNameLength - 1) : "")
+                .RuleFor(x => x.LastMissionPassedName, f => (!isPS2) ? Generator.Words(f, p.LastMissionPassedNameLength - 1) : "")
                 .RuleFor(x => x.TimeStamp, f => (isPC || isXbox) ? new SystemTime(Generator.Date(f)) : SystemTime.MinValue)
                 .RuleFor(x => x.SizeOfGameInBytes, f => (isPS2JP) ? 0x31400 : 0x31401)
                 .RuleFor(x => x.CurrentLevel, f => f.PickRandom<Level>())

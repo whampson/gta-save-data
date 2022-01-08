@@ -7,66 +7,116 @@ namespace GTASaveData.GTA3
     /// </summary>
     public class GTA3SaveParams : SerialiationParamsGTA3VC
     {
+        public const int DefaultWorkBufferSize = 55000;
+        public const int DefaultWorkBufferSizePS2 = 50000;
+        public const int DefaultMaxNumPaddingBlocks = 4;
+        public const int DefaultLastMissionPassedNameLength = 24;
+        public const int DefaultNumContacts = 16;
+        public const int DefaultNumCollectives = 32;
+        public const int DefaultNumBuildingSwaps = 25;
+        public const int DefaultNumInvisibilitySettings = 20;
+        public const int DefaultNumLocalVariables = 16;
+        public const int DefaultStackDepth = 6;
+        public const int DefaultStackDepthPS2 = 4;
+        public const int DefaultNumGarages = 32;
 
-        private static readonly GTA3SaveParams Defaults = new GTA3SaveParams()
-        {
-            WorkBufferSize = 55000,
-            MaxLastMissionPassedNameLength = 24,
-            MaxStackDepth = 6,
-            MaxNumPaddingBlocks = 4,
-            NumContacts = 16,
-            NumCollectives = 32,
-            NumBuildingSwaps = 25,
-            NumInvisibilitySettings = 20,
-            NumLocalVariables = 16
-        };
 
-        // General Save File
+        // ---------- General Save File ----------
+
+        /// <summary>
+        /// The maximum number of padding blocks that can be written to a save file.
+        /// </summary>
         public int MaxNumPaddingBlocks { get; set; }
 
-        // SimpleVars
-        public int MaxLastMissionPassedNameLength { get; set; }
 
-        // ScriptsBlock
+        // ---------- SimpleVariables ----------
+
+        /// <summary>
+        /// The total number of characters to write for the save title
+        /// (<see cref="SimpleVariables.LastMissionPassedName"/>).
+        /// </summary>
+        /// <remarks>
+        /// Does not apply to <i>The Definitive Edition</i>.
+        /// </remarks>
+        public int LastMissionPassedNameLength { get; set; }
+
+
+        // ---------- ScriptBlock ----------
+
+        /// <summary>
+        /// The number of items to store in the <see cref="ScriptBlock.Contacts"/> array.
+        /// </summary>
         public int NumContacts { get; set; }
+
+        /// <summary>
+        /// The number of items to store in the <see cref="ScriptBlock.Collectives"/> array.
+        /// </summary>
         public int NumCollectives { get; set; }
+
+        /// <summary>
+        /// The number of items to store in the <see cref="ScriptBlock.BuildingSwaps"/> array.
+        /// </summary>
         public int NumBuildingSwaps { get; set; }
+
+        /// <summary>
+        /// The number of items to store in the <see cref="ScriptBlock.InvisibilitySettings"/> array.
+        /// </summary>
         public int NumInvisibilitySettings { get; set; }
 
-        // RunningScript
-        public int MaxStackDepth { get; set; }
+
+        // ---------- RunningScript ----------
+        
+        /// <summary>
+        /// The number of local variables to store per script.
+        /// </summary>
         public int NumLocalVariables { get; set; }
+
+        /// <summary>
+        /// The maximum number of <c>gosub</c> return addresses that can be stored
+        /// on the stack.
+        /// </summary>
+        public int StackDepth { get; set; }
+
+
+        // ---------- GarageBlock ----------
+
+        /// <summary>
+        /// The number of items to store in the <see cref="GarageBlock.Garages"/> array.
+        /// </summary>
+        public int NumGarages { get; set; }
 
 
         public GTA3SaveParams() : base()
-        { }
+        {
+            WorkBufferSize = DefaultWorkBufferSize;
+            MaxNumPaddingBlocks = DefaultMaxNumPaddingBlocks;
+            LastMissionPassedNameLength = DefaultLastMissionPassedNameLength;
+            NumContacts = DefaultNumContacts;
+            NumCollectives = DefaultNumCollectives;
+            NumBuildingSwaps = DefaultNumBuildingSwaps;
+            NumInvisibilitySettings = DefaultNumInvisibilitySettings;
+            NumLocalVariables = DefaultNumLocalVariables;
+            StackDepth = DefaultStackDepth;
+            NumGarages = DefaultNumGarages;
+        }
 
         public GTA3SaveParams(GTA3SaveParams other) : base(other)
         {
             MaxNumPaddingBlocks = other.MaxNumPaddingBlocks;
-            MaxLastMissionPassedNameLength = other.MaxLastMissionPassedNameLength;
+            LastMissionPassedNameLength = other.LastMissionPassedNameLength;
             NumContacts = other.NumContacts;
             NumCollectives = other.NumCollectives;
             NumBuildingSwaps = other.NumBuildingSwaps;
             NumInvisibilitySettings = other.NumInvisibilitySettings;
-            MaxStackDepth = other.MaxStackDepth;
+            StackDepth = other.StackDepth;
             NumLocalVariables = other.NumLocalVariables;
         }
 
         /// <summary>
-        /// Gets the default, non-file-type-specific serialization params.
-        /// </summary>
-        /// <returns></returns>
-        public static GTA3SaveParams GetDefaults()
-        {
-            return new GTA3SaveParams(Defaults);
-        }
-
-        /// <summary>
-        /// Gets the default <see cref="FileType"/>-specific serialization params.
+        /// Gets the default serialization params for a given <see cref="FileType"/>.
         /// </summary>
         /// <remarks>
-        /// Valid file types are located in <see cref="GTA3Save.FileTypes"/>.
+        /// Supported file types for GTA3 saves are located in <see cref="GTA3Save.FileTypes"/>.
         /// </remarks>
         /// <returns>
         /// The default serialization params for the given file type,
@@ -80,14 +130,11 @@ namespace GTASaveData.GTA3
                 return null;
             }
 
-            GTA3SaveParams p = new GTA3SaveParams(Defaults)
-            {
-                FileType = t
-            };
+            GTA3SaveParams p = new GTA3SaveParams() { FileType = t };
             if (t.IsPS2)
             {
-                p.WorkBufferSize = 50000;
-                p.MaxStackDepth = 4;
+                p.WorkBufferSize = DefaultWorkBufferSizePS2;
+                p.StackDepth = DefaultStackDepthPS2;
             }
 
             return p;

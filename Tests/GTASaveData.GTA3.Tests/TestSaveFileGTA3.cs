@@ -16,8 +16,8 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.Params, p)
                 .RuleFor(x => x.SimpleVars, Generator.Generate<SimpleVariables, TestSimpleVariables, GTA3SaveParams>(p))
                 .RuleFor(x => x.Script, Generator.Generate<ScriptBlock, TestScriptBlock, GTA3SaveParams>(p))
-                .RuleFor(x => x.PlayerPeds, Generator.Generate<PedPool, TestPedPool, GTA3SaveParams>(p))
-                .RuleFor(x => x.Garages, Generator.Generate<GarageData, TestGarageData, GTA3SaveParams>(p))
+                .RuleFor(x => x.PedPool, Generator.Generate<PedPool, TestPedPool, GTA3SaveParams>(p))
+                .RuleFor(x => x.Garages, Generator.Generate<GarageBlock, TestGarageBlock, GTA3SaveParams>(p))
                 .RuleFor(x => x.Vehicles, Generator.Generate<VehiclePool, TestVehiclePool, GTA3SaveParams>(p))
                 .RuleFor(x => x.Objects, Generator.Generate<ObjectPool, TestObjectPool, GTA3SaveParams>(p))
                 .RuleFor(x => x.Paths, Generator.Generate<PathData, TestPathData, GTA3SaveParams>(p))
@@ -135,7 +135,7 @@ namespace GTASaveData.GTA3.Tests
         {
             Assert.Equal(x0.SimpleVars, x1.SimpleVars);
             Assert.Equal(x0.Script, x1.Script);
-            Assert.Equal(x0.PlayerPeds, x1.PlayerPeds);
+            Assert.Equal(x0.PedPool, x1.PedPool);
             Assert.Equal(x0.Garages, x1.Garages);
             Assert.Equal(x0.Vehicles, x1.Vehicles);
             Assert.Equal(x0.Objects, x1.Objects);

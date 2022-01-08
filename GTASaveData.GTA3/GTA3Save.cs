@@ -22,7 +22,7 @@ namespace GTASaveData.GTA3
         private SimpleVariables m_simpleVars;
         private ScriptBlock m_theScripts;
         private PedPool m_pedPool;
-        private GarageData m_garages;
+        private GarageBlock m_garages;
         private VehiclePool m_vehiclePool;
         private ObjectPool m_objectPool;
         private PathData m_paths;
@@ -52,8 +52,8 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// Mission script data like global variables, active mission scripts,
-        /// and swapped building model info.
+        /// Mission script data like global variables, <c>MAIN.SCM</c> info,
+        /// the saved state of active mission scripts, and others.
         /// </summary>
         public ScriptBlock Script
         {
@@ -61,13 +61,21 @@ namespace GTASaveData.GTA3
             set { m_theScripts = value; OnPropertyChanged(); }
         }
 
-        public PedPool PlayerPeds
+        /// <summary>
+        /// Contains the player peds. Here you can control the health, armor,
+        /// weapons, max wanted level, stamina, and model of the player. You can
+        /// also add multiple player peds.
+        /// </summary>
+        public PedPool PedPool
         {
             get { return m_pedPool; }
             set { m_pedPool = value; OnPropertyChanged(); }
         }
 
-        public GarageData Garages
+        /// <summary>
+        /// Garage data, including stored vehicles and script-controlled garage info.
+        /// </summary>
+        public GarageBlock Garages
         {
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
@@ -242,8 +250,8 @@ namespace GTASaveData.GTA3
         {
             SimpleVars = new SimpleVariables();
             Script = new ScriptBlock();
-            PlayerPeds = new PedPool();
-            Garages = new GarageData();
+            PedPool = new PedPool();
+            Garages = new GarageBlock();
             Vehicles = new VehiclePool();
             Objects = new ObjectPool();
             Paths = new PathData();
@@ -270,8 +278,8 @@ namespace GTASaveData.GTA3
         {
             SimpleVars = new SimpleVariables(other.SimpleVars);
             Script = new ScriptBlock(other.Script);
-            PlayerPeds = new PedPool(other.PlayerPeds);
-            Garages = new GarageData(other.Garages);
+            PedPool = new PedPool(other.PedPool);
+            Garages = new GarageBlock(other.Garages);
             Vehicles = new VehiclePool(other.Vehicles);
             Objects = new ObjectPool(other.Objects);
             Paths = new PathData(other.Paths);
@@ -307,8 +315,8 @@ namespace GTASaveData.GTA3
                 dataSize += FillWorkBuffer(file);
                 SimpleVars = WorkBuff.ReadObject<SimpleVariables>(Params);
                 Script = Get<ScriptBlock>();
-                PlayerPeds = Get<PedPool>();
-                Garages = Get<GarageData>();
+                PedPool = Get<PedPool>();
+                Garages = Get<GarageBlock>();
                 Vehicles = Get<VehiclePool>();
 
                 dataSize += FillWorkBuffer(file);
@@ -338,8 +346,8 @@ namespace GTASaveData.GTA3
                 dataSize += FillWorkBuffer(file);
                 SimpleVars = WorkBuff.ReadObject<SimpleVariables>(Params);
                 Script = Get<ScriptBlock>();
-                dataSize += FillWorkBuffer(file); PlayerPeds = Get<PedPool>();
-                dataSize += FillWorkBuffer(file); Garages = Get<GarageData>();
+                dataSize += FillWorkBuffer(file); PedPool = Get<PedPool>();
+                dataSize += FillWorkBuffer(file); Garages = Get<GarageBlock>();
                 dataSize += FillWorkBuffer(file); Vehicles = Get<VehiclePool>();
                 dataSize += FillWorkBuffer(file); Objects = Get<ObjectPool>();
                 dataSize += FillWorkBuffer(file); Paths = Get<PathData>();
@@ -410,7 +418,7 @@ namespace GTASaveData.GTA3
             {
                 WorkBuff.Write(SimpleVars, Params);
                 Put(Script);
-                Put(PlayerPeds);
+                Put(PedPool);
                 Put(Garages);
                 Put(Vehicles);
                 dataSize += FlushWorkBuffer(file);
@@ -441,7 +449,7 @@ namespace GTASaveData.GTA3
             {
                 WorkBuff.Write(SimpleVars, Params);
                 Put(Script); dataSize += FlushWorkBuffer(file);
-                Put(PlayerPeds); dataSize += FlushWorkBuffer(file);
+                Put(PedPool); dataSize += FlushWorkBuffer(file);
                 Put(Garages); dataSize += FlushWorkBuffer(file);
                 Put(Vehicles); dataSize += FlushWorkBuffer(file);
                 Put(Objects); dataSize += FlushWorkBuffer(file);
@@ -632,7 +640,7 @@ namespace GTASaveData.GTA3
             // data blocks
             size += SizeOf(SimpleVars, prm);
             size += SizeOf(Script, prm) + sizeof(int);
-            size += SizeOf(PlayerPeds, prm) + sizeof(int);
+            size += SizeOf(PedPool, prm) + sizeof(int);
             size += SizeOf(Garages, prm) + sizeof(int);
             size += SizeOf(Vehicles, prm) + sizeof(int);
             size += SizeOf(Objects, prm) + sizeof(int);
@@ -686,7 +694,7 @@ namespace GTASaveData.GTA3
 
             return SimpleVars.Equals(other.SimpleVars)
                 && Script.Equals(other.Script)
-                && PlayerPeds.Equals(other.PlayerPeds)
+                && PedPool.Equals(other.PedPool)
                 && Garages.Equals(other.Garages)
                 && Vehicles.Equals(other.Vehicles)
                 && Objects.Equals(other.Objects)

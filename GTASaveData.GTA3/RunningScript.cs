@@ -11,6 +11,9 @@ namespace GTASaveData.GTA3
     public class RunningScript : SaveDataObject,
         IEquatable<RunningScript>, IDeepClonable<RunningScript>
     {
+        /// <summary>
+        /// The maximum length of a script name including the NULL terminator.
+        /// </summary>
         public const int MaxNameLength = 8;
 
         private uint m_pNextScript; // not loaded
@@ -33,7 +36,7 @@ namespace GTASaveData.GTA3
         private bool m_missionFlag;
 
         /// <summary>
-        /// Pointer to the next CRunningScript in the list.
+        /// Pointer to the next <c>CRunningScript</c> in the list.
         /// </summary>
         /// <remarks>
         /// Useless value. Game always re-creates the list and does not use
@@ -46,7 +49,7 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// Pointer to the previous CRunningScript in the list.
+        /// Pointer to the previous <c>CRunningScript</c> in the list.
         /// </summary>
         /// <remarks>
         /// Useless value. Game always re-creates the list and does not use
@@ -77,8 +80,13 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// Return address stack.
+        /// <c>gosub</c> return address stack.
         /// </summary>
+        /// <seealso cref="StackIndex"/>
+        /// <seealso cref="PushStack(int)"/>
+        /// <seealso cref="PopStack"/>
+        /// <seealso cref="PeekStack"/>
+        /// <seealso cref="IsStackEmpty"/>
         public ObservableArray<int> Stack
         {
             get { return m_stack; }
@@ -95,8 +103,12 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// Local variables.
+        /// Local variables, not including the timers.
         /// </summary>
+        /// <seealso cref="GetLocal(int)"/>
+        /// <seealso cref="GetLocalAsFloat(int)"/>
+        /// <seealso cref="SetLocal(int, int)"/>
+        /// <seealso cref="SetLocal(int, float)"/>
         public ObservableArray<int> Locals
         {
             get { return m_localVariables; }
@@ -122,7 +134,7 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// Comparison flag.
+        /// Comparison flag; result of the last command that updates the flag.
         /// </summary>
         public bool CompareFlag
         {
@@ -161,7 +173,7 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// The state of the current if..and or if..or chain.
+        /// The number of conditions remaining in the current if..and or if..or chain.
         /// </summary>
         public AndOrState AndOrState
         {
@@ -330,7 +342,7 @@ namespace GTASaveData.GTA3
             PrevScriptPointer = buf.ReadUInt32();
             Name = buf.ReadString(MaxNameLength);
             IP = buf.ReadInt32();
-            Stack = buf.ReadArray<int>(p.MaxStackDepth);
+            Stack = buf.ReadArray<int>(p.StackDepth);
             StackIndex = buf.ReadInt16();
             buf.Align4();
             Locals = buf.ReadArray<int>(p.NumLocalVariables);
@@ -359,7 +371,7 @@ namespace GTASaveData.GTA3
             buf.Write(PrevScriptPointer);
             buf.Write(Name, MaxNameLength);
             buf.Write(IP);
-            buf.Write(Stack, p.MaxStackDepth);
+            buf.Write(Stack, p.StackDepth);
             buf.Write(StackIndex);
             buf.Align4();
             buf.Write(Locals, p.NumLocalVariables);
@@ -382,7 +394,24 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(SerializationParams prm)
         {
-            return (prm.FileType.IsPS2) ? 0x80 : 0x88;
+            //// TODO: update this!!!
+            //return (prm.FileType.IsPS2) ? 0x80 : 0x88;
+
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            return sizeof(uint)
+                + sizeof(uint)
+                + MaxNameLength
+                + sizeof(int)
+                + sizeof(int) * p.StackDepth
+                + 2 * sizeof(short)
+                + sizeof(int) * p.NumLocalVariables
+                + 2 * sizeof(int)
+                + 4 * sizeof(byte)
+                + sizeof(int)
+                + sizeof(short)
+                + 2 * sizeof(byte)
+                + 4 * sizeof(byte);
         }
 
         public override bool Equals(object obj)

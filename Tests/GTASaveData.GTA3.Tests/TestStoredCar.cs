@@ -56,5 +56,10 @@ namespace GTASaveData.GTA3.Tests
 
             Assert.Equal(x0, x1);
         }
+
+        public override int GetSizeOfTestObject(StoredCar obj, GTA3SaveParams p)
+        {
+            return 0x28;
+        }
     }
 }

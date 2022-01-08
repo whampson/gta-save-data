@@ -17,7 +17,10 @@ namespace GTASaveData.GTA3
     public class ScriptBlock : SaveDataObject,
         IEquatable<ScriptBlock>, IDeepClonable<ScriptBlock>
     {
-        private const int KeyLengthInScript = 8;
+        /// <summary>
+        /// The number of bytes a GXT key occupies in mission script code.
+        /// </summary>
+        public const int KeyLengthInScript = 8;
 
         private ScriptInfo m_scriptInfo;
         private ObservableArray<byte> m_scriptSpace;
@@ -48,12 +51,43 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// A chunk of MAIN.SCM which stores the game's global variables.
+        /// A chunk of <c>MAIN.SCM</c> which normally stores the game's global variables.
         /// </summary>
         /// <remarks>
-        /// Due to the nature of how the game saves and loads global variables, it's actually
-        /// possible to embed SCM code in this array. Have fun! :-)
+        /// When the game is saved, the first chunk of <c>MAIN.SCM</c> from the
+        /// game's memory is saved in this array. This chunk is normally used to
+        /// store the global variables. Each DWORD in this area represents one global
+        /// variable, except for the first two, which are used to store the total size
+        /// of the space. When the game is loaded from a save file, the global variable
+        /// space from the save is pasted over the game's in-memory copy of <c>MAIN.SCM</c>.
+        /// <para>
+        /// This leaves room for an interesting exploit; the game does not do any size-checking
+        /// when loading this buffer into memory, meaning we can make it as large as we want
+        /// (or as large as the save file permits) and insert our own SCM code! This is why
+        /// this variable is called <c>ScriptSpace</c>. The function
+        /// <see cref="SetGlobalVariableSpaceSize(int)"/> can be used to control how much of
+        /// the script space is used for global variables. Everything in the buffer that follows
+        /// after the global variables can be used for run-once SCM code. If you want SCM code to
+        /// persist in the save, insert it within the global variable space, but be sure not to
+        /// trample over any existing variables if you still want the missions to function normally
+        /// alongside your custom code. Happy hacking! :)
+        /// </para>
         /// </remarks>
+        /// <seealso cref="GrowScriptSpace(int)"/>
+        /// <seealso cref="ShrinkScriptSpace(int)"/>
+        /// <seealso cref="GetScriptSpaceSize"/>
+        /// <seealso cref="GetGlobalVariableSpaceSize"/>
+        /// <seealso cref="SetGlobalVariableSpaceSize(int)"/>
+        /// <seealso cref="Read1ByteFromScript(int)"/>
+        /// <seealso cref="Read2BytesFromScript(int)"/>
+        /// <seealso cref="Read4BytesFromScript(int)"/>
+        /// <seealso cref="ReadFloatFromScript(int)"/>
+        /// <seealso cref="ReadTextLabelFromScript(int)"/>
+        /// <seealso cref="Write1ByteToScript(int, byte)"/>
+        /// <seealso cref="Write2BytesToScript(int, short)"/>
+        /// <seealso cref="Write4BytesToScript(int, int)"/>
+        /// <seealso cref="WriteFloatToScript(int, float)"/>
+        /// <seealso cref="WriteTextLabelToScript(int, string)"/>
         [JsonConverter(typeof(ByteArrayConverter))]
         public ObservableArray<byte> ScriptSpace
         {
@@ -62,20 +96,25 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// Global variables.
+        /// Global variables list.
         /// </summary>
         /// <remarks>
         /// Each global variable is a DWORD from the <see cref="ScriptSpace"/>.
         /// Control the number of globals by calling <see cref="SetGlobalVariableSpaceSize(int)"/>.
         /// </remarks>
+        /// <seealso cref="GetGlobalVariable(int)"/>
+        /// <seealso cref="SetGlobalVariable(int, int)"/>
+        /// <seealso cref="SetGlobalVariable(int, float)"/>
+        /// <seealso cref="GetGlobalVariableSpaceSize"/>
+        /// <seealso cref="SetGlobalVariableSpaceSize(int)"/>
         [JsonIgnore]
-        public IEnumerable<int> Globals
+        public IEnumerable<int> GlobalVariables
         {
             get
             {
                 for (int i = 0; i < GetGlobalVariableSpaceSize() / 4; i++)
                 {
-                    yield return GetGlobal(i);
+                    yield return GetGlobalVariable(i);
                 }
             }
         }
@@ -223,6 +262,114 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
+        /// Returns the first building swap object containing the specified model,
+        /// or <c>null</c> if none exist.
+        /// </summary>
+        public BuildingSwap FindBuildingSwap(int model)
+        {
+            return BuildingSwaps.FirstOrDefault(x => x.OldModel == model || x.NewModel == model);
+        }
+
+        /// <summary>
+        /// Returns the first building swap object containing the specified handle,
+        /// or <c>null</c> if none exist.
+        /// </summary>
+        public BuildingSwap FindBuildingSwapByHandle(int handle)
+        {
+            return BuildingSwaps.FirstOrDefault(x => x.Handle == handle);
+        }
+
+        /// <summary>
+        /// Returns the next available building swap object,
+        /// or <c>null</c> if none exist.
+        /// </summary>
+        public BuildingSwap FindNextFreeBuildingSwapSlot()
+        {
+            return FindBuildingSwapByHandle(0);
+        }
+
+        /// <summary>
+        /// Replaces a building model.
+        /// </summary>
+        /// <param name="handle">The building pool handle.</param>
+        /// <param name="oldModel">The old building model number.</param>
+        /// <param name="newModel">the new building model number.</param>
+        public void SwapBuildingModel(int handle, int oldModel, int newModel)
+        {
+            BuildingSwap swap = FindBuildingSwapByHandle(handle);
+            if (swap != null)
+            {
+                if (oldModel == newModel)
+                {
+                    swap.Clear();
+                    return;
+                }
+                swap.Type = EntityClassType.Building;
+                swap.OldModel = oldModel;
+                swap.NewModel = newModel;
+                return;
+            }
+            
+            swap = FindNextFreeBuildingSwapSlot();
+            if (swap != null && oldModel != newModel)
+            {
+                swap.Handle = handle;
+                swap.Type = EntityClassType.Building;
+                swap.OldModel = oldModel;
+                swap.NewModel = newModel;
+            }
+        }
+
+        /// <summary>
+        /// Finds the invisible object containing the matching handle, or <c>null</c> if none exist.
+        /// </summary>
+        public InvisibleObject FindInvisibleObject(int handle)
+        {
+            return InvisibilitySettings.FirstOrDefault(x => x.Handle == handle);
+        }
+
+        /// <summary>
+        /// Finds the next available invisible object, or <c>null</c> if none exist.
+        /// </summary>
+        public InvisibleObject FindNextFreeInvisibleObjectSlot()
+        {
+            return FindInvisibleObject(0);
+        }
+
+        
+        /// <summary>
+        /// Changes a building's visibility.
+        /// </summary>
+        public void SetBuildingVisibility(int handle, bool visible)
+        {
+            SetEntityVisibility(EntityClassType.Building, handle, visible);
+        }
+
+        /// <summary>
+        /// Changes an object's visibility.
+        /// </summary>
+        public void SetEntityVisibility(EntityClassType type, int handle, bool visible)
+        {
+            if (visible)
+            {
+                InvisibleObject obj = FindInvisibleObject(handle);
+                if (obj != null)
+                {
+                    obj.Clear();
+                }
+            }
+            else
+            {
+                InvisibleObject obj = FindNextFreeInvisibleObjectSlot();
+                if (obj != null)
+                {
+                    obj.Handle = handle;
+                    obj.Type = type;
+                }
+            }
+        }
+
+        /// <summary>
         /// Adds a new <see cref="RunningScript"/> to the running scripts array.
         /// </summary>
         /// <param name="ip">The initial instruction pointer.</param>
@@ -340,7 +487,7 @@ namespace GTASaveData.GTA3
         /// <summary>
         /// Gets the value of a global variable.
         /// </summary>
-        public int GetGlobal(int index)
+        public int GetGlobalVariable(int index)
         {
             return Read4BytesFromScript(index * 4);
         }
@@ -348,7 +495,7 @@ namespace GTASaveData.GTA3
         /// <summary>
         /// Gets the value of a global variable as a float.
         /// </summary>
-        public float GetGlobalAsFloat(int index)
+        public float GetGlobalVariableFloat(int index)
         {
             int bits = Read4BytesFromScript(index * 4);
             return BitConverter.Int32BitsToSingle(bits);
@@ -357,7 +504,7 @@ namespace GTASaveData.GTA3
         /// <summary>
         /// Sets the value of a global variable.
         /// </summary>
-        public void SetGlobal(int index, int value)
+        public void SetGlobalVariable(int index, int value)
         {
             Write4BytesToScript(index * 4, value);
         }
@@ -365,7 +512,7 @@ namespace GTASaveData.GTA3
         /// <summary>
         /// Sets the value of a global variable as a float.
         /// </summary>
-        public void SetGlobal(int index, float value)
+        public void SetGlobalVariable(int index, float value)
         {
             int bits = BitConverter.SingleToInt32Bits(value);
             Write4BytesToScript(index * 4, bits);

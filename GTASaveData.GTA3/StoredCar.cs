@@ -6,6 +6,9 @@ using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
+    /// <summary>
+    /// A vehicle stored in a safehouse garage.
+    /// </summary>
     public class StoredCar : SaveDataObject,
         IEquatable<StoredCar>, IDeepClonable<StoredCar>
     {
@@ -19,60 +22,98 @@ namespace GTASaveData.GTA3
         private sbyte m_extra2;
         private BombType m_bomb;
 
+        /// <summary>
+        /// The vehicle model index.
+        /// </summary>
         public int Model
         {
             get { return m_model; }
             set { m_model = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// The vehicle's position in the game world.
+        /// </summary>
         public Vector3 Position
         {
             get { return m_veh.Position; }
             set { m_veh.Position = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// The vehicle's heading.
+        /// </summary>
         public float Heading
         {
             get { return (ToDeg(m_veh.Matrix.GetEulerAngles().Z) + 360) % 360; }
             set { m_veh.SetHeading(ToRad(value)); OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// The vehicle's special perks (Explosion Proof, Fire Proof, etc.).
+        /// </summary>
         public StoredCarFlags Flags
         {
             get { return m_flags; }
             set { m_flags = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Primary color. See <c>carcols.dat</c>.
+        /// </summary>
         public byte Color1
         {
             get { return m_color1; }
             set { m_color1 = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Secondary color. See <c>carcols.dat</c>.
+        /// </summary>
         public byte Color2
         {
             get { return m_color2; }
             set { m_color2 = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// The selected radio station.
+        /// </summary>
         public RadioStation Radio
         {
             get { return m_radio; }
             set { m_radio = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Extra part #1.
+        /// </summary>
+        /// <remarks>
+        /// Taxi light, hardtop roof, bed covering, livery, etc.
+        /// Only valid on some vehicles.
+        /// </remarks>
         public sbyte Extra1
         {
             get { return m_extra1; }
             set { m_extra1 = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Extra part #2.
+        /// </summary>
+        /// <remarks>
+        /// Taxi light, hardtop roof, bed covering, livery, etc.
+        /// Only valid on some vehicles.
+        /// </remarks>
         public sbyte Extra2
         {
             get { return m_extra2; }
             set { m_extra2 = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// The bomb fitted to this vehicle.
+        /// </summary>
         public BombType Bomb
         {
             get { return m_bomb; }
@@ -98,6 +139,22 @@ namespace GTASaveData.GTA3
             Bomb = other.Bomb;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this stored car is valid.
+        /// </summary>
+        public bool HasCar()
+        {
+            return Model != 0;
+        }
+
+        /// <summary>
+        /// Invalidates this stored car.
+        /// </summary>
+        public void Clear()
+        {
+            Model = 0;
+        }
+
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             Model = buf.ReadInt32();
@@ -119,7 +176,7 @@ namespace GTASaveData.GTA3
             Bomb = (BombType) buf.ReadSByte();
             buf.Skip(2);
 
-            Debug.Assert(buf.Offset == SizeOf<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>(prm));
         }
 
         protected override void WriteData(DataBuffer buf, SerializationParams prm)
@@ -136,12 +193,20 @@ namespace GTASaveData.GTA3
             buf.Write((sbyte) Bomb);
             buf.Skip(2);
 
-            Debug.Assert(buf.Offset == SizeOf<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>(prm));
         }
 
         protected override int GetSize(SerializationParams prm)
         {
-            return 0x28;
+            return sizeof(int)
+                + SizeOf<Vector3>(prm)
+                + SizeOf<Vector3>(prm)
+                + sizeof(int)
+                + 2 * sizeof(byte)
+                + sizeof(sbyte)
+                + 2 * sizeof(byte)
+                + sizeof(sbyte)
+                + 2;
         }
 
         public override bool Equals(object obj)

@@ -77,7 +77,7 @@ namespace GTASaveData.GTA3.Tests
         public void SerializationParams()
         {
             Faker faker = new Faker();
-            GTA3SaveParams p = GTA3SaveParams.GetDefaults();
+            GTA3SaveParams p = new GTA3SaveParams();
 
             p.NumContacts = faker.Random.Int(0, 100);
             p.NumCollectives = faker.Random.Int(0, 100);
@@ -98,19 +98,19 @@ namespace GTASaveData.GTA3.Tests
             string path = TestData.GetTestDataPath(Game.GTA3, GTA3Save.FileTypes.PC, "CAT2");
             using GTA3Save x = GTA3Save.Load(path, GTA3Save.FileTypes.PC);
 
-            Assert.Equal(987.5, x.Script.GetGlobalAsFloat(804));
+            Assert.Equal(987.5, x.Script.GetGlobalVariableFloat(804));
 
-            int numGlobals = x.Script.Globals.Count();
+            int numGlobals = x.Script.GlobalVariables.Count();
             int i0 = f.Random.Int(0, numGlobals - 1);
             int i1 = f.Random.Int(0, numGlobals - 1);
             int v0 = f.Random.Int();
             float v1 = f.Random.Float();
 
-            x.Script.SetGlobal(i0, v0);
-            x.Script.SetGlobal(i1, v1);
+            x.Script.SetGlobalVariable(i0, v0);
+            x.Script.SetGlobalVariable(i1, v1);
 
-            int r0 = x.Script.GetGlobal(i0);
-            float r1 = x.Script.GetGlobalAsFloat(i1);
+            int r0 = x.Script.GetGlobalVariable(i0);
+            float r1 = x.Script.GetGlobalVariableFloat(i1);
 
             Assert.Equal(v0, r0);
             Assert.Equal(v1, r1);

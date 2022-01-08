@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace Examples.GTA3
 {
@@ -12,9 +13,75 @@ namespace Examples.GTA3
     {
         static void Main(string[] args)
         {
-            Example1();
-            Example2();
-            Example3();
+            //Example1();
+            //Example2();
+            //Example3();
+
+            //PedPoolSandBox();
+            GarageSandBox();
+            //ObjectSandBox();
+        }
+
+        static void GarageSandBox()
+        {
+            string srcPath = Support.GetFileFromTestData("JM4", GTA3Save.FileTypes.PC);
+            using GTA3Save s = GTA3Save.Load(srcPath);
+            s.Title = "~y~Garage Stuff";
+
+            var grge = s.Garages;
+
+            Garage hideout1 = grge.FindGarageType(GarageType.Hideout1);
+            hideout1.SetDoorToRotate(true);
+
+            Garage securicarGarage = grge.FindGarageType(GarageType.CollectSpecificCars);
+            securicarGarage.TargetModelIndex = 116;     // Now accepts Police cars!
+
+            Garage luigiGarage = grge.FindGarageAt(new Vector3(1080, -570, 15));
+            luigiGarage.Type = GarageType.CollectSpecificCars;
+            luigiGarage.State = GarageState.FullyClosed;
+            luigiGarage.TargetModelIndex = 91;      // Now accepts Idahos!
+            luigiGarage.Deactivated = false;
+
+            StoredCar portlandCar = grge.CarsInSafeHouse1.FirstOrDefault(x => x.HasCar());
+            portlandCar.Model = 91;
+            portlandCar.Heading = 90.0f;
+            portlandCar.Color1 = 7;
+            portlandCar.Flags = StoredCarFlags.CollisionProof;
+
+            var nearest = grge.FindGaragesNear(new Vector3(1402.8f, -257.0f, 50.5f), 100.0f);
+
+
+            s.Save(Support.GetSaveSlot(4));
+        }
+
+        static void PedPoolSandBox()
+        {
+            string srcPath = Support.GetFileFromTestData("LM1", GTA3Save.FileTypes.PC);
+            using GTA3Save s = GTA3Save.Load(srcPath);
+            s.Title = "~y~Player Ped Stuff";
+
+            var pedPool = s.PedPool;
+            PlayerPed player = pedPool.GetPlayerInFocus();
+            PlayerPed player2 = pedPool.CreatePlayer("curly");
+            PlayerPed player3 = pedPool.CreatePlayer("darkel");
+
+            player2.Position = player.Position;
+            player2.GiveWeapon(WeaponType.Shotgun, 50);
+            player2.GiveWeapon(WeaponType.Flamethrower, 5000);
+            player2.GiveWeapon(WeaponType.AK47, 250);
+            player2.Armor = 100;
+
+            player3.Position = player.Position;
+            player3.GiveWeapon(WeaponType.M16, 5000);
+            player3.GiveWeapon(WeaponType.BaseballBat, 1);
+            player3.GiveWeapon(WeaponType.Molotov, 10);
+
+            pedPool.AddPlayer(player2);
+            pedPool.AddPlayer(player3);
+            pedPool.SetPlayerInFocus(player2);
+            player2.SetMaximumWantedLevel(2);
+
+            s.Save(Support.GetSaveSlot(4));
         }
 
         static void Example1()
@@ -77,7 +144,7 @@ namespace Examples.GTA3
             // 3) Edit garage vehicles
             {
                 // Let's replace the cars in the Staunton Island garage
-                var stauntonGarage = s.Garages.StoredCarsStaunton;
+                var stauntonGarage = s.Garages.CarsInSafeHouse2;
 
                 // Mafia Sentinel -> Banshee
                 StoredCar car1 = stauntonGarage.First(c => c.Model == 134);
@@ -103,14 +170,14 @@ namespace Examples.GTA3
             // 4) Edit player info
             {
                 // Player info is stored in two locations
-                var pPed = s.PlayerPeds.GetPlayerPed();
+                var pPed = s.PedPool.GetPlayerInFocus();
                 var pInfo = s.PlayerInfo;
 
                 // Health, armor, wanted level, weapons, position, player model, and some other useless stuff
                 pPed.Health = 999;                  // can go higher, but game only shows 3 digits well
                 pPed.Armor = 999;
                 pPed.MaxWantedLevel = 6;
-                pPed.MaxChaosLevel = 6400;
+                pPed.MaxChaos = 6400;
                 pPed.ModelName = "DARKEL";          // only 'Special' models allowed, see https://gtamods.com/wiki/023C#List_of_valid_models
                 pPed.GiveWeapon(WeaponType.M16, 99999);
                 pPed.GiveWeapon(WeaponType.RocketLauncher, 100);
@@ -141,7 +208,7 @@ namespace Examples.GTA3
                 // Mimic the 'Mission Passed' code from the :ASUKA1 thread of MAIN.SCM,
                 // that way it looks like the mission was passed normally ;)
                 s.Stats.MissionsGiven += 1;                                     // 0317: increment_mission_attempts
-                s.Script.SetGlobal(316, 1);                                     // $FLAG_ASUKA_MISSION1_PASSED = 1
+                s.Script.SetGlobalVariable(316, 1);                                     // $FLAG_ASUKA_MISSION1_PASSED = 1
                 s.PedTypeInfo.AddThreat(PedTypeId.Gang1, PedTypeFlags.Player1); // 03F1: pedtype 7 add_threat 1
                 {                                                               // 0237: set_gang 0 primary_weapon_to 2 secondary_weapon_to 4 
                     s.Gangs[GangType.Mafia].Weapon1 = WeaponType.Colt45;
@@ -422,11 +489,14 @@ namespace Examples.GTA3
                 // Let's get to it!
 
                 const int PlayerChar = 132;
-                const int ModelBanshee = 119;
-                const int ModelRhino = 122;
-                const int ModelBfInjection = 114;
-                const int ModelBorgnine = 148;
-                const int ModelFbiCar = 107;
+                const int ModelLandstalker = 90;
+                const int ModelCheetah = 105;
+                const int ModelTaxi = 110;
+                const int ModelEsperanto = 109;
+                const int ModelSentinel = 95;
+                const int ModelIdaho = 91;
+
+                const int NumCars = 6;
 
                 ScriptCommand[][] codeBlocks = new ScriptCommand[][]
                 {
@@ -499,7 +569,7 @@ namespace Examples.GTA3
                     new ScriptCommand[]                                     // :CAR_SELECT_BOUNDS
                     {                                                       // :CAR_SELECT_BOUNDS_MAX
                         new If(),                                           // 00D6: if
-                            new IsIntLocalGreaterThanValue(0, 4),           // 0019:    0@ > 4
+                            new IsIntLocalGreaterThanValue(0, NumCars - 1), // 0019:    0@ > 5
                         new GotoIfFalse(1),                                 // 004D: goto_if_false @CAR_SELECT_BOUNDS_MIN
                         new SetLocalInt(0, 0),                              // 0006: 0@ = 0
                     },
@@ -508,47 +578,55 @@ namespace Examples.GTA3
                         new If(),                                           // 00D6: if
                             new IsValGreaterThanIntLocal(0, 0),             // 001B:    0 > 0@
                         new GotoIfFalse(1),                                 // 004D: goto_if_false @VEHICLE_0
-                        new SetLocalInt(0, 4)                               // 0006: 0@ = 4
+                        new SetLocalInt(0, NumCars - 1)                     // 0006: 0@ = 5
                     },
                     new ScriptCommand[]
                     {                                                       // :VEHICLE_0
                         new If(),                                           // 00D6: if
                             new IsIntLocalEqualToVal(0, 0),                 // 0039:    0@ == 0
                         new GotoIfFalse(1),                                 // 004D: goto_if_false @VEHICLE_1
-                        new PrintBig("BANSHEE", 250, 6),                    // 00BA: text_styled 'BANSHEE' 250 ms 6
-                        new SetLocalInt(1, ModelBanshee),                   // 0006: 1@ = #BANSHEE
+                        new PrintBig("LANDSTK", 250, 6),                    // 00BA: text_styled 'LANDSTK' 250 ms 6
+                        new SetLocalInt(1, ModelLandstalker),               // 0006: 1@ = #LANDSTAL
                     },
                     new ScriptCommand[]
                     {                                                       // :VEHICLE_1
                         new If(),                                           // 00D6: if
                             new IsIntLocalEqualToVal(0, 1),                 // 0039:    0@ == 1
                         new GotoIfFalse(1),                                 // 004D: goto_if_false @VEHICLE_2
-                        new PrintBig("BORGNIN", 250, 6),                    // 00BA: text_styled 'BORGNIN' 250 ms 6
-                        new SetLocalInt(1, ModelBorgnine),                  // 0006: 1@ = #BORGNINE
+                        new PrintBig("CHEETAH", 250, 6),                    // 00BA: text_styled 'CHEETAH' 250 ms 6
+                        new SetLocalInt(1, ModelCheetah),                   // 0006: 1@ = #CHEETAH
                     },
                     new ScriptCommand[]
                     {                                                       // :VEHICLE_2
                         new If(),                                           // 00D6: if
                             new IsIntLocalEqualToVal(0, 2),                 // 0039:    0@ == 2
                         new GotoIfFalse(1),                                 // 004D: goto_if_false @VEHICLE_3
-                        new PrintBig("BFINJC", 250, 6),                     // 00BA: text_styled 'BFINJC' 250 ms 6
-                        new SetLocalInt(1, ModelBfInjection),               // 0006: 1@ = #BFINJECT
+                        new PrintBig("TAXI", 250, 6),                       // 00BA: text_styled 'TAXI' 250 ms 6
+                        new SetLocalInt(1, ModelTaxi),                      // 0006: 1@ = #TAXI
                     },
                     new ScriptCommand[]
                     {                                                       // :VEHICLE_3
                         new If(),                                           // 00D6: if
                             new IsIntLocalEqualToVal(0, 3),                 // 0039:    0@ == 3
                         new GotoIfFalse(1),                                 // 004D: goto_if_false @VEHICLE_4
-                        new PrintBig("FBICAR", 250, 6),                     // 00BA: text_styled 'FBICAR' 250 ms 6
-                        new SetLocalInt(1, ModelFbiCar),                    // 0006: 1@ = #FBICAR
+                        new PrintBig("ESPERAN", 250, 6),                    // 00BA: text_styled 'ESPERAN' 250 ms 6
+                        new SetLocalInt(1, ModelEsperanto),                 // 0006: 1@ = #ESPERANT
                     },
                     new ScriptCommand[]
                     {                                                       // :VEHICLE_4
                         new If(),                                           // 00D6: if
                             new IsIntLocalEqualToVal(0, 4),                 // 0039:    0@ == 4
+                        new GotoIfFalse(1),                                 // 004D: goto_if_false @VEHICLE_5
+                        new PrintBig("SENTINL", 250, 6),                    // 00BA: text_styled 'SENTINL' 250 ms 6
+                        new SetLocalInt(1, ModelSentinel),                  // 0006: 1@ = #SENTINEL
+                    },
+                    new ScriptCommand[]
+                    {                                                       // :VEHICLE_5
+                        new If(),                                           // 00D6: if
+                            new IsIntLocalEqualToVal(0, 5),                 // 0039:    0@ == 5
                         new GotoIfFalse(1),                                 // 004D: goto_if_false @KEYUP_LOOP
-                        new PrintBig("RHINO", 250, 6),                      // 00BA: text_styled 'RHINO' 250 ms 6
-                        new SetLocalInt(1, ModelRhino),                     // 0006: 1@ = #RHINO
+                        new PrintBig("IDAHO", 250, 6),                      // 00BA: text_styled 'IDAHO' 250 ms 6
+                        new SetLocalInt(1, ModelIdaho),                     // 0006: 1@ = #IDAHO
                     },
                     // You could add more cars here, just make sure you
                     // keep track of your GOTO offsets!!
@@ -557,7 +635,7 @@ namespace Examples.GTA3
                         new IfOr(2),                                        // 00D6: if or
                             new IsButtonPressed(0, Button.DPadLeft),        // 00E1:    pad 0 key_pressed 10
                             new IsButtonPressed(0, Button.DPadRight),       // 00E1:    pad 0 key_pressed 11
-                        new GotoIfFalse(-10),                               // 004D: goto_if_false @MENU_MAIN_LOOP
+                        new GotoIfFalse(-11),                               // 004D: goto_if_false @MENU_MAIN_LOOP
                         new Wait(75),                                       // 0001: wait 75
                         new Goto(0)                                         // 0002: goto @KEYUP_LOOP
                     }

@@ -14,7 +14,7 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.PrevScriptPointer, f => f.Random.UInt())
                 .RuleFor(x => x.Name, f => Generator.Words(f, RunningScript.MaxNameLength - 1))
                 .RuleFor(x => x.IP, f => f.Random.Int())
-                .RuleFor(x => x.Stack, f => Generator.Array(p.MaxStackDepth, g => f.Random.Int()))
+                .RuleFor(x => x.Stack, f => Generator.Array(p.StackDepth, g => f.Random.Int()))
                 .RuleFor(x => x.StackIndex, f => f.Random.Short())
                 .RuleFor(x => x.Locals, f => Generator.Array(p.NumLocalVariables, g => f.Random.Int()))
                 .RuleFor(x => x.TimerA, f => f.Random.UInt())
@@ -102,6 +102,11 @@ namespace GTASaveData.GTA3.Tests
             x0.PushStack(i2);
             int j2 = x0.PopStack();
             Assert.Equal(i2, j2);
+        }
+
+        public override int GetSizeOfTestObject(RunningScript obj, GTA3SaveParams p)
+        {
+            return p.FileType.IsPS2 ? 0x80 : 0x88;
         }
     }
 }

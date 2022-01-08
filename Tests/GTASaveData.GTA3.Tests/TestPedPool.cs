@@ -17,8 +17,8 @@ namespace GTASaveData.GTA3.Tests
                         ped.ModelIndex = f.Random.Short();
                         ped.Handle = f.Random.Int();
                         ped.MaxWantedLevel = f.Random.Int();
-                        ped.MaxChaosLevel = f.Random.Int();
-                        ped.ModelName = Generator.AsciiString(f, PlayerPed.MaxModelNameLength - 1);
+                        ped.MaxChaos = f.Random.Int();
+                        ped.ModelName = Generator.AsciiString(f, PlayerPed.ModelNameLength - 1);
                         return ped;
                     }));
 
@@ -49,6 +49,21 @@ namespace GTASaveData.GTA3.Tests
             PedPool x1 = new PedPool(x0);
 
             Assert.Equal(x0, x1);
+        }
+
+        public override int GetSizeOfTestObject(PedPool obj, GTA3SaveParams p)
+        {
+            var t = p.FileType;
+            int playerPedSize = 0;
+
+            if (t.IsPS2 && t.FlagJapan) playerPedSize = 0x590;
+            else if (t.IsPS2) playerPedSize = 0x5B0;
+            else if (t.IsPC) playerPedSize = 0x5F0;
+            else if (t.IsXbox) playerPedSize = 0x5F4;
+            else if (t.IsiOS) playerPedSize = 0x614;
+            else if (t.IsAndroid) playerPedSize = 0x618;
+
+            return 4 + ((10 + playerPedSize + 32) * obj.PlayerPeds.Count);
         }
     }
 }

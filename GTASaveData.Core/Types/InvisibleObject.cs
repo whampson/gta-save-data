@@ -40,6 +40,23 @@ namespace GTASaveData.Types
             Handle = other.Handle;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this invisible object is valid.
+        /// </summary>
+        public bool IsUsed()
+        {
+            return Handle != 0;
+        }
+
+        /// <summary>
+        /// Invalidates this invisible object.
+        /// </summary>
+        public void Clear()
+        {
+            Type = EntityClassType.None;
+            Handle = 0;
+        }
+
         protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             Type = (EntityClassType) buf.ReadInt32();

@@ -16,7 +16,7 @@ namespace TestFramework
         where T : new()
         where P : SerializationParams, new()
     {
-        public virtual int GetSizeOfTestObject(T obj)
+        public virtual int GetSizeOfTestObject(T obj)       // TODO: remove
         {
             return Serializer.SizeOf(obj, new P());
         }
@@ -26,7 +26,7 @@ namespace TestFramework
             return Serializer.SizeOf(obj, p);
         }
 
-        public T CreateSerializedCopy(T obj, out byte[] bytes)
+        public T CreateSerializedCopy(T obj, out byte[] bytes)  // TODO: remove
         {
             return CreateSerializedCopy(obj, new P(), out bytes);
         }

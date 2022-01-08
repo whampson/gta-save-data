@@ -69,6 +69,25 @@ namespace GTASaveData.Types
             OldModel = other.OldModel;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this building swap is valid.
+        /// </summary>
+        public bool IsUsed()
+        {
+            return Handle != 0;
+        }
+
+        /// <summary>
+        /// Invalidates this building swap.
+        /// </summary>
+        public void Clear()
+        {
+            Type = EntityClassType.None;
+            Handle = 0;
+            OldModel = -1;
+            NewModel = -1;
+        }
+
         protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             Type = (EntityClassType) buf.ReadInt32();

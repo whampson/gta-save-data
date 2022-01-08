@@ -156,7 +156,7 @@ namespace GTASaveData.GTA3
         /// The current controller configuration.
         /// </summary>
         /// <remarks>
-        /// I think this is only meaningful on PS2.
+        /// I think this field is only meaningful on PS2.
         /// </remarks>
         public short CurrPadMode
         {
@@ -178,10 +178,11 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// The game timer scale factor.
+        /// Animation speed scale factor.
         /// </summary>
         /// <remarks>
-        /// May not be used in the vanilla game.
+        /// This field is useless. Setting this field has no effect in the vanilla game
+        /// as it always gets overriden when the game loads.
         /// </remarks>
         public float TimeScale
         {
@@ -190,10 +191,11 @@ namespace GTASaveData.GTA3
         }
 
         /// <summary>
-        /// Mostly used for animation speed.
+        /// Game timer scale factor.
         /// </summary>
         /// <remarks>
-        /// May not be used in the vanilla game.
+        /// This field is useless. Setting this field has no effect in the vanilla game
+        /// as it always gets overriden when the game loads.
         /// </remarks>
         public float TimeStep
         {
@@ -205,7 +207,8 @@ namespace GTASaveData.GTA3
         /// Related to <see cref="TimeStep"/>.
         /// </summary>
         /// <remarks>
-        /// May not be used in the vanilla game.
+        /// This field is useless. Setting this field has no effect in the vanilla game
+        /// as it always gets overriden when the game loads.
         /// </remarks>
         public float TimeStepNonClipped
         {
@@ -562,7 +565,7 @@ namespace GTASaveData.GTA3
             {
                 if (!t.IsPS2)
                 {
-                    LastMissionPassedName = buf.ReadString(p.MaxLastMissionPassedNameLength, unicode: true);
+                    LastMissionPassedName = buf.ReadString(p.LastMissionPassedNameLength, unicode: true);
                 }
                 if (t.IsPC || t.IsXbox)
                 {
@@ -670,7 +673,7 @@ namespace GTASaveData.GTA3
                 throw new NotSupportedException("Definitive Edition not supported yet!!");
             }
 
-            if (!t.IsPS2) buf.Write($"{LastMissionPassedName}\0", p.MaxLastMissionPassedNameLength, unicode: true, zeroTerminate: false);
+            if (!t.IsPS2) buf.Write($"{LastMissionPassedName}\0", p.LastMissionPassedNameLength, unicode: true, zeroTerminate: false);
             if (t.IsPC || t.IsXbox) buf.Write(TimeStamp);
             buf.Write(SizeOfGameInBytes);
             buf.Write((int) CurrentLevel);
@@ -745,6 +748,8 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(SerializationParams prm)
         {
+            // TODO: update this!! compute size and check against hardcoded size in test
+
             var t = prm.FileType;
             if (t.FlagDE)
             {
