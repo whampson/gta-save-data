@@ -496,7 +496,7 @@ namespace GTASaveData.GTA3
             if (IsXbox)
             {
                 byte[] data = file.GetBytes();
-                byte[] sig = XboxHelper.GenerateSignature(XboxTitleKey, data, 0, data.Length - 4);
+                byte[] sig = XboxHelper.GenerateSignature(TitleKey, data, 0, data.Length - 4);
                 file.Write(sig);
             }
 
@@ -731,65 +731,65 @@ namespace GTASaveData.GTA3
             );
 
             public static readonly FileType iOS = new FileType(
-                nameof(iOS), "iOS", "Apple iOS",
+                nameof(iOS),
                 GameSystem.iOS
             );
 
             public static readonly FileType PC = new FileType(
-                nameof(PC), "PC", "Microsoft Windows",
+                nameof(PC),
+                GameSystem.Windows
+            );
+
+            public static readonly FileType PCDE = new FileType(
+                nameof(PCDE),
+                FileTypeFlags.DE,
+                //GameSystem.PS4,       // TODO: confirm
+                //GameSystem.PS5,
+                //GameSystem.Switch,
+                //GameSystem.XboxOne,
                 GameSystem.Windows
             );
 
             public static readonly FileType PS2 = new FileType(
-                nameof(PS2), "PS2", "PlayStation 2",
+                nameof(PS2),
                 GameSystem.PS2
             );
 
             public static readonly FileType PS2AU = new FileType(
-                nameof(PS2AU), "PS2 (AU)", "PlayStation 2 (Australia)",
+                nameof(PS2AU),
                 FileTypeFlags.Australia,
                 GameSystem.PS2
             );
 
             public static readonly FileType PS2JP = new FileType(
-                nameof(PS2JP), "PS2 (JP)", "PlayStation 2 (Japan)",
+                nameof(PS2JP),
                 FileTypeFlags.Japan,
                 GameSystem.PS2
             );
 
             public static readonly FileType Xbox = new FileType(
-                nameof(Xbox), "Xbox", "Microsoft Xbox",
+                nameof(Xbox),
                 GameSystem.Xbox
-            );
-
-            public static readonly FileType DefinitiveEdition = new FileType(
-                nameof(DefinitiveEdition), "Definitive Edition", "Grand Theft Auto: The Trilogy - The Definitive Edition (all versions)",
-                FileTypeFlags.DE,
-                GameSystem.PS4,
-                GameSystem.PS5,
-                GameSystem.Switch,
-                GameSystem.XboxOne,
-                GameSystem.Windows
             );
 
             public static FileType[] GetAll()
             {
-                return new FileType[] { Android, iOS, PC, PS2, PS2AU, PS2JP, Xbox, DefinitiveEdition };
+                return new FileType[] { Android, iOS, PC, PCDE, PS2, PS2AU, PS2JP, Xbox };
             }
         }
 
-        [JsonIgnore] public bool IsAndroid => GetFileType().IsAndroid;
-        [JsonIgnore] public bool IsiOS => GetFileType().IsiOS;
-        [JsonIgnore] public bool IsMobile => GetFileType().IsMobile;
-        [JsonIgnore] public bool IsPC => GetFileType().IsPC;
-        [JsonIgnore] public bool IsPS2 => GetFileType().IsPS2;
-        [JsonIgnore] public bool IsPS2Japan => GetFileType().IsPS2 && GetFileType().FlagJapan;
-        [JsonIgnore] public bool IsPS2Australia => GetFileType().IsPS2 && GetFileType().FlagAustralia;
-        [JsonIgnore] public bool IsXbox => GetFileType().IsXbox;
-        [JsonIgnore] public bool IsDefinitiveEdition => GetFileType().FlagDE;
+        [JsonIgnore] public bool IsAndroid => Params.FileType.IsAndroid;
+        [JsonIgnore] public bool IsiOS => Params.FileType.IsiOS;
+        [JsonIgnore] public bool IsMobile => Params.FileType.IsMobile;
+        [JsonIgnore] public bool IsPC => Params.FileType.IsPC;
+        [JsonIgnore] public bool IsPS2 => Params.FileType.IsPS2;
+        [JsonIgnore] public bool IsPS2Japan => Params.FileType.IsPS2 && Params.FileType.FlagJapan;
+        [JsonIgnore] public bool IsPS2Australia => Params.FileType.IsPS2 && Params.FileType.FlagAustralia;
+        [JsonIgnore] public bool IsXbox => Params.FileType.IsXbox;
+        [JsonIgnore] public bool IsDefinitiveEdition => Params.FileType.FlagDE;
 
 
-        private static readonly byte[] XboxTitleKey =
+        private static readonly byte[] TitleKey =
         {
             0xFF, 0x3B, 0x8F, 0x5C, 0xDE, 0x53, 0xF3, 0x25,
             0x9E, 0x70, 0x09, 0x54, 0xEF, 0xDC, 0xA8, 0xDC

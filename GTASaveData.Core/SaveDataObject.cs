@@ -182,7 +182,7 @@ namespace GTASaveData
         /// </summary>
         protected InvalidOperationException SizeNotDefined(FileType t)
         {
-            return new InvalidOperationException(string.Format(Strings.Error_InvalidOperation_SizeNotDefined, t.DisplayName));
+            return new InvalidOperationException(string.Format(Strings.Error_InvalidOperation_SizeNotDefined, t.Id));
         }
 
         /// <summary>

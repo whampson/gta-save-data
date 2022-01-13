@@ -45,19 +45,6 @@ namespace GTASaveData
         public string Id => m_id ?? "";
 
         /// <summary>
-        /// A friendly name to use for this file type.
-        /// </summary>
-        /// <remarks>
-        /// Example: PC (Steam)
-        /// </remarks>
-        public string DisplayName => m_displayName ?? "";
-
-        /// <summary>
-        /// A long description of this file type.
-        /// </summary>
-        public string Description => m_description ?? "";
-
-        /// <summary>
         ///  A set of <see cref="FileTypeFlags"/> used to further delineate file formats.
         /// </summary>
         public FileTypeFlags Flags => m_flags;
@@ -163,7 +150,7 @@ namespace GTASaveData
 
         public override string ToString()
         {
-            return DisplayName;
+            return Id;
         }
 
         public static bool operator ==(FileType left, FileType right)
