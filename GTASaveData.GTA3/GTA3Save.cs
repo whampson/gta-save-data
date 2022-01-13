@@ -550,12 +550,24 @@ namespace GTASaveData.GTA3
             int saveSizeOffsetJP = data.FindFirst(BitConverter.GetBytes(SizeOfGameDataInBytes));
             int scrOffset = data.FindFirst("SCR\0".GetAsciiBytes());
 
+            int deTitleSize = 0;
+            using (DataBuffer buf = new DataBuffer(data))
+            {
+                buf.Seek(0x24);
+                deTitleSize = buf.ReadInt32();
+            }
+
             if ((saveSizeOffset < 0 && saveSizeOffsetJP < 0) || scrOffset < 0)
             {
                 goto DetectionFailed;
             }
 
-            if (scrOffset == 0xB0 && saveSizeOffset == 0x04)
+            if (saveSizeOffset == 0x28 + deTitleSize)
+            {
+                t = FileTypes.PCDE;
+                return true;
+            }
+            else if (scrOffset == 0xB0 && saveSizeOffset == 0x04)
             {
                 t = FileTypes.PS2AU;
                 return true;

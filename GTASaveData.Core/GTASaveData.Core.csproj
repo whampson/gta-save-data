@@ -9,8 +9,8 @@
     <Product>GTASaveData</Product>
     <Description>GTASaveData core framework library.</Description>
     <Copyright>(C) 2019-2022 Wes Hampson</Copyright>
-    <AssemblyVersion>2.0.0.1326</AssemblyVersion>
-    <FileVersion>2.0.0.1184</FileVersion>
+    <AssemblyVersion>2.0.0.1327</AssemblyVersion>
+    <FileVersion>2.0.0.1185</FileVersion>
     <Version>2.0.0</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
