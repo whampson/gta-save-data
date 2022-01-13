@@ -780,6 +780,7 @@ namespace GTASaveData.GTA3
 
         [JsonIgnore] public bool IsAndroid => GetFileType().IsAndroid;
         [JsonIgnore] public bool IsiOS => GetFileType().IsiOS;
+        [JsonIgnore] public bool IsMobile => GetFileType().IsMobile;
         [JsonIgnore] public bool IsPC => GetFileType().IsPC;
         [JsonIgnore] public bool IsPS2 => GetFileType().IsPS2;
         [JsonIgnore] public bool IsPS2Japan => GetFileType().IsPS2 && GetFileType().FlagJapan;
