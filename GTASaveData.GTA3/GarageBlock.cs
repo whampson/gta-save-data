@@ -1,6 +1,5 @@
 ﻿using GTASaveData.Interfaces;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,6 +19,7 @@ namespace GTASaveData.GTA3
         public const int NumStoredCars = NumSafeHouses * NumGarageStoredCars;
 
         private const int JunkSize = 244;
+        private const int JunkSizeDE = 756;
 
         private int m_numGarages;
         private bool m_bombsAreFree;
@@ -366,7 +366,7 @@ namespace GTASaveData.GTA3
             Garages = buf.ReadArray<Garage>(p.NumGarages);
 
             // Game writes some garbage here due to incorrect size calculation
-            buf.Skip(JunkSize);
+            buf.Skip((p.IsDE) ? JunkSizeDE : JunkSize);
 
             Debug.Assert(buf.Offset == SizeOf<GarageBlock>(prm));
         }
@@ -389,7 +389,7 @@ namespace GTASaveData.GTA3
             buf.Write(Garages, p.NumGarages);
 
             // Game writes some garbage here due to incorrect size calculation
-            buf.Skip(JunkSize);
+            buf.Skip((p.IsDE) ? JunkSizeDE : JunkSize);
 
             Debug.Assert(buf.Offset == SizeOf<GarageBlock>(prm));
         }
@@ -405,7 +405,7 @@ namespace GTASaveData.GTA3
                 + sizeof(int)
                 + SizeOf<StoredCar>(prm) * NumStoredCars
                 + SizeOf<Garage>(prm) * p.NumGarages
-                + JunkSize;
+                + ((p.IsDE) ? JunkSizeDE : JunkSize);
         }
 
         public override bool Equals(object obj)

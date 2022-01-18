@@ -684,15 +684,34 @@ namespace GTASaveData.GTA3
         private List<Block> m_deBlocks;
         private PaddingBlock m_dePadding;
 
+        private T ReadBlockDE<T>(DataBuffer file) where T : SaveDataObject, new()
+        {
+            long mark = file.Position;
+            int size = file.ReadInt32();
+            T block = file.ReadObject<T>(Params);
+
+            Debug.Assert(size + 4 == file.Position - mark);
+
+            return block;
+        }
+
+        private void WriteBlockDE<T>(DataBuffer file, T block) where T : SaveDataObject, new()
+        {
+            byte[] buf = Serializer.Write(block, Params);
+            file.Write(buf.Length);
+            file.Write(buf);
+        }
+
         private void LoadDE(DataBuffer file)
         {
             m_deHeader = file.ReadStruct<DEHeader>();
             SimpleVars = file.ReadObject<SimpleVariables>(Params);
             Script = file.ReadObject<ScriptBlock>(Params);
-            file.ReadInt32(); PedPool = file.ReadObject<PedPool>(Params);
+            PedPool = ReadBlockDE<PedPool>(file);
+            Garages = ReadBlockDE<GarageBlock>(file);
 
             m_deBlocks = new List<Block>();
-            for (int i = 2; i < 20; i++)
+            for (int i = 3; i < 20; i++)
             {
                 m_deBlocks.Add(file.ReadObject<Block>(Params));
             }
@@ -712,7 +731,8 @@ namespace GTASaveData.GTA3
             file.Write(hdr);
             file.Write(SimpleVars, Params);
             file.Write(Script, Params);
-            file.Write(PedPool, Params);
+            WriteBlockDE(file, PedPool);
+            WriteBlockDE(file, Garages);
 
             foreach (var block in m_deBlocks)
             {
@@ -725,8 +745,8 @@ namespace GTASaveData.GTA3
             byte[] hashBytes = md5.ComputeHash(file.GetBuffer());
             
             file.Seek(0);
-            file.Write(hdr.Field00h);
-            file.Write(hdr.Field04h);
+            file.Write(m_deHeader.Field00h);
+            file.Write(m_deHeader.Field04h);
             file.Write(hashBytes);
         }
 
