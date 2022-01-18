@@ -82,6 +82,7 @@ namespace GTASaveData.GTA3.Tests
             new object[] { GTA3Save.FileTypes.PCDE, "JM1" },
             new object[] { GTA3Save.FileTypes.PCDE, "RM4" },
             new object[] { GTA3Save.FileTypes.PCDE, "KM4" },
+            new object[] { GTA3Save.FileTypes.PCDE, "AS1" },
         };
     }
 }

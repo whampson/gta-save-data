@@ -150,15 +150,15 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            var t = prm.FileType;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
 
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
             Matrix = buf.ReadStruct<CompressedMatrix>().Decompress();
-            if ((t.IsPS2 && t.FlagJapan) || !t.IsPS2) buf.Skip(4);
+            if (p.IsPS2JP || !p.IsPS2) buf.Skip(4);
             UprootLimit = buf.ReadFloat();
             ObjectMatrix = buf.ReadStruct<CompressedMatrix>().Decompress();
-            if ((t.IsPS2 && t.FlagJapan) || !t.IsPS2) buf.Skip(4);
+            if (p.IsPS2JP || !p.IsPS2) buf.Skip(4);
             CreatedBy = (ObjectCreatedBy) buf.ReadByte();
             IsPickup = buf.ReadBool();
             IsPickupInShop = buf.ReadBool();
@@ -178,15 +178,15 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            var t = prm.FileType;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
 
             buf.Write(ModelIndex);
             buf.Write(Handle);
             buf.Write(Matrix.Compress());
-            if ((t.IsPS2 && t.FlagJapan) || !t.IsPS2) buf.Skip(4);
+            if (p.IsPS2JP || !p.IsPS2) buf.Skip(4);
             buf.Write(UprootLimit);
             buf.Write(ObjectMatrix.Compress());
-            if ((t.IsPS2 && t.FlagJapan) || !t.IsPS2) buf.Skip(4);
+            if (p.IsPS2JP || !p.IsPS2) buf.Skip(4);
             buf.Write((byte) CreatedBy);
             buf.Write(IsPickup);
             buf.Write(IsPickupInShop);
@@ -206,9 +206,10 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(SerializationParams prm)
         {
-            var t = prm.FileType;
-            if (t.IsPS2 && !t.FlagJapan) return 0x4C;
-            if (t.IsiOS) return 0x52;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (p.IsPS2 && !p.IsPS2JP) return 0x4C;
+            if (p.IsiOS) return 0x52;
             return 0x54;
         }
 

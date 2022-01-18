@@ -82,8 +82,10 @@ namespace GTASaveData.GTA3
 
         protected void LoadEntityFlags(DataBuffer buf, SerializationParams prm)
         {
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
             long eFlags = buf.ReadUInt32();
-            eFlags |= (prm.FileType.IsiOS)
+            eFlags |= (p.IsiOS)
                 ? ((long) buf.ReadUInt16()) << 32
                 : ((long) buf.ReadUInt32()) << 32;
 
@@ -94,11 +96,13 @@ namespace GTASaveData.GTA3
 
         protected void SaveEntityFlags(DataBuffer buf, SerializationParams prm)
         {
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
             long eFlags = (long) EntityFlags;
             eFlags |= ((long) EntityType) & 0x07;
             eFlags |= (((long) EntityStatus) & 0x1F) << 3;
             buf.Write((uint) (eFlags & 0xFFFFFFFF));
-            if (prm.FileType.IsiOS)
+            if (p.IsiOS)
                 buf.Write((ushort) (eFlags >> 32));
             else
                 buf.Write((uint) (eFlags >> 32));

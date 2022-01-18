@@ -1,7 +1,6 @@
 ﻿using GTASaveData.Interfaces;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -16,6 +15,12 @@ namespace GTASaveData.GTA3
     {
         private byte[] m_data;
         private string m_infoText;
+
+        public byte[] RawData
+        {
+            get { return m_data; }
+            private set { m_data = value; OnPropertyChanged(); }
+        }
 
         public string InfoText  // TODO: break into sections
         {

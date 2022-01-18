@@ -351,70 +351,70 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            var t = prm.FileType;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
 
-            if (!t.IsPS2) buf.Skip(4);
+            if (!p.IsPS2) buf.Skip(4);
             buf.Skip(48);
             Position = buf.ReadStruct<Vector3>();
-            if(t.IsPC || t.IsXbox) buf.Skip(288);
-            if (t.IsiOS) buf.Skip(292);
-            if (t.IsAndroid) buf.Skip(296);
-            if (t.IsPS2 && t.FlagJapan) buf.Skip(324);
-            else if (t.IsPS2) buf.Skip(356);
+            if (p.IsPC || p.IsXbox) buf.Skip(288);
+            if (p.IsiOS) buf.Skip(292);
+            if (p.IsAndroid || p.IsDE) buf.Skip(296);     // TODO: need to delineate between IsPC and FlagDE
+            if (p.IsPS2JP) buf.Skip(324);
+            else if (p.IsPS2) buf.Skip(356);
             CharCreatedBy = (CharCreatedBy) buf.ReadByte();
             buf.Skip(351);
-            if (t.IsXbox) buf.Skip(4);
+            if (p.IsXbox) buf.Skip(4);
             Health = buf.ReadFloat();
             Armor = buf.ReadFloat();
-            if (t.IsPS2) buf.Skip(164);
+            if (p.IsPS2) buf.Skip(164);
             else buf.Skip(148);
             Weapons = buf.ReadArray<Weapon>(NumWeapons, prm);
             buf.Skip(5);
             MaxWeaponTypeAllowed = buf.ReadByte();
             buf.Skip(178);
-            if (t.IsMobile) buf.Skip(4);
-            if (t.IsPS2) buf.Skip(8);
+            if (p.IsMobile || p.IsDE) buf.Skip(4);
+            if (p.IsPS2) buf.Skip(8);
             MaxStamina = buf.ReadFloat();
             buf.Skip(28);
             TargetableObjects = buf.ReadArray<int>(NumTargetableObjects);
-            if (t.IsPC || t.IsXbox) buf.Skip(116);
-            if (t.IsMobile) buf.Skip(144);
-            if (t.IsPS2) buf.Skip(16);
+            if (p.IsPC || p.IsXbox) buf.Skip(116);
+            if (p.IsMobile || p.IsDE) buf.Skip(144);
+            if (p.IsPS2) buf.Skip(16);
 
             Debug.Assert(buf.Offset == SizeOf<PlayerPed>(prm));
         }
 
         protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            var t = prm.FileType;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
 
-            if (!t.IsPS2) buf.Skip(4);
+            if (!p.IsPS2) buf.Skip(4);
             buf.Skip(48);
             buf.Write(Position);
-            if (t.IsPC || t.IsXbox) buf.Skip(288);
-            if (t.IsiOS) buf.Skip(292);
-            if (t.IsAndroid) buf.Skip(296);
-            if (t.IsPS2 && t.FlagJapan) buf.Skip(324);
-            else if (t.IsPS2) buf.Skip(356);
+            if (p.IsPC || p.IsXbox) buf.Skip(288);
+            if (p.IsiOS) buf.Skip(292);
+            if (p.IsAndroid || p.IsDE) buf.Skip(296);
+            if (p.IsPS2JP) buf.Skip(324);
+            else if (p.IsPS2) buf.Skip(356);
             buf.Write((byte) CharCreatedBy);
             buf.Skip(351);
-            if (t.IsXbox) buf.Skip(4);
+            if (p.IsXbox) buf.Skip(4);
             buf.Write(Health);
             buf.Write(Armor);
-            if (t.IsPS2) buf.Skip(164);
+            if (p.IsPS2) buf.Skip(164);
             else buf.Skip(148);
             buf.Write(Weapons, prm, NumWeapons);
             buf.Skip(5);
             buf.Write(MaxWeaponTypeAllowed);
             buf.Skip(178);
-            if (t.IsMobile) buf.Skip(4);
-            if (t.IsPS2) buf.Skip(8);
+            if (p.IsMobile || p.IsDE) buf.Skip(4);
+            if (p.IsPS2) buf.Skip(8);
             buf.Write(MaxStamina);
             buf.Skip(28);
             buf.Write(TargetableObjects, NumTargetableObjects);
-            if (t.IsPC || t.IsXbox) buf.Skip(116);
-            if (t.IsMobile) buf.Skip(144);
-            if (t.IsPS2) buf.Skip(16);
+            if (p.IsPC || p.IsXbox) buf.Skip(116);
+            if (p.IsMobile || p.IsDE) buf.Skip(144);
+            if (p.IsPS2) buf.Skip(16);
 
             Debug.Assert(buf.Offset == SizeOf<PlayerPed>(prm));
         }
@@ -423,14 +423,15 @@ namespace GTASaveData.GTA3
         {
             // TODO: calculate...?
 
-            var t = prm.FileType;
-            if (t.IsPS2 && t.FlagJapan) return 0x590;
-            if (t.IsPS2) return 0x5B0;
-            if (t.IsPC) return 0x5F0;
-            if (t.IsXbox) return 0x5F4;
-            if (t.IsiOS) return 0x614;
-            if (t.IsAndroid) return 0x618;
-            throw SizeNotDefined(t);
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (p.IsPS2JP) return 0x590;
+            if (p.IsPS2) return 0x5B0;
+            if (p.IsPC) return 0x5F0;
+            if (p.IsXbox) return 0x5F4;
+            if (p.IsiOS) return 0x614;
+            if (p.IsAndroid || p.IsDE) return 0x618;
+            throw SizeNotDefined(p);
         }
 
         public override bool Equals(object obj)

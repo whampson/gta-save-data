@@ -804,11 +804,11 @@ namespace GTASaveData.GTA3
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             var p = (GTA3SaveParams) prm;
-            var t = p.FileType;
 
-            if (t.FlagDE)
+            if (p.IsDE)
             {
                 ScriptInfo = buf.ReadObject<ScriptInfo>();
+                // TODO: artificially create this for other script versions
             }
 
             buf.Mark();
@@ -849,6 +849,11 @@ namespace GTASaveData.GTA3
         {
             var p = (GTA3SaveParams) prm;
 
+            if (p.IsDE)
+            {
+                buf.Write(ScriptInfo, prm);
+            }
+
             int size = SizeOf(this, p);
             int unusedSize = sizeof(int)
                 + SizeOf<Contact>(prm) * p.NumContacts
@@ -858,6 +863,7 @@ namespace GTASaveData.GTA3
                 + SizeOf<InvisibleObject>(prm) * p.NumInvisibilitySettings
                 + 4 * sizeof(int);
 
+            buf.Mark();
             GTA3Save.WriteBlockHeader(buf, "SCR", size - GTA3Save.BlockHeaderSize);
 
             buf.Write(ScriptSpace.Count);
@@ -885,7 +891,6 @@ namespace GTASaveData.GTA3
         protected override int GetSize(SerializationParams prm)
         {
             var p = (GTA3SaveParams) prm;
-            if (prm.FileType.FlagDE) throw new NotImplementedException();
 
             return GTA3Save.BlockHeaderSize
                 + sizeof(int)

@@ -189,14 +189,14 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            var t = prm.FileType;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
 
-            if (!t.IsPS2) buf.Skip(4);
+            if (!p.IsPS2) buf.Skip(4);
             buf.Skip(48);
             Position = buf.ReadStruct<Vector3>();
             buf.Skip(4);
-            if (!(t.IsPS2 && t.FlagJapan)) buf.Skip(8);
-            if (t.IsPS2 && !t.FlagJapan) buf.Skip(24);
+            if (!p.IsPS2JP) buf.Skip(8);
+            if (p.IsPS2 && !p.IsPS2JP) buf.Skip(24);
             NextParticleObjectPointer = buf.ReadUInt32();
             PrevParticleObjectPointer = buf.ReadUInt32();
             ParticlePointer = buf.ReadUInt32();
@@ -215,21 +215,21 @@ namespace GTASaveData.GTA3
             DestroyWhenFar = buf.ReadBool();
             CreationChance = buf.ReadSByte();
             buf.Align4();
-            if (t.IsPS2) Unknown = buf.ReadInt32();
+            if (p.IsPS2) Unknown = buf.ReadInt32();
 
             Debug.Assert(buf.Offset == SizeOf<ParticleObject>(prm));
         }
 
         protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            var t = prm.FileType;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
 
-            if (!t.IsPS2) buf.Skip(4);
+            if (!p.IsPS2) buf.Skip(4);
             buf.Skip(48);
             buf.Write(Position);
             buf.Skip(4);
-            if (!(t.IsPS2 && t.FlagJapan)) buf.Skip(8);
-            if (t.IsPS2 && !t.FlagJapan) buf.Skip(24);
+            if (!p.IsPS2JP) buf.Skip(8);
+            if (p.IsPS2 && !p.IsPS2JP) buf.Skip(24);
             buf.Write(NextParticleObjectPointer);
             buf.Write(PrevParticleObjectPointer);
             buf.Write(ParticlePointer);
@@ -248,16 +248,17 @@ namespace GTASaveData.GTA3
             buf.Write(DestroyWhenFar);
             buf.Write(CreationChance);
             buf.Align4();
-            if (t.IsPS2) buf.Write(Unknown);
+            if (p.IsPS2) buf.Write(Unknown);
 
             Debug.Assert(buf.Offset == SizeOf<ParticleObject>(prm));
         }
 
         protected override int GetSize(SerializationParams prm)
         {
-            var t = prm.FileType;
-            if (t.IsPS2 && t.FlagJapan) return 0x80;
-            if (t.IsPS2) return 0xA0;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (p.IsPS2JP) return 0x80;
+            if (p.IsPS2) return 0xA0;
 
             return 0x88;
         }

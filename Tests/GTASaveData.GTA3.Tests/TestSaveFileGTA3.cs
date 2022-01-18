@@ -40,25 +40,25 @@ namespace GTASaveData.GTA3.Tests
             return model.Generate();
         }
 
-        [Theory]
-        [MemberData(nameof(TestFiles))]
-        public void DefinitiveEditionPlayground(FileType fmt, string path)
-        {
-            if (!fmt.FlagDE) return;
+        //[Theory]
+        //[MemberData(nameof(TestFiles))]
+        //public void DefinitiveEditionPlayground(FileType fmt, string path)
+        //{
+        //    if (!fmt.FlagDE) return;
 
-            path = TestData.GetTestDataPath(Game.GTA3, fmt, path);
-            var save = GTA3Save.Load(path, fmt);
+        //    path = TestData.GetTestDataPath(Game.GTA3, fmt, path);
+        //    var save = GTA3Save.Load(path, fmt);
 
-            Debug.WriteLine($"Title: {save.Title}");
-            Debug.WriteLine($"TimeStamp: {save.TimeStamp}");
-        }
+        //    Debug.WriteLine($"Title: {save.Title}");
+        //    Debug.WriteLine($"TimeStamp: {save.TimeStamp}");
+        //}
 
         [Theory]
         [MemberData(nameof(TestFiles))]
         public void FileFormatDetection(FileType expectedFormat, string filename)
         {
             string path = TestData.GetTestDataPath(Game.GTA3, expectedFormat, filename);
-            GTA3Save.TryGetFileType<GTA3Save>(path, out FileType detectedFormat);
+            GTA3Save.TryGetFileType(path, out FileType detectedFormat);
 
             Assert.Equal(expectedFormat, detectedFormat);
         }

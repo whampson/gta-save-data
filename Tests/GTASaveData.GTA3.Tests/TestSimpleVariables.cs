@@ -9,11 +9,11 @@ namespace GTASaveData.GTA3.Tests
     {
         public override SimpleVariables GenerateTestObject(GTA3SaveParams p)
         {
-            bool isPC = p.FileType.IsPC;
-            bool isPS2 = p.FileType.IsPS2;
-            bool isPS2JP = p.FileType.IsPS2 && p.FileType.FlagJapan;
-            bool isXbox = p.FileType.IsXbox;
-            bool isMobile = p.FileType.IsMobile;
+            bool isPC = p.IsPC;
+            bool isPS2 = p.IsPS2;
+            bool isPS2JP = p.IsPS2JP;
+            bool isXbox = p.IsXbox;
+            bool isMobile = p.IsMobile;
 
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
                 .RuleFor(x => x.LastMissionPassedName, f => (!isPS2) ? Generator.Words(f, p.LastMissionPassedNameLength - 1) : "")

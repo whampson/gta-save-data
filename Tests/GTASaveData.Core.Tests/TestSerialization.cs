@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GTASaveData.Helpers;
 using GTASaveData.Types;
 using System;
 using System.Linq;
@@ -12,11 +13,11 @@ namespace GTASaveData.Core.Tests
         [Fact]
         public void AlignedAddress()
         {
-            Assert.Equal(0, DataBuffer.Align4(0));
-            Assert.Equal(4, DataBuffer.Align4(4));
-            Assert.Equal(8, DataBuffer.Align4(5));
-            Assert.Equal(8, DataBuffer.Align4(6));
-            Assert.Equal(8, DataBuffer.Align4(7));
+            Assert.Equal(0, AddressHelper.Align4(0));
+            Assert.Equal(4, AddressHelper.Align4(4));
+            Assert.Equal(8, AddressHelper.Align4(5));
+            Assert.Equal(8, AddressHelper.Align4(6));
+            Assert.Equal(8, AddressHelper.Align4(7));
         }
 
         [Fact]

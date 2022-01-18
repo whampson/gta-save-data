@@ -6,9 +6,9 @@ using System.Linq;
 namespace GTASaveData
 {
     /// <summary>
-    /// A <see cref="FileType"/> is a specifier for the arrangement of bytes in a save file.
-    /// It consists of two parts: a list of supported <see cref="GameSystem"/>s, and a set
-    /// of <see cref="FileTypeFlags"/>.
+    /// A <see cref="FileType"/> identifies the convention used to store data in a save file.
+    /// It consists of three parts: a unique string identifier, a set of file type-specific flags,
+    /// and a list of supported game versions.
     /// </summary>
     /// <remarks>
     /// Many games exhibit minor layout differences in the save files between platforms.
@@ -16,136 +16,97 @@ namespace GTASaveData
     /// of how the blocks are written. A <see cref="FileType"/> is designed to disambiguate
     /// thesee differing data layouts. It does NOT reveal information about the game script version
     /// or other game differences.
-    /// <para>
-    /// Equality between file formats is determined by comparing the compatibility list and flags;
-    /// ID, display name, and description are ignored as they may be shared between similar file
-    /// types.
-    /// </para>
     /// </remarks>
     public struct FileType : IEquatable<FileType>
     {
         /// <summary>
-        /// Placeholder for areas where <see cref="FileType"/> is irrelevant;
-        /// do not use.
+        /// Placeholder generic <see cref="FileType"/>.
         /// </summary>
-        public static readonly FileType Default = new FileType("", "", "");
+        public static readonly FileType Default = new FileType("");
 
         private readonly string m_id;
-        private readonly string m_displayName;
-        private readonly string m_description;
-        private readonly FileTypeFlags m_flags;
-        private readonly IEnumerable<GameSystem> m_compatibleWith;
+        private readonly uint m_flags;
+        private readonly List<GameVersionId> m_compatibleWith;
 
         /// <summary>
         /// A short identifier for this file type.
         /// </summary>
         /// <remarks>
-        /// Example: PC_STEAM
+        /// Example: <c>PC_STEAM</c>
         /// </remarks>
         public string Id => m_id ?? "";
 
         /// <summary>
-        ///  A set of <see cref="FileTypeFlags"/> used to further delineate file formats.
+        /// Flags that can be used to further delineate similar file types.
         /// </summary>
-        public FileTypeFlags Flags => m_flags;
+        public uint Flags => m_flags;
 
         /// <summary>
-        /// Game systems which are compatible with this <see cref="FileType"/>.
+        /// Game versions compatible with this file type.
         /// </summary>
-        public IEnumerable<GameSystem> CompatibilityList => m_compatibleWith ?? new List<GameSystem>();
+        public IEnumerable<GameVersionId> CompatibilityList => m_compatibleWith ?? new List<GameVersionId>();
 
         /// <summary>
         /// Creates a new <see cref="FileType"/>.
         /// </summary>
         /// <param name="id">A short identifier.</param>
-        /// <param name="compatibleWith">A list of compatible <see cref="GameSystem"/>s.</param>
-        public FileType(string id, params GameSystem[] compatibleWith)
-            : this(id, id, id, FileTypeFlags.None, compatibleWith)
+        /// <param name="compatibleWith">A list of compatible <see cref="GameVersionId"/>s.</param>
+        public FileType(string id, params GameVersionId[] compatibleWith)
+            : this(id, 0, compatibleWith)
         { }
 
         /// <summary>
         /// Creates a new <see cref="FileType"/>.
         /// </summary>
         /// <param name="id">A short identifier.</param>
-        /// <param name="flags">A set of <see cref="FileTypeFlags"/>.</param>
-        /// <param name="compatibleWith">A list of compatible <see cref="GameSystem"/>s.</param>
-        public FileType(string id, FileTypeFlags flags, params GameSystem[] compatibleWith)
-            : this(id, id, id, flags, compatibleWith)
-        { }
-
-        /// <summary>
-        /// Creates a new <see cref="FileType"/>.
-        /// </summary>
-        /// <param name="id">A short identifier.</param>
-        /// <param name="displayName">A short friendly name.</param>
-        /// <param name="description">A long description.</param>
-        /// <param name="compatibleWith">A list of compatible <see cref="GameSystem"/>s.</param>
-        public FileType(string id, string displayName, string description,
-            params GameSystem[] compatibleWith)
-            : this(id, displayName, description, FileTypeFlags.None, compatibleWith)
-        { }
-
-        /// <summary>
-        /// Creates a new <see cref="FileType"/>.
-        /// </summary>
-        /// <param name="id">A short identifier.</param>
-        /// <param name="displayName">A short friendly name.</param>
-        /// <param name="description">A long description.</param>
-        /// <param name="flags">A set of <see cref="FileTypeFlags"/>.</param>
-        /// <param name="compatibleWith">A list of compatible <see cref="GameSystem"/>s.</param>
-        public FileType(string id, string displayName, string description, FileTypeFlags flags,
-            params GameSystem[] compatibleWith)
+        /// <param name="flags">A set of bitflags that can be used to delineate similar file types.</param>
+        /// <param name="compatibleWith">A list of compatible <see cref="GameVersionId"/>s.</param>
+        public FileType(string id, uint flags, params GameVersionId[] compatibleWith)
         {
             m_id = id;
-            m_displayName = displayName;
-            m_description = description;
             m_flags = flags;
-            m_compatibleWith = new List<GameSystem>(compatibleWith);
+            m_compatibleWith = new List<GameVersionId>(compatibleWith);
         }
 
         /// <summary>
-        /// Checks whether this <see cref="FileType"/> is supported on the specified <see cref="GameSystem"/>.
+        /// Checks whether this file type is supported by a specific game version.
         /// </summary>
-        public bool IsSupportedOn(GameSystem s)
+        public bool IsSupportedBy(GameVersionId g)
         {
-            return CompatibilityList.Contains(s);
+            return CompatibilityList.Contains(g);
         }
 
         /// <summary>
-        /// Checks wither this <see cref="FileType"/> has a specific <see cref="FileTypeFlags"/> value set.
+        /// Checks wither this file type has a flag set.
         /// </summary>
-        public bool HasFlag(FileTypeFlags f)
+        public bool HasFlag(uint flag)
         {
-            return Flags.HasFlag(f);
+            return (Flags & flag) == flag;
         }
 
         public override int GetHashCode()
         {
             int hash = 17;
-            foreach (GameSystem c in CompatibilityList)
+            foreach (GameVersionId c in CompatibilityList)
             {
                 hash += 23 * c.GetHashCode();
             }
             hash += 23 * Flags.GetHashCode();
+            hash += 23 * Id.GetHashCode();
 
             return hash;
         }
 
         public override bool Equals(object obj)
         {
-            if (!(obj is FileType))
-            {
-                return false;
-            }
-
-            return Equals((FileType) obj);
+            return obj is FileType type && Equals(type);
         }
 
         public bool Equals(FileType other)
         {
-            // Deliberately ignoring Id/DisplayName/Description as they may not be unique
-            return CompatibilityList.SequenceEqual(other.CompatibilityList)
-                && Flags.Equals(other.Flags);
+            return Id.Equals(Id)
+                && Flags.Equals(other.Flags)
+                && CompatibilityList.SequenceEqual(other.CompatibilityList);
         }
 
         public override string ToString()
@@ -166,67 +127,45 @@ namespace GTASaveData
         /// <summary>
         /// Gets a value indicating whether this <see cref="FileType"/> is supported on the Android OS.
         /// </summary>
-        [JsonIgnore] public bool IsAndroid => IsSupportedOn(GameSystem.Android);
+        [JsonIgnore] public bool IsAndroid => IsSupportedBy(GameVersionId.Android);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="FileType"/> is supported on Apple iOS.
         /// </summary>
-        [JsonIgnore] public bool IsiOS => IsSupportedOn(GameSystem.iOS);
+        [JsonIgnore] public bool IsiOS => IsSupportedBy(GameVersionId.iOS);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="FileType"/> is supported on the PlayStation 2.
         /// </summary>
-        [JsonIgnore] public bool IsPS2 => IsSupportedOn(GameSystem.PS2);
+        [JsonIgnore] public bool IsPS2 => IsSupportedBy(GameVersionId.PS2);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="FileType"/> is supported on the PlayStation 3.
         /// </summary>
-        [JsonIgnore] public bool IsPS3 => IsSupportedOn(GameSystem.PS3);
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the PlayStation 4.
-        /// </summary>
-        [JsonIgnore] public bool IsPS4 => IsSupportedOn(GameSystem.PS4);
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the PlayStation 5.
-        /// </summary>
-        [JsonIgnore] public bool IsPS5 => IsSupportedOn(GameSystem.PS5);
+        [JsonIgnore] public bool IsPS3 => IsSupportedBy(GameVersionId.PS3);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="FileType"/> is supported on the PlayStation Portable.
         /// </summary>
-        [JsonIgnore] public bool IsPSP => IsSupportedOn(GameSystem.PSP);
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the Nintendo Switch.
-        /// </summary>
-        [JsonIgnore] public bool IsSwitch => IsSupportedOn(GameSystem.Switch);
+        [JsonIgnore] public bool IsPSP => IsSupportedBy(GameVersionId.PSP);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="FileType"/> is supported on the original Xbox.
         /// </summary>
-        [JsonIgnore] public bool IsXbox => IsSupportedOn(GameSystem.Xbox);
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the Xbox 360.
-        /// </summary>
-        [JsonIgnore] public bool IsXbox360 => IsSupportedOn(GameSystem.Xbox360);
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> is supported on the Xbox One
-        /// or Xbox Series X|S.
-        /// </summary>
-        [JsonIgnore] public bool IsXboxOne => IsSupportedOn(GameSystem.XboxOne);
+        [JsonIgnore] public bool IsXbox => IsSupportedBy(GameVersionId.Xbox);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="FileType"/> is supported on Microsoft Windows.
         /// </summary>
-        [JsonIgnore] public bool IsWindows => IsSupportedOn(GameSystem.Windows);
+        [JsonIgnore] public bool IsWindows => IsSupportedBy(GameVersionId.Windows);
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> is supported on
-        /// Android or iOS.
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on Microsoft Windows.
+        /// </summary>
+        [JsonIgnore] public bool IsDefinitiveEdition => IsSupportedBy(GameVersionId.DefinitiveEdition);
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="FileType"/> is supported on Android or iOS.
         /// </summary>
         [JsonIgnore] public bool IsMobile => IsAndroid || IsiOS;
 
@@ -234,217 +173,17 @@ namespace GTASaveData
         /// Gets a value indicating whether this <see cref="FileType"/> is supported on Microsoft Windows.
         /// </summary>
         [JsonIgnore] public bool IsPC => IsWindows;
-
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> has the Steam flag set.
-        /// </summary>
-        [JsonIgnore] public bool FlagSteam => HasFlag(FileTypeFlags.Steam);
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> has the Australia flag set.
-        /// </summary>
-        [JsonIgnore] public bool FlagAustralia => HasFlag(FileTypeFlags.Australia);
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> has the Japan flag set.
-        /// </summary>
-        [JsonIgnore] public bool FlagJapan => HasFlag(FileTypeFlags.Japan);
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> has the Definitive Edition flag set.
-        /// </summary>
-        [JsonIgnore] public bool FlagDE => HasFlag(FileTypeFlags.DE);
     }
 
-    /// <summary>
-    /// Game systems that support GTA games.
-    /// </summary>
-    /// <remarks>
-    /// List may be incomplete.
-    /// </remarks>
-    public enum GameSystem
+    public enum GameVersionId
     {
-        None,
-
-        /// <summary>
-        /// Android OS.
-        /// </summary>
-        /// <remarks>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto III</i><br/>
-        /// <i>Grand Theft Auto: Vice City</i><br/>
-        /// <i>Grand Theft Auto: San Andreas</i><br/>
-        /// <i>Grand Theft Auto: Liberty City Stories</i><br/>
-        /// </remarks>
         Android,
-
-        /// <summary>
-        /// Apple iOS.
-        /// </summary>
-        /// <remarks>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto III</i><br/>
-        /// <i>Grand Theft Auto: Vice City</i><br/>
-        /// <i>Grand Theft Auto: San Andreas</i><br/>
-        /// <i>Grand Theft Auto: Liberty City Stories</i><br/>
-        /// </remarks>
         iOS,
-
-        /// <summary>
-        /// Sony PlayStation 2.
-        /// </summary>
-        /// <remarks>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto III</i><br/>
-        /// <i>Grand Theft Auto: Vice City</i><br/>
-        /// <i>Grand Theft Auto: San Andreas</i><br/>
-        /// <i>Grand Theft Auto: Liberty City Stories</i><br/>
-        /// <i>Grand Theft Auto: Vice City Stories</i><br/>
-        /// </remarks>
         PS2,
-
-        /// <summary>
-        /// Sony PlayStation 3.
-        /// </summary>
-        /// <remarks>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto: San Andreas</i><br/>
-        /// <i>Grand Theft Auto IV</i><br/>
-        /// <i>Grand Theft Auto IV: The Lost and Damned</i><br/>
-        /// <i>Grand Theft Auto: The Ballad of Gay Tony</i><br/>
-        /// </remarks>
         PS3,
-
-        /// <summary>
-        /// Sony PlayStation 4.
-        /// </summary>
-        /// <remarks>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto III - The Definitive Edition</i><br/>
-        /// <i>Grand Theft Auto: Vice City - The Definitive Edition</i><br/>
-        /// <i>Grand Theft Auto: San Andreas - The Definitive Edition</i><br/>
-        /// </remarks>
-        PS4,
-
-        /// <summary>
-        /// Sony PlayStation 5.
-        /// </summary>
-        /// <remarks>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto III - The Definitive Edition</i><br/>
-        /// <i>Grand Theft Auto: Vice City - The Definitive Edition</i><br/>
-        /// <i>Grand Theft Auto: San Andreas - The Definitive Edition</i><br/>
-        /// </remarks>
-        PS5,
-
-        /// <summary>
-        /// Sony PlayStation Portable.
-        /// </summary>
-        /// <remarks>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto: Liberty City Stories</i><br/>
-        /// <i>Grand Theft Auto: Vice City Stories</i><br/>
-        /// </remarks>
         PSP,
-
-        /// <summary>
-        /// Nintendo Switch.
-        /// </summary>
-        /// <remarks>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto III - The Definitive Edition</i><br/>
-        /// <i>Grand Theft Auto: Vice City - The Definitive Edition</i><br/>
-        /// <i>Grand Theft Auto: San Andreas - The Definitive Edition</i><br/>
-        /// </remarks>
-        Switch,
-
-        /// <summary>
-        /// Microsoft Xbox.
-        /// </summary>
-        /// /// <remarks>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto III</i><br/>
-        /// <i>Grand Theft Auto: Vice City</i><br/>
-        /// <i>Grand Theft Auto: San Andreas</i><br/>
-        /// </remarks>
         Xbox,
-
-        /// <summary>
-        /// Microsoft Xbox 360.
-        /// </summary>
-        /// <remarks>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto: San Andreas</i><br/>
-        /// <i>Grand Theft Auto IV</i><br/>
-        /// <i>Grand Theft Auto IV: The Lost and Damned</i><br/>
-        /// <i>Grand Theft Auto: The Ballad of Gay Tony</i><br/>
-        /// </remarks>
-        Xbox360,
-
-        /// <summary>
-        /// Microsoft Xbox One and Xbox Series X|S.
-        /// </summary>
-        /// <remarks>
-        /// The Xbox One and Xbox Series X|S are lumped together as one
-        /// because all consoles run the same operating system.
-        /// <para>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto III - The Definitive Edition</i><br/>
-        /// <i>Grand Theft Auto: Vice City - The Definitive Edition</i><br/>
-        /// <i>Grand Theft Auto: San Andreas - The Definitive Edition</i><br/>
-        /// </para>
-        /// </remarks>
-        XboxOne,
-
-        /// <summary>
-        /// Microsoft Windows.
-        /// </summary>
-        /// <remarks>
-        /// Supported games:<br/>
-        /// <i>Grand Theft Auto III</i><br/>
-        /// <i>Grand Theft Auto III - The Definitive Edition</i><br/>
-        /// <i>Grand Theft Auto: Vice City</i><br/>
-        /// <i>Grand Theft Auto: Vice City - The Definitive Edition</i><br/>
-        /// <i>Grand Theft Auto: San Andreas</i><br/>
-        /// <i>Grand Theft Auto: San Andreas - The Definitive Edition</i><br/>
-        /// <i>Grand Theft Auto IV</i><br/>
-        /// <i>Grand Theft Auto IV: The Lost and Damned</i><br/>
-        /// <i>Grand Theft Auto: The Ballad of Gay Tony</i><br/>
-        /// </remarks>
         Windows,
-    }
-
-
-    /// <summary>
-    /// Modifier flags that may be used to further delineate a file type.
-    /// </summary>
-    /// <remarks>
-    /// These typically align with different versions of the same game.
-    /// </remarks>
-    [Flags]
-    public enum FileTypeFlags
-    {
-        None = 0,
-
-        /// <summary>
-        /// The PC Steam version of <i>Grand Theft Auto: Vice City</i>.
-        /// </summary>
-        Steam = 1 << 0,
-
-        /// <summary>
-        /// The Japanese PS2 release of <i>Grand Theft Auto III</i>.
-        /// </summary>
-        Japan = 1 << 1,
-
-        /// <summary>
-        /// The Australian PS2 release of <i>Grand Theft Auto III</i>.
-        /// </summary>
-        Australia = 1 << 2,
-
-        /// <summary>
-        /// <i>Grand Theft Auto: The Trilogy - The Definitive Edition</i>
-        /// </summary>
-        DE = 1 << 3,
+        DefinitiveEdition,
     }
 }

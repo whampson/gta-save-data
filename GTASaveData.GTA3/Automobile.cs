@@ -57,12 +57,13 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(SerializationParams prm)
         {
-            var t = prm.FileType;
-            if (t.IsPS2 && t.FlagJapan) return 0x630;
-            if (t.IsPC || t.IsXbox) return 0x5A8;
-            if (t.IsMobile) return 0x5AC;
-            if (t.IsPS2) return 0x650;
-            throw SizeNotDefined(t);
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (p.IsPC || p.IsXbox) return 0x5A8;
+            if (p.IsMobile) return 0x5AC;
+            if (p.IsPS2JP) return 0x630;
+            if (p.IsPS2) return 0x650;
+            throw SizeNotDefined(p);
         }
 
         public override bool Equals(object obj)

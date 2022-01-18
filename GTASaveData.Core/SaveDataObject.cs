@@ -1,4 +1,5 @@
-﻿using GTASaveData.Interfaces;
+﻿using GTASaveData.Helpers;
+using GTASaveData.Interfaces;
 using Newtonsoft.Json;
 using System;
 using WpfEssentials;
@@ -180,9 +181,9 @@ namespace GTASaveData
         /// Returns an exception for scenarios when there is no
         /// defined size for the specified file typr.
         /// </summary>
-        protected InvalidOperationException SizeNotDefined(FileType t)
+        protected InvalidOperationException SizeNotDefined(SerializationParams p)
         {
-            return new InvalidOperationException(string.Format(Strings.Error_InvalidOperation_SizeNotDefined, t.Id));
+            return new InvalidOperationException(string.Format(Strings.Error_InvalidOperation_SizeNotDefined, p));
         }
 
         /// <summary>
@@ -190,7 +191,7 @@ namespace GTASaveData
         /// </summary>
         protected int Align4(int addr)
         {
-            return DataBuffer.Align4(addr);
+            return AddressHelper.Align4(addr);
         }
     }
 }

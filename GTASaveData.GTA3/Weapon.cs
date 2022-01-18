@@ -64,12 +64,14 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
             Type = (WeaponType) buf.ReadInt32();
             State = (WeaponState) buf.ReadInt32();
             AmmoInClip = buf.ReadInt32();
             AmmoTotal = buf.ReadInt32();
             Timer = buf.ReadUInt32();
-            if (!prm.FileType.IsPS2)
+            if (!p.IsPS2)
             {
                 AddRotOffset = buf.ReadBool();
                 buf.ReadBytes(3);
@@ -80,12 +82,14 @@ namespace GTASaveData.GTA3
 
         protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
             buf.Write((uint) Type);
             buf.Write((uint) State);
             buf.Write(AmmoInClip);
             buf.Write(AmmoTotal);
             buf.Write(Timer);
-            if (!prm.FileType.IsPS2)
+            if (!p.IsPS2)
             {
                 buf.Write(AddRotOffset);
                 buf.Write(new byte[3]);
@@ -96,7 +100,9 @@ namespace GTASaveData.GTA3
 
         protected override int GetSize(SerializationParams prm)
         {
-            if (prm.FileType.IsPS2)
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (p.IsPS2)
             {
                 return 20;
             }

@@ -53,15 +53,14 @@ namespace GTASaveData.GTA3.Tests
 
         public override int GetSizeOfTestObject(PedPool obj, GTA3SaveParams p)
         {
-            var t = p.FileType;
             int playerPedSize = 0;
 
-            if (t.IsPS2 && t.FlagJapan) playerPedSize = 0x590;
-            else if (t.IsPS2) playerPedSize = 0x5B0;
-            else if (t.IsPC) playerPedSize = 0x5F0;
-            else if (t.IsXbox) playerPedSize = 0x5F4;
-            else if (t.IsiOS) playerPedSize = 0x614;
-            else if (t.IsAndroid) playerPedSize = 0x618;
+            if (p.IsPS2JP) playerPedSize = 0x590;
+            else if (p.IsPS2) playerPedSize = 0x5B0;
+            else if (p.IsPC) playerPedSize = 0x5F0;
+            else if (p.IsXbox) playerPedSize = 0x5F4;
+            else if (p.IsiOS) playerPedSize = 0x614;
+            else if (p.IsAndroid) playerPedSize = 0x618;
 
             return 4 + ((10 + playerPedSize + 32) * obj.PlayerPeds.Count);
         }

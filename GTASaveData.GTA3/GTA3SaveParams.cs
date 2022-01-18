@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json;
+using System.Linq;
 
 namespace GTASaveData.GTA3
 {
@@ -7,6 +8,9 @@ namespace GTASaveData.GTA3
     /// </summary>
     public class GTA3SaveParams : SerialiationParamsGTA3VC
     {
+        public const int FlagPS2AU = 0x01;
+        public const int FlagPS2JP = 0x02;
+
         public const int DefaultWorkBufferSize = 55000;
         public const int DefaultWorkBufferSizePS2 = 50000;
         public const int DefaultMaxNumPaddingBlocks = 4;
@@ -28,6 +32,17 @@ namespace GTASaveData.GTA3
         /// </summary>
         public int MaxNumPaddingBlocks { get; set; }
 
+        public FileType FileType { get; set; }
+
+        [JsonIgnore] public bool IsAndroid => FileType.IsAndroid;
+        [JsonIgnore] public bool IsiOS => FileType.IsiOS;
+        [JsonIgnore] public bool IsMobile => IsAndroid || IsiOS;
+        [JsonIgnore] public bool IsPC => FileType.IsWindows;
+        [JsonIgnore] public bool IsPS2 => FileType.IsPS2;
+        [JsonIgnore] public bool IsPS2JP => IsPS2 && FileType.HasFlag(FlagPS2JP);
+        [JsonIgnore] public bool IsPS2AU => IsPS2 && FileType.HasFlag(FlagPS2AU);
+        [JsonIgnore] public bool IsXbox => FileType.IsXbox;
+        [JsonIgnore] public bool IsDE => FileType.IsDefinitiveEdition;
 
         // ---------- SimpleVariables ----------
 
@@ -138,11 +153,6 @@ namespace GTASaveData.GTA3
             }
 
             return p;
-        }
-
-        protected override T GetDefaultsInternal<T>(FileType t)
-        {
-            return GetDefaults(t) as T;
         }
     }
 }

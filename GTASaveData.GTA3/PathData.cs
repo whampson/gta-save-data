@@ -49,9 +49,10 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            FillWorkBuffer(buf);
-
+            WorkBuffer = buf.ReadBytes(GetSize(prm));
             int n = WorkBuffer.Count / 2;
+
+            Debug.Assert(n != 0);
 
             for (int i = 0; i < PathNodes.Count; i++)
             {

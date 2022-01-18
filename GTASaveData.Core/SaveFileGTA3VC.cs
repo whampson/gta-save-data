@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Helpers;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -130,10 +131,10 @@ namespace GTASaveData
         /// The object is preceded by a 4-byte value containing the object size.
         /// As a result, the actual number of bytes read is 4 larger than the object size.
         /// </remarks>
-        protected T Get<T>() where T : SaveDataObject, new()
+        protected T ReadBlock<T>() where T : SaveDataObject, new()
         {
             T obj = new T();
-            _ = Get(ref obj);
+            _ = ReadBlock(ref obj);
 
             return obj;
         }
@@ -147,11 +148,12 @@ namespace GTASaveData
         /// </remarks>
         /// <param name="obj">The object to read.</param>
         /// <returns>The number of bytes read.</returns>
-        protected int Get<T>(ref T obj) where T : SaveDataObject
+        protected int ReadBlock<T>(ref T obj) where T : SaveDataObject
         {
             int size = WorkBuff.ReadInt32();
             if (obj is BufferedObject)
             {
+                // needed for Paths block
                 if (!(Activator.CreateInstance(typeof(T), size) is T o))
                 {
                     throw new SerializationException(Strings.Error_Serialization_NoPreAlloc, typeof(T));
@@ -163,7 +165,7 @@ namespace GTASaveData
             WorkBuff.Align4();
 
             Debug.WriteLine($"{typeof(T).Name}: {bytesRead} bytes read");
-            Debug.Assert(bytesRead <= DataBuffer.Align4(size));
+            Debug.Assert(bytesRead <= Align4(size));
 
             return bytesRead;
         }
@@ -176,7 +178,7 @@ namespace GTASaveData
         /// As a result, the actual number of bytes written is 4 larger than the object size.
         /// </remarks>
         /// <param name="obj">The object to write.</param>
-        protected void Put<T>(T obj) where T : SaveDataObject
+        protected void WriteBlock<T>(T obj) where T : SaveDataObject
         {
             int size, preSize, postData;
 
@@ -208,16 +210,16 @@ namespace GTASaveData
             InitWorkBuffer();
         }
 
-        protected override void OnFileLoad(string path)
-        {
-            base.OnFileLoad(path);
+        //protected override void OnFileLoad(string path)
+        //{
+        //    base.OnFileLoad(path);
 
-            var t = GetFileType();
-            if (t.IsPS2 || t.IsMobile)
-            {
-                TimeStamp = File.GetLastWriteTime(path);
-            }
-        }
+        //    var t = GetFileType();
+        //    if (t.IsPS2 || t.IsMobile)
+        //    {
+        //        TimeStamp = File.GetLastWriteTime(path);
+        //    }
+        //}
 
         private void InitWorkBuffer()
         {

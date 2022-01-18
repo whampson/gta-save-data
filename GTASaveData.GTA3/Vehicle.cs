@@ -270,17 +270,17 @@ namespace GTASaveData.GTA3
 
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            var t = prm.FileType;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
 
-            if (!t.IsPS2) buf.Skip(4);
+            if (!p.IsPS2) buf.Skip(4);
             Matrix = buf.ReadStruct<Matrix>();
-            if (t.IsPC || t.IsXbox) buf.Skip(12);
-            if (t.IsiOS) buf.Skip(15);
-            if (t.IsAndroid) buf.Skip(16);
-            if (t.IsPS2 && !t.FlagJapan) buf.Skip(32);
+            if (p.IsPC || p.IsXbox) buf.Skip(12);
+            if (p.IsiOS) buf.Skip(15);
+            if (p.IsAndroid) buf.Skip(16);
+            if (p.IsPS2 && !p.IsPS2JP) buf.Skip(32);
             LoadEntityFlags(buf, prm);
-            if (t.IsiOS) buf.Skip(1);
-            if (t.IsPS2) buf.Skip(236);
+            if (p.IsiOS) buf.Skip(1);
+            if (p.IsPS2) buf.Skip(236);
             else buf.Skip(212);
             AutoPilot = buf.ReadObject<AutoPilot>();
             Color1 = buf.ReadByte();
@@ -317,23 +317,23 @@ namespace GTASaveData.GTA3
             BombTimer = buf.ReadInt16();
             buf.Skip(12);
             DoorLock = (CarLock) buf.ReadInt32();
-            if (t.IsPS2) buf.Skip(156);
+            if (p.IsPS2) buf.Skip(156);
             else buf.Skip(96);
         }
 
         protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            var t = prm.FileType;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
 
-            if (!t.IsPS2) buf.Skip(4);
+            if (!p.IsPS2) buf.Skip(4);
             buf.Write(Matrix);
-            if (t.IsPC || t.IsXbox) buf.Skip(12);
-            if (t.IsiOS) buf.Skip(15);
-            if (t.IsAndroid) buf.Skip(16);
-            if (t.IsPS2 && !t.FlagJapan) buf.Skip(32);
+            if (p.IsPC || p.IsXbox) buf.Skip(12);
+            if (p.IsiOS) buf.Skip(15);
+            if (p.IsAndroid) buf.Skip(16);
+            if (p.IsPS2 && !p.IsPS2JP) buf.Skip(32);
             SaveEntityFlags(buf, prm);
-            if (t.IsiOS) buf.Skip(1);
-            if (t.IsPS2) buf.Skip(236);
+            if (p.IsiOS) buf.Skip(1);
+            if (p.IsPS2) buf.Skip(236);
             else buf.Skip(212);
             buf.Write(AutoPilot);
             buf.Write(Color1);
@@ -371,7 +371,7 @@ namespace GTASaveData.GTA3
             buf.Write(BombTimer);
             buf.Skip(12);
             buf.Write((int) DoorLock);
-            if (t.IsPS2) buf.Skip(156);
+            if (p.IsPS2) buf.Skip(156);
             else buf.Skip(96);
         }
 

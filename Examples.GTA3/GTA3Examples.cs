@@ -1,5 +1,6 @@
 ﻿using GTASaveData;
 using GTASaveData.GTA3;
+using GTASaveData.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,8 +19,18 @@ namespace Examples.GTA3
             //Example3();
 
             //PedPoolSandBox();
-            GarageSandBox();
+            //GarageSandBox();
             //ObjectSandBox();
+
+            DefinitiveEditionPlayground();
+        }
+
+        static void DefinitiveEditionPlayground()
+        {
+            string srcPath = Support.GetFileFromTestData("AS1", GTA3Save.FileTypes.PCDE);
+            using GTA3Save s = GTA3Save.Load(srcPath);
+
+            s.Save(Support.GetSaveSlotDE(2));
         }
 
         static void GarageSandBox()
@@ -376,7 +387,7 @@ namespace Examples.GTA3
 
                 // Inject the code
                 int baseAddr = scr.GetScriptSpaceSize();
-                int limit = scr.GrowScriptSpace(DataBuffer.Align4(code1.Length));   // align4 not required but it keeps some editing tools happy
+                int limit = scr.GrowScriptSpace(AddressHelper.Align4(code1.Length));   // align4 not required but it keeps some editing tools happy
                 scr.ScriptSpace.CopyFrom(code1, baseAddr);
 
                 // ...but this is ugly and hard to read.
@@ -429,7 +440,7 @@ namespace Examples.GTA3
                 // Inject the code
                 byte[] code2 = buf.ToArray();
                 int offset = scr.GetScriptSpaceSize();
-                limit = scr.GrowScriptSpace(DataBuffer.Align4(code2.Length));
+                limit = scr.GrowScriptSpace(AddressHelper.Align4(code2.Length));
                 scr.ScriptSpace.CopyFrom(code2, offset);
 
                 // Lastly, kick off the new script!
@@ -692,7 +703,7 @@ namespace Examples.GTA3
                 // script space and start a new RunningScript to kick it off!
 
                 byte[] bytecode = buf.ToArray();
-                int newSize = scr.GrowScriptSpace(DataBuffer.Align4(bytecode.Length));
+                int newSize = scr.GrowScriptSpace(AddressHelper.Align4(bytecode.Length));
                 scr.ScriptSpace.CopyFrom(bytecode, baseAddr);
                 scr.SetGlobalVariableSpaceSize(newSize);        // This is how we make the script persist.
 
