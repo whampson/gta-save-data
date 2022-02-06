@@ -55,6 +55,7 @@ namespace GTASaveData.GTA3.Tests
             new object[] { GTA3Save.FileTypes.PS2, "LM1 US" },
             new object[] { GTA3Save.FileTypes.PS2, "LM1 VehiclePool" },
             new object[] { GTA3Save.FileTypes.PS2, "T4X4_1" },
+            new object[] { GTA3Save.FileTypes.PS2, "100 PALv140" },
             new object[] { GTA3Save.FileTypes.PS2AU, "AS3" },
             new object[] { GTA3Save.FileTypes.PS2AU, "CAT2" },
             new object[] { GTA3Save.FileTypes.PS2AU, "T4X4_2" },
