@@ -35,12 +35,6 @@ namespace GTASaveData.GTA3
             set { m_phones = value; OnPropertyChanged(); }
         }
 
-        public Phone this[int i]
-        {
-            get { return Phones[i]; }
-            set { Phones[i] = value; OnPropertyChanged(); }
-        }
-
         public PhoneData()
         {
             Phones = ArrayHelper.CreateArray<Phone>(MaxNumPhones);

@@ -19,12 +19,6 @@ namespace GTASaveData.GTA3
             set { m_audioScriptObjects = value; OnPropertyChanged(); }
         }
 
-        public AudioScriptObject this[int i]
-        {
-            get { return AudioScriptObjects[i]; }
-            set { AudioScriptObjects[i] = value; OnPropertyChanged(); }
-        }
-
         public AudioScriptData()
         {
             AudioScriptObjects = new ObservableArray<AudioScriptObject>();

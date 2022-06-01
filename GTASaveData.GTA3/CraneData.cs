@@ -35,12 +35,6 @@ namespace GTASaveData.GTA3
             set { m_cranes = value; OnPropertyChanged(); }
         }
 
-        public Crane this[int i]
-        {
-            get { return Cranes[i]; }
-            set { Cranes[i] = value; OnPropertyChanged(); }
-        }
-
         public CraneData()
         {
             Cranes = ArrayHelper.CreateArray<Crane>(MaxNumCranes);

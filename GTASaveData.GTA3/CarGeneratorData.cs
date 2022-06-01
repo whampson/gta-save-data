@@ -52,12 +52,6 @@ namespace GTASaveData.GTA3
             set { m_carGeneratorArray = value; OnPropertyChanged(); }
         }
 
-        public CarGenerator this[int i]
-        {
-            get { return CarGenerators[i]; }
-            set { CarGenerators[i] = value; OnPropertyChanged(); }
-        }
-
         public CarGeneratorData()
         {
             CarGenerators = ArrayHelper.CreateArray<CarGenerator>(MaxNumCarGenerators);

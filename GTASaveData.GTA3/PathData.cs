@@ -19,12 +19,6 @@ namespace GTASaveData.GTA3
             set { m_pathNodes = value; OnPropertyChanged(); }
         }
 
-        public PathNode this[int i]
-        {
-            get { return PathNodes[i]; }
-            set { PathNodes[i] = value; OnPropertyChanged(); }
-        }
-
         public PathData()
             : this(0)
         { }

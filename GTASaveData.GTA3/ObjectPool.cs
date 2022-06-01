@@ -19,12 +19,6 @@ namespace GTASaveData.GTA3
             set { m_objects = value; OnPropertyChanged(); }
         }
 
-        public PhysicalObject this[int i]
-        {
-            get { return Objects[i]; }
-            set { Objects[i] = value; OnPropertyChanged(); }
-        }
-
         public ObjectPool()
         {
             Objects = new ObservableArray<PhysicalObject>();

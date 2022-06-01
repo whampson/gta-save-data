@@ -21,16 +21,6 @@ namespace GTASaveData.GTA3
             set { m_gangs = value;OnPropertyChanged(); }
         }
 
-        public Gang this[int i]
-        {
-            get { return GetGang(i); }
-        }
-
-        public Gang this[GangType g]
-        {
-            get { return GetGang(g); }
-        }
-
         public Gang GetGang(int g)
         {
             return Gangs[g];

@@ -36,12 +36,6 @@ namespace GTASaveData.GTA3
             set { m_pickUpsCollected = value; OnPropertyChanged(); }
         }
 
-        public Pickup this[int i]
-        {
-            get { return Pickups[i]; }
-            set { Pickups[i] = value; OnPropertyChanged(); }
-        }
-
         public PickupData()
         {
             Pickups = ArrayHelper.CreateArray<Pickup>(MaxNumPickups);

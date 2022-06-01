@@ -21,12 +21,6 @@ namespace GTASaveData.GTA3
             set { m_radarBlips = value; OnPropertyChanged(); }
         }
 
-        public RadarBlip this[int i]
-        {
-            get { return RadarBlips[i]; }
-            set { RadarBlips[i] = value; OnPropertyChanged(); }
-        }
-
         public RadarData()
         {
             RadarBlips = ArrayHelper.CreateArray<RadarBlip>(MaxNumRadarBlips);
