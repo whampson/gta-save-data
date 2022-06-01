@@ -221,11 +221,21 @@ namespace GTASaveData.GTA3
         }
 
         public RunningScript()
+            : this("noname")
+        { }
+
+        public RunningScript(string name)
         {
-            Name = "noname";
+            Name = name;
             Stack = new ObservableArray<int>();
             Locals = new ObservableArray<int>();
             DeathArrestEnabled = true;
+        }
+
+        public RunningScript(string name, int ip)
+            : this(name)
+        {
+            IP = ip;
         }
 
         public RunningScript(RunningScript other)
