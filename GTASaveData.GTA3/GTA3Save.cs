@@ -306,7 +306,7 @@ namespace GTASaveData.GTA3
             {
                 if (!TryGetFileType(path, out t))
                 {
-                    return null;
+                    throw new InvalidDataException("Unable to detect file type!");
                 }
             }
 
