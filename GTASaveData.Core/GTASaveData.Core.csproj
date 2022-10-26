@@ -9,8 +9,8 @@
     <Product>GTASaveData</Product>
     <Description>GTASaveData core framework library.</Description>
     <Copyright>(C) 2019-2022 Wes Hampson</Copyright>
-    <AssemblyVersion>2.0.0.1343</AssemblyVersion>
-    <FileVersion>2.0.0.1201</FileVersion>
+    <AssemblyVersion>2.0.0.1344</AssemblyVersion>
+    <FileVersion>2.0.0.1202</FileVersion>
     <Version>2.0.0</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -49,7 +49,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="WpfEssentials" Version="1.2.1" />
   </ItemGroup>
