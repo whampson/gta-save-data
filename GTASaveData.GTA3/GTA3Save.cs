@@ -306,18 +306,15 @@ namespace GTASaveData.GTA3
             {
                 if (!TryGetFileType(path, out t))
                 {
-                    throw new InvalidDataException("Unable to detect file type!");
+                    throw new InvalidDataException("Unable to detect file type!");      // TODO: strings.resx
                 }
             }
 
-            var s = new GTA3Save();
-            var p = GTA3SaveParams.GetDefaults(t);
-            if (p == null)
+            var s = new GTA3Save
             {
-                return null;
-            }
-
-            s.Params = p;
+                Params = GTA3SaveParams.GetDefaults(t)
+                    ?? throw new InvalidDataException($"Invalid file type! ({t})")
+            };
             s.LoadInternal(path);
 
             return s;

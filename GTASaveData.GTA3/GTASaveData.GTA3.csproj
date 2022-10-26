@@ -7,7 +7,7 @@
     <Authors>Wes Hampson</Authors>
     <Company>Wes Hampson</Company>
     <Product>GTASaveData</Product>
-    <Copyright>(C) 2019-20201Wes Hampson</Copyright>
+    <Copyright>(C) 2019-2022 Wes Hampson</Copyright>
     <Description>A .NET library for manipulating Grand Theft Auto III save files.</Description>
     <AssemblyVersion>2.0.0.1539</AssemblyVersion>
     <FileVersion>2.0.0.1435</FileVersion>

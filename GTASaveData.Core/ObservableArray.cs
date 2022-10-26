@@ -1,4 +1,5 @@
 ﻿using GTASaveData.Extensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -127,7 +128,7 @@ namespace GTASaveData
             RegisterStateChangedHandler(item);
 
             OnPropertyChanged(nameof(Count));
-            OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
+            OnCollectionChanged(NotifyCollectionChangedAction.Add, item, m_items.Count - 1);
         }
 
         /// <summary>
@@ -238,6 +239,8 @@ namespace GTASaveData
 
             m_items.Clear();
             m_items.AddRange(dest);
+
+            OnCollectionChanged(NotifyCollectionChangedAction.Add, dest, index);
         }
 
         /// <summary>
@@ -330,19 +333,13 @@ namespace GTASaveData
         /// <returns>True if the item was found in the list and removed.</returns>
         public bool Remove(T item)
         {
-            CheckReentrancy();
-
-            bool found = m_items.Remove(item);
-            if (!found)
+            int index = m_items.IndexOf(item);
+            if (index == -1)
             {
                 return false;
             }
 
-            UnregisterStateChangedHandler(item);
-
-            OnPropertyChanged(nameof(Count));
-            OnCollectionChanged(NotifyCollectionChangedAction.Remove, item);
-
+            RemoveAt(index);
             return true;
         }
 
@@ -393,6 +390,25 @@ namespace GTASaveData
         public override string ToString()
         {
             return $"{typeof(T).Name}[{Count}]";
+        }
+
+        /// <summary>
+        /// Serializes this object into a JSON string.
+        /// </summary>
+        /// <returns>The object as a JSON string.</returns>
+        public string ToJsonString()
+        {
+            return ToJsonString(Formatting.Indented);
+        }
+
+        /// <summary>
+        /// Serializes this object into a JSON string.
+        /// </summary>
+        /// <param name="formatting">The JSON formatting.</param>
+        /// <returns>The object as a JSON string.</returns>
+        public string ToJsonString(Formatting formatting)
+        {
+            return JsonConvert.SerializeObject(this, formatting);
         }
 
         #region IEnumerable
@@ -509,6 +525,31 @@ namespace GTASaveData
         protected void OnCollectionChanged(NotifyCollectionChangedAction action, object newItem, object oldItem, int index)
         {
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItem, oldItem, index));
+        }
+
+        /// <summary>
+        /// Raises a new <see cref="CollectionChanged"/> event for a multi-item
+        /// <see cref="NotifyCollectionChangedAction.Replace"/> change.
+        /// </summary>
+        /// <param name="action">The action that triggered this event.</param>
+        /// <param name="newItems">The items added by this event.</param>
+        /// <param name="oldItems">The items removed by this event.</param>
+        /// <param name="index">The starting index of the affected items.</param>
+        protected void OnCollectionChanged(NotifyCollectionChangedAction action, IList newItems, IList oldItems, int index)
+        {
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItems, oldItems, index));
+        }
+
+        /// <summary>
+        /// Raises a new <see cref="CollectionChanged"/> event for a multi-item
+        /// <see cref="NotifyCollectionChangedAction.Add"/> change.
+        /// </summary>
+        /// <param name="action">The action that triggered this event.</param>
+        /// <param name="newItems">The items added by this event.</param>
+        /// <param name="index">The starting index of the affected items.</param>
+        protected void OnCollectionChanged(NotifyCollectionChangedAction action, IList newItems, int index)
+        {
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItems, null, index));
         }
         #endregion
 
