@@ -9,7 +9,7 @@ using System.Linq;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.LCS
 {
-    public class GarageData : SaveDataObject, IGarageData,
+    public class GarageData : SaveDataObject,
         IEquatable<GarageData>, IDeepClonable<GarageData>,
         IEnumerable<Garage>
     {
@@ -152,9 +152,6 @@ namespace GTASaveData.LCS
                 }
             }
         }
-
-        IEnumerable<IStoredCar> IGarageData.CarsInSafeHouse => m_carsInSafeHouse;
-        IEnumerable<IGarage> IGarageData.Garages => m_garages;
 
         public GarageData()
         {

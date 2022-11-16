@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace GTASaveData.LCS
 {
-    public class LCSSave : SaveData, ISaveData,
+    public class LCSSave : SaveData,
         IEquatable<LCSSave>, IDeepClonable<LCSSave>
     {
         private const int SizeOfGameInBytes = 0x19000;
@@ -62,27 +62,6 @@ namespace GTASaveData.LCS
             get { return (DateTime) SimpleVars.TimeStamp; }
             set { SimpleVars.TimeStamp = new Date(value); OnPropertyChanged(); }
         }
-
-        bool ISaveData.HasSimpleVariables => true;
-        bool ISaveData.HasScriptData => true;
-        bool ISaveData.HasGarageData => true;
-        bool ISaveData.HasCarGenerators => false;
-        bool ISaveData.HasPlayerInfo => true;
-
-        ISimpleVariables ISaveData.SimpleVars => SimpleVars;
-        IScriptData ISaveData.ScriptData => Scripts;
-        IGarageData ISaveData.GarageData => Garages;
-        ICarGeneratorData ISaveData.CarGenerators => throw new NotSupportedException();
-        IPlayerInfo ISaveData.PlayerInfo => PlayerInfo;
-
-        IReadOnlyList<ISaveDataObject> ISaveData.Blocks => new List<SaveDataObject>()
-        {
-            SimpleVars,
-            Scripts,
-            Garages,
-            PlayerInfo,
-            Stats
-        };
 
         public static LCSSave Load(string path)
         {
