@@ -14,7 +14,7 @@ namespace GTASaveData
     /// The Load/Save functionality mimics that of the games themselves for the best data accuracy.
     /// </remarks>
     public abstract class SaveFileGTA3VC<P> : SaveFile<P>, IDisposable
-        where P : SerialiationParamsGTA3VC, new()
+        where P : SerializationParamsGTA3VC, new()
     {
         private bool m_disposed;
 

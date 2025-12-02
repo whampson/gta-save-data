@@ -6,7 +6,7 @@ namespace GTASaveData.GTA3
     /// <summary>
     /// Serialization parameters for GTA3 save files.
     /// </summary>
-    public class GTA3SaveParams : SerialiationParamsGTA3VC
+    public class GTA3SaveParams : SerializationParamsGTA3VC
     {
         public const int FlagPS2AU = 0x01;
         public const int FlagPS2JP = 0x02;
@@ -80,7 +80,7 @@ namespace GTASaveData.GTA3
 
 
         // ---------- RunningScript ----------
-        
+
         /// <summary>
         /// The number of local variables to store per script.
         /// </summary>
