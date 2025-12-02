@@ -17,7 +17,7 @@ namespace GTASaveData
     /// thesee differing data layouts. It does NOT reveal information about the game script version
     /// or other game differences.
     /// </remarks>
-    public struct FileType : IEquatable<FileType>
+    public readonly struct FileType : IEquatable<FileType>
     {
         /// <summary>
         /// Placeholder generic <see cref="FileType"/>.
