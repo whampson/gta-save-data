@@ -547,7 +547,7 @@ namespace GTASaveData.GTA3
         protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             var p = (GTA3SaveParams) prm;
-            
+
             if (p.IsDE)
             {
                 int titleSize = buf.ReadInt32();
@@ -745,7 +745,7 @@ namespace GTASaveData.GTA3
                 buf.Write(CheatedFlag);
             }
 
-            Debug.Assert(buf.Offset == GetSize(p));
+            Debug.Assert(buf.Offset == GetSize(p)); // TODO: [2025-12-02] I think SizeOf<SimpleVariables>(p) is much clearer than GetSize(p)
         }
 
         protected override int GetSize(SerializationParams prm)
