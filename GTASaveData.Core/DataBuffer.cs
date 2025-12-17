@@ -10,6 +10,19 @@ using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
+// TODO: need to just add a SerializarionParams member to this class
+// and forget about passing it as a parameter everywhere...
+// consider this:
+//
+//  DataBuffer<GTA4Save> buf;
+//  class DataBuffer<T> where T : ISerializationParams
+//  class Gta4Save : ISerializationParams
+//  using (DataBuffer<Gta4Save> buf = ...) {
+//      if (buf.Params.IsSomethingSpecificToGta4) {
+//          ...
+//      }
+//  }
+
 namespace GTASaveData
 {
     /// <summary>
@@ -25,19 +38,8 @@ namespace GTASaveData
         private static readonly byte[] DefaultPaddingBytes = new byte[1] { 0 };
 
         private readonly MemoryStream m_buffer;
-        private byte[] m_paddingBytes;
+        private readonly SerializationParams m_params;
         private bool m_disposed;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to read and write data in big-endian byte order.
-        /// </summary>
-        /// <remarks>
-        /// The endianness of serialized structs is determined by the host CPU. If you need to control
-        /// the endianness of a structure, consider implementing <see cref="ISaveDataObject"/> and using
-        /// <see cref="ReadObject{T}(SerializationParams)"/> and <see cref="Write(ISaveDataObject, SerializationParams)"/>
-        /// to serialize your struct.
-        /// </remarks>
-        public bool BigEndian { get; set; }
 
         /// <summary>
         /// Gets or sets a saved position in the buffer.
@@ -62,22 +64,51 @@ namespace GTASaveData
         /// <summary>
         /// Gets or sets the padding type.
         /// </summary>
-        public PaddingScheme PaddingType { get; set; }
+        public PaddingScheme PaddingType
+        {
+            get { return m_params.PaddingType; }
+            set { m_params.PaddingType = value; }
+        }
 
         /// <summary>
         /// Gets or sets the pattern used when the padding type is <see cref="PaddingScheme.Pattern"/>.
         /// </summary>
         public byte[] PaddingBytes
-        { 
-            get { return m_paddingBytes; }
-            set { m_paddingBytes = value ?? DefaultPaddingBytes; }
+        {
+            get { return m_params.PaddingBytes; }
+            set { m_params.PaddingBytes = value ?? DefaultPaddingBytes; }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to read and write data in big-endian byte order.
+        /// </summary>
+        /// <remarks>
+        /// The endianness of serialized structs is determined by the host CPU. If you need to control
+        /// the endianness of a structure, consider implementing <see cref="ISaveDataObject"/> and using
+        /// <see cref="ReadObject{T}(SerializationParams)"/> and <see cref="Write(ISaveDataObject, SerializationParams)"/>
+        /// to serialize your struct.
+        /// </remarks>
+        public bool BigEndian
+        {
+            get { return m_params.BigEndian; }
+            set { m_params.BigEndian = value; }
+        }
+
+private DataBuffer(MemoryStream buffer, SerializationParams p)
+        {
+            m_buffer = buffer;
+            m_params = p;
         }
 
         /// <summary>
         /// Creates a new expandable <see cref="DataBuffer"/>.
         /// </summary>
         public DataBuffer()
-            : this(new MemoryStream())
+            : this(new MemoryStream(), new SerializationParams())
+        { }
+
+        public DataBuffer(SerializationParams p)
+            : this(new MemoryStream(), p)
         { }
 
         /// <summary>
@@ -85,7 +116,11 @@ namespace GTASaveData
         /// </summary>
         /// <param name="data">The data to contain within the buffer.</param>
         public DataBuffer(byte[] data)
-            : this(new MemoryStream(data))
+            : this(new MemoryStream(data), new SerializationParams())
+        { }
+
+        public DataBuffer(byte[] data, SerializationParams p)
+            : this(new MemoryStream(data), p)
         { }
 
         /// <summary>
@@ -93,14 +128,12 @@ namespace GTASaveData
         /// </summary>
         /// <param name="size">The buffer size.</param>
         public DataBuffer(int size)
-            : this(new byte[size])
+            : this(new byte[size], new SerializationParams())
         { }
 
-        private DataBuffer(MemoryStream buffer)
-        {
-            m_buffer = buffer;
-            PaddingBytes = DefaultPaddingBytes;
-        }
+        public DataBuffer(int size, SerializationParams p)
+            : this(new byte[size], p)
+        { }
 
         /// <summary>
         /// Reads a generic value.
@@ -139,13 +172,8 @@ namespace GTASaveData
         /// <see cref="string"/>,
         /// <see cref="ISaveDataObject"/>.
         /// </exception>
-        internal int GenericRead<T>(SerializationParams p,
-            out T obj,
-            int length = 0,
-            bool unicode = false)
+        internal int GenericRead<T>(out T obj, int length = 0, bool unicode = false)
         {
-            p ??= new SerializationParams();
-
             Type t = typeof(T);
             if (t.IsEnum) t = Enum.GetUnderlyingType(t);
 
@@ -171,10 +199,10 @@ namespace GTASaveData
             else if (t.Implements(typeof(ISaveDataObject)))
             {
                 var tp = new Type[] { typeof(SerializationParams) };
-                var m = GetType().GetMethod(nameof(ReadObject), tp).MakeGenericMethod(t);
+                var m = GetType().GetMethods().Single(mi => mi.Name == nameof(ReadObject) && mi.GetParameters().Count() == 0).MakeGenericMethod(t);
                 try
                 {
-                    o = m.Invoke(this, new object[] { p });
+                    o = m.Invoke(this, new object[] { });
                 }
                 catch (TargetInvocationException ex)
                 {
@@ -389,7 +417,7 @@ namespace GTASaveData
         /// </summary>
         /// <param name="unicode">A value indicating whether to read 16-bit characters.</param>
         /// <exception cref="EndOfStreamException"/>
-        public string ReadString(bool unicode = false)
+        public string ReadString(bool unicode = false)                          // TODO: [2025-12-02] rename to ReadChars(), make ReadString() read zero-terminated string
         {
             string s = "";
             char c;
@@ -413,7 +441,7 @@ namespace GTASaveData
         /// <param name="length">The number of characters to read.</param>
         /// <exception cref="ArgumentOutOfRangeException"/>
         /// <exception cref="EndOfStreamException"/>
-        public string ReadString(int length, bool unicode = false)
+        public string ReadString(int length, bool unicode = false)              // TODO: [2025-12-02] rename to ReadChars(), make ReadString() read zero-terminated string
         {
             if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
             if (length == 0) return ReadString(unicode);
@@ -438,6 +466,45 @@ namespace GTASaveData
             return s;
         }
 
+        private static void ReverseEndianness(Type type, byte[] data, int offset = 0)
+        {
+            if (type.IsPrimitive)
+            {
+                Array.Reverse(data);
+                return;
+            }
+
+            foreach (var field in type.GetFields())
+            {
+                var fieldType = field.FieldType;
+                if (fieldType == typeof(string) ||
+                    fieldType == typeof(char[]) ||
+                    field.IsStatic)
+                {
+                    continue;
+                }
+
+                if (fieldType.IsEnum)
+                {
+                    fieldType = fieldType.GetEnumUnderlyingType();
+                }
+
+                int fieldOffset = Marshal.OffsetOf(type, field.Name).ToInt32();
+                int fieldSize = Marshal.SizeOf(fieldType);
+                int effectiveOffset = offset + fieldOffset;
+
+                var subFields = fieldType.GetFields().Where(x => x.IsStatic == false).ToArray();
+                if (subFields.Length == 0)
+                {
+                    Array.Reverse(data, effectiveOffset, fieldSize);
+                }
+                else
+                {
+                    ReverseEndianness(fieldType, data, effectiveOffset);
+                }
+            }
+        }
+
         /// <summary>
         /// Reads a structure.
         /// </summary>
@@ -451,12 +518,17 @@ namespace GTASaveData
         /// <exception cref="EndOfStreamException"/>
         public T ReadStruct<T>() where T : struct
         {
-            var size = Marshal.SizeOf<T>();
+            Type type = typeof(T);
+            if (type.IsEnum)
+                type = type.GetEnumUnderlyingType();
+
+            var size = Marshal.SizeOf(type);
             var pObj = Marshal.AllocHGlobal(size);
             var data = ReadBytes(size);
-
+            if (BigEndian)
+                ReverseEndianness(type, data);    // TODO: what if our machine is big-endian?
             Marshal.Copy(data, 0, pObj, size);
-            T obj = Marshal.PtrToStructure<T>(pObj);
+            T obj = (T) Marshal.PtrToStructure(pObj, type);
             Marshal.FreeHGlobal(pObj);
 
             return obj;
@@ -470,21 +542,7 @@ namespace GTASaveData
         public T ReadObject<T>() where T : ISaveDataObject, new()
         {
             T obj = new T();
-            obj.ReadData(this, new SerializationParams());
-
-            return obj;
-        }
-
-        /// <summary>
-        /// Reads an <see cref="ISaveDataObject"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of <see cref="ISaveDataObject"/> to read.</typeparam>
-        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is read.</param>
-        /// <exception cref="EndOfStreamException"/>
-        public T ReadObject<T>(SerializationParams p) where T : ISaveDataObject, new()
-        {
-            T obj = new T();
-            obj.ReadData(this, p);
+            obj.ReadData(this, m_params);
 
             return obj;
         }
@@ -494,12 +552,12 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The type of <see cref="ISaveDataObject"/> to read.</typeparam>
         /// <param name="obj">the object to populate.</param>
-        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is read.</param>
         /// <exception cref="EndOfStreamException"/>
-        public int ReadObject<T>(T obj, SerializationParams p) where T : ISaveDataObject
+        public int ReadObject<T>(T obj) where T : ISaveDataObject
         {
-            return obj.ReadData(this, p);
+            return obj.ReadData(this, m_params);
         }
+
 
         /// <summary>
         /// Reads an array of type <typeparamref name="T"/>.
@@ -516,37 +574,12 @@ namespace GTASaveData
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException"/>
         /// <exception cref="EndOfStreamException"/>
-        public T[] ReadArray<T>(int count,
-            int itemLength = 0,
-            bool unicode = false)
-        {
-            return ReadArray<T>(count, new SerializationParams(), itemLength, unicode);
-        }
-
-        /// <summary>
-        /// Reads an array of type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The array element type.</typeparam>
-        /// <param name="count">The number of elements to read.</param>
-        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is read per element.</param>
-        /// <param name="itemLength">
-        /// The number of bytes/characters to read per element if <typeparamref name="T"/> is
-        /// <see cref="byte"/>[], <see cref="bool"/>, or <see cref="string"/>.
-        /// </param>
-        /// <param name="unicode">
-        /// A value indicating whether to read 16-bit characters if
-        /// <typeparamref name="T"/> is a <see cref="char"/> or <see cref="string"/>.
-        /// </param>
-        /// <exception cref="ArgumentOutOfRangeException"/>
-        /// <exception cref="EndOfStreamException"/>
-        public T[] ReadArray<T>(int count, SerializationParams p,
-            int itemLength = 0,
-            bool unicode = false)
+        public T[] ReadArray<T>(int count, int itemLength = 0, bool unicode = false)
         {
             List<T> items = new List<T>();
             for (int i = 0; i < count; i++)
             {
-                GenericRead(p, out T obj, itemLength, unicode);
+                GenericRead(out T obj, itemLength, unicode);
                 items.Add(obj);
             }
 
@@ -558,7 +591,6 @@ namespace GTASaveData
         /// </summary>
         /// <typeparam name="T">The type of data to write.</typeparam>
         /// <param name="value">The <typeparamref name="T"/> value to write.</param>
-        /// <param name="p">The <see cref="SerializationParams"/>, if applicable.</param>
         /// <param name="length">
         /// The number of bytes/characters to write if <paramref name="value"/> is a
         /// <see cref="byte"/>[], <see cref="bool"/> or <see cref="string"/>.
@@ -588,12 +620,8 @@ namespace GTASaveData
         /// <see cref="string"/>,
         /// <see cref="ISaveDataObject"/>.
         /// </exception>
-        internal int GenericWrite<T>(T value, SerializationParams p,
-            int length = 0,
-            bool unicode = false)
+        internal int GenericWrite<T>(T value, int length = 0, bool unicode = false)
         {
-            p ??= new SerializationParams();
-
             Type t = typeof(T);
             if (t.IsEnum) t = Enum.GetUnderlyingType(t);
 
@@ -615,7 +643,7 @@ namespace GTASaveData
             else if (t == typeof(short)) return Write(Convert.ToInt16(value));
             else if (t == typeof(ushort)) return Write(Convert.ToUInt16(value));
             else if (t == typeof(string)) return Write(Convert.ToString(value), length, unicode);
-            else if (t.Implements(typeof(ISaveDataObject))) return Write((ISaveDataObject) value, p);
+            else if (t.Implements(typeof(ISaveDataObject))) return Write((ISaveDataObject) value);
             else if (t.IsValueType) return Write(t, value);
             else throw SerializationNotSupported(typeof(T));
         }
@@ -998,6 +1026,9 @@ namespace GTASaveData
 
         private int Write(Type t, object obj)
         {
+            if (t.IsEnum)
+                t = t.GetEnumUnderlyingType();
+
             var size = Marshal.SizeOf(t);
             var pObj = Marshal.AllocHGlobal(size);
             var data = new byte[size];
@@ -1006,11 +1037,14 @@ namespace GTASaveData
             Marshal.Copy(pObj, data, 0, size);
             Marshal.FreeHGlobal(pObj);
 
+            if (BigEndian)
+                ReverseEndianness(t, data);    // TODO: what if our machine is big-endian?
+
             return Write(data);
         }
 
         /// <summary>
-        /// Writes an <see cref="ISaveDataObject"/>.
+        /// Writes an <see cref="ISaveDataObject"/> using the specified data format.
         /// </summary>
         /// <param name="value">The object to write.</param>
         /// <returns>The number of bytes written.</returns>
@@ -1018,21 +1052,8 @@ namespace GTASaveData
         /// <exception cref="EndOfStreamException"/>
         public int Write(ISaveDataObject value)
         {
-            return Write(value, new SerializationParams());
-        }
-
-        /// <summary>
-        /// Writes an <see cref="ISaveDataObject"/> using the specified data format.
-        /// </summary>
-        /// <param name="value">The object to write.</param>
-        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is written.</param>
-        /// <returns>The number of bytes written.</returns>
-        /// <exception cref="ArgumentNullException"/>
-        /// <exception cref="EndOfStreamException"/>
-        public int Write(ISaveDataObject value, SerializationParams p)
-        {
             if (value == null) throw new ArgumentNullException(nameof(value));
-            return value.WriteData(this, p);
+            return value.WriteData(this, m_params);
         }
 
         /// <summary>
@@ -1054,35 +1075,6 @@ namespace GTASaveData
         /// <exception cref="ArgumentOutOfRangeException"/>
         /// <exception cref="EndOfStreamException"/>
         public int Write<T>(T[] items,
-            int? count = null,
-            int itemLength = 0,
-            bool unicode = false)
-            where T : new()
-        {
-            return Write(items, new SerializationParams(), count, itemLength, unicode);
-        }
-
-        /// <summary>
-        /// Writes an array of type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The array element type.</typeparam>
-        /// <param name="items">The elements to write.</param>
-        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is written per element.</param>
-        /// <param name="count">The number of elements to write. If this value is null, the entire array will be written.</param>
-        /// <param name="itemLength">
-        /// The number of bytes/characters to write per element if <typeparamref name="T"/> is
-        /// <see cref="byte"/>[], <see cref="bool"/>, or <see cref="string"/>.
-        /// </param>
-        /// <param name="unicode">
-        /// A value indicating whether to read 16-bit characters if
-        /// <typeparamref name="T"/> is a <see cref="char"/> or <see cref="string"/>.
-        /// </param>
-        /// <returns>The number of bytes written.</returns>
-        /// <exception cref="ArgumentNullException"/>
-        /// <exception cref="ArgumentOutOfRangeException"/>
-        /// <exception cref="EndOfStreamException"/>
-        public int Write<T>(T[] items,
-            SerializationParams p,
             int? count = null,
             int itemLength = 0,
             bool unicode = false)
@@ -1097,8 +1089,8 @@ namespace GTASaveData
             for (int i = 0; i < (count ?? capacity); i++)
             {
                 bytesWritten += (i < capacity)
-                    ? GenericWrite(items.ElementAt(i), p, itemLength, unicode)
-                    : GenericWrite(new T(), p, itemLength, unicode);
+                    ? GenericWrite(items.ElementAt(i), itemLength, unicode)
+                    : GenericWrite(new T(), itemLength, unicode);
             }
 
             return bytesWritten;
@@ -1128,37 +1120,8 @@ namespace GTASaveData
             bool unicode = false)
             where T : new()
         {
-            return Write(items, new SerializationParams(), count, itemLength, unicode);
-        }
-
-        /// <summary>
-        /// Writes an array of type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The array element type.</typeparam>
-        /// <param name="items">The elements to write.</param>
-        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is written per element.</param>
-        /// <param name="count">The number of elements to write. If this value is null, the entire array will be written.</param>
-        /// <param name="itemLength">
-        /// The number of bytes/characters to write per element if <typeparamref name="T"/> is
-        /// <see cref="byte"/>[], <see cref="bool"/>, or <see cref="string"/>.
-        /// </param>
-        /// <param name="unicode">
-        /// A value indicating whether to read 16-bit characters if
-        /// <typeparamref name="T"/> is a <see cref="char"/> or <see cref="string"/>.
-        /// </param>
-        /// <returns>The number of bytes written.</returns>
-        /// <exception cref="ArgumentNullException"/>
-        /// <exception cref="ArgumentOutOfRangeException"/>
-        /// <exception cref="EndOfStreamException"/>
-        public int Write<T>(ObservableArray<T> items,
-            SerializationParams p,
-            int? count = null,
-            int itemLength = 0,
-            bool unicode = false)
-            where T : new()
-        {
             if (items == null) throw new ArgumentNullException(nameof(items));
-            return Write(items.ToArray(), p, count, itemLength, unicode);
+            return Write(items.ToArray(), count, itemLength, unicode);
         }
 
         /// <summary>
@@ -1251,7 +1214,7 @@ namespace GTASaveData
                     {
                         pad[i] = seq[i % seq.Length];
                     }
-                    
+
                     return Write(pad);
                 }
 
@@ -1260,7 +1223,7 @@ namespace GTASaveData
                     byte[] pad = new byte[count];
                     Random rand = new Random();
                     rand.NextBytes(pad);
-                    
+
                     return Write(pad);
                 }
             }

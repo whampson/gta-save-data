@@ -52,8 +52,10 @@ namespace GTASaveData
         /// </exception>
         public static int Read<T>(byte[] buf, SerializationParams p, out T obj)
         {
-            using DataBuffer stream = CreateDataBufferStream(buf, p);
-            return Read(stream, p, out obj);
+            using (DataBuffer stream = CreateDataBufferStream(buf, p))
+            {
+                return Read(stream, p, out obj);
+            }
         }
 
         /// <summary>
@@ -70,8 +72,10 @@ namespace GTASaveData
         public static int Read<T>(T obj, byte[] buf, SerializationParams p)
             where T : ISaveDataObject
         {
-            using DataBuffer stream = CreateDataBufferStream(buf, p);
-            return Read(obj, stream, p);
+            using (DataBuffer stream = CreateDataBufferStream(buf, p))
+            {
+                return Read(obj, stream, p);
+            }
         }
 
         /// <summary>
@@ -104,7 +108,7 @@ namespace GTASaveData
         /// </exception>
         public static int Read<T>(DataBuffer buf, SerializationParams p, out T obj)
         {
-            return buf.GenericRead(p, out obj);
+            return buf.GenericRead(out obj);
         }
 
         /// <summary>
@@ -151,10 +155,12 @@ namespace GTASaveData
         /// </exception>
         public static int Write<T>(T obj, SerializationParams p, out byte[] data)
         {
-            using DataBuffer stream = CreateDataBufferStream(p);
-            int bytesWritten = stream.GenericWrite(obj, p);
-            data = stream.GetBuffer();
-            return bytesWritten;
+            using (DataBuffer stream = CreateDataBufferStream(p))
+            {
+                int bytesWritten = stream.GenericWrite(obj);
+                data = stream.GetBuffer();
+                return bytesWritten;
+            }
         }
 
         /// <summary>
@@ -230,22 +236,12 @@ namespace GTASaveData
 
         private static DataBuffer CreateDataBufferStream(SerializationParams p)
         {
-            return new DataBuffer()
-            {
-                BigEndian = p.BigEndian,
-                PaddingType = p.PaddingType,
-                PaddingBytes = p.PaddingBytes
-            };
+            return new DataBuffer(p);
         }
 
         private static DataBuffer CreateDataBufferStream(byte[] buf, SerializationParams p)
         {
-            return new DataBuffer(buf)
-            {
-                BigEndian = p.BigEndian,
-                PaddingType = p.PaddingType,
-                PaddingBytes = p.PaddingBytes
-            };
+            return new DataBuffer(buf, p);
         }
     }
 }

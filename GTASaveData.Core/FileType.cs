@@ -164,15 +164,6 @@ namespace GTASaveData
         /// </summary>
         [JsonIgnore] public bool IsDefinitiveEdition => IsSupportedBy(GameVersionId.DefinitiveEdition);
 
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> is supported on Android or iOS.
-        /// </summary>
-        [JsonIgnore] public bool IsMobile => IsAndroid || IsiOS;
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FileType"/> is supported on Microsoft Windows.
-        /// </summary>
-        [JsonIgnore] public bool IsPC => IsWindows;
     }
 
     public enum GameVersionId

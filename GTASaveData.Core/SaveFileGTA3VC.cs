@@ -161,7 +161,7 @@ namespace GTASaveData
                 obj = o;
             }
 
-            int bytesRead = WorkBuff.ReadObject(obj, Params);
+            int bytesRead = WorkBuff.ReadObject(obj);
             WorkBuff.Align4();
 
             Debug.WriteLine($"{typeof(T).Name}: {bytesRead} bytes read");
@@ -185,7 +185,7 @@ namespace GTASaveData
             preSize = WorkBuff.Position;
             WorkBuff.Skip(4);
 
-            size = WorkBuff.Write(obj, Params);
+            size = WorkBuff.Write(obj);
             postData = WorkBuff.Position;
 
             WorkBuff.Seek(preSize);
@@ -227,14 +227,7 @@ namespace GTASaveData
             {
                 WorkBuff.Dispose();
             }
-
-            var p = Params;
-            WorkBuff = new DataBuffer(p.WorkBufferSize)
-            {
-                BigEndian = false,
-                PaddingType = p.PaddingType,
-                PaddingBytes = p.PaddingBytes
-            };
+            WorkBuff = new DataBuffer(Params.WorkBufferSize, Params);
         }
 
         /// <summary>

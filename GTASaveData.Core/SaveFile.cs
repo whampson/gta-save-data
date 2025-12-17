@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTASaveData.Interfaces;
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -15,15 +16,6 @@ namespace GTASaveData
         private Game m_game;
         private P m_params;
 
-        /// <summary>
-        /// The internal name of the save file.
-        /// </summary>
-        public abstract string Title { get; set; }
-
-        /// <summary>
-        /// The time the file was last saved.
-        /// </summary>
-        public abstract DateTime TimeStamp { get; set; }
 
         /// <summary>
         /// The <i>Grand Theft Auto</i> game this save belongs to.
@@ -43,14 +35,21 @@ namespace GTASaveData
             set { m_params = value ?? new P(); OnPropertyChanged(); }
         }
 
-        protected SaveFile(Game game)
+        protected SaveFile(Game game) : this(game, new P()) { }
+
+        protected SaveFile(Game game, P param)
         {
             Game = game;
-            Params = new P();
+            Params = param;
         }
 
-        protected int LoadInternal(string path)
+        private static byte[] ReadBytesFromFile(string path)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
             if (!File.Exists(path))
             {
                 throw new DirectoryNotFoundException(string.Format(Strings.Error_PathNotFound, path));
@@ -62,17 +61,75 @@ namespace GTASaveData
                 throw new InvalidDataException(Strings.Error_InvalidData_FileTooLarge);
             }
 
+            return File.ReadAllBytes(path);
+        }
+
+        private int DoLoad(string path)
+        {
             OnFileLoading(path);
-            byte[] buf = File.ReadAllBytes(path);
-            int bytesRead = LoadInternal(buf);
+            byte[] buf = ReadBytesFromFile(path);
+            int bytesRead = Serializer.Read(this, buf, Params);
             OnFileLoad(path);
 
             return bytesRead;
         }
 
-        protected int LoadInternal(byte[] buf)
+        protected static T LoadFromFile<T>(string path, Game game, P param, out int bytesRead) where T : SaveFile<P>, new()
         {
-            return Serializer.Read(this, buf, Params);
+            T save = new T()
+            {
+                Game = game,
+                Params = param ?? throw new ArgumentNullException(nameof(param))
+            };
+
+            bytesRead = save.DoLoad(path);
+            return save;
+        }
+
+        protected static bool TryLoadFromFile<T>(string path, Game game, P param, out T saveData) where T : SaveFile<P>, new()
+        {
+            if (path == null) throw new ArgumentNullException(nameof(path));
+
+            try
+            {
+                saveData = LoadFromFile<T>(path, game, param, out _);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (!(ex is InvalidDataException &&
+                      ex is SerializationException &&
+                      ex is DirectoryNotFoundException))
+                {
+                    throw;
+                }
+            }
+
+            saveData = null;
+            return false;
+        }
+
+        public static bool TryGetFileType<T>(string path, out FileType t) where T : SaveFile<P>, new()
+        {
+            if (path == null) throw new ArgumentNullException(nameof(path));
+
+            try
+            {
+                byte[] data = ReadBytesFromFile(path);
+                return new T().DetectFileType(data, out t);
+            }
+            catch (Exception ex)
+            {
+                if (!(ex is InvalidDataException &&
+                      ex is SerializationException &&
+                      ex is DirectoryNotFoundException))
+                {
+                    throw;
+                }
+            }
+
+            t = FileType.Default;
+            return false;
         }
 
 
@@ -98,7 +155,7 @@ namespace GTASaveData
         /// <returns>The number of bytes written.</returns>
         public int Save(out byte[] buf)
         {
-            return Serializer.Write(this, Params, out buf);
+            return Serializer.Write(this, Params, out buf); // TODO: need to fire file saving event here...
         }
 
         protected override void ReadData(DataBuffer buf, SerializationParams p)
@@ -126,12 +183,17 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Deserializes all data from the buffer.
+        /// Attempts to determine the file type from the data provided. This function is not meant to be called directly.
+        /// </summary>
+        protected abstract bool DetectFileType(byte[] buf, out FileType t);
+
+        /// <summary>
+        /// Deserializes all data from the buffer. This function is not meant to be called directly.
         /// </summary>
         protected abstract void Load(DataBuffer buf);
 
         /// <summary>
-        /// Serializes all data to the buffer.
+        /// Serializes all data to the buffer. This function is not meant to be called directly.
         /// </summary>
         protected abstract void Save(DataBuffer buf);
 

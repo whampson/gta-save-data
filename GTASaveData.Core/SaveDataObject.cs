@@ -98,10 +98,7 @@ namespace GTASaveData
 
         int ISaveDataObject.ReadData(DataBuffer buf, SerializationParams p)
         {
-            int oldMark, start, len;
-
-            oldMark = buf.MarkedPosition;
-            buf.Mark();
+            int start, len;
             start = buf.Position;
 
             OnReading(p);
@@ -109,17 +106,12 @@ namespace GTASaveData
             OnRead(p);
 
             len = buf.Position - start;
-            buf.MarkedPosition = oldMark;
-
             return len;
         }
 
         int ISaveDataObject.WriteData(DataBuffer buf, SerializationParams p)
         {
-            int oldMark, start, len;
-
-            oldMark = buf.MarkedPosition;
-            buf.Mark();
+            int start, len;
             start = buf.Position;
 
             OnWriting(p);
@@ -127,8 +119,6 @@ namespace GTASaveData
             OnWrite(p);
 
             len = buf.Position - start;
-            buf.MarkedPosition = oldMark;
-
             return len;
         }
 

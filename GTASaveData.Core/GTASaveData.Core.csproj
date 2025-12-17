@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <AssemblyName>GTASaveData.Core</AssemblyName>
     <RootNamespace>GTASaveData</RootNamespace>
     <Authors>Wes Hampson</Authors>
@@ -9,8 +9,8 @@
     <Product>GTASaveData</Product>
     <Description>GTASaveData core framework library.</Description>
     <Copyright>(C) 2019-2022 Wes Hampson</Copyright>
-    <AssemblyVersion>2.0.0.1351</AssemblyVersion>
-    <FileVersion>2.0.0.1209</FileVersion>
+    <AssemblyVersion>2.0.0.1403</AssemblyVersion>
+    <FileVersion>2.0.0.1261</FileVersion>
     <Version>2.0.0</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
