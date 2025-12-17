@@ -5,7 +5,21 @@ using GTASaveData.Interfaces;
 
 namespace GTASaveData.IV
 {
-    public class SimpleVariables : SaveDataObject, ISimpleVariables,
+
+    // TODO: Copied from VC; verify/update for GTA IV
+    public enum WeatherType
+    {
+        None = -1,
+        Sunny,
+        Cloudy,
+        Rainy,
+        Foggy,
+        ExtraSunny,
+        Hurricane,
+        ExtraColors
+    }
+
+    public class SimpleVariables : Block,
         IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
         private int m_closestSafehouseIndex;
@@ -303,24 +317,6 @@ namespace GTASaveData.IV
             set { m_unknownACh = value; OnPropertyChanged(); }
         }
 
-        int ISimpleVariables.OldWeatherType
-        {
-            get { return (int) OldWeatherType; }
-            set { OldWeatherType = (WeatherType) value; OnPropertyChanged(); }
-        }
-
-        int ISimpleVariables.NewWeatherType
-        {
-            get { return (int) NewWeatherType; }
-            set { NewWeatherType = (WeatherType) value; OnPropertyChanged(); }
-        }
-
-        int ISimpleVariables.ForcedWeatherType
-        {
-            get { return (int) ForcedWeatherType; }
-            set { ForcedWeatherType = (WeatherType) value; OnPropertyChanged(); }
-        }
-
         public SimpleVariables()
         {
             CameraPosition = new Vector3();
@@ -371,19 +367,17 @@ namespace GTASaveData.IV
             UnknownACh = other.UnknownACh;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
+            BlockHeader head = ReadBlockHeader(buf);
+            buf.Mark();
+
             ClosestSafehouseIndex = buf.ReadInt32();
             FadeInAfterLoad = buf.ReadBool();
-            buf.Skip(3);
+            _ = buf.Skip(3);
             Unknown04h = buf.ReadInt32();
             Unknown08h = buf.ReadInt32();
-            CameraPosition = new Vector3()
-            {
-                X = buf.ReadFloat(),
-                Y = buf.ReadFloat(),
-                Z = buf.ReadFloat(),
-            };
+            CameraPosition = buf.ReadStruct<Vector3>();
             Unknown1Ch = buf.ReadInt32();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
@@ -393,7 +387,7 @@ namespace GTASaveData.IV
             GameClockMinutes = buf.ReadInt32();
             GameClockDayOfWeek = buf.ReadInt32();
             HasPlayerCheated = buf.ReadBool();
-            buf.Skip(3);
+            _ = buf.Skip(3);
             TimeInMilliseconds = buf.ReadUInt32();
             FrameCounter = buf.ReadUInt32();
             OldWeatherType = (WeatherType) buf.ReadInt32();
@@ -428,8 +422,10 @@ namespace GTASaveData.IV
             Debug.Assert(buf.Offset == SizeOf<SimpleVariables>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
+            base.WriteData(buf, prm);
+
             buf.Write(ClosestSafehouseIndex);
             buf.Write(FadeInAfterLoad);
             buf.Write(Unknown04h);
@@ -478,7 +474,7 @@ namespace GTASaveData.IV
             Debug.Assert(buf.Offset == SizeOf<SimpleVariables>());
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
             return 0xB0;
         }
@@ -538,22 +534,9 @@ namespace GTASaveData.IV
                 && UnknownACh.Equals(other.UnknownACh);
         }
 
-        public SimpleVariables DeepClone()
+        public new SimpleVariables DeepClone()
         {
             return new SimpleVariables(this);
         }
-    }
-
-    // TODO: Copied from VC. Fix for GTA IV
-    public enum WeatherType
-    {
-        None = -1,
-        Sunny,
-        Cloudy,
-        Rainy,
-        Foggy,
-        ExtraSunny,
-        Hurricane,
-        ExtraColours
     }
 }

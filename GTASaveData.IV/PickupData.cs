@@ -1,30 +1,33 @@
-﻿using System;
+﻿using GTASaveData.Interfaces;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using GTASaveData.Interfaces;
 
 namespace GTASaveData.IV
 {
-    public class PickupData : SaveDataObject,
-        IEquatable<PickupData>, IDeepClonable<PickupData>
+    public class PickupData : Block,
+        IEquatable<PickupData>, IDeepClonable<PickupData>,
+        IEnumerable<Pickup>
     {
-        public const int MaxPickupsCount = 650;
+        public const int MaxNumPickups = 650;
 
-        private int m_pickupsCount;
-        private ObservableArray<Pickup> m_pickupsArray;
+        private int m_numPickups;
+        private ObservableArray<Pickup> m_Pickups;
         private byte m_weaponPickupMessagesRemaining;
         private int m_unknown;
 
-        public int PickupsCount
+        public int NumPickups
         {
-            get { return m_pickupsCount; }
-            set { m_pickupsCount = value; OnPropertyChanged(); }
+            get { return m_numPickups; }
+            set { m_numPickups = value; OnPropertyChanged(); }
         }
 
-        public ObservableArray<Pickup> PickupsArray
+        public ObservableArray<Pickup> Pickups
         {
-            get { return m_pickupsArray; }
-            set { m_pickupsArray = value; OnPropertyChanged(); }
+            get { return m_Pickups; }
+            set { m_Pickups = value; OnPropertyChanged(); }
         }
 
         public byte WeaponPickupMessagesRemaining
@@ -41,35 +44,43 @@ namespace GTASaveData.IV
 
         public PickupData()
         {
-            PickupsArray = new ObservableArray<Pickup>();
+            Pickups = ArrayHelper.CreateArray<Pickup>(MaxNumPickups);
         }
 
         public PickupData(PickupData other)
         {
-            PickupsCount = other.PickupsCount;
-            PickupsArray = ArrayHelper.DeepClone(other.PickupsArray);
+            NumPickups = other.NumPickups;
+            Pickups = ArrayHelper.DeepClone(other.Pickups);
             WeaponPickupMessagesRemaining = other.WeaponPickupMessagesRemaining;
             Unknown = other.Unknown;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            PickupsCount = buf.ReadInt32();
-            PickupsArray = buf.ReadArray<Pickup>(MaxPickupsCount);
+            BlockHeader head = ReadBlockHeader(buf);
+            buf.Mark();
+
+            NumPickups = buf.ReadInt32();
+            Pickups = buf.ReadArray<Pickup>(MaxNumPickups);
             WeaponPickupMessagesRemaining = buf.ReadByte();
             Unknown = buf.ReadInt32();
 
             Debug.Assert(buf.Offset == SizeOf<PickupData>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            buf.Write(PickupsCount);
-            buf.Write(PickupsArray, MaxPickupsCount);
+            buf.Write(NumPickups);
+            buf.Write(Pickups, MaxNumPickups);
             buf.Write(WeaponPickupMessagesRemaining);
             buf.Write(Unknown);
 
             Debug.Assert(buf.Offset == SizeOf<PickupData>());
+        }
+
+        protected override int GetSize(SerializationParams p)
+        {
+            return 0xD551;  // TODO: calculate this
         }
 
         public override bool Equals(object obj)
@@ -84,20 +95,25 @@ namespace GTASaveData.IV
                 return false;
             }
 
-            return PickupsCount.Equals(other.PickupsCount)
-                && PickupsArray.SequenceEqual(other.PickupsArray)
+            return NumPickups.Equals(other.NumPickups)
+                && Pickups.SequenceEqual(other.Pickups)
                 && WeaponPickupMessagesRemaining.Equals(other.WeaponPickupMessagesRemaining)
                 && Unknown.Equals(other.Unknown);
         }
 
-        protected override int GetSize(FileType fmt)
-        {
-            return 0xD551;  // TODO calculate
-        }
-
-        public PickupData DeepClone()
+        public new PickupData DeepClone()
         {
             return new PickupData(this);
+        }
+
+        public IEnumerator<Pickup> GetEnumerator()
+        {
+            return Pickups.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
