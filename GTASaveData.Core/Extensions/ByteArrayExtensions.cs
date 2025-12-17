@@ -1,55 +1,57 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GTASaveData.Extensions
 {
     public static class ByteArrayExtensions
     {
-        /// <summary>
-        /// Gets the index in the array of the first occurrence of a sequence.
-        /// </summary>
-        /// <param name="arr">The array to search.</param>
-        /// <param name="seq">The sequence to search for.</param>
-        /// <param name="start">The starting offset in the array.</param>
-        /// <returns>The index of the first occurrence of the sequence, or -1 if not found.</returns>
-        public static int FindFirst(this byte[] arr, byte[] seq, int start = 0)
+        static readonly int[] Empty = new int[0];
+
+        public static int[] FindAll(this byte[] src, byte[] seq)
         {
-            if (arr.Length < seq.Length) throw new ArgumentException(Strings.Error_Argument_SequenceTooBig, nameof(seq));
-            if (seq == null) throw new ArgumentNullException(nameof(seq));
-            if (start < 0) throw new ArgumentOutOfRangeException(nameof(start));
+            if (IsFindEmpty(src, seq))
+                return Empty;
 
-            int searchLen = arr.Length - seq.Length + 1;
-            if (start >= searchLen) throw new ArgumentOutOfRangeException(nameof(start), Strings.Error_ArgumentOutOfRange_IndexOutOfRange);
+            var list = new List<int>();
+            for (int i = 0; i < src.Length; i++)
+                if (IsFindMatch(src, i, seq))
+                    list.Add(i);
 
-            if (arr.Length == 0 || seq.Length == 0)
-            {
-                return -1;
-            }
-
-            int index = -1;
-            for (int i = start; i < searchLen; i++)
-            {
-                if (arr[i] == seq[0])
-                {
-                    // First byte match, lookahead for the rest
-                    bool match = true;
-                    for (int k = 1; k < arr.Length - 1 && k < seq.Length; k++)
-                    {
-                        if (arr[i + k] != seq[k])
-                        {
-                            match = false;
-                            break;
-                        }
-                    }
-
-                    if (match)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-            }
-
-            return index;
+            return list.Count == 0 ? Empty : list.ToArray();
         }
+
+        public static int FindFirst(this byte[] src, byte[] seq)
+        {
+            if (IsFindEmpty(src, seq))
+                return -1;
+
+            for (int i = 0; i < src.Length; i++)
+                if (IsFindMatch(src, i, seq))
+                    return i;
+
+            return -1;
+        }
+
+        private static bool IsFindEmpty(byte[] src, byte[] seq)
+        {
+            return src == null || seq == null ||
+                src.Length == 0 || seq.Length == 0 ||
+                src.Length < seq.Length;
+        }
+
+        private static bool IsFindMatch(byte[] src, int pos, byte[] seq)
+        {
+            if ((src.Length - pos) < seq.Length)
+                return false;
+
+            for (int i = 0; i < seq.Length; i++)
+                if (src[pos + i] != seq[i])
+                    return false;
+
+            return true;
+        }
+
+        // look ma, no braces!
     }
 }
