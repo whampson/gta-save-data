@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -13,11 +14,11 @@ namespace GTASaveData.GTA3
         public const int MaxNumPickups = 336;
         public const int MaxNumCollectedPickups = 20;
 
-        private Array<Pickup> m_pickUps;
+        private ObservableArray<Pickup> m_pickUps;
         private short m_collectedPickupIndex;
-        private Array<int> m_pickUpsCollected;
+        private ObservableArray<int> m_pickUpsCollected;
 
-        public Array<Pickup> Pickups
+        public ObservableArray<Pickup> Pickups
         {
             get { return m_pickUps; }
             set { m_pickUps = value; OnPropertyChanged(); }
@@ -29,16 +30,10 @@ namespace GTASaveData.GTA3
             set { m_collectedPickupIndex = value; OnPropertyChanged(); }
         }
 
-        public Array<int> PickupsCollected
+        public ObservableArray<int> PickupsCollected
         {
             get { return m_pickUpsCollected; }
             set { m_pickUpsCollected = value; OnPropertyChanged(); }
-        }
-
-        public Pickup this[int i]
-        {
-            get { return Pickups[i]; }
-            set { Pickups[i] = value; OnPropertyChanged(); }
         }
 
         public PickupData()
@@ -54,27 +49,27 @@ namespace GTASaveData.GTA3
             PickupsCollected = ArrayHelper.DeepClone(other.PickupsCollected);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            Pickups = buf.Read<Pickup>(MaxNumPickups);
+            Pickups = buf.ReadArray<Pickup>(MaxNumPickups);
             LastCollectedIndex = buf.ReadInt16();
             buf.ReadInt16();
-            PickupsCollected = buf.Read<int>(MaxNumCollectedPickups);
+            PickupsCollected = buf.ReadArray<int>(MaxNumCollectedPickups);
 
-            Debug.Assert(buf.Offset == SizeOfType<PickupData>());
+            Debug.Assert(buf.Offset == SizeOf<PickupData>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(Pickups, MaxNumPickups);
             buf.Write(LastCollectedIndex);
             buf.Write((short) 0);
             buf.Write(PickupsCollected, MaxNumCollectedPickups);
 
-            Debug.Assert(buf.Offset == SizeOfType<PickupData>());
+            Debug.Assert(buf.Offset == SizeOf<PickupData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x2514;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -49,7 +50,7 @@ namespace GTASaveData.GTA3
             Weapon2 = other.Weapon2;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             VehicleModel = buf.ReadInt32();
             PedModelOverride = buf.ReadSByte();
@@ -57,10 +58,10 @@ namespace GTASaveData.GTA3
             Weapon1 = (WeaponType) buf.ReadInt32();
             Weapon2 = (WeaponType) buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOfType<Gang>());
+            Debug.Assert(buf.Offset == SizeOf<Gang>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(VehicleModel);
             buf.Write(PedModelOverride);
@@ -68,10 +69,10 @@ namespace GTASaveData.GTA3
             buf.Write((int) Weapon1);
             buf.Write((int) Weapon2);
 
-            Debug.Assert(buf.Offset == SizeOfType<Gang>());
+            Debug.Assert(buf.Offset == SizeOf<Gang>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 16;
         }

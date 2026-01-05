@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -9,8 +10,8 @@ namespace GTASaveData.GTA3
     {
         public const int NumModels = 200;
 
-        private Array<StreamingFlags> m_modelFlags;
-        public Array<StreamingFlags> ModelFlags
+        private ObservableArray<StreamingFlags> m_modelFlags;
+        public ObservableArray<StreamingFlags> ModelFlags
         {
             get { return m_modelFlags; }
             set { m_modelFlags = value; OnPropertyChanged(); }
@@ -26,21 +27,21 @@ namespace GTASaveData.GTA3
             ModelFlags = ArrayHelper.DeepClone(other.ModelFlags);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            ModelFlags = buf.Read<StreamingFlags>(NumModels);
+            ModelFlags = buf.ReadArray<StreamingFlags>(NumModels);
 
-            Debug.Assert(buf.Offset == SizeOfType<Streaming>());
+            Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(ModelFlags, NumModels);
 
-            Debug.Assert(buf.Offset == SizeOfType<Streaming>());
+            Debug.Assert(buf.Offset == SizeOf<Streaming>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 200;
         }

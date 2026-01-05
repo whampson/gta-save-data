@@ -1,6 +1,8 @@
 ﻿using GTASaveData.Types;
 using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.LCS
 {
@@ -449,7 +451,7 @@ namespace GTASaveData.LCS
             m_scriptGarageStateChanging = other.m_scriptGarageStateChanging;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             if (fmt.IsPS2)
             {
@@ -638,10 +640,10 @@ namespace GTASaveData.LCS
                 Debug.Assert(buf.Offset == 0xE0);
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<Garage>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Garage>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             if (fmt.IsPS2)
             {
@@ -825,10 +827,10 @@ namespace GTASaveData.LCS
                 Debug.Assert(buf.Offset == 0xE0);
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<Garage>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Garage>(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPS2) return 0x100;
             if (fmt.IsPSP) return 0xE0;

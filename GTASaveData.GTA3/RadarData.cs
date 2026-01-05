@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -12,18 +13,12 @@ namespace GTASaveData.GTA3
     {
         public const int MaxNumRadarBlips = 32;
 
-        private Array<RadarBlip> m_radarBlips;
+        private ObservableArray<RadarBlip> m_radarBlips;
 
-        public Array<RadarBlip> RadarBlips
+        public ObservableArray<RadarBlip> RadarBlips
         {
             get { return m_radarBlips; }
             set { m_radarBlips = value; OnPropertyChanged(); }
-        }
-
-        public RadarBlip this[int i]
-        {
-            get { return RadarBlips[i]; }
-            set { RadarBlips[i] = value; OnPropertyChanged(); }
         }
 
         public RadarData()
@@ -36,24 +31,38 @@ namespace GTASaveData.GTA3
             RadarBlips = ArrayHelper.DeepClone(other.RadarBlips);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        public void DisableBlip(int index)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "RDR");
-            RadarBlips = buf.Read<RadarBlip>(MaxNumRadarBlips);
+            if (index < 0) return;
 
-            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
-            Debug.Assert(size == SizeOfType<RadarData>() - GTA3VCSave.BlockHeaderSize);
+            RadarBlip b = RadarBlips[index];
+            Debug.Assert(b.Index == index);
+
+            b.IsInUse = false;
+            b.Type = RadarBlipType.None;
+            b.Display = RadarBlipDisplay.None;
+            b.Sprite = RadarBlipSprite.None;
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "RDR", SizeOfType<RadarData>() - GTA3VCSave.BlockHeaderSize);
+            int size = GTA3Save.ReadBlockHeader(buf, out string tag);
+            Debug.Assert(tag == "RDR");
+            RadarBlips = buf.ReadArray<RadarBlip>(MaxNumRadarBlips);
+
+            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
+            Debug.Assert(size == SizeOf<RadarData>() - GTA3Save.BlockHeaderSize);
+        }
+
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
+        {
+            GTA3Save.WriteBlockHeader(buf, "RDR", SizeOf<RadarData>() - GTA3Save.BlockHeaderSize);
             buf.Write(RadarBlips, MaxNumRadarBlips);
 
-            Debug.Assert(buf.Offset == SizeOfType<RadarData>());
+            Debug.Assert(buf.Offset == SizeOf<RadarData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x608;
         }

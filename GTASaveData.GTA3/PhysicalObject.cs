@@ -1,6 +1,7 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
+using GTASaveData.Types;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -10,7 +11,7 @@ namespace GTASaveData.GTA3
         private short m_modelIndex;
         private int m_handle;
         private float m_uprootLimit;
-        private ViewMatrix m_objectMatrix;
+        private Matrix m_objectMatrix;
         private ObjectCreatedBy m_createdBy;
         private bool m_isPickup;
         private bool m_isPickupInShop;
@@ -42,7 +43,7 @@ namespace GTASaveData.GTA3
             set { m_uprootLimit = value; OnPropertyChanged(); }
         }
 
-        public ViewMatrix ObjectMatrix
+        private Matrix ObjectMatrix     // Useless
         {
             get { return m_objectMatrix; }
             set { m_objectMatrix = value; OnPropertyChanged(); }
@@ -122,7 +123,7 @@ namespace GTASaveData.GTA3
 
         public PhysicalObject()
         {
-            ObjectMatrix = ViewMatrix.Identity;
+            ObjectMatrix = Matrix.Identity;
             EntityType = EntityType.Object;
         }
 
@@ -132,7 +133,7 @@ namespace GTASaveData.GTA3
             ModelIndex = other.ModelIndex;
             Handle = other.Handle;
             UprootLimit = other.UprootLimit;
-            ObjectMatrix = new ViewMatrix(other.ObjectMatrix);
+            ObjectMatrix = new Matrix(other.ObjectMatrix);
             CreatedBy = other.CreatedBy;
             IsPickup = other.IsPickup;
             IsPickupInShop = other.IsPickupInShop;
@@ -147,15 +148,17 @@ namespace GTASaveData.GTA3
             EndOfLifeTime = other.EndOfLifeTime;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
             ModelIndex = buf.ReadInt16();
             Handle = buf.ReadInt32();
-            Matrix = buf.Read<CompressedViewMatrix>(fmt).Decompress();
-            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
+            Matrix = buf.ReadStruct<CompressedMatrix>().Decompress();
+            if (p.IsPS2JP || !p.IsPS2) buf.Skip(4);
             UprootLimit = buf.ReadFloat();
-            ObjectMatrix = buf.Read<CompressedViewMatrix>(fmt).Decompress();
-            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
+            ObjectMatrix = buf.ReadStruct<CompressedMatrix>().Decompress();
+            if (p.IsPS2JP || !p.IsPS2) buf.Skip(4);
             CreatedBy = (ObjectCreatedBy) buf.ReadByte();
             IsPickup = buf.ReadBool();
             IsPickupInShop = buf.ReadBool();
@@ -168,20 +171,22 @@ namespace GTASaveData.GTA3
             CollisionDamageEffect = buf.ReadByte();
             SpecialCollisionResponseCases = buf.ReadByte();
             EndOfLifeTime = buf.ReadUInt32();
-            LoadEntityFlags(buf, fmt);
+            LoadEntityFlags(buf, prm);
 
-            Debug.Assert(buf.Offset == SizeOfType<PhysicalObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(prm));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
             buf.Write(ModelIndex);
             buf.Write(Handle);
-            buf.Write(Matrix.Compress(), fmt);
-            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
+            buf.Write(Matrix.Compress());
+            if (p.IsPS2JP || !p.IsPS2) buf.Skip(4);
             buf.Write(UprootLimit);
-            buf.Write(ObjectMatrix.Compress(), fmt);
-            if ((fmt.IsPS2 && fmt.IsJapanese) || !fmt.IsPS2) buf.Skip(4);
+            buf.Write(ObjectMatrix.Compress());
+            if (p.IsPS2JP || !p.IsPS2) buf.Skip(4);
             buf.Write((byte) CreatedBy);
             buf.Write(IsPickup);
             buf.Write(IsPickupInShop);
@@ -194,15 +199,17 @@ namespace GTASaveData.GTA3
             buf.Write(CollisionDamageEffect);
             buf.Write(SpecialCollisionResponseCases);
             buf.Write(EndOfLifeTime);
-            SaveEntityFlags(buf, fmt);
+            SaveEntityFlags(buf, prm);
 
-            Debug.Assert(buf.Offset == SizeOfType<PhysicalObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PhysicalObject>(prm));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2 && !fmt.IsJapanese) return 0x4C;
-            if (fmt.IsiOS) return 0x52;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (p.IsPS2 && !p.IsPS2JP) return 0x4C;
+            if (p.IsiOS) return 0x52;
             return 0x54;
         }
 
@@ -220,9 +227,8 @@ namespace GTASaveData.GTA3
 
             return ModelIndex.Equals(other.ModelIndex)
                 && Handle.Equals(other.Handle)
-                && Matrix.Equals(other.Matrix)
+                && Position.Equals(other.Position)
                 && UprootLimit.Equals(other.UprootLimit)
-                && ObjectMatrix.Equals(other.ObjectMatrix)
                 && CreatedBy.Equals(other.CreatedBy)
                 && IsPickup.Equals(other.IsPickup)
                 && IsPickupInShop.Equals(other.IsPickupInShop)

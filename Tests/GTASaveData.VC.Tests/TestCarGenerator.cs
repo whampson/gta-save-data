@@ -6,11 +6,11 @@ namespace GTASaveData.VC.Tests
 {
     public class TestCarGenerator : Base<CarGenerator>
     {
-        public override CarGenerator GenerateTestObject(FileFormat format)
+        public override CarGenerator GenerateTestObject(FileType format)
         {
             Faker<CarGenerator> model = new Faker<CarGenerator>()
                 .RuleFor(x => x.Model, f => f.Random.Int())
-                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Position, f => Generator.Vector3(f))
                 .RuleFor(x => x.Heading, f => f.Random.Float())
                 .RuleFor(x => x.Color1, f => f.Random.Short())
                 .RuleFor(x => x.Color2, f => f.Random.Short())
@@ -50,6 +50,15 @@ namespace GTASaveData.VC.Tests
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+        }
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            CarGenerator x0 = GenerateTestObject();
+            CarGenerator x1 = new CarGenerator(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

@@ -6,12 +6,12 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestStoredCar : Base<StoredCar>
     {
-        public override StoredCar GenerateTestObject(FileFormat format)
+        public override StoredCar GenerateTestObject(GTA3SaveParams p)
         {
             Faker<StoredCar> model = new Faker<StoredCar>()
                 .RuleFor(x => x.Model, f => f.Random.Int())
-                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
-                .RuleFor(x => x.Angle, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Position, f => Generator.Vector3(f))
+                .RuleFor(x => x.Heading, f => f.Random.Float())
                 .RuleFor(x => x.Flags, f => f.PickRandom<StoredCarFlags>())
                 .RuleFor(x => x.Color1, f => f.Random.Byte())
                 .RuleFor(x => x.Color2, f => f.Random.Byte())
@@ -24,15 +24,16 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            StoredCar x0 = GenerateTestObject(format);
-            StoredCar x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            StoredCar x0 = GenerateTestObject(p);
+            StoredCar x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Model, x1.Model);
             Assert.Equal(x0.Position, x1.Position);
-            Assert.Equal(x0.Angle, x1.Angle);
+            Assert.Equal(x0.Heading, x1.Heading);
             Assert.Equal(x0.Flags, x1.Flags);
             Assert.Equal(x0.Color1, x1.Color1);
             Assert.Equal(x0.Color2, x1.Color2);
@@ -42,16 +43,23 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Bomb, x1.Bomb);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            StoredCar x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            StoredCar x0 = GenerateTestObject(p);
             StoredCar x1 = new StoredCar(x0);
 
             Assert.Equal(x0, x1);
+        }
+
+        public override int GetSizeOfTestObject(StoredCar obj, GTA3SaveParams p)
+        {
+            return 0x28;
         }
     }
 }

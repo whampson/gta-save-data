@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -11,12 +12,12 @@ namespace GTASaveData.GTA3
         public const int GangDensityCapacity = 9;
 
         private short m_carDensity;
-        private Array<short> m_carThreshold;
+        private ObservableArray<short> m_carThreshold;
         private short m_copCarDensity;
-        private Array<short> m_gangCarDensity;
+        private ObservableArray<short> m_gangCarDensity;
         private short m_pedDensity;
         private short m_copPedDensity;
-        private Array<short> m_gangPedDensity;
+        private ObservableArray<short> m_gangPedDensity;
         private short m_pedGroup;
 
         public short CarDensity
@@ -25,7 +26,7 @@ namespace GTASaveData.GTA3
             set { m_carDensity = value; OnPropertyChanged(); }
         }
 
-        public Array<short> CarThreshold
+        public ObservableArray<short> CarThreshold
         {
             get { return m_carThreshold; }
             set { m_carThreshold = value; OnPropertyChanged(); }
@@ -37,7 +38,7 @@ namespace GTASaveData.GTA3
             set { m_copCarDensity = value; OnPropertyChanged(); }
         }
 
-        public Array<short> GangCarDensity
+        public ObservableArray<short> GangCarDensity
         {
             get { return m_gangCarDensity; }
             set { m_gangCarDensity = value; OnPropertyChanged(); }
@@ -55,7 +56,7 @@ namespace GTASaveData.GTA3
             set { m_copPedDensity = value; OnPropertyChanged(); }
         }
 
-        public Array<short> GangPedDensity
+        public ObservableArray<short> GangPedDensity
         {
             get { return m_gangPedDensity; }
             set { m_gangPedDensity = value; OnPropertyChanged(); }
@@ -86,21 +87,21 @@ namespace GTASaveData.GTA3
             PedGroup = other.PedGroup;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             CarDensity = buf.ReadInt16();
-            CarThreshold = buf.Read<short>(CarThresholdCapacity);
+            CarThreshold = buf.ReadArray<short>(CarThresholdCapacity);
             CopCarDensity = buf.ReadInt16();
-            GangCarDensity = buf.Read<short>(GangDensityCapacity);
+            GangCarDensity = buf.ReadArray<short>(GangDensityCapacity);
             PedDensity = buf.ReadInt16();
             CopPedDensity = buf.ReadInt16();
-            GangPedDensity = buf.Read<short>(GangDensityCapacity);
+            GangPedDensity = buf.ReadArray<short>(GangDensityCapacity);
             PedGroup = buf.ReadInt16();
 
-            Debug.Assert(buf.Offset == SizeOfType<ZoneInfo>());
+            Debug.Assert(buf.Offset == SizeOf<ZoneInfo>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(CarDensity);
             buf.Write(CarThreshold, CarThresholdCapacity);
@@ -111,10 +112,10 @@ namespace GTASaveData.GTA3
             buf.Write(GangPedDensity, GangDensityCapacity);
             buf.Write(PedGroup);
 
-            Debug.Assert(buf.Offset == SizeOfType<ZoneInfo>());
+            Debug.Assert(buf.Offset == SizeOf<ZoneInfo>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 58;      // not aligned
         }

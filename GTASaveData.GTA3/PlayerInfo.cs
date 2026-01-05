@@ -1,10 +1,10 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Diagnostics;
 
 namespace GTASaveData.GTA3
 {
-    public class PlayerInfo : SaveDataObject, IPlayerInfo,
+    public class PlayerInfo : SaveDataObject,
         IEquatable<PlayerInfo>, IDeepClonable<PlayerInfo>
     {
         public const int MaxPlayerNameLength = 70;
@@ -123,8 +123,24 @@ namespace GTASaveData.GTA3
             PlayerName = other.PlayerName;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        public int GiveMoney(int amount, bool animate = false)
         {
+            Money += amount;
+            if (!animate) MoneyOnScreen = Money;
+
+            return Money;
+        }
+
+        public void SetMoney(int amount)
+        {
+            Money = amount;
+            MoneyOnScreen = amount;
+        }
+
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
+        {
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
             Money = buf.ReadInt32();
             WastedBustedState = (WastedBustedState) buf.ReadByte();
             WastedBustedTime = buf.ReadUInt32();
@@ -139,14 +155,16 @@ namespace GTASaveData.GTA3
             GetOutOfHospitalFree = buf.ReadBool();
             PlayerName = buf.ReadString(MaxPlayerNameLength);
 
-            if (fmt.IsPS2) buf.Skip(175);
+            if (p.IsPS2) buf.Skip(175);
             else buf.Skip(215);
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(prm));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
             buf.Write(Money);
             buf.Write((byte) WastedBustedState);
             buf.Write(WastedBustedTime);
@@ -162,15 +180,17 @@ namespace GTASaveData.GTA3
             buf.Write(PlayerName, MaxPlayerNameLength);
 
             // Game writes some garbage here due to incorrect size calculation
-            if (fmt.IsPS2) buf.Skip(175);
+            if (p.IsPS2) buf.Skip(175);
             else buf.Skip(215);
 
-            Debug.Assert(buf.Offset == SizeOfType<PlayerInfo>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(prm));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2) return 0x114;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (p.IsPS2) return 0x114;
             return 0x13C;
         }
 

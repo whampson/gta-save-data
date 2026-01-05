@@ -48,7 +48,7 @@ namespace TestApp
 
         private void FileTypeMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem item && item.Header is FileFormat fmt)
+            if (sender is MenuItem item && item.Header is FileType fmt)
             {
                 ViewModel.CurrentFileFormat = fmt;
             }
@@ -58,5 +58,13 @@ namespace TestApp
         {
             ViewModel.Initialize();
         }
+
+        //private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    if (ViewModel.SelectedBlockIndex == 0)
+        //    {
+        //        ViewModel.UpdateTextBox();
+        //    }
+        //}
     }
 }

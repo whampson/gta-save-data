@@ -203,6 +203,24 @@ namespace GTASaveData.GTA3
             set { m_doorLock = value; OnPropertyChanged(); }
         }
 
+        public static Vehicle Create(int model, VehicleType type = VehicleType.Car)
+        {
+            switch (type)
+            {
+                case VehicleType.Car:
+                    return new Automobile((short) model);
+                case VehicleType.Boat:
+                    return new Boat((short) model);
+                default:
+                    throw new InvalidOperationException("Invalid VehicleType: " + (int) type);
+            }
+        }
+
+        public static Vehicle CreateDefault(VehicleType type = VehicleType.Car)
+        {
+            return Create(0, type);
+        }
+
         public Vehicle(VehicleType type, short model, int handle)
             : base()
         {
@@ -250,26 +268,21 @@ namespace GTASaveData.GTA3
             DoorLock = other.DoorLock;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            if (!fmt.IsPS2) buf.Skip(4);
-            Matrix.Right = buf.Read<Vector3D>();
-            buf.Skip(4);
-            Matrix.Forward = buf.Read<Vector3D>();
-            buf.Skip(4);
-            Matrix.Up = buf.Read<Vector3D>();
-            buf.Skip(4);
-            Matrix.Position = buf.Read<Vector3D>();
-            buf.Skip(4);
-            if (fmt.IsPC || fmt.IsXbox) buf.Skip(12);
-            if (fmt.IsiOS) buf.Skip(15);
-            if (fmt.IsAndroid) buf.Skip(16);
-            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(32);
-            LoadEntityFlags(buf, fmt);
-            if (fmt.IsiOS) buf.Skip(1);
-            if (fmt.IsPS2) buf.Skip(236);
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (!p.IsPS2) buf.Skip(4);
+            Matrix = buf.ReadStruct<Matrix>();
+            if (p.IsPC || p.IsXbox) buf.Skip(12);
+            if (p.IsiOS) buf.Skip(15);
+            if (p.IsAndroid) buf.Skip(16);
+            if (p.IsPS2 && !p.IsPS2JP) buf.Skip(32);
+            LoadEntityFlags(buf, prm);
+            if (p.IsiOS) buf.Skip(1);
+            if (p.IsPS2) buf.Skip(236);
             else buf.Skip(212);
-            AutoPilot = buf.Read<AutoPilot>();
+            AutoPilot = buf.ReadObject<AutoPilot>();
             Color1 = buf.ReadByte();
             Color2 = buf.ReadByte();
             buf.Skip(2);
@@ -304,28 +317,23 @@ namespace GTASaveData.GTA3
             BombTimer = buf.ReadInt16();
             buf.Skip(12);
             DoorLock = (CarLock) buf.ReadInt32();
-            if (fmt.IsPS2) buf.Skip(156);
+            if (p.IsPS2) buf.Skip(156);
             else buf.Skip(96);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            if (!fmt.IsPS2) buf.Skip(4);
-            buf.Write(Matrix.Right);
-            buf.Skip(4);
-            buf.Write(Matrix.Forward);
-            buf.Skip(4);
-            buf.Write(Matrix.Up);
-            buf.Skip(4);
-            buf.Write(Matrix.Position);
-            buf.Skip(4);
-            if (fmt.IsPC || fmt.IsXbox) buf.Skip(12);
-            if (fmt.IsiOS) buf.Skip(15);
-            if (fmt.IsAndroid) buf.Skip(16);
-            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(32);
-            SaveEntityFlags(buf, fmt);
-            if (fmt.IsiOS) buf.Skip(1);
-            if (fmt.IsPS2) buf.Skip(236);
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (!p.IsPS2) buf.Skip(4);
+            buf.Write(Matrix);
+            if (p.IsPC || p.IsXbox) buf.Skip(12);
+            if (p.IsiOS) buf.Skip(15);
+            if (p.IsAndroid) buf.Skip(16);
+            if (p.IsPS2 && !p.IsPS2JP) buf.Skip(32);
+            SaveEntityFlags(buf, prm);
+            if (p.IsiOS) buf.Skip(1);
+            if (p.IsPS2) buf.Skip(236);
             else buf.Skip(212);
             buf.Write(AutoPilot);
             buf.Write(Color1);
@@ -363,7 +371,7 @@ namespace GTASaveData.GTA3
             buf.Write(BombTimer);
             buf.Skip(12);
             buf.Write((int) DoorLock);
-            if (fmt.IsPS2) buf.Skip(156);
+            if (p.IsPS2) buf.Skip(156);
             else buf.Skip(96);
         }
 

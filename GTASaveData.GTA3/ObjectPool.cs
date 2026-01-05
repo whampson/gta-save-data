@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -10,23 +11,17 @@ namespace GTASaveData.GTA3
         IEquatable<ObjectPool>, IDeepClonable<ObjectPool>,
         IEnumerable<PhysicalObject>
     {
-        private Array<PhysicalObject> m_objects;
+        private ObservableArray<PhysicalObject> m_objects;
 
-        public Array<PhysicalObject> Objects
+        public ObservableArray<PhysicalObject> Objects
         {
             get { return m_objects; }
             set { m_objects = value; OnPropertyChanged(); }
         }
 
-        public PhysicalObject this[int i]
-        {
-            get { return Objects[i]; }
-            set { Objects[i] = value; OnPropertyChanged(); }
-        }
-
         public ObjectPool()
         {
-            Objects = new Array<PhysicalObject>();
+            Objects = new ObservableArray<PhysicalObject>();
         }
 
         public ObjectPool(ObjectPool other)
@@ -34,25 +29,25 @@ namespace GTASaveData.GTA3
             Objects = ArrayHelper.DeepClone(other.Objects);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             int numObjects = buf.ReadInt32();
-            Objects = buf.Read<PhysicalObject>(numObjects, fmt);
+            Objects = buf.ReadArray<PhysicalObject>(numObjects, prm);
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(Objects.Count);
-            buf.Write(Objects, fmt);
+            buf.Write(Objects, prm);
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            return (SizeOfType<PhysicalObject>(fmt) * Objects.Count) + sizeof(int);
+            return (SizeOf<PhysicalObject>(prm) * Objects.Count) + sizeof(int);
         }
 
         public override bool Equals(object obj)

@@ -3,26 +3,30 @@
 namespace GTASaveData
 {
     /// <summary>
-    /// Supported GTA games.
+    /// <i>Grand Theft Auto</i> games supported by the <see cref="GTASaveData"/> library.
     /// </summary>
+    /// <remarks>
+    /// Only the "major versions" are listed; add-ons or remasters are included
+    /// under the parent game.
+    /// </remarks>
     public enum Game
     {
-        [Description("GTA III")]
+        [Description("Grand Theft Auto III")]
         GTA3,
 
-        [Description("Vice City")]
+        [Description("Grand Theft Auto: Vice City")]
         VC,
 
-        //[Description("San Andreas")]
-        //SA,
+        [Description("Grand Theft Auto: San Andreas")]
+        SA,
 
-        [Description("Liberty City Stories")]
+        [Description("Grand Theft Auto: Liberty City Stories")]
         LCS,
 
-        [Description("Vice City Stories")]
+        [Description("Grand Theft Auto: Vice City Stories")]
         VCS,
 
-        //[Description("GTA IV")]
-        //IV
+        [Description("Grand Theft Auto IV")]
+        IV
     }
 }

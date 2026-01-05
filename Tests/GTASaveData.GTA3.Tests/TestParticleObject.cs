@@ -2,15 +2,14 @@
 using TestFramework;
 using Xunit;
 
-#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3.Tests
 {
     public class TestParticleObject : Base<ParticleObject>
     {
-        public override ParticleObject GenerateTestObject(FileFormat format)
+        public override ParticleObject GenerateTestObject(GTA3SaveParams p)
         {
             Faker<ParticleObject> model = new Faker<ParticleObject>()
-                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Position, f => Generator.Vector3(f))
                 .RuleFor(x => x.NextParticleObjectPointer, f => f.Random.UInt())
                 .RuleFor(x => x.PrevParticleObjectPointer, f => f.Random.UInt())
                 .RuleFor(x => x.ParticlePointer, f => f.Random.UInt())
@@ -21,23 +20,24 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.SkipFrames, f => f.Random.Byte())
                 .RuleFor(x => x.FrameCounter, f => f.Random.UShort())
                 .RuleFor(x => x.State, f => f.PickRandom<ParticleObjectState>())
-                .RuleFor(x => x.Target, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Target, f => Generator.Vector3(f))
                 .RuleFor(x => x.Spread, f => f.Random.Float())
                 .RuleFor(x => x.Size, f => f.Random.Float())
                 .RuleFor(x => x.Color, f => f.Random.UInt())
                 .RuleFor(x => x.DestroyWhenFar, f => f.Random.Bool())
                 .RuleFor(x => x.CreationChance, f => f.Random.SByte())
-                .RuleFor(x => x.Unknown, f => (format.IsPS2) ? f.Random.Int() : default);
+                .RuleFor(x => x.Unknown, f => (p.FileType.IsPS2) ? f.Random.Int() : default);
 
             return model.Generate();
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            ParticleObject x0 = GenerateTestObject(format);
-            ParticleObject x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            ParticleObject x0 = GenerateTestObject(p);
+            ParticleObject x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Position, x1.Position);
             Assert.Equal(x0.NextParticleObjectPointer, x1.NextParticleObjectPointer);
@@ -59,18 +59,19 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.Unknown, x1.Unknown);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            ParticleObject x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            ParticleObject x0 = GenerateTestObject(p);
             ParticleObject x1 = new ParticleObject(x0);
 
             Assert.Equal(x0, x1);
         }
     }
 }
-#pragma warning restore CS0618 // Type or member is obsolete

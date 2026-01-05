@@ -1,13 +1,13 @@
-﻿using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
-    public class CarGeneratorData : SaveDataObject, ICarGeneratorData,
+    public class CarGeneratorData : SaveDataObject,
         IEquatable<CarGeneratorData>, IDeepClonable<CarGeneratorData>,
         IEnumerable<CarGenerator>
     {
@@ -20,7 +20,7 @@ namespace GTASaveData.GTA3
         private int m_currentActiveCount;
         private byte m_processCounter;
         private byte m_generateEvenIfPlayerIsCloseCounter;
-        private Array<CarGenerator> m_carGeneratorArray;
+        private ObservableArray<CarGenerator> m_carGeneratorArray;
 
         public int NumberOfCarGenerators
         {
@@ -46,25 +46,11 @@ namespace GTASaveData.GTA3
             set { m_generateEvenIfPlayerIsCloseCounter = value; OnPropertyChanged(); }
         }
 
-        public Array<CarGenerator> CarGenerators
+        public ObservableArray<CarGenerator> CarGenerators
         {
             get { return m_carGeneratorArray; }
             set { m_carGeneratorArray = value; OnPropertyChanged(); }
         }
-
-        public CarGenerator this[int i]
-        {
-            get { return CarGenerators[i]; }
-            set { CarGenerators[i] = value; OnPropertyChanged(); }
-        }
-
-        ICarGenerator ICarGeneratorData.this[int i]
-        {
-            get { return CarGenerators[i]; }
-            set { CarGenerators[i] = (CarGenerator) value; OnPropertyChanged(); }
-        }
-
-        IEnumerable<ICarGenerator> ICarGeneratorData.CarGenerators => m_carGeneratorArray;
 
         public CarGeneratorData()
         {
@@ -80,9 +66,10 @@ namespace GTASaveData.GTA3
             CarGenerators = ArrayHelper.DeepClone(other.CarGenerators);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "CGN");
+            int size = GTA3Save.ReadBlockHeader(buf, out string tag);
+            Debug.Assert(tag == "CGN");
 
             int infoSize = buf.ReadInt32();
             Debug.Assert(infoSize == CarGeneratorDataSize);
@@ -93,15 +80,15 @@ namespace GTASaveData.GTA3
             buf.ReadInt16();
             int carGensSize = buf.ReadInt32();
             Debug.Assert(carGensSize == CarGeneratorArraySize);
-            CarGenerators = buf.Read<CarGenerator>(MaxNumCarGenerators);
+            CarGenerators = buf.ReadArray<CarGenerator>(MaxNumCarGenerators);
 
-            Debug.Assert(buf.Offset == SizeOfType<CarGeneratorData>());
-            Debug.Assert(size == SizeOfType<CarGeneratorData>() - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(buf.Offset == SizeOf<CarGeneratorData>());
+            Debug.Assert(size == SizeOf<CarGeneratorData>() - GTA3Save.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "CGN", SizeOfType<CarGeneratorData>() - GTA3VCSave.BlockHeaderSize);
+            GTA3Save.WriteBlockHeader(buf, "CGN", SizeOf<CarGeneratorData>() - GTA3Save.BlockHeaderSize);
 
             buf.Write(CarGeneratorDataSize);
             buf.Write(NumberOfCarGenerators);
@@ -112,10 +99,10 @@ namespace GTASaveData.GTA3
             buf.Write(CarGeneratorArraySize);
             buf.Write(CarGenerators, MaxNumCarGenerators);
 
-            Debug.Assert(buf.Offset == SizeOfType<CarGeneratorData>());
+            Debug.Assert(buf.Offset == SizeOf<CarGeneratorData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x2D1C;
         }

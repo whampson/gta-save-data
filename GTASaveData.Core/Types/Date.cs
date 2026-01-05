@@ -1,118 +1,58 @@
-﻿using GTASaveData.Types.Interfaces;
-using System;
-using System.ComponentModel;
-using System.Globalization;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
 {
     /// <summary>
-    /// Represents a date and time.
+    /// Date structure used by the GTA games.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 24)]
-    public struct Date : ISaveDataObject, IEquatable<Date>
+    public struct Date : IEquatable<Date>
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public static readonly Date MinValue = new Date(1601, 1, 1);
+        public static readonly Date MaxValue = new Date(30827, 12, 31, 23, 59, 59);
 
-        private const int Size = 24;
+        public int Second;
+        public int Minute;
+        public int Hour;
+        public int Day;
+        public int Month;
+        public int Year;
 
-        public int Second { get; set; }
-        public int Minute { get; set; }
-        public int Hour { get; set; }
-        public int Day { get; set; }
-        public int Month { get; set; }
-        public int Year { get; set; }
-
-        public Date(int year, int month, int day, int hour, int minute, int second)
+        public Date(int year, int month, int day, int hour = 0, int minute = 0, int second = 0)
         {
-            Second = second;
-            Minute = minute;
-            Hour = hour;
-            Day = day;
-            Month = month;
             Year = year;
-            PropertyChanged = null;
+            Month = month;
+            Day = day;
+            Hour = hour;
+            Minute = minute;
+            Second = second;
         }
 
-        public Date(DateTime dateTime)
+        public Date(DateTime dt)
         {
-            Second = dateTime.Second;
-            Minute = dateTime.Minute;
-            Hour = dateTime.Hour;
-            Day = dateTime.Day;
-            Month = dateTime.Month;
-            Year = dateTime.Year;
-            PropertyChanged = null;
+            Year = dt.Year;
+            Month = dt.Month;
+            Day = dt.Day;
+            Hour = dt.Hour;
+            Minute = dt.Minute;
+            Second = dt.Second;
         }
 
-        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
+        public override string ToString()
         {
-            Second = buf.ReadInt32();
-            Minute = buf.ReadInt32();
-            Hour = buf.ReadInt32();
-            Day = buf.ReadInt32();
-            Month = buf.ReadInt32();
-            Year = buf.ReadInt32();
-
-            return Size;
-        }
-
-        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
-        {
-            buf.Write(Second);
-            buf.Write(Minute);
-            buf.Write(Hour);
-            buf.Write(Day);
-            buf.Write(Month);
-            buf.Write(Year);
-
-            return Size;
-        }
-
-        int ISaveDataObject.GetSize(FileFormat fmt)
-        {
-            return Size;
-        }
-
-        public bool TryGetDateTime(out DateTime dt)
-        {
-            string dateString = $"{Year:D4}-{Month:D2}-{Day:D2} {Hour:D2}:{Minute:D2}:{Second:D2}";
-            string format = "yyyy-MM-dd HH:mm:ss";
-
-            return DateTime.TryParseExact(
-                dateString,
-                format,
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out dt);
-        }
-
-        public DateTime ToDateTime()
-        {
-            return new DateTime(
-                Year,
-                Month,
-                Day,
-                Hour,
-                Minute,
-                Second);
-        }
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            return $"{Month:D2}/{Day:D2}/{Year:D4} {Hour:D2}:{Minute:D2}:{Second:D2}";
         }
 
         public override int GetHashCode()
         {
             int hash = 17;
-            hash += 23 * Year;
-            hash += 23 * Month;
-            hash += 23 * Day;
-            hash += 23 * Hour;
-            hash += 23 * Minute;
-            hash += 23 * Second;
+            hash += 23 * Year.GetHashCode();
+            hash += 23 * Month.GetHashCode();
+            hash += 23 * Day.GetHashCode();
+            hash += 23 * Hour.GetHashCode();
+            hash += 23 * Minute.GetHashCode();
+            hash += 23 * Second.GetHashCode();
 
             return hash;
         }
@@ -137,39 +77,22 @@ namespace GTASaveData.Types
                 && Second.Equals(other.Second);
         }
 
-        public override string ToString()
+        public static bool operator ==(Date s1, Date s2)
         {
-            if (TryGetDateTime(out DateTime dt))
-            {
-                return dt.ToString("dd MMM yyyy HH:mm:ss");
-            }
-
-            return "(invalid date)";
+            return s1.Equals(s2);
         }
 
-        public static bool operator ==(Date d1, Date d2)
+        public static bool operator !=(Date s1, Date s2)
         {
-            return d1.Equals(d2);
+            return !s1.Equals(s2);
         }
 
-        public static bool operator !=(Date d1, Date d2)
+        public static explicit operator DateTime(Date st)
         {
-            return !d1.Equals(d2);
-        }
+            if (st.Year == 0 || st == MinValue) return DateTime.MinValue;
+            if (st == MaxValue) return DateTime.MaxValue;
 
-        public static explicit operator DateTime(Date t)
-        {
-            if (t.TryGetDateTime(out DateTime dt))
-            {
-                return dt;
-            }
-
-            return DateTime.MinValue;
-        }
-
-        public static implicit operator Date(DateTime t)
-        {
-            return new Date(t);
+            return new DateTime(st.Year, st.Month, st.Day, st.Hour, st.Minute, st.Second, DateTimeKind.Local);
         }
     }
 }

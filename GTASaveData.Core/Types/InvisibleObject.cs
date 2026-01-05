@@ -1,26 +1,30 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 
 namespace GTASaveData.Types
 {
-    public class InvisibleObject : SaveDataObject, IInvisibleObject,
+    /// <summary>
+    /// Represents an object that should be invisible in the game.
+    /// </summary>
+    public class InvisibleObject : SaveDataObject,
         IEquatable<InvisibleObject>, IDeepClonable<InvisibleObject>
     {
-        private PoolType m_type;
+        private EntityClassType m_type;
         private int m_handle;
 
-        int IInvisibleObject.Type
-        {
-            get { return (int) Type; }
-            set { Type = (PoolType) Type; }
-        }
-
-        public PoolType Type
+        /// <summary>
+        /// Entity class type. Controls which entity pool the <see cref="InvisibleObject"/>
+        /// goes into when the game is loaded.
+        /// </summary>
+        public EntityClassType Type
         {
             get { return m_type; }
             set { m_type = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Entity handle; pool index + 1.
+        /// </summary>
         public int Handle
         {
             get { return m_handle; }
@@ -36,21 +40,39 @@ namespace GTASaveData.Types
             Handle = other.Handle;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        /// <summary>
+        /// Gets a value indicating whether this invisible object is valid.
+        /// </summary>
+        public bool IsUsed()
         {
-            Type = (PoolType) buf.ReadInt32();
+            return Handle != 0;
+        }
+
+        /// <summary>
+        /// Invalidates this invisible object.
+        /// </summary>
+        public void Clear()
+        {
+            Type = EntityClassType.None;
+            Handle = 0;
+        }
+
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
+        {
+            Type = (EntityClassType) buf.ReadInt32();
             Handle = buf.ReadInt32();
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             buf.Write((int) Type);
             buf.Write(Handle);
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            return 8;
+            return sizeof(int)
+                + sizeof(int);
         }
 
         public override bool Equals(object obj)

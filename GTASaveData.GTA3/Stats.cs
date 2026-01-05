@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
-    public class Stats : SaveDataObject, 
+    public class Stats : SaveDataObject,
         IEquatable<Stats>, IDeepClonable<Stats>
     {
         public const int NumPedTypes = 23;
@@ -16,7 +17,7 @@ namespace GTASaveData.GTA3
         private int m_peopleKilledByOthers;
         private int m_carsExploded;
         private int m_roundsFiredByPlayer;
-        private Array<int> m_pedsKilledOfThisType;
+        private ObservableArray<int> m_pedsKilledOfThisType;
         private int m_helisDestroyed;
         private int m_progressMade;
         private int m_totalProgressInGame;
@@ -59,8 +60,8 @@ namespace GTASaveData.GTA3
         private int m_numberKillFrenziesPassed;
         private int m_totalNumberKillFrenzies;
         private int m_totalNumberMissions;
-        private Array<int> m_fastestTimes;
-        private Array<int> m_highestScores;
+        private ObservableArray<int> m_fastestTimes;
+        private ObservableArray<int> m_highestScores;
         private int m_killsSinceLastCheckpoint;
         private int m_totalLegitimateKills;
         private string m_lastMissionPassedName;
@@ -89,7 +90,7 @@ namespace GTASaveData.GTA3
             set { m_roundsFiredByPlayer = value; OnPropertyChanged(); }
         }
 
-        public Array<int> PedsKilledOfThisType
+        public ObservableArray<int> PedsKilledOfThisType
         {
             get { return m_pedsKilledOfThisType; }
             set { m_pedsKilledOfThisType = value; OnPropertyChanged(); }
@@ -347,13 +348,13 @@ namespace GTASaveData.GTA3
             set { m_totalNumberMissions = value; OnPropertyChanged(); }
         }
 
-        public Array<int> FastestTimes
+        public ObservableArray<int> FastestTimes
         {
             get { return m_fastestTimes; }
             set { m_fastestTimes = value; OnPropertyChanged(); }
         }
 
-        public Array<int> HighestScores
+        public ObservableArray<int> HighestScores
         {
             get { return m_highestScores; }
             set { m_highestScores = value; OnPropertyChanged(); }
@@ -441,13 +442,13 @@ namespace GTASaveData.GTA3
             LastMissionPassedName = other.LastMissionPassedName;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             PeopleKilledByPlayer = buf.ReadInt32();
             PeopleKilledByOthers = buf.ReadInt32();
             CarsExploded = buf.ReadInt32();
             RoundsFiredByPlayer = buf.ReadInt32();
-            PedsKilledOfThisType = buf.Read<int>(NumPedTypes);
+            PedsKilledOfThisType = buf.ReadArray<int>(NumPedTypes);
             HelisDestroyed = buf.ReadInt32();
             ProgressMade = buf.ReadInt32();
             TotalProgressInGame = buf.ReadInt32();
@@ -490,16 +491,16 @@ namespace GTASaveData.GTA3
             NumberKillFrenziesPassed = buf.ReadInt32();
             TotalNumberKillFrenzies = buf.ReadInt32();
             TotalNumberMissions = buf.ReadInt32();
-            FastestTimes = buf.Read<int>(NumFastestTimes);
-            HighestScores = buf.Read<int>(NumHighestScores);
+            FastestTimes = buf.ReadArray<int>(NumFastestTimes);
+            HighestScores = buf.ReadArray<int>(NumHighestScores);
             KillsSinceLastCheckpoint = buf.ReadInt32();
             TotalLegitimateKills = buf.ReadInt32();
             LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength);
 
-            Debug.Assert(buf.Offset == SizeOfType<Stats>());
+            Debug.Assert(buf.Offset == SizeOf<Stats>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(PeopleKilledByPlayer);
             buf.Write(PeopleKilledByOthers);
@@ -554,10 +555,10 @@ namespace GTASaveData.GTA3
             buf.Write(TotalLegitimateKills);
             buf.Write(LastMissionPassedName, MaxMissionPassedNameLength);
 
-            Debug.Assert(buf.Offset == SizeOfType<Stats>());
+            Debug.Assert(buf.Offset == SizeOf<Stats>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 420;
         }

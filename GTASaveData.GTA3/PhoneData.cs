@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -14,7 +15,7 @@ namespace GTASaveData.GTA3
 
         private int m_numPhones;
         private int m_numActivePhones;
-        private Array<Phone> m_phones;
+        private ObservableArray<Phone> m_phones;
 
         public int NumPhones
         {
@@ -28,16 +29,10 @@ namespace GTASaveData.GTA3
             set { m_numActivePhones = value; OnPropertyChanged(); }
         }
 
-        public Array<Phone> Phones
+        public ObservableArray<Phone> Phones
         {
             get { return m_phones; }
             set { m_phones = value; OnPropertyChanged(); }
-        }
-
-        public Phone this[int i]
-        {
-            get { return Phones[i]; }
-            set { Phones[i] = value; OnPropertyChanged(); }
         }
 
         public PhoneData()
@@ -52,25 +47,25 @@ namespace GTASaveData.GTA3
             Phones = ArrayHelper.DeepClone(other.Phones);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             NumPhones = buf.ReadInt32();
             NumActivePhones = buf.ReadInt32();
-            Phones = buf.Read<Phone>(MaxNumPhones);
+            Phones = buf.ReadArray<Phone>(MaxNumPhones);
 
-            Debug.Assert(buf.Offset == SizeOfType<PhoneData>());
+            Debug.Assert(buf.Offset == SizeOf<PhoneData>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(NumPhones);
             buf.Write(NumActivePhones);
             buf.Write(Phones, MaxNumPhones);
 
-            Debug.Assert(buf.Offset == SizeOfType<PhoneData>());
+            Debug.Assert(buf.Offset == SizeOf<PhoneData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0xA30;
         }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -12,24 +13,32 @@ namespace GTASaveData.GTA3
     {
         public const int MaxNumGangs = 9;
 
-        private Array<Gang> m_gangs;
+        private ObservableArray<Gang> m_gangs;
 
-        public Array<Gang> Gangs
+        public ObservableArray<Gang> Gangs
         {
             get { return m_gangs; }
             set { m_gangs = value;OnPropertyChanged(); }
         }
 
-        public Gang this[int i]
+        public Gang GetGang(int gangIndex)
         {
-            get { return Gangs[i]; }
-            set { Gangs[i] = value; OnPropertyChanged(); }
+            return this[gangIndex];
+        }
+
+        public Gang GetGang(GangType g)
+        {
+            return this[g];
+        }
+
+        public Gang this[int gangIndex]
+        {
+            get => Gangs[gangIndex];
         }
 
         public Gang this[GangType g]
         {
-            get { return Gangs[(int) g]; }
-            set { Gangs[(int) g] = value; OnPropertyChanged(); }
+            get => Gangs[(int) g];
         }
 
         public GangData()
@@ -42,25 +51,26 @@ namespace GTASaveData.GTA3
             Gangs = ArrayHelper.DeepClone(other.Gangs);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "GNG");
+            int size = GTA3Save.ReadBlockHeader(buf, out string tag);
+            Debug.Assert(tag == "GNG");
 
-            Gangs = buf.Read<Gang>(MaxNumGangs);
+            Gangs = buf.ReadArray<Gang>(MaxNumGangs);
 
-            Debug.Assert(buf.Offset == SizeOfType<GangData>());
-            Debug.Assert(size == SizeOfType<GangData>() - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(buf.Offset == SizeOf<GangData>());
+            Debug.Assert(size == SizeOf<GangData>() - GTA3Save.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "GNG", SizeOfType<GangData>() - GTA3VCSave.BlockHeaderSize);
+            GTA3Save.WriteBlockHeader(buf, "GNG", SizeOf<GangData>() - GTA3Save.BlockHeaderSize);
             buf.Write(Gangs, MaxNumGangs);
 
-            Debug.Assert(buf.Offset == SizeOfType<GangData>());
+            Debug.Assert(buf.Offset == SizeOf<GangData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x98;
         }
@@ -99,11 +109,13 @@ namespace GTASaveData.GTA3
     public enum GangType
     {
         Mafia,
-        Triad,
+        Triads,
         Diablos,
         Yakuza,
-        Yardie,
-        Columb,
-        Hoods
+        Yardies,
+        Cartel,
+        Hoods,
+        Gang8,
+        Gang9
     }
 }

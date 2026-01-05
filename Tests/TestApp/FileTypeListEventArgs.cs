@@ -6,9 +6,9 @@ namespace TestApp
 {
     public class FileTypeListEventArgs : EventArgs
     {
-        public IEnumerable<FileFormat> FileTypes { get; }
+        public IEnumerable<FileType> FileTypes { get; }
 
-        public FileTypeListEventArgs(IEnumerable<FileFormat> fileTypes)
+        public FileTypeListEventArgs(IEnumerable<FileType> fileTypes)
         {
             FileTypes = fileTypes;
         }

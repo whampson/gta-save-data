@@ -1,41 +1,54 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Diagnostics;
 
 namespace GTASaveData.Types
 {
-    public class BuildingSwap : SaveDataObject, IBuildingSwap,
+    /// <summary>
+    /// Data structure containing building model swap info.
+    /// </summary>
+    public class BuildingSwap : SaveDataObject,
         IEquatable<BuildingSwap>, IDeepClonable<BuildingSwap>
     {
-        private PoolType m_type;
+        private EntityClassType m_type;      // can be Treadable or Building
         private int m_handle;
         private int m_newModel;
         private int m_oldModel;
 
-        int IBuildingSwap.Type
-        {
-            get { return (int) Type; }
-            set { Type = (PoolType) value; OnPropertyChanged(); }
-        }
-
-        public PoolType Type
+        /// <summary>
+        /// Entity class type. Controls which entity pool the <see cref="BuildingSwap"/>
+        /// goes into when loaded into the game.
+        /// </summary>
+        /// <remarks>
+        /// Can be <see cref="EntityClassType.Treadable"/> or <see cref="EntityClassType.Building"/>.
+        /// </remarks>
+        public EntityClassType Type
         {
             get { return m_type; }
             set { m_type = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Entity handle; pool index + 1.
+        /// </summary>
         public int Handle
         {
             get { return m_handle; }
             set { m_handle = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// New (current) building model index.
+        /// </summary>
         public int NewModel
         {
             get { return m_newModel; }
             set { m_newModel = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Old building model index.
+        /// </summary>
         public int OldModel
         {
             get { return m_oldModel; }
@@ -56,29 +69,51 @@ namespace GTASaveData.Types
             OldModel = other.OldModel;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        /// <summary>
+        /// Gets a value indicating whether this building swap is valid.
+        /// </summary>
+        public bool IsUsed()
         {
-            Type = (PoolType) buf.ReadInt32();
+            return Handle != 0;
+        }
+
+        /// <summary>
+        /// Invalidates this building swap.
+        /// </summary>
+        public void Clear()
+        {
+            Type = EntityClassType.None;
+            Handle = 0;
+            OldModel = -1;
+            NewModel = -1;
+        }
+
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
+        {
+            Type = (EntityClassType) buf.ReadInt32();
             Handle = buf.ReadInt32();
             NewModel = buf.ReadInt32();
             OldModel = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOfType<BuildingSwap>());
+            Debug.Assert(buf.Offset == SizeOf<BuildingSwap>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             buf.Write((int) Type);
             buf.Write(Handle);
             buf.Write(NewModel);
             buf.Write(OldModel);
 
-            Debug.Assert(buf.Offset == SizeOfType<BuildingSwap>());
+            Debug.Assert(buf.Offset == SizeOf<BuildingSwap>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            return 16;
+            return sizeof(int)
+                + sizeof(int)
+                + sizeof(int)
+                + sizeof(int);
         }
 
         public override bool Equals(object obj)
@@ -103,5 +138,22 @@ namespace GTASaveData.Types
         {
             return new BuildingSwap(this);
         }
+    }
+
+    public enum EntityClassType
+    {
+        None,
+
+        /// <summary>CTreadable</summary>
+        Treadable,
+
+        /// <summary>CBuilding</summary>
+        Building,
+
+        /// <summary>CObject</summary>
+        Object,
+
+        /// <summary>CDummy</summary>
+        Dummy
     }
 }

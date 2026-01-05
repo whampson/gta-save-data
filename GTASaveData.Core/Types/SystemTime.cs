@@ -1,120 +1,66 @@
-﻿using GTASaveData.Types.Interfaces;
-using System;
-using System.ComponentModel;
-using System.Globalization;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace GTASaveData.Types
 {
     /// <summary>
-    /// A .NET version of the Win32 <c>SYSTEMTIME</c> structure.
+    /// A .NET implementation of the Win32 <c>SYSTEMTIME</c> structure.
+    /// Used in some GTA saves.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 16)]
-    public struct SystemTime : ISaveDataObject, IEquatable<SystemTime>
+    [StructLayout(LayoutKind.Sequential, Pack = 2, Size = 16)]
+    public struct SystemTime : IEquatable<SystemTime>
     {
-        private const int Size = 16;
+        public static readonly SystemTime MinValue = new SystemTime(1601, 1, 1);
+        public static readonly SystemTime MaxValue = new SystemTime(30827, 12, 31, 23, 59, 59, 999);
 
-        public short Year { get; set; }
-        public short Month { get; set; }
-        public short DayOfWeek { get; set; }
-        public short Day { get; set; }
-        public short Hour { get; set; }
-        public short Minute { get; set; }
-        public short Second { get; set; }
-        public short Millisecond { get; set; }
+        [MarshalAs(UnmanagedType.U2)] public ushort Year;
+        [MarshalAs(UnmanagedType.U2)] public ushort Month;
+        [MarshalAs(UnmanagedType.U2)] public ushort DayOfWeek;
+        [MarshalAs(UnmanagedType.U2)] public ushort Day;
+        [MarshalAs(UnmanagedType.U2)] public ushort Hour;
+        [MarshalAs(UnmanagedType.U2)] public ushort Minute;
+        [MarshalAs(UnmanagedType.U2)] public ushort Second;
+        [MarshalAs(UnmanagedType.U2)] public ushort Milliseconds;
 
-        public SystemTime(short year, short month, short dayOfWeek, short day,
-            short hour, short minute, short second, short millisecond)
+        public SystemTime(ushort year, ushort month, ushort day, ushort hour = 0, ushort minute = 0, ushort second = 0, ushort millisecond = 0)
         {
-            Millisecond = millisecond;
-            Second = second;
-            Minute = minute;
-            Hour = hour;
-            Day = day;
-            DayOfWeek = dayOfWeek;
-            Month = month;
             Year = year;
+            Month = month;
+            Day = day;
+            Hour = hour;
+            Minute = minute;
+            Second = second;
+            Milliseconds = millisecond;
+            DayOfWeek = 0;
         }
 
-        public SystemTime(DateTime dateTime)
+        public SystemTime(DateTime dt)
         {
-            Year = (short) dateTime.Year;
-            Month = (short) dateTime.Month;
-            DayOfWeek = (short) dateTime.DayOfWeek;
-            Day = (short) dateTime.Day;
-            Hour = (short) dateTime.Hour;
-            Minute = (short) dateTime.Minute;
-            Second = (short) dateTime.Second;
-            Millisecond = (short) dateTime.Millisecond;
+            Year = Convert.ToUInt16(dt.Year);
+            Month = Convert.ToUInt16(dt.Month);
+            DayOfWeek = Convert.ToUInt16(dt.DayOfWeek);
+            Day = Convert.ToUInt16(dt.Day);
+            Hour = Convert.ToUInt16(dt.Hour);
+            Minute = Convert.ToUInt16(dt.Minute);
+            Second = Convert.ToUInt16(dt.Second);
+            Milliseconds = Convert.ToUInt16(dt.Millisecond);
         }
 
-        int ISaveDataObject.ReadData(StreamBuffer buf, FileFormat fmt)
+        public override string ToString()
         {
-            Year = buf.ReadInt16();
-            Month = buf.ReadInt16();
-            DayOfWeek = buf.ReadInt16();
-            Day = buf.ReadInt16();
-            Hour = buf.ReadInt16();
-            Minute = buf.ReadInt16();
-            Second = buf.ReadInt16();
-            Millisecond = buf.ReadInt16();
-
-            return Size;
-        }
-
-        int ISaveDataObject.WriteData(StreamBuffer buf, FileFormat fmt)
-        {
-            buf.Write(Year);
-            buf.Write(Month);
-            buf.Write(DayOfWeek);
-            buf.Write(Day);
-            buf.Write(Hour);
-            buf.Write(Minute);
-            buf.Write(Second);
-            buf.Write(Millisecond);
-
-            return Size;
-        }
-
-        int ISaveDataObject.GetSize(FileFormat fmt)
-        {
-            return Size;
-        }
-
-        public bool IsValidDateTime(out DateTime dt)
-        {
-            return DateTime.TryParseExact(
-                $"{Year:04}-{Month:02}-{Day:02} {Hour:02}:{Minute:02}:{Second:02}.{Millisecond}",
-                "yyyy-MM-dd HH:mm:ss.fff",
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out dt);
-        }
-
-        public DateTime ToDateTime()
-        {
-            return new DateTime(
-                Year,
-                Month,
-                Day,
-                Hour,
-                Minute,
-                Second,
-                Millisecond);
+            return $"{Month:D2}/{Day:D2}/{Year:D4} {Hour:D2}:{Minute:D2}:{Second:D2}.{Milliseconds:D3}";
         }
 
         public override int GetHashCode()
         {
             int hash = 17;
-            hash += 23 * Year;
-            hash += 23 * Month;
-            hash += 23 * DayOfWeek;
-            hash += 23 * Day;
-            hash += 23 * Hour;
-            hash += 23 * Minute;
-            hash += 23 * Second;
-            hash += 23 * Millisecond;
+            hash += 23 * Year.GetHashCode();
+            hash += 23 * Month.GetHashCode();
+            hash += 23 * Day.GetHashCode();
+            hash += 23 * Hour.GetHashCode();
+            hash += 23 * Minute.GetHashCode();
+            hash += 23 * Second.GetHashCode();
+            hash += 23 * Milliseconds.GetHashCode();
 
             return hash;
         }
@@ -133,47 +79,29 @@ namespace GTASaveData.Types
         {
             return Year.Equals(other.Year)
                 && Month.Equals(other.Month)
-                && DayOfWeek.Equals(other.DayOfWeek)
                 && Day.Equals(other.Day)
                 && Hour.Equals(other.Hour)
                 && Minute.Equals(other.Minute)
                 && Second.Equals(other.Second)
-                && Millisecond.Equals(other.Millisecond);
+                && Milliseconds.Equals(other.Milliseconds);
         }
 
-        public override string ToString()
+        public static bool operator ==(SystemTime s1, SystemTime s2)
         {
-            if (IsValidDateTime(out DateTime dt))
-            {
-                return dt.ToString("dd MMM yyyy HH:mm:ss.fff");
-            }
-
-            return "(invalid date)";
+            return s1.Equals(s2);
         }
 
-        public static bool operator ==(SystemTime d1, SystemTime d2)
+        public static bool operator !=(SystemTime s1, SystemTime s2)
         {
-            return d1.Equals(d2);
+            return !s1.Equals(s2);
         }
 
-        public static bool operator !=(SystemTime d1, SystemTime d2)
+        public static explicit operator DateTime(SystemTime st)
         {
-            return !d1.Equals(d2);
-        }
+            if (st.Year == 0 || st == MinValue) return DateTime.MinValue;
+            if (st == MaxValue) return DateTime.MaxValue;
 
-        public static explicit operator DateTime(SystemTime t)
-        {
-            if (t.IsValidDateTime(out DateTime dt))
-            {
-                return dt;
-            }
-
-            return DateTime.MinValue;
-        }
-
-        public static implicit operator SystemTime(DateTime t)
-        {
-            return new SystemTime(t);
+            return new DateTime(st.Year, st.Month, st.Day, st.Hour, st.Minute, st.Second, st.Milliseconds, DateTimeKind.Local);
         }
     }
 }

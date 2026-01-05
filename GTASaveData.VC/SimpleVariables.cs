@@ -1,22 +1,26 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.VC
 {
     public class SimpleVariables : SaveDataObject, ISimpleVariables,
-        IEquatable<SimpleVariables>
+        IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
         public const int MaxMissionPassedNameLength = 24;
+        public const int MaxMissionPassedNameLengthMobile = 28;
         public const int RadioStationListCount = 10;
+        public const int SteamMagic = 0x3DF5C2FD;
 
+        private int m_saveVersionNumber;
         private string m_lastMissionPassedName;
         private SystemTime m_timeStamp;
+        private int m_sizeOfGameInBytes;
         private Level m_currLevel;
-        private Vector3D m_cameraPosition;
-        private int m_steamId;
+        private Vector3 m_cameraPosition;
+        private int m_steamMagicNumber;
         private int m_millisecondsPerGameMinute;
         private uint m_lastClockTick;
         private byte m_gameClockHours;
@@ -43,7 +47,13 @@ namespace GTASaveData.VC
         private int m_extraColour;
         private bool m_extraColourOn;
         private float m_extraColourInter;
-        private Array<int> m_radioStationPositionList;
+        private ObservableArray<int> m_radioStationPositionList;
+
+        public int SaveVersionNumber
+        {
+            get { return m_saveVersionNumber; }
+            set { m_saveVersionNumber = value; }
+        }
 
         public string LastMissionPassedName
         {
@@ -57,22 +67,28 @@ namespace GTASaveData.VC
             set { m_timeStamp = value; OnPropertyChanged(); }
         }
 
+        public int SizeOfGameInBytes
+        {
+            get { return m_sizeOfGameInBytes; }
+            set { m_sizeOfGameInBytes = value; }
+        }
+
         public Level CurrLevel
         {
             get { return m_currLevel; }
             set { m_currLevel = value; OnPropertyChanged(); }
         }
 
-        public Vector3D CameraPosition
+        public Vector3 CameraPosition
         {
             get { return m_cameraPosition; }
             set { m_cameraPosition = value; OnPropertyChanged(); }
         }
 
-        public int SteamId
+        public int SteamMagicNumber
         {
-            get { return m_steamId; }
-            set { m_steamId = value; OnPropertyChanged(); }
+            get { return m_steamMagicNumber; }
+            set { m_steamMagicNumber = value; OnPropertyChanged(); }
         }
 
         public int MillisecondsPerGameMinute
@@ -231,26 +247,103 @@ namespace GTASaveData.VC
             set { m_extraColourInter = value; OnPropertyChanged(); }
         }
 
-        public Array<int> RadioStationPositionList
+        public ObservableArray<int> RadioStationPositionList
         {
             get { return m_radioStationPositionList; }
             set { m_radioStationPositionList = value; OnPropertyChanged(); }
         }
 
+        int ISimpleVariables.GameClockHours
+        {
+            get { return GameClockHours; }
+            set { GameClockHours = (byte) value; OnPropertyChanged(); }
+        }
+
+        int ISimpleVariables.GameClockMinutes
+        {
+            get { return GameClockMinutes; }
+            set { GameClockMinutes = (byte) value; OnPropertyChanged(); }
+        }
+
+        int ISimpleVariables.OldWeatherType
+        {
+            get { return (int) OldWeatherType; }
+            set { OldWeatherType = (WeatherType) value; OnPropertyChanged(); }
+        }
+
+        int ISimpleVariables.NewWeatherType
+        {
+            get { return (int) NewWeatherType; }
+            set { NewWeatherType = (WeatherType) value; OnPropertyChanged(); }
+        }
+
+        int ISimpleVariables.ForcedWeatherType
+        {
+            get { return (int) ForcedWeatherType; }
+            set { ForcedWeatherType = (WeatherType) value; OnPropertyChanged(); }
+        }
+
         public SimpleVariables()
         {
             LastMissionPassedName = "";
-            RadioStationPositionList = new Array<int>();
+            TimeStamp = SystemTime.MinValue;
+            RadioStationPositionList = new ObservableArray<int>();
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        public SimpleVariables(SimpleVariables other)
         {
-            LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
-            TimeStamp = buf.Read<SystemTime>();
-            buf.ReadInt32();
+            SaveVersionNumber = other.SaveVersionNumber;
+            LastMissionPassedName = other.LastMissionPassedName;
+            TimeStamp = other.TimeStamp;
+            SizeOfGameInBytes = other.SizeOfGameInBytes;
+            CurrLevel = other.CurrLevel;
+            CameraPosition = other.CameraPosition;
+            SteamMagicNumber = other.SteamMagicNumber;
+            MillisecondsPerGameMinute = other.MillisecondsPerGameMinute;
+            LastClockTick = other.LastClockTick;
+            GameClockHours = other.GameClockHours;
+            GameClockMinutes = other.GameClockMinutes;
+            CurrPadMode = other.CurrPadMode;
+            TimeInMilliseconds = other.TimeInMilliseconds;
+            TimerTimeScale = other.TimerTimeScale;
+            TimerTimeStep = other.TimerTimeStep;
+            TimerTimeStepNonClipped = other.TimerTimeStepNonClipped;
+            FrameCounter = other.FrameCounter;
+            TimeStep = other.TimeStep;
+            FramesPerUpdate = other.FramesPerUpdate;
+            TimeScale = other.TimeScale;
+            OldWeatherType = other.OldWeatherType;
+            NewWeatherType = other.NewWeatherType;
+            ForcedWeatherType = other.ForcedWeatherType;
+            WeatherInterpolation = other.WeatherInterpolation;
+            WeatherTypeInList = other.WeatherTypeInList;
+            CameraCarZoomIndicator = other.CameraCarZoomIndicator;
+            CameraPedZoomIndicator = other.CameraPedZoomIndicator;
+            CurrArea = other.CurrArea;
+            AllTaxisHaveNitro = other.AllTaxisHaveNitro;
+            InvertLook4Pad = other.InvertLook4Pad;
+            ExtraColour = other.ExtraColour;
+            ExtraColourOn = other.ExtraColourOn;
+            ExtraColourInterpolation = other.ExtraColourInterpolation;
+            RadioStationPositionList = other.RadioStationPositionList;
+        }
+
+        protected override void ReadData(DataBuffer buf, FileType fmt)
+        {
+            if (fmt.IsMobile)
+            {
+                SaveVersionNumber = buf.ReadInt32();
+                LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLengthMobile, unicode: true);
+            }
+            else
+            {
+                LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
+                TimeStamp = buf.ReadStruct<SystemTime>();
+            }
+            SizeOfGameInBytes = buf.ReadInt32();
             CurrLevel = (Level) buf.ReadInt32();
-            CameraPosition = buf.Read<Vector3D>();
-            if (fmt.IsPC && fmt.IsSteam) SteamId = buf.ReadInt32();
+            CameraPosition = buf.ReadStruct<Vector3>();
+            if (fmt.IsPC && fmt.FlagSteam) SteamMagicNumber = buf.ReadInt32();
             MillisecondsPerGameMinute = buf.ReadInt32();
             LastClockTick = buf.ReadUInt32();
             GameClockHours = (byte) buf.ReadInt32();
@@ -285,19 +378,27 @@ namespace GTASaveData.VC
             ExtraColour = buf.ReadInt32();
             ExtraColourOn = buf.ReadBool(4);
             ExtraColourInterpolation = buf.ReadFloat();
-            RadioStationPositionList = buf.Read<int>(RadioStationListCount);
+            RadioStationPositionList = buf.ReadArray<int>(RadioStationListCount);
 
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
-            buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
-            buf.Write(TimeStamp);
-            buf.Write(VCSave.SizeOfGameInBytes + 1);
+            if (fmt.IsMobile)
+            {
+                buf.Write(SaveVersionNumber);
+                buf.Write(LastMissionPassedName, MaxMissionPassedNameLengthMobile, unicode: true);
+            }
+            else
+            {
+                buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
+                buf.Write(TimeStamp);
+            }
+            buf.Write(SizeOfGameInBytes);
             buf.Write((int) CurrLevel);
             buf.Write(CameraPosition);
-            if (fmt.IsPC && fmt.IsSteam) buf.Write(SteamId);
+            if (fmt.IsPC && fmt.FlagSteam) buf.Write(SteamMagicNumber);
             buf.Write(MillisecondsPerGameMinute);
             buf.Write(LastClockTick);
             buf.Write(GameClockHours);
@@ -337,11 +438,15 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
-            if (fmt.IsPC)
+            if (fmt.IsMobile)
             {
-                if (fmt.IsSteam)
+                return 0xE0;
+            }
+            else if (fmt.IsPC)
+            {
+                if (fmt.FlagSteam)
                 {
                     return 0xE8;
                 }
@@ -363,11 +468,13 @@ namespace GTASaveData.VC
                 return false;
             }
 
-            return LastMissionPassedName.Equals(other.LastMissionPassedName)
+            return SaveVersionNumber.Equals(other.SaveVersionNumber)
+                && LastMissionPassedName.Equals(other.LastMissionPassedName)
                 && TimeStamp.Equals(other.TimeStamp)
+                && SizeOfGameInBytes.Equals(other.SizeOfGameInBytes)
                 && CurrLevel.Equals(other.CurrLevel)
                 && CameraPosition.Equals(other.CameraPosition)
-                && SteamId.Equals(other.SteamId)
+                && SteamMagicNumber.Equals(other.SteamMagicNumber)
                 && MillisecondsPerGameMinute.Equals(other.MillisecondsPerGameMinute)
                 && LastClockTick.Equals(other.LastClockTick)
                 && GameClockHours.Equals(other.GameClockHours)
@@ -395,6 +502,11 @@ namespace GTASaveData.VC
                 && ExtraColourOn.Equals(other.ExtraColourOn)
                 && ExtraColourInterpolation.Equals(other.ExtraColourInterpolation)
                 && RadioStationPositionList.SequenceEqual(other.RadioStationPositionList);
+        }
+
+        public SimpleVariables DeepClone()
+        {
+            return new SimpleVariables(this);
         }
     }
 

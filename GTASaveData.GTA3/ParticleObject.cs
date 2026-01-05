@@ -1,7 +1,8 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3
@@ -9,7 +10,7 @@ namespace GTASaveData.GTA3
     public class ParticleObject : SaveDataObject,
         IEquatable<ParticleObject>, IDeepClonable<ParticleObject>
     {
-        private Vector3D m_position;
+        private Vector3 m_position;
         private uint m_nextParticleObjectPointer;
         private uint m_prevParticleObjectPointer;
         private uint m_particlePointer;
@@ -20,7 +21,7 @@ namespace GTASaveData.GTA3
         private byte m_skipFrames;
         private ushort m_frameCounter;
         private ParticleObjectState m_state;
-        private Vector3D m_target;
+        private Vector3 m_target;
         private float m_spread;
         private float m_size;
         private uint m_color;
@@ -28,7 +29,7 @@ namespace GTASaveData.GTA3
         private sbyte m_creationChance;
         private int m_unknown;
 
-        public Vector3D Position
+        public Vector3 Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -98,7 +99,7 @@ namespace GTASaveData.GTA3
             set { m_state = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Target
+        public Vector3 Target
         {
             get { return m_target; }
             set { m_target = value; OnPropertyChanged(); }
@@ -142,13 +143,13 @@ namespace GTASaveData.GTA3
 
         public ParticleObject()
         {
-            Position = new Vector3D();
-            Target = new Vector3D();
+            Position = new Vector3();
+            Target = new Vector3();
         }
 
         public ParticleObject(ParticleObject other)
         {
-            Position = new Vector3D(other.Position);
+            Position = other.Position;
             NextParticleObjectPointer = other.NextParticleObjectPointer;
             PrevParticleObjectPointer = other.PrevParticleObjectPointer;
             ParticlePointer = other.ParticlePointer;
@@ -159,7 +160,7 @@ namespace GTASaveData.GTA3
             SkipFrames = other.SkipFrames;
             FrameCounter = other.FrameCounter;
             State = other.State;
-            Target = new Vector3D(other.Target);
+            Target = other.Target;
             Spread = other.Spread;
             Size = other.Size;
             Color = other.Color;
@@ -186,14 +187,16 @@ namespace GTASaveData.GTA3
             Color = (rgb << 8) | a;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            if (!fmt.IsPS2) buf.Skip(4);
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (!p.IsPS2) buf.Skip(4);
             buf.Skip(48);
-            Position = buf.Read<Vector3D>();
+            Position = buf.ReadStruct<Vector3>();
             buf.Skip(4);
-            if (!(fmt.IsPS2 && fmt.IsJapanese)) buf.Skip(8);
-            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(24);
+            if (!p.IsPS2JP) buf.Skip(8);
+            if (p.IsPS2 && !p.IsPS2JP) buf.Skip(24);
             NextParticleObjectPointer = buf.ReadUInt32();
             PrevParticleObjectPointer = buf.ReadUInt32();
             ParticlePointer = buf.ReadUInt32();
@@ -205,26 +208,28 @@ namespace GTASaveData.GTA3
             buf.Align4();
             FrameCounter = buf.ReadUInt16();
             State = (ParticleObjectState) buf.ReadInt16();
-            Target = buf.Read<Vector3D>();
+            Target = buf.ReadStruct<Vector3>();
             Spread = buf.ReadFloat();
             Size = buf.ReadFloat();
             Color = buf.ReadUInt32();
             DestroyWhenFar = buf.ReadBool();
             CreationChance = buf.ReadSByte();
             buf.Align4();
-            if (fmt.IsPS2) Unknown = buf.ReadInt32();
+            if (p.IsPS2) Unknown = buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == SizeOfType<ParticleObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<ParticleObject>(prm));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            if (!fmt.IsPS2) buf.Skip(4);
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (!p.IsPS2) buf.Skip(4);
             buf.Skip(48);
             buf.Write(Position);
             buf.Skip(4);
-            if (!(fmt.IsPS2 && fmt.IsJapanese)) buf.Skip(8);
-            if (fmt.IsPS2 && !fmt.IsJapanese) buf.Skip(24);
+            if (!p.IsPS2JP) buf.Skip(8);
+            if (p.IsPS2 && !p.IsPS2JP) buf.Skip(24);
             buf.Write(NextParticleObjectPointer);
             buf.Write(PrevParticleObjectPointer);
             buf.Write(ParticlePointer);
@@ -243,15 +248,17 @@ namespace GTASaveData.GTA3
             buf.Write(DestroyWhenFar);
             buf.Write(CreationChance);
             buf.Align4();
-            if (fmt.IsPS2) buf.Write(Unknown);
+            if (p.IsPS2) buf.Write(Unknown);
 
-            Debug.Assert(buf.Offset == SizeOfType<ParticleObject>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<ParticleObject>(prm));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2 && fmt.IsJapanese) return 0x80;
-            if (fmt.IsPS2) return 0xA0;
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (p.IsPS2JP) return 0x80;
+            if (p.IsPS2) return 0xA0;
 
             return 0x88;
         }

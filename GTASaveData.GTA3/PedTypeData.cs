@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -9,8 +10,8 @@ namespace GTASaveData.GTA3
     {
         public const int NumPedTypes = 23;
         
-        private Array<PedType> m_pedTypes;
-        public Array<PedType> PedTypes
+        private ObservableArray<PedType> m_pedTypes;
+        public ObservableArray<PedType> PedTypes
         {
             get { return m_pedTypes; }
             set { m_pedTypes = value; OnPropertyChanged(); }
@@ -26,61 +27,110 @@ namespace GTASaveData.GTA3
             PedTypes = ArrayHelper.DeepClone(other.PedTypes);
         }
 
-        public PedTypeFlags GetFlag(PedTypeId type)
+        public PedType GetPedInfo(PedTypeId type)
         {
-            return m_pedTypes[(int) type].Flag;
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type] : null;
         }
 
-        public PedTypeFlags GetAvoid(PedTypeId type)
+        public PedTypeFlags GetFlag(PedTypeId type)
         {
-            return m_pedTypes[(int) type].Avoid;
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type].Flag : 0;
         }
 
         public PedTypeFlags GetThreats(PedTypeId type)
         {
-            return m_pedTypes[(int) type].Threats;
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type].Threats : 0;
         }
 
-        public void SetThreats(PedTypeId type, PedTypeFlags threat)
+        public void SetThreat(PedTypeId type, PedTypeFlags threat)
         {
-            m_pedTypes[(int) type].Threats = threat;
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Threats = threat;
+            }
         }
 
         public void AddThreat(PedTypeId type, PedTypeFlags threat)
         {
-            m_pedTypes[(int) type].Threats |= threat;
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Threats |= threat;
+            }
         }
 
         public void RemoveThreat(PedTypeId type, PedTypeFlags threat)
         {
-            m_pedTypes[(int) type].Threats &= ~threat;
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Threats &= ~threat;
+            }
         }
 
         public bool IsThreat(PedTypeId type, PedTypeFlags threat)
         {
-            return m_pedTypes[(int) type].Threats.HasFlag(threat);
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type].Threats.HasFlag(threat) : false;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        public PedTypeFlags GetAvoids(PedTypeId type)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "PTP");
-
-            PedTypes = buf.Read<PedType>(NumPedTypes);
-
-            Debug.Assert(buf.Offset == SizeOfType<PedTypeData>());
-            Debug.Assert(size == SizeOfType<PedTypeData>() - GTA3VCSave.BlockHeaderSize);
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type].Avoids : 0;
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        public void SetAvoid(PedTypeId type, PedTypeFlags avoid)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "PTP", SizeOfType<PedTypeData>() - GTA3VCSave.BlockHeaderSize);
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Avoids = avoid;
+            }
+        }
+
+        public void AddAvoid(PedTypeId type, PedTypeFlags avoid)
+        {
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Avoids |= avoid;
+            }
+        }
+
+        public void RemoveAvoid(PedTypeId type, PedTypeFlags avoid)
+        {
+            if (IsPedTypeValid(type))
+            {
+                m_pedTypes[(int) type].Avoids &= ~avoid;
+            }
+        }
+
+        public bool IsAvoid(PedTypeId type, PedTypeFlags threat)
+        {
+            return IsPedTypeValid(type) ? m_pedTypes[(int) type].Avoids.HasFlag(threat) : false;
+        }
+
+        private bool IsPedTypeValid(PedTypeId type)
+        {
+            return type >= PedTypeId.Player1 && type <= PedTypeId.Unused2;
+        }
+
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
+        {
+            int size = GTA3Save.ReadBlockHeader(buf, out string tag);
+            Debug.Assert(tag == "PTP");
+
+            PedTypes = buf.ReadArray<PedType>(NumPedTypes);
+
+            Debug.Assert(buf.Offset == SizeOf<PedTypeData>());
+            Debug.Assert(size == SizeOf<PedTypeData>() - GTA3Save.BlockHeaderSize);
+        }
+
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
+        {
+            GTA3Save.WriteBlockHeader(buf, "PTP", SizeOf<PedTypeData>() - GTA3Save.BlockHeaderSize);
 
             buf.Write(PedTypes, NumPedTypes);
 
-            Debug.Assert(buf.Offset == SizeOfType<PedTypeData>());
+            Debug.Assert(buf.Offset == SizeOf<PedTypeData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x2E8;
         }

@@ -7,7 +7,7 @@ namespace GTASaveData.VCS.Tests
 {
     public class TestSimpleVariables : Base<SimpleVariables>
     {
-        public override SimpleVariables GenerateTestObject(FileFormat format)
+        public override SimpleVariables GenerateTestObject(FileType format)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
                 .RuleFor(x => x.CurrentLevel, f => f.Random.Int())
@@ -29,7 +29,7 @@ namespace GTASaveData.VCS.Tests
                 .RuleFor(x => x.ForcedWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
                 .RuleFor(x => x.WeatherInterpolationValue, f => f.Random.Float())
-                .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
+                .RuleFor(x => x.CameraPosition, f => Generator.Vector3(f))
                 .RuleFor(x => x.CameraModeInCar, f => f.Random.Float())
                 .RuleFor(x => x.CameraModeOnFoot, f => f.Random.Float())
                 .RuleFor(x => x.ExtraColor, f => f.Random.Int())
@@ -52,10 +52,10 @@ namespace GTASaveData.VCS.Tests
                 .RuleFor(x => x.HasPlayerCheated, f => f.Random.Bool())
                 .RuleFor(x => x.AllTaxisHaveNitro, f => f.Random.Bool())
                 .RuleFor(x => x.TargetIsOn, f => f.Random.Bool())
-                .RuleFor(x => x.TargetPosition, f => Generator.Vector2D(f))
-                .RuleFor(x => x.PlayerPosition, f => Generator.Vector3D(f))
+                .RuleFor(x => x.TargetPosition, f => Generator.Vector2(f))
+                .RuleFor(x => x.PlayerPosition, f => Generator.Vector3(f))
                 .RuleFor(x => x.TrailsOn, f => (format.IsPS2) ? f.Random.Bool() : false)
-                .RuleFor(x => x.TimeStamp, f => (format.IsPS2) ? Generator.Date(f) : DateTime.MinValue)
+                .RuleFor(x => x.TimeStamp, f => (format.IsPS2) ? new Date(Generator.Date(f)) : Date.MinValue)
                 .RuleFor(x => x.Unknown78hPS2, f => (format.IsPS2) ? f.Random.Int() : 0)
                 .RuleFor(x => x.Unknown7ChPS2, f => (format.IsPS2) ? f.Random.Int() : 0)
                 .RuleFor(x => x.Unknown90hPS2, f => (format.IsPS2) ? f.Random.Int() : 0)
@@ -68,7 +68,7 @@ namespace GTASaveData.VCS.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        public void RandomDataSerialization(FileType format)
         {
             SimpleVariables x0 = GenerateTestObject(format);
             SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);

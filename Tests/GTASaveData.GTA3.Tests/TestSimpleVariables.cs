@@ -1,21 +1,26 @@
 ﻿using Bogus;
-using System;
+using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
-#pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.GTA3.Tests
 {
     public class TestSimpleVariables : Base<SimpleVariables>
     {
-        public override SimpleVariables GenerateTestObject(FileFormat format)
+        public override SimpleVariables GenerateTestObject(GTA3SaveParams p)
         {
+            bool isPC = p.IsPC;
+            bool isPS2 = p.IsPS2;
+            bool isPS2JP = p.IsPS2JP;
+            bool isXbox = p.IsXbox;
+            bool isMobile = p.IsMobile;
+
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.LastMissionPassedName, f => (!format.IsPS2) ? Generator.Words(f, SimpleVariables.MaxMissionPassedNameLength - 1) : "")
-                .RuleFor(x => x.TimeStamp, f => (format.IsPC || format.IsXbox) ? Generator.Date(f) : DateTime.MinValue)
-                .RuleFor(x => x.SizeOfGameInBytes, f => (format.IsPS2 && format.IsJapanese) ? 0x31400 : 0x31401)
+                .RuleFor(x => x.LastMissionPassedName, f => (!isPS2) ? Generator.Words(f, p.LastMissionPassedNameLength - 1) : "")
+                .RuleFor(x => x.TimeStamp, f => (isPC || isXbox) ? new SystemTime(Generator.Date(f)) : SystemTime.MinValue)
+                .RuleFor(x => x.SizeOfGameInBytes, f => (isPS2JP) ? 0x31400 : 0x31401)
                 .RuleFor(x => x.CurrentLevel, f => f.PickRandom<Level>())
-                .RuleFor(x => x.CameraPosition, f => Generator.Vector3D(f))
+                .RuleFor(x => x.CameraPosition, f => Generator.Vector3(f))
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
                 .RuleFor(x => x.GameClockHours, f => f.Random.Byte())
@@ -33,31 +38,32 @@ namespace GTASaveData.GTA3.Tests
                 .RuleFor(x => x.NewWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.ForcedWeatherType, f => f.PickRandom<WeatherType>())
                 .RuleFor(x => x.WeatherInterpolation, f => f.Random.Float())
-                .RuleFor(x => x.MusicVolume, f => (format.IsPS2) ? f.Random.Int() : default)
-                .RuleFor(x => x.SfxVolume, f => (format.IsPS2) ? f.Random.Int() : default)
-                .RuleFor(x => x.UseVibration, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.StereoOutput, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.RadioStation, f => (format.IsPS2) ? f.PickRandom<RadioStation>() : default)
-                .RuleFor(x => x.Brightness, f => (format.IsPS2) ? f.Random.Int() : default)
-                .RuleFor(x => x.ShowSubtitles, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.Language, f => (format.IsPS2) ? f.PickRandom<Language>() : default)
-                .RuleFor(x => x.UseWideScreen, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.BlurOn, f => (format.IsPS2) ? f.Random.Bool() : default)
-                .RuleFor(x => x.CompileDateAndTime, f => Generator.Date(f))
+                .RuleFor(x => x.MusicVolume, f => (isPS2) ? f.Random.Int() : default)
+                .RuleFor(x => x.SfxVolume, f => (isPS2) ? f.Random.Int() : default)
+                .RuleFor(x => x.UseVibration, f => (isPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.UseMono, f => (isPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.RadioStation, f => (isPS2) ? f.PickRandom<RadioStation>() : default)
+                .RuleFor(x => x.Brightness, f => (isPS2) ? f.Random.Int() : default)
+                .RuleFor(x => x.ShowSubtitles, f => (isPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.Language, f => (isPS2) ? f.PickRandom<Language>() : default)
+                .RuleFor(x => x.UseWideScreen, f => (isPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.Trails, f => (isPS2) ? f.Random.Bool() : default)
+                .RuleFor(x => x.CompileDateAndTime, f => new Date(Generator.Date(f)))
                 .RuleFor(x => x.WeatherTypeInList, f => f.Random.Int())
-                .RuleFor(x => x.CameraModeInCar, f => f.Random.Float())
-                .RuleFor(x => x.CameraModeOnFoot, f => f.Random.Float())
-                .RuleFor(x => x.IsQuickSave, f => (format.IsMobile) ? f.PickRandom<QuickSaveState>() : default);
+                .RuleFor(x => x.CameraModeInCar, f => f.PickRandom<CameraMode>())
+                .RuleFor(x => x.CameraModeOnFoot, f => f.PickRandom<CameraMode>())
+                .RuleFor(x => x.IsQuickSave, f => (isMobile) ? f.PickRandom<QuickSaveState>() : default);
 
             return model.Generate();
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            SimpleVariables x0 = GenerateTestObject(format);
-            SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            SimpleVariables x0 = GenerateTestObject(p);
+            SimpleVariables x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
             Assert.Equal(x0.TimeStamp, x1.TimeStamp);
@@ -84,13 +90,13 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.MusicVolume, x1.MusicVolume);
             Assert.Equal(x0.SfxVolume, x1.SfxVolume);
             Assert.Equal(x0.UseVibration, x1.UseVibration);
-            Assert.Equal(x0.StereoOutput, x1.StereoOutput);
+            Assert.Equal(x0.UseMono, x1.UseMono);
             Assert.Equal(x0.RadioStation, x1.RadioStation);
             Assert.Equal(x0.Brightness, x1.Brightness);
             Assert.Equal(x0.ShowSubtitles, x1.ShowSubtitles);
             Assert.Equal(x0.Language, x1.Language);
             Assert.Equal(x0.UseWideScreen, x1.UseWideScreen);
-            Assert.Equal(x0.BlurOn, x1.BlurOn);
+            Assert.Equal(x0.Trails, x1.Trails);
             Assert.Equal(x0.CompileDateAndTime, x1.CompileDateAndTime);
             Assert.Equal(x0.WeatherTypeInList, x1.WeatherTypeInList);
             Assert.Equal(x0.CameraModeInCar, x1.CameraModeInCar);
@@ -98,17 +104,18 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.IsQuickSave, x1.IsQuickSave);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            SimpleVariables x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            SimpleVariables x0 = GenerateTestObject(p);
             SimpleVariables x1 = new SimpleVariables(x0);
 
             Assert.Equal(x0, x1);
         }
     }
 }
-#pragma warning restore CS0618 // Type or member is obsolete

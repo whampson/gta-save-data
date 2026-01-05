@@ -1,16 +1,19 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Types;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
-    public class StoredCar : SaveDataObject, IStoredCar,
+    /// <summary>
+    /// A vehicle stored in a safehouse garage.
+    /// </summary>
+    public class StoredCar : SaveDataObject,
         IEquatable<StoredCar>, IDeepClonable<StoredCar>
     {
         private int m_model;
-        private Vector3D m_position;
-        private Vector3D m_angle;
+        private Vehicle m_veh;
         private StoredCarFlags m_flags;
         private byte m_color1;
         private byte m_color2;
@@ -19,113 +22,114 @@ namespace GTASaveData.GTA3
         private sbyte m_extra2;
         private BombType m_bomb;
 
+        /// <summary>
+        /// The vehicle model index.
+        /// </summary>
         public int Model
         {
             get { return m_model; }
             set { m_model = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Position
+        /// <summary>
+        /// The vehicle's position in the game world.
+        /// </summary>
+        public Vector3 Position
         {
-            get { return m_position; }
-            set { m_position = value; OnPropertyChanged(); }
+            get { return m_veh.Position; }
+            set { m_veh.Position = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Angle
+        /// <summary>
+        /// The vehicle's heading.
+        /// </summary>
+        public float Heading
         {
-            get { return m_angle; }
-            set { m_angle = value; OnPropertyChanged(); }
+            get { return (ToDeg(m_veh.Matrix.GetEulerAngles().Z) + 360) % 360; }
+            set { m_veh.SetHeading(ToRad(value)); OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// The vehicle's special perks (Explosion Proof, Fire Proof, etc.).
+        /// </summary>
         public StoredCarFlags Flags
         {
             get { return m_flags; }
             set { m_flags = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Primary color. See <c>carcols.dat</c>.
+        /// </summary>
         public byte Color1
         {
             get { return m_color1; }
             set { m_color1 = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Secondary color. See <c>carcols.dat</c>.
+        /// </summary>
         public byte Color2
         {
             get { return m_color2; }
             set { m_color2 = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// The selected radio station.
+        /// </summary>
         public RadioStation Radio
         {
             get { return m_radio; }
             set { m_radio = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Extra part #1.
+        /// </summary>
+        /// <remarks>
+        /// Taxi light, hardtop roof, bed covering, livery, etc.
+        /// Only valid on some vehicles.
+        /// </remarks>
         public sbyte Extra1
         {
             get { return m_extra1; }
             set { m_extra1 = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Extra part #2.
+        /// </summary>
+        /// <remarks>
+        /// Taxi light, hardtop roof, bed covering, livery, etc.
+        /// Only valid on some vehicles.
+        /// </remarks>
         public sbyte Extra2
         {
             get { return m_extra2; }
             set { m_extra2 = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// The bomb fitted to this vehicle.
+        /// </summary>
         public BombType Bomb
         {
             get { return m_bomb; }
             set { m_bomb = value; OnPropertyChanged(); }
         }
 
-        int IStoredCar.Flags
-        {
-            get { return (int) Flags; }
-            set { Flags = (StoredCarFlags) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Color1
-        {
-            get { return Color1; }
-            set { Color1 = (byte) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Color2
-        {
-            get { return Color2; }
-            set { Color2 = (byte) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Radio
-        {
-            get { return (int) Radio; }
-            set { Radio = (RadioStation) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Extra1
-        {
-            get { return Extra1; }
-            set { Extra1 = (sbyte) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Extra2
-        {
-            get { return Extra2; }
-            set { Extra2 = (sbyte) value; OnPropertyChanged(); }
-        }
-
         public StoredCar()
         {
-            Position = new Vector3D();
-            Angle = new Vector3D();
+            m_veh = Vehicle.CreateDefault();
         }
 
-        public StoredCar(StoredCar other)
+        public StoredCar(StoredCar other) : this()
         {
             Model = other.Model;
-            Position = new Vector3D(other.Position);
-            Angle = new Vector3D(other.Angle);
+            Position = other.Position;
+            Heading = other.Heading;
             Flags = other.Flags;
             Color1 = other.Color1;
             Color2 = other.Color2;
@@ -135,11 +139,34 @@ namespace GTASaveData.GTA3
             Bomb = other.Bomb;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        /// <summary>
+        /// Gets a value indicating whether this stored car is valid.
+        /// </summary>
+        public bool HasCar()
+        {
+            return Model != 0;
+        }
+
+        /// <summary>
+        /// Invalidates this stored car.
+        /// </summary>
+        public void Clear()
+        {
+            Model = 0;
+        }
+
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             Model = buf.ReadInt32();
-            Position = buf.Read<Vector3D>();
-            Angle = buf.Read<Vector3D>();
+            Vector3 position = buf.ReadStruct<Vector3>();
+            Vector3 angle = buf.ReadStruct<Vector3>();
+            m_veh.Matrix = new Matrix()
+            {
+                Position = position,
+                Forward = angle,
+                Right = new Vector3(angle.Y, -angle.X, 0),
+                Up = new Vector3(0, 0, 1)
+            };
             Flags = (StoredCarFlags) buf.ReadInt32();
             Color1 = buf.ReadByte();
             Color2 = buf.ReadByte();
@@ -149,14 +176,14 @@ namespace GTASaveData.GTA3
             Bomb = (BombType) buf.ReadSByte();
             buf.Skip(2);
 
-            Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>(prm));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(Model);
             buf.Write(Position);
-            buf.Write(Angle);
+            buf.Write(m_veh.Matrix.Forward);
             buf.Write((int) Flags);
             buf.Write(Color1);
             buf.Write(Color2);
@@ -166,12 +193,20 @@ namespace GTASaveData.GTA3
             buf.Write((sbyte) Bomb);
             buf.Skip(2);
 
-            Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>(prm));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            return 0x28;
+            return sizeof(int)
+                + SizeOf<Vector3>(prm)
+                + SizeOf<Vector3>(prm)
+                + sizeof(int)
+                + 2 * sizeof(byte)
+                + sizeof(sbyte)
+                + 2 * sizeof(byte)
+                + sizeof(sbyte)
+                + 2;
         }
 
         public override bool Equals(object obj)
@@ -188,7 +223,7 @@ namespace GTASaveData.GTA3
 
             return Model.Equals(other.Model)
                 && Position.Equals(other.Position)
-                && Angle.Equals(other.Angle)
+                && Heading.Equals(other.Heading)
                 && Flags.Equals(other.Flags)
                 && Color1.Equals(other.Color1)
                 && Color2.Equals(other.Color2)
@@ -202,41 +237,8 @@ namespace GTASaveData.GTA3
         {
             return new StoredCar(this);
         }
-    }
 
-    [Flags]
-    public enum StoredCarFlags
-    {
-        BulletProof     = 0b00001,
-        FireProof       = 0b00010,
-        ExplosionProof  = 0b00100,
-        CollisionProof  = 0b01000,
-        MeleeProof      = 0b10000
-    }
-
-    public enum BombType
-    {
-        None,
-        Timer,
-        Ignition,
-        Remote,
-        TimerArmed,
-        IgnitionArmed
-    }
-
-    public enum RadioStation
-    {
-        HeadRadio,
-        DoubleCleff,
-        JahRadio,
-        RiseFM,
-        Lips106,
-        GameFM,
-        MsxFM,
-        Flashback,
-        Chatterbox,
-        UserTrack,
-        PoliceRadio,
-        None
+        private static float ToDeg(float rad) => (float) (rad * 180.0f / Math.PI);
+        private static float ToRad(float deg) => (float) (deg * Math.PI / 180.0f);
     }
 }

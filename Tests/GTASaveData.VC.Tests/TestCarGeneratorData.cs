@@ -6,7 +6,7 @@ namespace GTASaveData.VC.Tests
 {
     public class TestCarGeneratorData : Base<CarGeneratorData>
     {
-        public override CarGeneratorData GenerateTestObject(FileFormat format)
+        public override CarGeneratorData GenerateTestObject(FileType format)
         {
             Faker<CarGeneratorData> model = new Faker<CarGeneratorData>()
                 .RuleFor(x => x.NumberOfCarGenerators, f => f.Random.Int())
@@ -32,6 +32,15 @@ namespace GTASaveData.VC.Tests
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0), data.Length);
+        }
+
+        [Fact]
+        public void CopyConstructor()
+        {
+            CarGeneratorData x0 = GenerateTestObject();
+            CarGeneratorData x1 = new CarGeneratorData(x0);
+
+            Assert.Equal(x0, x1);
         }
     }
 }

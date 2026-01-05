@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -34,33 +35,35 @@ namespace GTASaveData.GTA3
             Damage = new DamageManager(other.Damage);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            base.ReadData(buf, fmt);
+            base.ReadData(buf, prm);
 
-            Damage = buf.Read<DamageManager>();
-            buf.Skip(SizeOfType<Automobile>(fmt) - buf.Offset);    // The rest is useless
+            Damage = buf.ReadObject<DamageManager>();
+            buf.Skip(SizeOf<Automobile>(prm) - buf.Offset);    // The rest is useless
 
-            Debug.Assert(buf.Offset == SizeOfType<Automobile>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Automobile>(prm));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            base.WriteData(buf, fmt);
+            base.WriteData(buf, prm);
 
             buf.Write(Damage);
-            buf.Skip(SizeOfType<Automobile>(fmt) - buf.Offset);
+            buf.Skip(SizeOf<Automobile>(prm) - buf.Offset);
 
-            Debug.Assert(buf.Offset == SizeOfType<Automobile>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Automobile>(prm));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2 && fmt.IsJapanese) return 0x630;
-            if (fmt.IsPC || fmt.IsXbox) return 0x5A8;
-            if (fmt.IsMobile) return 0x5AC;
-            if (fmt.IsPS2) return 0x650;
-            throw SizeNotDefined(fmt);
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (p.IsPC || p.IsXbox) return 0x5A8;
+            if (p.IsMobile) return 0x5AC;
+            if (p.IsPS2JP) return 0x630;
+            if (p.IsPS2) return 0x650;
+            throw SizeNotDefined(p);
         }
 
         public override bool Equals(object obj)

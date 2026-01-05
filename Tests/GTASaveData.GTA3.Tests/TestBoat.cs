@@ -1,5 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests;
 using TestFramework;
 using Xunit;
 
@@ -7,14 +6,14 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestBoat : Base<Boat>
     {
-        public override Boat GenerateTestObject(FileFormat format)
+        public override Boat GenerateTestObject(GTA3SaveParams p)
         {
             Faker<Boat> model = new Faker<Boat>()
-                .RuleFor(x => x.Matrix, f => TestViewMatrix.GenerateRandom(f))
+                .RuleFor(x => x.Matrix, f => Generator.Matrix(f))
                 .RuleFor(x => x.EntityType, f => f.PickRandom<EntityType>())
                 .RuleFor(x => x.EntityStatus, f => f.PickRandom<EntityStatus>())
                 .RuleFor(x => x.EntityFlags, f => f.PickRandom<EntityFlags>())
-                .RuleFor(x => x.AutoPilot, f => Generator.Generate<AutoPilot, TestAutoPilot>())
+                .RuleFor(x => x.AutoPilot, f => Generator.Generate<AutoPilot, TestAutoPilot, GTA3SaveParams>(p))
                 .RuleFor(x => x.Color1, f => f.Random.Byte())
                 .RuleFor(x => x.Color2, f => f.Random.Byte())
                 .RuleFor(x => x.AlarmState, f => f.Random.Short())
@@ -44,11 +43,12 @@ namespace GTASaveData.GTA3.Tests
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            Boat x0 = GenerateTestObject(format);
-            Boat x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Boat x0 = GenerateTestObject(p);
+            Boat x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(VehicleType.Boat, x1.Type);
             Assert.Equal(x0.Matrix, x1.Matrix);
@@ -82,14 +82,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.DoorLock, x1.DoorLock);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            Boat x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            Boat x0 = GenerateTestObject(p);
             Boat x1 = new Boat(x0);
 
             Assert.Equal(x0, x1);

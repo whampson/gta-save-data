@@ -6,23 +6,24 @@ namespace GTASaveData.GTA3.Tests
 {
     public class TestAudioScriptObject : Base<AudioScriptObject>
     {
-        public override AudioScriptObject GenerateTestObject(FileFormat format)
+        public override AudioScriptObject GenerateTestObject(GTA3SaveParams p)
         {
             Faker<AudioScriptObject> model = new Faker<AudioScriptObject>()
                 .RuleFor(x => x.Index, f => f.Random.Int())
                 .RuleFor(x => x.AudioId, f => f.Random.Short())
-                .RuleFor(x => x.Position, f => Generator.Vector3D(f))
+                .RuleFor(x => x.Position, f => Generator.Vector3(f))
                 .RuleFor(x => x.AudioEntity, f => f.Random.Int());
 
             return model.Generate();
         }
 
         [Theory]
-        [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileFormat format)
+        [MemberData(nameof(FileTypes))]
+        public void RandomDataSerialization(FileType t)
         {
-            AudioScriptObject x0 = GenerateTestObject(format);
-            AudioScriptObject x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            AudioScriptObject x0 = GenerateTestObject(p);
+            AudioScriptObject x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Index, x1.Index);
             Assert.Equal(x0.AudioId, x1.AudioId);
@@ -30,14 +31,16 @@ namespace GTASaveData.GTA3.Tests
             Assert.Equal(x0.AudioEntity, x1.AudioEntity);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
 
-        [Fact]
-        public void CopyConstructor()
+        [Theory]
+        [MemberData(nameof(FileTypes))]
+        public void CopyConstructor(FileType t)
         {
-            AudioScriptObject x0 = GenerateTestObject();
+            GTA3SaveParams p = GTA3SaveParams.GetDefaults(t);
+            AudioScriptObject x0 = GenerateTestObject(p);
             AudioScriptObject x1 = new AudioScriptObject(x0);
 
             Assert.Equal(x0, x1);

@@ -6,18 +6,18 @@ using Xunit;
 
 namespace GTASaveData.Core.Tests
 {
-    public class TestSaveDataObject : SaveDataObjectTestBase<TestObject>
+    public class TestSaveDataObject : SaveDataObjectTestBase<DummySaveDataObject, SerializationParams>
     {
-        public override TestObject GenerateTestObject(FileFormat format)
+        public override DummySaveDataObject GenerateTestObject(SerializationParams p)
         {
-            Faker<TestObject2> model2 = new Faker<TestObject2>()
+            Faker<DummySaveDataObject2> model2 = new Faker<DummySaveDataObject2>()
                 .RuleFor(x => x.Value, f => f.Random.Int());
 
-            Faker<TestObject> model = new Faker<TestObject>()
+            Faker<DummySaveDataObject> model = new Faker<DummySaveDataObject>()
                 .RuleFor(x => x.Value, f => f.Random.Int())
                 .RuleFor(x => x.Object, model2.Generate())
-                .RuleFor(x => x.ValueArray, f => Generator.Array(TestObject.ValueArrayCount, g => f.Random.Int()))
-                .RuleFor(x => x.ObjectArray, f => Generator.Array(TestObject.ObjectArrayCount, g => model2.Generate()));
+                .RuleFor(x => x.ValueArray, f => Generator.Array(DummySaveDataObject.ValueArrayCount, g => f.Random.Int()))
+                .RuleFor(x => x.ObjectArray, f => Generator.Array(DummySaveDataObject.ObjectArrayCount, g => model2.Generate()));
 
             return model.Generate();
         }
@@ -25,8 +25,8 @@ namespace GTASaveData.Core.Tests
         [Fact]
         public void RandomDataSerialization()
         {
-            TestObject x0 = GenerateTestObject();
-            TestObject x1 = CreateSerializedCopy(x0, out byte[] data);
+            DummySaveDataObject x0 = GenerateTestObject();
+            DummySaveDataObject x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Value, x1.Value);
             Assert.Equal(x0.Object, x1.Object);
@@ -40,9 +40,9 @@ namespace GTASaveData.Core.Tests
         [Fact]
         public void JsonSerialization()
         {
-            TestObject x0 = GenerateTestObject();
+            DummySaveDataObject x0 = GenerateTestObject();
             string json = x0.ToJsonString();
-            TestObject x1 = SaveDataObject.FromJsonString<TestObject>(json);
+            DummySaveDataObject x1 = SaveDataObject.FromJsonString<DummySaveDataObject>(json);
 
             Assert.Equal(x0.Value, x1.Value);
             Assert.Equal(x0.Object, x1.Object);
@@ -55,7 +55,7 @@ namespace GTASaveData.Core.Tests
         [Fact]
         public void NullObject()
         {
-            TestObject x0 = GenerateTestObject();
+            DummySaveDataObject x0 = GenerateTestObject();
             x0.Object = null;
             
             Assert.Throws<ArgumentNullException>(() => CreateSerializedCopy(x0, out byte[] _));
@@ -64,22 +64,22 @@ namespace GTASaveData.Core.Tests
         [Fact]
         public void NullArray()
         {
-            TestObject x0 = GenerateTestObject();
+            DummySaveDataObject x0 = GenerateTestObject();
             x0.ObjectArray = null;
 
             Assert.Throws<ArgumentNullException>(() => CreateSerializedCopy(x0, out byte[] _));
         }
     }
 
-    public class TestObject : SaveDataObject, IEquatable<TestObject>
+    public class DummySaveDataObject : SaveDataObject, IEquatable<DummySaveDataObject>
     {
         public const int ValueArrayCount = 5;
         public const int ObjectArrayCount = 5;
 
         private int m_value;
-        private TestObject2 m_object;
-        private Array<int> m_valueArray;
-        private Array<TestObject2> m_objectArray;
+        private DummySaveDataObject2 m_object;
+        private ObservableArray<int> m_valueArray;
+        private ObservableArray<DummySaveDataObject2> m_objectArray;
 
         public int Value
         {
@@ -87,41 +87,41 @@ namespace GTASaveData.Core.Tests
             set { m_value = value; OnPropertyChanged(); }
         }
 
-        public TestObject2 Object
+        public DummySaveDataObject2 Object
         {
             get { return m_object; }
             set { m_object = value; OnPropertyChanged(); }
         }
 
-        public Array<int> ValueArray
+        public ObservableArray<int> ValueArray
         {
             get { return m_valueArray; }
             set { m_valueArray = value; OnPropertyChanged(); }
         }
 
-        public Array<TestObject2> ObjectArray
+        public ObservableArray<DummySaveDataObject2> ObjectArray
         {
             get { return m_objectArray; }
             set { m_objectArray = value; OnPropertyChanged(); }
         }
 
-        public TestObject()
+        public DummySaveDataObject()
         {
             m_value = 0;
-            m_object = new TestObject2();
-            m_valueArray = new Array<int>();
-            m_objectArray = new Array<TestObject2>();
+            m_object = new DummySaveDataObject2();
+            m_valueArray = new ObservableArray<int>();
+            m_objectArray = new ObservableArray<DummySaveDataObject2>();
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             Value = buf.ReadInt32();
-            Object = buf.Read<TestObject2>();
-            ValueArray = buf.Read<int>(ValueArrayCount);
-            ObjectArray = buf.Read<TestObject2>(ObjectArrayCount);
+            Object = buf.ReadObject<DummySaveDataObject2>();
+            ValueArray = buf.ReadArray<int>(ValueArrayCount);
+            ObjectArray = buf.ReadArray<DummySaveDataObject2>(ObjectArrayCount);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             buf.Write(Value);
             buf.Write(Object);
@@ -130,20 +130,20 @@ namespace GTASaveData.Core.Tests
 
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams p)
         {
             return sizeof(int)
                 + sizeof(int) * ValueArrayCount
-                + SizeOfType<TestObject2>()
-                + SizeOfType<TestObject2>() * ObjectArrayCount;
+                + SizeOf<DummySaveDataObject2>()
+                + SizeOf<DummySaveDataObject2>() * ObjectArrayCount;
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as TestObject);
+            return Equals(obj as DummySaveDataObject);
         }
 
-        public bool Equals(TestObject other)
+        public bool Equals(DummySaveDataObject other)
         {
             if (other == null)
             {
@@ -157,7 +157,7 @@ namespace GTASaveData.Core.Tests
         }
     }
 
-    public class TestObject2 : SaveDataObject, IEquatable<TestObject2>
+    public class DummySaveDataObject2 : SaveDataObject, IEquatable<DummySaveDataObject2>
     {
         private int m_value;
 
@@ -167,30 +167,30 @@ namespace GTASaveData.Core.Tests
             set { m_value = value; OnPropertyChanged(); }
         }
 
-        public TestObject2()
+        public DummySaveDataObject2()
         { }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             Value = buf.ReadInt32();
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             buf.Write(Value);
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams p)
         {
             return 4;
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as TestObject2);
+            return Equals(obj as DummySaveDataObject2);
         }
 
-        public bool Equals(TestObject2 other)
+        public bool Equals(DummySaveDataObject2 other)
         {
             if (other == null)
             {

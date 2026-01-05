@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -8,8 +9,8 @@ namespace GTASaveData.GTA3
     {
         private WeaponType m_type;
         private WeaponState m_state;
-        private uint m_ammoInClip;
-        private uint m_ammoTotal;
+        private int m_ammoInClip;
+        private int m_ammoTotal;
         private uint m_timer;
         private bool m_unknown;
 
@@ -25,13 +26,13 @@ namespace GTASaveData.GTA3
             set { m_state = value; OnPropertyChanged(); }
         }
 
-        public uint AmmoInClip
+        public int AmmoInClip
         {
             get { return m_ammoInClip; }
             set { m_ammoInClip = value; OnPropertyChanged(); }
         }
 
-        public uint AmmoTotal
+        public int AmmoTotal
         {
             get { return m_ammoTotal; }
             set { m_ammoTotal = value; OnPropertyChanged(); }
@@ -43,12 +44,11 @@ namespace GTASaveData.GTA3
             set { m_timer = value; OnPropertyChanged(); }
         }
 
-        public bool Unknown
+        public bool AddRotOffset
         {
             get { return m_unknown; }
             set { m_unknown = value; OnPropertyChanged(); }
         }
-
 
         public Weapon()
         { }
@@ -59,44 +59,50 @@ namespace GTASaveData.GTA3
             State = other.State;
             AmmoInClip = other.AmmoInClip;
             AmmoInClip = other.AmmoInClip;
-            Unknown = other.Unknown;
+            AddRotOffset = other.AddRotOffset;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
             Type = (WeaponType) buf.ReadInt32();
             State = (WeaponState) buf.ReadInt32();
-            AmmoInClip = buf.ReadUInt32();
-            AmmoTotal = buf.ReadUInt32();
+            AmmoInClip = buf.ReadInt32();
+            AmmoTotal = buf.ReadInt32();
             Timer = buf.ReadUInt32();
-            if (!fmt.IsPS2)
+            if (!p.IsPS2)
             {
-                Unknown = buf.ReadBool();
+                AddRotOffset = buf.ReadBool();
                 buf.ReadBytes(3);
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<Weapon>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Weapon>(prm));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
             buf.Write((uint) Type);
             buf.Write((uint) State);
             buf.Write(AmmoInClip);
             buf.Write(AmmoTotal);
             buf.Write(Timer);
-            if (!fmt.IsPS2)
+            if (!p.IsPS2)
             {
-                buf.Write(Unknown);
+                buf.Write(AddRotOffset);
                 buf.Write(new byte[3]);
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<Weapon>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Weapon>(prm));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            if (fmt.IsPS2)
+            GTA3SaveParams p = (GTA3SaveParams) prm;
+
+            if (p.IsPS2)
             {
                 return 20;
             }
@@ -120,7 +126,7 @@ namespace GTASaveData.GTA3
                 && State.Equals(other.State)
                 && AmmoInClip.Equals(other.AmmoInClip)
                 && AmmoInClip.Equals(other.AmmoInClip)
-                && Unknown.Equals(other.Unknown);
+                && AddRotOffset.Equals(other.AddRotOffset);
         }
 
         public Weapon DeepClone()

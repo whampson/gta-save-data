@@ -1,6 +1,4 @@
 ﻿using Bogus;
-using GTASaveData.Core.Tests.Types;
-using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -8,14 +6,14 @@ namespace GTASaveData.SA.Tests
 {
     public class TestSimpleVariables : Base<SimpleVariables>
     {
-        public override SimpleVariables GenerateTestObject(FileFormat format)
+        public override SimpleVariables GenerateTestObject(FileType format)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
                 .RuleFor(x => x.VersionId, f => f.Random.UInt())
-                .RuleFor(x => x.LastMissionPassedName, f => Generator.AsciiString(f, SimpleVariables.Limits.MaxNameLength - 1))
+                .RuleFor(x => x.LastMissionPassedName, f => Generator.AsciiString(f, SimpleVariables.MaxNameLength - 1))
                 .RuleFor(x => x.MissionPackGame, f => f.Random.Byte())
                 .RuleFor(x => x.CurrLevel, f => f.PickRandom<LevelType>())
-                .RuleFor(x => x.CameraPosition, f => Generator.Generate<Vector3D, TestVector3D>())
+                .RuleFor(x => x.CameraPosition, f => Generator.Vector3(f))
                 .RuleFor(x => x.MillisecondsPerGameMinute, f => f.Random.Int())
                 .RuleFor(x => x.LastClockTick, f => f.Random.UInt())
                 .RuleFor(x => x.GameClockMonths, f => f.Random.Byte())
@@ -58,7 +56,7 @@ namespace GTASaveData.SA.Tests
                 .RuleFor(x => x.FrenchGame, f => f.Random.Bool())
                 .RuleFor(x => x.NastyGame, f => f.Random.Bool())
                 .RuleFor(x => x.CinematicCamMessagesLeftToDisplay, f => f.Random.Byte())
-                .RuleFor(x => x.TimeLastSaved, f => Generator.Generate<SystemTime, TestSystemTime>())
+                .RuleFor(x => x.TimeLastSaved, f => new SystemTime(Generator.Date(f)))
                 .RuleFor(x => x.TargetMarkerHandle, f => f.Random.Int())
                 .RuleFor(x => x.HasDisplayedPlayerQuitEnterCarHelpText, f => f.Random.Bool())
                 .RuleFor(x => x.AllTaxisHaveNitro, f => f.Random.Bool())
@@ -69,7 +67,7 @@ namespace GTASaveData.SA.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void Serialization(FileFormat format)
+        public void Serialization(FileType format)
         {
             SimpleVariables x0 = GenerateTestObject(format);
             SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);
@@ -127,7 +125,7 @@ namespace GTASaveData.SA.Tests
             Assert.Equal(x0.AllTaxisHaveNitro, x1.AllTaxisHaveNitro);
             Assert.Equal(x0.ProstiutesPayYou, x1.ProstiutesPayYou);
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestType(format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
         }
     }
 }

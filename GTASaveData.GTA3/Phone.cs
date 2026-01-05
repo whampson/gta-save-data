@@ -1,7 +1,8 @@
-﻿using GTASaveData.Types;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -10,20 +11,20 @@ namespace GTASaveData.GTA3
     {
         public const int MaxNumMessages = 6;
 
-        private Vector3D m_position;
-        private Array<uint> m_messages;     // wchar pointers
+        private Vector3 m_position;
+        private ObservableArray<uint> m_messages;     // wchar pointers
         private uint m_repeatedMessageStartTime;
         private int m_handle;
         private PhoneState m_state;
         private bool m_visibleToCam;
 
-        public Vector3D Position
+        public Vector3 Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
         }
 
-        public Array<uint> Messages
+        public ObservableArray<uint> Messages
         {
             get { return m_messages; }
             set { m_messages = value; OnPropertyChanged(); }
@@ -55,13 +56,13 @@ namespace GTASaveData.GTA3
 
         public Phone()
         {
-            Position = new Vector3D();
+            Position = new Vector3();
             Messages = ArrayHelper.CreateArray<uint>(MaxNumMessages);
         }
 
         public Phone(Phone other)
         {
-            Position = new Vector3D(other.Position);
+            Position = other.Position;
             Messages = ArrayHelper.DeepClone(other.Messages);
             RepeatedMessageStartTime = other.RepeatedMessageStartTime;
             Handle = other.Handle;
@@ -69,20 +70,20 @@ namespace GTASaveData.GTA3
             VisibleToCam = other.VisibleToCam;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            Position = buf.Read<Vector3D>();
-            Messages = buf.Read<uint>(MaxNumMessages);
+            Position = buf.ReadStruct<Vector3>();
+            Messages = buf.ReadArray<uint>(MaxNumMessages);
             RepeatedMessageStartTime = buf.ReadUInt32();
             Handle = buf.ReadInt32();
             State = (PhoneState) buf.ReadUInt32();
             VisibleToCam = buf.ReadBool();
             buf.Align4();
 
-            Debug.Assert(buf.Offset == SizeOfType<Phone>());
+            Debug.Assert(buf.Offset == SizeOf<Phone>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(Position);
             buf.Write(Messages, MaxNumMessages);
@@ -92,10 +93,10 @@ namespace GTASaveData.GTA3
             buf.Write(VisibleToCam);
             buf.Align4();
 
-            Debug.Assert(buf.Offset == SizeOfType<Phone>());
+            Debug.Assert(buf.Offset == SizeOf<Phone>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x34;
         }

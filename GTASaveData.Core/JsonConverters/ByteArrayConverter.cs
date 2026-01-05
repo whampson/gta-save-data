@@ -5,10 +5,10 @@ using System.Collections.Generic;
 namespace GTASaveData.JsonConverters
 {
     /// <summary>
-    /// Converts a <see cref="byte"/> <see cref="Array{T}"/> to
+    /// Converts a <see cref="byte"/> <see cref="ObservableArray{T}"/> to
     /// a base64 string if the array is sufficiently large.
     /// </summary>
-    public class ByteArrayConverter : JsonConverter<Array<byte>>
+    public class ByteArrayConverter : JsonConverter<ObservableArray<byte>>
     {
         public const int DefaultThreshold = 32;
 
@@ -23,8 +23,8 @@ namespace GTASaveData.JsonConverters
         /// </summary>
         public static int Threshold { get; set; }
 
-        public override Array<byte> ReadJson(JsonReader reader, Type objectType,
-            Array<byte> existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override ObservableArray<byte> ReadJson(JsonReader reader, Type objectType,
+            ObservableArray<byte> existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -69,7 +69,7 @@ namespace GTASaveData.JsonConverters
             throw EndOfStream();
         }
 
-        public override void WriteJson(JsonWriter writer, Array<byte> value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, ObservableArray<byte> value, JsonSerializer serializer)
         {
             if (value == null)
             {

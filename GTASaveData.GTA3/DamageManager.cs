@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -14,10 +15,10 @@ namespace GTASaveData.GTA3
 
         private float m_wheelDamageEffect;
         private byte m_engine;
-        private Array<WheelStatus> m_wheels;
-        private Array<DoorStatus> m_doors;
-        private Array<LightStatus> m_lights;
-        private Array<PanelStatus> m_panels;
+        private ObservableArray<WheelStatus> m_wheels;
+        private ObservableArray<DoorStatus> m_doors;
+        private ObservableArray<LightStatus> m_lights;
+        private ObservableArray<PanelStatus> m_panels;
         private int m_field24h;
 
         public float WheelDamageEffect
@@ -32,25 +33,25 @@ namespace GTASaveData.GTA3
             set { m_engine = value; OnPropertyChanged(); }
         }
 
-        public Array<WheelStatus> Wheels
+        public ObservableArray<WheelStatus> Wheels
         {
             get { return m_wheels; }
             set { m_wheels = value; OnPropertyChanged(); }
         }
 
-        public Array<DoorStatus> Doors
+        public ObservableArray<DoorStatus> Doors
         {
             get { return m_doors; }
             set { m_doors = value; OnPropertyChanged(); }
         }
 
-        public Array<LightStatus> Lights
+        public ObservableArray<LightStatus> Lights
         {
             get { return m_lights; }
             set { m_lights = value; OnPropertyChanged(); }
         }
 
-        public Array<PanelStatus> Panels
+        public ObservableArray<PanelStatus> Panels
         {
             get { return m_panels; }
             set { m_panels = value; OnPropertyChanged(); }
@@ -123,12 +124,12 @@ namespace GTASaveData.GTA3
             Panels[(int) panel] = status;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             WheelDamageEffect = buf.ReadFloat();
             Engine = buf.ReadByte();
-            Wheels = buf.Read<WheelStatus>(NumWheels);
-            Doors = buf.Read<DoorStatus>(NumDoors);
+            Wheels = buf.ReadArray<WheelStatus>(NumWheels);
+            Doors = buf.ReadArray<DoorStatus>(NumDoors);
             buf.Skip(1);
             int lightStatus = buf.ReadInt32();
             int panelStatus = buf.ReadInt32();
@@ -148,10 +149,10 @@ namespace GTASaveData.GTA3
                 panelStatus >>= 4;
             }
 
-            Debug.Assert(buf.Offset == SizeOfType<DamageManager>());
+            Debug.Assert(buf.Offset == SizeOf<DamageManager>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             int lightStatus = 0;
             int panelStatus = 0;
@@ -175,10 +176,10 @@ namespace GTASaveData.GTA3
             buf.Write(panelStatus);
             buf.Write(Field24h);
 
-            Debug.Assert(buf.Offset == SizeOfType<DamageManager>());
+            Debug.Assert(buf.Offset == SizeOf<DamageManager>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x1C;
         }

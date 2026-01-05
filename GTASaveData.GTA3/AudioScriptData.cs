@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -10,23 +11,17 @@ namespace GTASaveData.GTA3
         IEquatable<AudioScriptData>, IDeepClonable<AudioScriptData>,
         IEnumerable<AudioScriptObject>
     {
-        private Array<AudioScriptObject> m_audioScriptObjects;
+        private ObservableArray<AudioScriptObject> m_audioScriptObjects;
 
-        public Array<AudioScriptObject> AudioScriptObjects
+        public ObservableArray<AudioScriptObject> AudioScriptObjects
         {
             get { return m_audioScriptObjects; }
             set { m_audioScriptObjects = value; OnPropertyChanged(); }
         }
 
-        public AudioScriptObject this[int i]
-        {
-            get { return AudioScriptObjects[i]; }
-            set { AudioScriptObjects[i] = value; OnPropertyChanged(); }
-        }
-
         public AudioScriptData()
         {
-            AudioScriptObjects = new Array<AudioScriptObject>();
+            AudioScriptObjects = new ObservableArray<AudioScriptObject>();
         }
 
         public AudioScriptData(AudioScriptData other)
@@ -34,31 +29,32 @@ namespace GTASaveData.GTA3
             AudioScriptObjects = ArrayHelper.DeepClone(other.AudioScriptObjects);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "AUD");
+            int size = GTA3Save.ReadBlockHeader(buf, out string tag);
+            Debug.Assert(tag == "AUD");
 
             int count = buf.ReadInt32();
-            AudioScriptObjects = buf.Read<AudioScriptObject>(count);
+            AudioScriptObjects = buf.ReadArray<AudioScriptObject>(count);
 
-            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
-            Debug.Assert(size == SizeOfObject(this) - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
+            Debug.Assert(size == SizeOf(this) - GTA3Save.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "AUD", SizeOfObject(this) - GTA3VCSave.BlockHeaderSize);
+            GTA3Save.WriteBlockHeader(buf, "AUD", SizeOf(this) - GTA3Save.BlockHeaderSize);
 
             buf.Write(AudioScriptObjects.Count);
             buf.Write(AudioScriptObjects);
 
-            Debug.Assert(buf.Offset == SizeOfObject(this));
+            Debug.Assert(buf.Offset == SizeOf(this));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            return SizeOfType<AudioScriptObject>() * AudioScriptObjects.Count
-                + GTA3VCSave.BlockHeaderSize
+            return SizeOf<AudioScriptObject>() * AudioScriptObjects.Count
+                + GTA3Save.BlockHeaderSize
                 + sizeof(int);
         }
 

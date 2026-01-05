@@ -12,38 +12,41 @@ namespace TestFramework
         { }
     }
 
-    public abstract class TestBase<T> where T : new()
+    public abstract class TestBase<T, P>
+        where T : new()
+        where P : SerializationParams, new()
     {
-        public int GetSizeOfTestObject(T obj)
+        public virtual int GetSizeOfTestObject(T obj)       // TODO: remove
         {
-            return Serializer.SizeOfObject(obj, FileFormat.Default);
+            return Serializer.SizeOf(obj, new P());
         }
 
-        public int GetSizeOfTestObject(T obj, FileFormat format)
+        public virtual int GetSizeOfTestObject(T obj, P p)
         {
-            return Serializer.SizeOfObject(obj, format);
+            return Serializer.SizeOf(obj, p);
         }
 
-        public T CreateSerializedCopy(T obj, out byte[] bytes)
+        public T CreateSerializedCopy(T obj, out byte[] bytes)  // TODO: remove
         {
-            return CreateSerializedCopy(obj, FileFormat.Default, out bytes);
+            return CreateSerializedCopy(obj, new P(), out bytes);
         }
 
-        public T CreateSerializedCopy(T obj, FileFormat format, out byte[] bytes)
+        public T CreateSerializedCopy(T obj, P p, out byte[] bytes)
         {
-            bytes = Serializer.Write(obj, format);
-            return Serializer.Read<T>(bytes, format);
+            bytes = Serializer.Write(obj, p);
+            return Serializer.Read<T>(bytes, p);
         }
     }
 
-    public abstract class SaveDataObjectTestBase<T> : TestBase<T>
+    public abstract class SaveDataObjectTestBase<T, P> : TestBase<T, P>
         where T : SaveDataObject, new()
+        where P : SerializationParams, new()
     {
         public T GenerateTestObject()
         {
-            return GenerateTestObject(FileFormat.Default);
+            return GenerateTestObject(new P());
         }
 
-        public abstract T GenerateTestObject(FileFormat format);
+        public abstract T GenerateTestObject(P p);
     }
 }

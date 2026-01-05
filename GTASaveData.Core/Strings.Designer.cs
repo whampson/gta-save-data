@@ -19,7 +19,7 @@ namespace GTASaveData {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Strings {
@@ -79,11 +79,29 @@ namespace GTASaveData {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to End of stream reached..
+        ///   Looks up a localized string similar to An attempt was made to read or write past the end of the buffer..
         /// </summary>
         internal static string Error_EndOfStream {
             get {
                 return ResourceManager.GetString("Error_EndOfStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file is too large to be a valid Grand Theft Auto save file..
+        /// </summary>
+        internal static string Error_InvalidData_FileTooLarge {
+            get {
+                return ResourceManager.GetString("Error_InvalidData_FileTooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You weren&apos;t supposed to be able to get here, you know..
+        /// </summary>
+        internal static string Error_InvalidOperation_Generic {
+            get {
+                return ResourceManager.GetString("Error_InvalidOperation_Generic", resourceCulture);
             }
         }
         
@@ -133,7 +151,16 @@ namespace GTASaveData {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The block size exceeds the size of the buffer: {0}.
+        ///   Looks up a localized string similar to The path does not exist: {0}.
+        /// </summary>
+        internal static string Error_PathNotFound {
+            get {
+                return ResourceManager.GetString("Error_PathNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The block size exceeds the size of the buffer. (block size = {0}, buffer size = {1}).
         /// </summary>
         internal static string Error_Serialization_BadBlockSize {
             get {

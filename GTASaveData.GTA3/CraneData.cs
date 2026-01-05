@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -14,7 +15,7 @@ namespace GTASaveData.GTA3
 
         private int m_numCranes;
         private CollectCarsMilitaryCrane m_carsCollectedMilitaryCrane;
-        private Array<Crane> m_cranes;
+        private ObservableArray<Crane> m_cranes;
 
         public int NumCranes
         {
@@ -28,16 +29,10 @@ namespace GTASaveData.GTA3
             set { m_carsCollectedMilitaryCrane = value; OnPropertyChanged(); }
         }
 
-        public Array<Crane> Cranes
+        public ObservableArray<Crane> Cranes
         {
             get { return m_cranes; }
             set { m_cranes = value; OnPropertyChanged(); }
-        }
-
-        public Crane this[int i]
-        {
-            get { return Cranes[i]; }
-            set { Cranes[i] = value; OnPropertyChanged(); }
         }
 
         public CraneData()
@@ -52,25 +47,25 @@ namespace GTASaveData.GTA3
             Cranes = ArrayHelper.DeepClone(other.Cranes);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             NumCranes = buf.ReadInt32();
             CarsCollectedMilitaryCrane = (CollectCarsMilitaryCrane) buf.ReadInt32();
-            Cranes = buf.Read<Crane>(MaxNumCranes);
+            Cranes = buf.ReadArray<Crane>(MaxNumCranes);
 
-            Debug.Assert(buf.Offset == SizeOfType<CraneData>());
+            Debug.Assert(buf.Offset == SizeOf<CraneData>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(NumCranes);
             buf.Write((int) CarsCollectedMilitaryCrane);
             buf.Write(Cranes, MaxNumCranes);
 
-            Debug.Assert(buf.Offset == SizeOfType<CraneData>());
+            Debug.Assert(buf.Offset == SizeOf<CraneData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x408;
         }

@@ -1,205 +1,247 @@
 ﻿using GTASaveData.Extensions;
-using GTASaveData.Types.Interfaces;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData
 {
     /// <summary>
-    /// A convenience wrapper for <see cref="StreamBuffer"/> for serializing and deserializing data.
+    /// A <see cref="DataBuffer"/> wrapper class for easy data serialization.
     /// </summary>
     public static class Serializer
     {
         /// <summary>
-        /// Reads a value from a byte array.
+        /// Reads an object from a buffer.
         /// </summary>
+        /// <typeparam name="T">The type to read.</typeparam>
+        /// <param name="buf">The buffer to read from.</param>
+        /// <returns>An instance of <typeparamref name="T"/> containing data deserialized from the input buffer.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static T Read<T>(byte[] buf,
-            bool bigEndian = false)
+        public static T Read<T>(byte[] buf)
         {
-            Read(buf, FileFormat.Default, out T obj, bigEndian);
+            Read(buf, new SerializationParams(), out T obj);
             return obj;
         }
 
         /// <summary>
-        /// Reads a value from a byte array using the specified data format.
+        /// Reads an object from a buffer.
         /// </summary>
+        /// <typeparam name="T">The type to read.</typeparam>
+        /// <param name="buf">The buffer to read from.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is read.</param>
+        /// <returns>An instance of <typeparamref name="T"/> containing data deserialized from the input buffer.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static T Read<T>(byte[] buf, FileFormat fmt,
-            bool bigEndian = false)
+        public static T Read<T>(byte[] buf, SerializationParams p)
         {
-            Read(buf, fmt, out T obj, bigEndian);
+            Read(buf, p, out T obj);
             return obj;
         }
 
         /// <summary>
-        /// Reads a value from a byte array using the specified data format
-        /// and returns the number of bytes read.
+        /// Reads an object from a buffer.
         /// </summary>
+        /// <typeparam name="T">The type to read.</typeparam>
+        /// <param name="buf">The buffer to read from.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> object controlling how data is read.</param>
+        /// <param name="obj">An instance of <typeparamref name="T"/> containing data deserialized from the input buffer.</param>
+        /// <returns>The number of bytes read.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(byte[] buf, FileFormat fmt, out T obj,
-            bool bigEndian = false)
+        public static int Read<T>(byte[] buf, SerializationParams p, out T obj)
         {
-            using (StreamBuffer stream = new StreamBuffer(buf) { BigEndian = bigEndian })
+            using (DataBuffer stream = CreateDataBufferStream(buf, p))
             {
-                return Read(stream, fmt, out obj);
+                return Read(stream, p, out obj);
             }
         }
 
         /// <summary>
-        /// Reads the object's data from a byte array using the specified
-        /// data format and returns the number of bytes read.
+        /// Reads an object from a buffer.
         /// </summary>
+        /// <typeparam name="T">The type to read.</typeparam>
+        /// <param name="obj">The object to populate.</param>
+        /// <param name="buf">The buffer to read from.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is read.</param>
+        /// <returns>The number of bytes read.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(T obj, byte[] buf, FileFormat fmt,
-            bool bigEndian = false) where T : ISaveDataObject
+        public static int Read<T>(T obj, byte[] buf, SerializationParams p)
+            where T : ISaveDataObject
         {
-            using (StreamBuffer stream = new StreamBuffer(buf) { BigEndian = bigEndian })
+            using (DataBuffer stream = CreateDataBufferStream(buf, p))
             {
-                return Read(obj, stream, fmt);
+                return Read(obj, stream, p);
             }
         }
 
         /// <summary>
-        /// Reads the object's data from the current position in the buffer
-        /// using the specified data format and returns the number of bytes read.
+        /// Reads an object from a buffer.
         /// </summary>
+        /// <typeparam name="T">The type to read.</typeparam>
+        /// <param name="obj">The object to populate.</param>
+        /// <param name="buf">The buffer to read from.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is read.</param>
+        /// <returns>The number of bytes read.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(T obj, StreamBuffer buf, FileFormat fmt) where T : ISaveDataObject
+        public static int Read<T>(T obj, DataBuffer buf, SerializationParams p)
+            where T : ISaveDataObject
         {
-            return obj.ReadData(buf, fmt);
+            return obj.ReadData(buf, p);
         }
 
         /// <summary>
-        /// Reads a value from the current position in the buffer using the
-        /// specified data format and returns the number of bytes read.
+        /// Reads an object from a buffer.
         /// </summary>
+        /// <typeparam name="T">The type to read.</typeparam>
+        /// <param name="buf">The buffer to read from.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is read.</param>
+        /// <param name="obj">An instance of <typeparamref name="T"/> containing data deserialized from the input buffer.</param>
+        /// <returns>The number of bytes read.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Read<T>(StreamBuffer buf, FileFormat fmt, out T obj)
+        public static int Read<T>(DataBuffer buf, SerializationParams p, out T obj)
         {
-            return buf.GenericRead(fmt, out obj);
+            return buf.GenericRead(out obj);
         }
 
         /// <summary>
-        /// Converts a value into a byte array.
+        /// Writes an object to a buffer.
         /// </summary>
+        /// <typeparam name="T">The type to write.</typeparam>
+        /// <param name="obj">The object to write.</param>
+        /// <returns>The serialized object.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static byte[] Write<T>(T obj,
-            bool bigEndian = false)
+        public static byte[] Write<T>(T obj)
         {
-            Write(obj, FileFormat.Default, out byte[] data, bigEndian);
+            Write(obj, new SerializationParams(), out byte[] data);
             return data;
         }
 
         /// <summary>
-        /// Converts a value into a byte array using the specified data format.
+        /// Writes an object to a buffer.
         /// </summary>
-        /// <exception cref="SerializationException"/>
-        public static byte[] Write<T>(T obj, FileFormat fmt,
-            bool bigEndian = false)
+        /// <typeparam name="T">The type to write.</typeparam>
+        /// <param name="obj">The object to write.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written.</param>
+        /// <returns>The serialized object.</returns>
+        /// <exception cref="SerializationException">
+        /// Thrown if the type is not serializable.
+        /// </exception>
+        public static byte[] Write<T>(T obj, SerializationParams p)
         {
-            Write(obj, fmt, out byte[] data, bigEndian);
+            Write(obj, p, out byte[] data);
             return data;
         }
 
         /// <summary>
-        /// Converts a value into a byte array using the specified data format
-        /// and returns the number of bytes written.
+        /// Writes an object to a buffer.
         /// </summary>
+        /// <typeparam name="T">The type to write.</typeparam>
+        /// <param name="obj">The object to write.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written.</param>
+        /// <param name="data">The serialized object.</param>
+        /// <returns>The number of bytes written.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Write<T>(T obj, FileFormat fmt, out byte[] data,
-            bool bigEndian = false,
-            PaddingType padding = PaddingType.Default, byte[] paddingBytes = null)
+        public static int Write<T>(T obj, SerializationParams p, out byte[] data)
         {
-            using (StreamBuffer stream = new StreamBuffer() {
-                BigEndian = bigEndian,
-                PaddingType = padding,
-                PaddingBytes = paddingBytes
-            })
+            using (DataBuffer stream = CreateDataBufferStream(p))
             {
-                int bytesWritten = stream.GenericWrite(obj, fmt);
-                data = stream.GetBufferBytes();
+                int bytesWritten = stream.GenericWrite(obj);
+                data = stream.GetBuffer();
                 return bytesWritten;
             }
         }
 
         /// <summary>
-        /// Writes an object to the current postion in the buffer using the
-        /// specified data format and returns the number of bytes written.
+        /// Writes an object to a buffer.
         /// </summary>
+        /// <typeparam name="T">The type to write.</typeparam>
+        /// <param name="buf">The buffer to write into.</param>
+        /// <param name="obj">The object to write.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written.</param>
+        /// <returns>The number of bytes written.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Write<T>(StreamBuffer buf, T obj, FileFormat fmt) where T : ISaveDataObject
+        public static int Write<T>(DataBuffer buf, T obj, SerializationParams p)
+            where T : ISaveDataObject
         {
-            return obj.WriteData(buf, fmt);
+            return obj.WriteData(buf, p);
         }
 
         /// <summary>
-        /// Gets the serialized size of the specified type.
+        /// Gets the size of a type when serialized.
         /// </summary>
+        /// <typeparam name="T">The type to get the size of.</typeparam>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int SizeOfType<T>() where T : new()
+        public static int SizeOf<T>()
+            where T : new()
         {
-            return SizeOfObject(new T(), FileFormat.Default);
+            return SizeOf(new T(), new SerializationParams());
         }
 
         /// <summary>
-        /// Gets the serialized size of the specified type using the
-        /// specified data format.
+        /// Gets the size of a type when serialized.
         /// </summary>
+        /// <typeparam name="T">The type to get the size of.</typeparam>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written, which may affect the size.</param>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int SizeOfType<T>(FileFormat fmt) where T : new()
+        public static int SizeOf<T>(SerializationParams p)
+            where T : new()
         {
-            return SizeOfObject(new T(), fmt);
+            return SizeOf(new T(), p);
         }
 
         /// <summary>
-        /// Gets the serialized size of an object.
+        /// Gets the size of an object when serialized.
         /// </summary>
+        /// <param name="obj">The object to get the size of.</param>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int SizeOfObject<T>(T obj)
+        public static int SizeOf<T>(T obj)
         {
-            return SizeOfObject(obj, FileFormat.Default);
+            return SizeOf(obj, new SerializationParams());
         }
 
         /// <summary>
-        /// Gets the serialized size of an object using the
-        /// specified data format.
+        /// Gets the size of an object when serialized.
         /// </summary>
+        /// <param name="obj">The object to get the size of.</param>
+        /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written, which may affect the size.</param>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int SizeOfObject<T>(T obj, FileFormat fmt)
+        public static int SizeOf<T>(T obj, SerializationParams p)
         {
-            // Get size from GetSize() function if T is ISerializable
-            if (typeof(T).Implements(typeof(ISaveDataObject)))
-            {
-                return ((ISaveDataObject) obj).GetSize(fmt);
-            }
+            return typeof(T).Implements(typeof(ISaveDataObject))
+                ? ((ISaveDataObject) obj).GetSize(p)
+                : Write(obj, p, out byte[] _);
+        }
 
-            // Otherwise get size by serializing the data
-            return Write(obj, fmt, out byte[] _);
+        private static DataBuffer CreateDataBufferStream(SerializationParams p)
+        {
+            return new DataBuffer(p);
+        }
+
+        private static DataBuffer CreateDataBufferStream(byte[] buf, SerializationParams p)
+        {
+            return new DataBuffer(buf, p);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,8 +27,8 @@ namespace GTASaveData.LCS
         private int m_carTypesCollected3;   // not used
         private int m_carTypesCollected4;   // not used
         private uint m_lastTimeHelpMessage;
-        private Array<StoredCar> m_carsInSafeHouse;
-        private Array<Garage> m_garages;
+        private ObservableArray<StoredCar> m_carsInSafeHouse;
+        private ObservableArray<Garage> m_garages;
 
         public int NumGarages
         {
@@ -102,13 +102,13 @@ namespace GTASaveData.LCS
             set { m_lastTimeHelpMessage = value; OnPropertyChanged(); }
         }
 
-        public Array<StoredCar> CarsInSafeHouse
+        public ObservableArray<StoredCar> CarsInSafeHouse
         {
             get { return m_carsInSafeHouse; }
             set { m_carsInSafeHouse = value; OnPropertyChanged(); }
         }
 
-        public Array<Garage> Garages
+        public ObservableArray<Garage> Garages
         {
             get { return m_garages; }
             set { m_garages = value; OnPropertyChanged(); }
@@ -176,7 +176,7 @@ namespace GTASaveData.LCS
             Garages = ArrayHelper.DeepClone(other.Garages);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             NumGarages = buf.ReadInt32();
             FreeBombs = buf.ReadBool(4);
@@ -189,14 +189,14 @@ namespace GTASaveData.LCS
             CarTypesCollected3 = buf.ReadInt32();
             CarTypesCollected4 = buf.ReadInt32();
             TimeHelpMessageLastShown = buf.ReadUInt32();
-            CarsInSafeHouse = buf.Read<StoredCar>(NumStoredCars);
-            Garages = buf.Read<Garage>(MaxNumGarages, fmt);
+            CarsInSafeHouse = buf.ReadArray<StoredCar>(NumStoredCars);
+            Garages = buf.ReadArray<Garage>(MaxNumGarages, fmt);
             buf.Skip(344);
 
-            Debug.Assert(buf.Offset == SizeOfType<GarageData>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<GarageData>(fmt));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(NumGarages);
             buf.Write(FreeBombs, 4);
@@ -215,10 +215,10 @@ namespace GTASaveData.LCS
             // Game writes some garbage here due to incorrect size calculation
             buf.Skip(344);
 
-            Debug.Assert(buf.Offset == SizeOfType<GarageData>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<GarageData>(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             if (fmt.IsPS2) return 0x29C4;
             if (fmt.IsPSP || fmt.IsMobile) return 0x25C4;

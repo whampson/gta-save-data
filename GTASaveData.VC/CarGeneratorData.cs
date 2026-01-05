@@ -1,12 +1,15 @@
-﻿using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.VC
 {
-    public class CarGeneratorData : SaveDataObject, ICarGeneratorData, IEquatable<CarGeneratorData>
+    public class CarGeneratorData : SaveDataObject, ICarGeneratorData,
+        IEquatable<CarGeneratorData>, IDeepClonable<CarGeneratorData>,
+        IEnumerable<CarGenerator>
     {
         public const int MaxNumCarGenerators = 185;
 
@@ -17,7 +20,7 @@ namespace GTASaveData.VC
         private int m_currentActiveCount;
         private byte m_processCounter;
         private byte m_generateEvenIfPlayerIsCloseCounter;
-        private Array<CarGenerator> m_carGeneratorArray;
+        private ObservableArray<CarGenerator> m_carGeneratorArray;
 
         public int NumberOfCarGenerators
         {
@@ -43,7 +46,7 @@ namespace GTASaveData.VC
             set { m_generateEvenIfPlayerIsCloseCounter = value; OnPropertyChanged(); }
         }
 
-        public Array<CarGenerator> CarGenerators
+        public ObservableArray<CarGenerator> CarGenerators
         {
             get { return m_carGeneratorArray; }
             set { m_carGeneratorArray = value; OnPropertyChanged(); }
@@ -55,25 +58,31 @@ namespace GTASaveData.VC
             set { CarGenerators[i] = value; OnPropertyChanged(); }
         }
 
-        IEnumerable<ICarGenerator> ICarGeneratorData.CarGenerators
-        {
-            get { return m_carGeneratorArray; }
-        }
-
         ICarGenerator ICarGeneratorData.this[int index]
         {
             get { return CarGenerators[index]; }
             set { CarGenerators[index] = (CarGenerator) value; OnPropertyChanged(); }
         }
 
+        IEnumerable<ICarGenerator> ICarGeneratorData.CarGenerators => m_carGeneratorArray;
+
         public CarGeneratorData()
         {
-            CarGenerators = new Array<CarGenerator>();
+            CarGenerators = ArrayHelper.CreateArray<CarGenerator>(MaxNumCarGenerators);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        public CarGeneratorData(CarGeneratorData other)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "CGN");
+            NumberOfCarGenerators = other.NumberOfCarGenerators;
+            NumberOfEnabledCarGenerators = other.NumberOfEnabledCarGenerators;
+            ProcessCounter = other.ProcessCounter;
+            GenerateEvenIfPlayerIsCloseCounter = other.GenerateEvenIfPlayerIsCloseCounter;
+            CarGenerators = ArrayHelper.DeepClone(other.CarGenerators);
+        }
+
+        protected override void ReadData(DataBuffer buf, FileType fmt)
+        {
+            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "CGN");
 
             int infoSize = buf.ReadInt32();
             Debug.Assert(infoSize == CarGeneratorDataSize);
@@ -84,15 +93,15 @@ namespace GTASaveData.VC
             buf.ReadInt16();
             int carGensSize = buf.ReadInt32();
             Debug.Assert(carGensSize == CarGeneratorArraySize);
-            CarGenerators = buf.Read<CarGenerator>(MaxNumCarGenerators);
+            CarGenerators = buf.ReadArray<CarGenerator>(MaxNumCarGenerators);
 
             Debug.Assert(buf.Offset == GetSize(fmt));
-            Debug.Assert(size == GetSize(fmt) - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(size == GetSize(fmt) - SaveFileGTA3VC.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "CGN", SizeOfType<CarGeneratorData>() - GTA3VCSave.BlockHeaderSize);
+            SaveFileGTA3VC.WriteBlockHeader(buf, "CGN", SizeOf<CarGeneratorData>() - SaveFileGTA3VC.BlockHeaderSize);
 
             buf.Write(CarGeneratorDataSize);
             buf.Write(NumberOfCarGenerators);
@@ -106,7 +115,7 @@ namespace GTASaveData.VC
             Debug.Assert(buf.Offset == GetSize(fmt));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0x1FE8;
         }
@@ -128,6 +137,21 @@ namespace GTASaveData.VC
                 && ProcessCounter.Equals(other.ProcessCounter)
                 && GenerateEvenIfPlayerIsCloseCounter.Equals(other.GenerateEvenIfPlayerIsCloseCounter)
                 && CarGenerators.SequenceEqual(other.CarGenerators);
+        }
+
+        public CarGeneratorData DeepClone()
+        {
+            return new CarGeneratorData(this);
+        }
+
+        public IEnumerator<CarGenerator> GetEnumerator()
+        {
+            return CarGenerators.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

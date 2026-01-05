@@ -3,34 +3,29 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
-    public class PathData : SaveDataObject,
+    public class PathData : BufferedObject,
         IEquatable<PathData>, IDeepClonable<PathData>,
         IEnumerable<PathNode>
     {
-        private Array<PathNode> m_pathNodes;
+        private ObservableArray<PathNode> m_pathNodes;
 
-        public Array<PathNode> PathNodes
+        public ObservableArray<PathNode> PathNodes
         {
             get { return m_pathNodes; }
             set { m_pathNodes = value; OnPropertyChanged(); }
-        }
-
-        public PathNode this[int i]
-        {
-            get { return PathNodes[i]; }
-            set { PathNodes[i] = value; OnPropertyChanged(); }
         }
 
         public PathData()
             : this(0)
         { }
 
-        public PathData(int saveSize)
+        public PathData(int size)
         {
-            PathNodes = ArrayHelper.CreateArray<PathNode>((saveSize / 2) * 8);
+            PathNodes = ArrayHelper.CreateArray<PathNode>((size / 2) * 8);
         }
 
         public PathData(PathData other)
@@ -41,33 +36,34 @@ namespace GTASaveData.GTA3
         public static PathData Load(byte[] data)
         {
             PathData p = new PathData(data.Length);
-            Serializer.Read(p, data, FileFormat.Default);
+            Serializer.Read(p, data, new GTA3SaveParams());
 
             return p;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            int size = SizeOfObject(this);
-            byte[] data = buf.ReadBytes(size);
-            int n = size / 2;
+            WorkBuffer = buf.ReadBytes(GetSize(prm));
+            int n = WorkBuffer.Count / 2;
+
+            Debug.Assert(n != 0);
 
             for (int i = 0; i < PathNodes.Count; i++)
             {
-                PathNodes[i].Disabled = ((data[i / 8] & (1 << i % 8)) != 0);
+                PathNodes[i].Disabled = ((WorkBuffer[i / 8] & (1 << i % 8)) != 0);
             }
 
             for (int i = 0; i < PathNodes.Count; i++)
             {
-                PathNodes[i].BetweenLevels = ((data[i / 8 + n] & (1 << i % 8)) != 0);
+                PathNodes[i].BetweenLevels = ((WorkBuffer[i / 8 + n] & (1 << i % 8)) != 0);
             }
 
-            Debug.Assert(buf.Offset == size);
+            Debug.Assert(buf.Offset == WorkBuffer.Count);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            int size = SizeOfObject(this);
+            int size = SizeOf(this);
             byte[] data = new byte[size];
             int n = size / 2;
 
@@ -91,7 +87,7 @@ namespace GTASaveData.GTA3
             Debug.Assert(buf.Offset == size);
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return ((PathNodes.Count + 7) / 8) * 2;
         }

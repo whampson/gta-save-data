@@ -1,15 +1,15 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Numerics;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
-    public class CarGenerator : SaveDataObject, ICarGenerator,
+    public class CarGenerator : SaveDataObject,
         IEquatable<CarGenerator>, IDeepClonable<CarGenerator>
     {
         private int m_modelIndex;
-        private Vector3D m_position;
+        private Vector3 m_position;
         private float m_heading;
         private short m_color1;
         private short m_color2;
@@ -22,8 +22,8 @@ namespace GTASaveData.GTA3
         private int m_handle;
         private bool m_enabled;
         private bool m_isBlocking;
-        private Vector3D m_vecInf;
-        private Vector3D m_vecSup;
+        private Vector3 m_vecInf;
+        private Vector3 m_vecSup;
         private float m_size;
 
         public int Model
@@ -32,7 +32,7 @@ namespace GTASaveData.GTA3
             set { m_modelIndex = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Position
+        public Vector3 Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -110,13 +110,13 @@ namespace GTASaveData.GTA3
             set { m_isBlocking = value; OnPropertyChanged(); }
         }
 
-        public Vector3D CollisionBoundingMin
+        public Vector3 CollisionBoundingMin
         {
             get { return m_vecInf; }
             set { m_vecInf = value; OnPropertyChanged(); }
         }
 
-        public Vector3D CollisionBoundingMax
+        public Vector3 CollisionBoundingMax
         {
             get { return m_vecSup; }
             set { m_vecSup = value; OnPropertyChanged(); }
@@ -128,41 +128,17 @@ namespace GTASaveData.GTA3
             set { m_size= value; OnPropertyChanged(); }
         }
 
-        int ICarGenerator.Color1
-        {
-            get { return Color1; }
-            set { Color1 = (short) value; OnPropertyChanged(); }
-        }
-
-        int ICarGenerator.Color2
-        {
-            get { return Color2; }
-            set { Color2 = (short) value; OnPropertyChanged(); }
-        }
-
-        int ICarGenerator.AlarmChance
-        {
-            get { return AlarmChance; }
-            set { AlarmChance = (byte) value; OnPropertyChanged(); }
-        }
-
-        int ICarGenerator.LockedChance
-        {
-            get { return LockedChance; }
-            set { LockedChance = (byte) value; OnPropertyChanged(); }
-        }
-
         public CarGenerator()
         {
-            Position = new Vector3D();
-            CollisionBoundingMin = new Vector3D();
-            CollisionBoundingMax = new Vector3D();
+            Position = new Vector3();
+            CollisionBoundingMin = new Vector3();
+            CollisionBoundingMax = new Vector3();
         }
 
         public CarGenerator(CarGenerator other)
         {
             Model = other.Model;
-            Position = new Vector3D(other.Position);
+            Position = other.Position;
             Heading = other.Heading;
             Color1 = other.Color1;
             Color2 = other.Color2;
@@ -175,15 +151,15 @@ namespace GTASaveData.GTA3
             Handle = other.Handle;
             Enabled = other.Enabled;
             IsBlocking = other.IsBlocking;
-            CollisionBoundingMin = new Vector3D(other.CollisionBoundingMin);
-            CollisionBoundingMax = new Vector3D(other.CollisionBoundingMax);
+            CollisionBoundingMin = other.CollisionBoundingMin;
+            CollisionBoundingMax = other.CollisionBoundingMax;
             CollisionSize = other.CollisionSize;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             Model = buf.ReadInt32();
-            Position = buf.Read<Vector3D>();
+            Position = buf.ReadStruct<Vector3>();
             Heading = buf.ReadFloat();
             Color1 = buf.ReadInt16();
             Color2 = buf.ReadInt16();
@@ -198,14 +174,14 @@ namespace GTASaveData.GTA3
             Enabled = buf.ReadBool(2);
             IsBlocking = buf.ReadBool();
             buf.ReadByte();
-            CollisionBoundingMin = buf.Read<Vector3D>();
-            CollisionBoundingMax = buf.Read<Vector3D>();
+            CollisionBoundingMin = buf.ReadStruct<Vector3>();
+            CollisionBoundingMax = buf.ReadStruct<Vector3>();
             CollisionSize = buf.ReadFloat();
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(prm));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             buf.Write(Model);
             buf.Write(Position);
@@ -227,10 +203,10 @@ namespace GTASaveData.GTA3
             buf.Write(CollisionBoundingMax);
             buf.Write(CollisionSize);
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(prm));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x48;
         }

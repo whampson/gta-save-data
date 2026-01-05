@@ -15,44 +15,29 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="175"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="175"/>
         </Grid.ColumnDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Content="Block:"
-                IsEnabled="{Binding MainViewModel.CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Content="Block:"
+            IsEnabled="{Binding MainViewModel.CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
 
-            <ComboBox Grid.Row="0" Grid.Column="1"
-                Style="{StaticResource ComboBoxStyle}"
-                ItemsSource="{Binding MainViewModel.BlockNameForCurrentGame, Mode=OneWay}"
-                SelectedIndex="{Binding SelectedBlockIndex}"
-                SelectionChanged="BlockComboBox_SelectionChanged"
-                IsEnabled="{Binding MainViewModel.CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
+        <ComboBox Grid.Row="0" Grid.Column="1"
+            Style="{StaticResource ComboBoxStyle}"
+            ItemsSource="{Binding MainViewModel.BlockNamesForCurrentGame, Mode=OneWay}"
+            SelectedIndex="{Binding SelectedBlockIndex}"
+            SelectionChanged="BlockComboBox_SelectionChanged"
+            IsEnabled="{Binding MainViewModel.CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
 
-            <Label Grid.Row="0" Grid.Column="3"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Content="Name:"
-                IsEnabled="{Binding MainViewModel.CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"/>
-
-            <TextBox Grid.Row="0" Grid.Column="4"
-                Margin="5,5,5,5"
-                Text="{Binding MainViewModel.CurrentSaveFile.Name, UpdateSourceTrigger=PropertyChanged}"
-                VerticalContentAlignment="Center"
-                IsEnabled="{Binding MainViewModel.CurrentSaveFile, Converter={StaticResource NullBooleanConverter}}"
-                TextChanged="TextBox_TextChanged"/>
-
-            <TextBox Grid.Row="1" Grid.ColumnSpan="5"
-                IsReadOnly="True"
-                FontFamily="Consolas"
-                VerticalScrollBarVisibility="Auto"
-                TextWrapping="Wrap"
-                Text="{Binding Text}"/>
+        <TextBox Grid.Row="1" Grid.ColumnSpan="3"
+            IsReadOnly="True"
+            FontFamily="Consolas"
+            VerticalScrollBarVisibility="Auto"
+            TextWrapping="Wrap"
+            Text="{Binding Text}"/>
     </Grid>
 </local:TabPageViewBase>

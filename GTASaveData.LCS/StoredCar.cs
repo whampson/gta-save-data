@@ -1,8 +1,8 @@
-﻿using GTASaveData.Types;
-using GTASaveData.Types.Interfaces;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace GTASaveData.LCS
 {
@@ -10,7 +10,7 @@ namespace GTASaveData.LCS
         IEquatable<StoredCar>, IDeepClonable<StoredCar>
     {
         private int m_model;
-        private Vector3D m_position;
+        private Vector3 m_position;
         private float m_heading;
         private float m_pitch;
         private float m_traction;
@@ -27,7 +27,7 @@ namespace GTASaveData.LCS
             set { m_model = value; OnPropertyChanged(); }
         }
 
-        public Vector3D Position
+        public Vector3 Position
         {
             get { return m_position; }
             set { m_position = value; OnPropertyChanged(); }
@@ -125,13 +125,13 @@ namespace GTASaveData.LCS
 
         public StoredCar()
         {
-            Position = new Vector3D();
+            Position = new Vector3();
         }
 
         public StoredCar(StoredCar other)
         {
             Model = other.Model;
-            Position = new Vector3D(other.Position);
+            Position = other.Position;
             Heading = other.Heading;
             Pitch = other.Pitch;
             Traction = other.Traction;
@@ -143,10 +143,10 @@ namespace GTASaveData.LCS
             Extra2 = other.Extra2;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, FileType fmt)
         {
             Model = buf.ReadInt32();
-            Position = buf.Read<Vector3D>();
+            Position = buf.ReadStruct<Vector3>();
             float headingX = buf.ReadFloat();
             float headingY = buf.ReadFloat();
             float heading = (float) RadToDeg(Math.Atan2(headingY, headingX)) - 90;
@@ -162,10 +162,10 @@ namespace GTASaveData.LCS
             Extra2 = buf.ReadSByte();
             buf.Skip(3);
 
-            Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, FileType fmt)
         {
             buf.Write(Model);
             buf.Write(Position);
@@ -181,10 +181,10 @@ namespace GTASaveData.LCS
             buf.Write(Extra2);
             buf.Skip(3);
 
-            Debug.Assert(buf.Offset == SizeOfType<StoredCar>());
+            Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(FileType fmt)
         {
             return 0x2C;
         }

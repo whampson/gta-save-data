@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -10,8 +11,8 @@ namespace GTASaveData.GTA3
         public const int MaxNumWastedRestarts = 8;
         public const int MaxNumBustedRestarts = 8;
 
-        private Array<RestartPoint> m_wastedRestartPoints;
-        private Array<RestartPoint> m_bustedRestartPoints;
+        private ObservableArray<RestartPoint> m_wastedRestartPoints;
+        private ObservableArray<RestartPoint> m_bustedRestartPoints;
         private short m_numberOfWastedRestartPoints;
         private short m_numberOfBustedRestartPoints;
         private bool m_overrideNextRestart;
@@ -21,13 +22,13 @@ namespace GTASaveData.GTA3
         private Level m_overrideHospitalLevel;
         private Level m_overridePoliceStationLevel;
 
-        public Array<RestartPoint> WastedRestartPoints
+        public ObservableArray<RestartPoint> WastedRestartPoints
         {
             get { return m_wastedRestartPoints; }
             set { m_wastedRestartPoints = value; OnPropertyChanged(); }
         }
 
-        public Array<RestartPoint> BustedRestartPoints
+        public ObservableArray<RestartPoint> BustedRestartPoints
         {
             get { return m_bustedRestartPoints; }
             set { m_bustedRestartPoints = value; OnPropertyChanged(); }
@@ -102,29 +103,30 @@ namespace GTASaveData.GTA3
             OverridePoliceStationLevel = other.OverridePoliceStationLevel;
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
-            int size = GTA3VCSave.ReadBlockHeader(buf, "RST");
+            int size = GTA3Save.ReadBlockHeader(buf, out string tag);
+            Debug.Assert(tag == "RST");
 
-            WastedRestartPoints = buf.Read<RestartPoint>(MaxNumWastedRestarts);
-            BustedRestartPoints = buf.Read<RestartPoint>(MaxNumBustedRestarts);
+            WastedRestartPoints = buf.ReadArray<RestartPoint>(MaxNumWastedRestarts);
+            BustedRestartPoints = buf.ReadArray<RestartPoint>(MaxNumBustedRestarts);
             NumberOfWastedRestartPoints = buf.ReadInt16();
             NumberOfBustedRestartPoints = buf.ReadInt16();
             OverrideNextRestart = buf.ReadBool();
             buf.ReadBytes(3);
-            OverrideRestartPoint = buf.Read<RestartPoint>();
+            OverrideRestartPoint = buf.ReadObject<RestartPoint>();
             FadeInAfteNextDeath = buf.ReadBool();
             FadeInAfteNextArrest = buf.ReadBool();
             OverrideHospitalLevel = (Level) buf.ReadByte();
             OverridePoliceStationLevel = (Level) buf.ReadByte();
 
-            Debug.Assert(buf.Offset == size + GTA3VCSave.BlockHeaderSize);
-            Debug.Assert(size == SizeOfType<RestartData>() - GTA3VCSave.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + GTA3Save.BlockHeaderSize);
+            Debug.Assert(size == SizeOf<RestartData>() - GTA3Save.BlockHeaderSize);
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
-            GTA3VCSave.WriteBlockHeader(buf, "RST", SizeOfType<RestartData>() - GTA3VCSave.BlockHeaderSize);
+            GTA3Save.WriteBlockHeader(buf, "RST", SizeOf<RestartData>() - GTA3Save.BlockHeaderSize);
 
             buf.Write(WastedRestartPoints, MaxNumWastedRestarts);
             buf.Write(BustedRestartPoints, MaxNumBustedRestarts);
@@ -138,10 +140,10 @@ namespace GTASaveData.GTA3
             buf.Write((byte) OverrideHospitalLevel);
             buf.Write((byte) OverridePoliceStationLevel);
 
-            Debug.Assert(buf.Offset == SizeOfType<RestartData>());
+            Debug.Assert(buf.Offset == SizeOf<RestartData>());
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             return 0x124;
         }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
@@ -10,23 +11,17 @@ namespace GTASaveData.GTA3
         IEquatable<ParticleData>, IDeepClonable<ParticleData>,
         IEnumerable<ParticleObject>
     {
-        private Array<ParticleObject> m_objects;
+        private ObservableArray<ParticleObject> m_objects;
 
-        public Array<ParticleObject> Objects
+        public ObservableArray<ParticleObject> Objects
         {
             get { return m_objects; }
             set { m_objects = value; OnPropertyChanged(); }
         }
 
-        public ParticleObject this[int i]
-        {
-            get { return Objects[i]; }
-            set { Objects[i] = value; OnPropertyChanged(); }
-        }
-
         public ParticleData()
         {
-            Objects = new Array<ParticleObject>();
+            Objects = new ObservableArray<ParticleObject>();
         }
 
         public ParticleData(ParticleData other)
@@ -34,28 +29,28 @@ namespace GTASaveData.GTA3
             Objects = ArrayHelper.DeepClone(other.Objects);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             int numObjects = buf.ReadInt32();
-            Objects = buf.Read<ParticleObject>(numObjects, fmt);
-            buf.Skip(SizeOfType<ParticleObject>(fmt));
+            Objects = buf.ReadArray<ParticleObject>(numObjects, prm);
+            buf.Skip(SizeOf<ParticleObject>(prm));
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             int numObjects = Objects.Count;
             buf.Write(numObjects);
-            buf.Write(Objects, fmt, numObjects);
-            buf.Skip(SizeOfType<ParticleObject>(fmt));  // game writes extra ParticleObject for some reason
+            buf.Write(Objects, prm, numObjects);
+            buf.Skip(SizeOf<ParticleObject>(prm));  // game writes extra ParticleObject for some reason
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
-            return (SizeOfType<ParticleObject>(fmt) * (Objects.Count + 1)) + sizeof(int);
+            return (SizeOf<ParticleObject>(prm) * (Objects.Count + 1)) + sizeof(int);
         }
 
         public override bool Equals(object obj)

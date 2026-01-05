@@ -2,22 +2,23 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GTASaveData.Interfaces;
 
 namespace GTASaveData.GTA3
 {
     public class VehiclePool : SaveDataObject,
         IEquatable<VehiclePool>, IDeepClonable<VehiclePool>
     {
-        private Array<Automobile> m_cars;
-        private Array<Boat> m_boats;
+        private ObservableArray<Automobile> m_cars;
+        private ObservableArray<Boat> m_boats;
 
-        public Array<Automobile> Cars
+        public ObservableArray<Automobile> Cars
         {
             get { return m_cars; }
             set { m_cars = value; OnPropertyChanged(); }
         }
 
-        public Array<Boat> Boats
+        public ObservableArray<Boat> Boats
         {
             get { return m_boats; }
             set { m_boats = value; OnPropertyChanged(); }
@@ -25,8 +26,8 @@ namespace GTASaveData.GTA3
 
         public VehiclePool()
         {
-            Cars = new Array<Automobile>();
-            Boats = new Array<Boat>();
+            Cars = new ObservableArray<Automobile>();
+            Boats = new ObservableArray<Boat>();
         }
 
         public VehiclePool(VehiclePool other)
@@ -35,7 +36,7 @@ namespace GTASaveData.GTA3
             Boats = ArrayHelper.DeepClone(other.Boats);
         }
 
-        protected override void ReadData(StreamBuffer buf, FileFormat fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams prm)
         {
             int numCars = buf.ReadInt32();
             int numBoats = buf.ReadInt32();
@@ -51,21 +52,21 @@ namespace GTASaveData.GTA3
                 if (type == VehicleType.Car)
                 {
                     Automobile a = new Automobile(model, handle);
-                    Serializer.Read(a, buf, fmt);
+                    Serializer.Read(a, buf, prm);
                     Cars.Add(a);
                 }
                 else if (type == VehicleType.Boat)
                 {
                     Boat b = new Boat(model, handle);
-                    Serializer.Read(b, buf, fmt);
+                    Serializer.Read(b, buf, prm);
                     Boats.Add(b);
                 }
             }
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override void WriteData(StreamBuffer buf, FileFormat fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams prm)
         {
             List<Vehicle> vehicles = Cars.Select(x => x as Vehicle).Concat(Boats.Select(x => x as Vehicle)).ToList();
 
@@ -77,17 +78,17 @@ namespace GTASaveData.GTA3
                 buf.Write((int) v.Type);
                 buf.Write(v.ModelIndex);
                 buf.Write(v.Handle);
-                buf.Write(v, fmt);
+                buf.Write(v, prm);
             }
 
-            Debug.Assert(buf.Offset == SizeOfObject(this, fmt));
+            Debug.Assert(buf.Offset == SizeOf(this, prm));
         }
 
-        protected override int GetSize(FileFormat fmt)
+        protected override int GetSize(SerializationParams prm)
         {
             int headerSize = 2 * sizeof(int) + sizeof(short);
-            int sizeOfCars = (SizeOfType<Automobile>(fmt) + headerSize) * Cars.Count;
-            int sizeOfBoats = (SizeOfType<Boat>(fmt) + headerSize) * Boats.Count;
+            int sizeOfCars = (SizeOf<Automobile>(prm) + headerSize) * Cars.Count;
+            int sizeOfBoats = (SizeOf<Boat>(prm) + headerSize) * Boats.Count;
 
             return 2 * sizeof(int) + sizeOfCars + sizeOfBoats;
         }
