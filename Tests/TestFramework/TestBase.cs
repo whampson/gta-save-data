@@ -1,5 +1,6 @@
 ﻿using GTASaveData;
 using System;
+using System.Xml;
 
 namespace TestFramework
 {
@@ -16,7 +17,7 @@ namespace TestFramework
         where T : new()
         where P : SerializationParams, new()
     {
-        public virtual int GetSizeOfTestObject(T obj)       // TODO: remove
+        public virtual int GetSizeOfTestObject(T obj)       // TODO: remove, prefer version with P
         {
             return Serializer.SizeOf(obj, new P());
         }
@@ -26,7 +27,7 @@ namespace TestFramework
             return Serializer.SizeOf(obj, p);
         }
 
-        public T CreateSerializedCopy(T obj, out byte[] bytes)  // TODO: remove
+        public T CreateSerializedCopy(T obj, out byte[] bytes)  // TODO: remove, prefer version with P
         {
             return CreateSerializedCopy(obj, new P(), out bytes);
         }
@@ -42,6 +43,13 @@ namespace TestFramework
         where T : SaveDataObject, new()
         where P : SerializationParams, new()
     {
+        public T CreateSerializedJsonCopy(T obj, out string json,
+            Newtonsoft.Json.Formatting formatting = Newtonsoft.Json.Formatting.Indented)
+        {
+            json = obj.ToJsonString(formatting);
+            return SaveDataObject.FromJsonString<T>(json);
+        }
+
         public T GenerateTestObject()
         {
             return GenerateTestObject(new P());
