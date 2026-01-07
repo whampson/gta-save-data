@@ -7,10 +7,10 @@ namespace GTASaveData.LCS.Tests
 {
     public class TestSimpleVariables : Base<SimpleVariables>
     {
-        public override SimpleVariables GenerateTestObject(FileType format)
+        public override SimpleVariables GenerateTestObject(LCSSaveParams p)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.LastMissionPassedName, f => (format.IsMobile) ? Generator.Words(f, SimpleVariables.MaxMissionPassedNameLength - 1) : "")
+                .RuleFor(x => x.LastMissionPassedName, f => (p.FileType.IsiOS || p.FileType.IsAndroid) ? Generator.Words(f, SimpleVariables.MaxMissionPassedNameLength - 1) : "")
                 .RuleFor(x => x.CurrentLevel, f => f.Random.Int())
                 .RuleFor(x => x.CurrentArea, f => f.Random.Int())
                 .RuleFor(x => x.Language, f => f.Random.Int())
@@ -41,30 +41,33 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.ShowSubtitles, f => f.Random.Bool())
                 .RuleFor(x => x.RadarMode, f => f.PickRandom<RadarMode>())
                 .RuleFor(x => x.BlurOn, f => f.Random.Bool())
-                .RuleFor(x => x.UseWideScreen, f => (format.IsPS2) ? f.Random.Bool() : false)
+                .RuleFor(x => x.UseWideScreen, f => (p.FileType.IsPS2) ? f.Random.Bool() : false)
                 .RuleFor(x => x.MusicVolume, f => f.Random.Int())
                 .RuleFor(x => x.SfxVolume, f => f.Random.Int())
                 .RuleFor(x => x.RadioStation, f => f.PickRandom<RadioStation>())
                 .RuleFor(x => x.StereoOutput, f => f.Random.Bool())
                 .RuleFor(x => x.PadMode, f => f.Random.Short())
                 .RuleFor(x => x.InvertLook, f => f.Random.Bool())
-                .RuleFor(x => x.UseVibration, f => (format.IsPS2) ? f.Random.Bool() : false)
-                .RuleFor(x => x.SwapNippleAndDPad, f => (!format.IsPS2) ? f.Random.Bool() : false)
+                .RuleFor(x => x.UseVibration, f => (p.FileType.IsPS2) ? f.Random.Bool() : false)
+                .RuleFor(x => x.SwapNippleAndDPad, f => (!p.FileType.IsPS2) ? f.Random.Bool() : false)
                 .RuleFor(x => x.HasPlayerCheated, f => f.Random.Bool())
                 .RuleFor(x => x.AllTaxisHaveNitro, f => f.Random.Bool())
                 .RuleFor(x => x.TargetIsOn, f => f.Random.Bool())
                 .RuleFor(x => x.TargetPosition, f => Generator.Vector2(f))
-                .RuleFor(x => x.TimeStamp, f => (format.IsPS2) ? new Date(Generator.Date(f)) : Date.MinValue);
+                .RuleFor(x => x.TimeStamp, f => (p.FileType.IsPS2) ? Generator.DateTime(f) : DateTime.MinValue);
 
+            var x = model.Generate();
+            var ts = x.TimeStamp;
+            x.TimeStamp = new DateTime(ts.Year, ts.Month, ts.Day, ts.Hour, ts.Minute, ts.Second);
             return model.Generate();
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        public void RandomDataSerialization(LCSSaveParams p)
         {
-            SimpleVariables x0 = GenerateTestObject(format);
-            SimpleVariables x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            SimpleVariables x0 = GenerateTestObject(p);
+            SimpleVariables x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.LastMissionPassedName, x1.LastMissionPassedName);
             Assert.Equal(x0.CurrentLevel, x1.CurrentLevel);
@@ -113,7 +116,7 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0.TimeStamp, x1.TimeStamp);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
         [Fact]

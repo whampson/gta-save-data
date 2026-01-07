@@ -12,7 +12,7 @@ namespace GTASaveData.Core.Tests
         {
             Faker f = new Faker();
 
-            SystemTime x0 = new SystemTime(Generator.Date(f));
+            SystemTime x0 = new SystemTime(Generator.DateTime(f));
             SystemTime x1 = CreateSerializedCopy(x0, out byte[] data);
 
             Assert.Equal(x0.Year, x1.Year);

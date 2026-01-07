@@ -7,7 +7,7 @@ namespace GTASaveData.LCS.Tests
 {
     public class TestStats : Base<Stats>
     {
-        public override Stats GenerateTestObject(FileType format)
+        public override Stats GenerateTestObject(LCSSaveParams p)
         {
             Faker<Stats> model = new Faker<Stats>()
                 .RuleFor(x => x.PeopleKilledByPlayer, f => f.Random.Int())
@@ -136,17 +136,18 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.FastestStreetRaceTimes, f => Generator.Array(Stats.NumStreetRaces, g => f.Random.Int()))
                 .RuleFor(x => x.FastestDirtBikeLapTimes, f => Generator.Array(Stats.NumDirtBikeRaces, g => f.Random.Int()))
                 .RuleFor(x => x.FastestDirtBikeTimes, f => Generator.Array(Stats.NumDirtBikeRaces, g => f.Random.Int()))
-                .RuleFor(x => x.FavoriteRadioStationList, f => Generator.Array((format.IsMobile) ? Stats.NumRadioStationsMobile : Stats.NumRadioStations, g => f.Random.Float()));
+                .RuleFor(x => x.FavoriteRadioStationList,
+                    f => Generator.Array((p.FileType.IsiOS || p.FileType.IsAndroid) ? Stats.NumRadioStationsMobile : Stats.NumRadioStations, g => f.Random.Float()));
 
             return model.Generate();
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        public void RandomDataSerialization(LCSSaveParams p)
         {
-            Stats x0 = GenerateTestObject(format);
-            Stats x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            Stats x0 = GenerateTestObject(p);
+            Stats x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.PeopleKilledByPlayer, x1.PeopleKilledByPlayer);
             Assert.Equal(x0.PeopleKilledByOthers, x1.PeopleKilledByOthers);
@@ -277,7 +278,7 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0.FavoriteRadioStationList, x1.FavoriteRadioStationList);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
         [Fact]

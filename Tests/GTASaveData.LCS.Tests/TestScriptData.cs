@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using GTASaveData.Core.Tests;
+using GTASaveData.Types;
 using System.Linq;
 using TestFramework;
 using Xunit;
@@ -9,7 +10,7 @@ namespace GTASaveData.LCS.Tests
 {
     public class TestScriptData : Base<ScriptData>
     {
-        public override ScriptData GenerateTestObject(FileType format)
+        public override ScriptData GenerateTestObject(LCSSaveParams p)
         {
             Faker faker = new Faker();
 
@@ -20,26 +21,26 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.Globals, f => Generator.Array(varSpace, g => f.Random.Int()))
                 .RuleFor(x => x.OnAMissionFlag, f => f.Random.Int())
                 .RuleFor(x => x.LastMissionPassedTime, f => f.Random.Int())
-                .RuleFor(x => x.Collectives, f => Generator.Array(ScriptData.NumCollectives, g => Generator.Generate<Collective, TestCollective>()))
+                .RuleFor(x => x.Collectives, f => Generator.Array(ScriptData.NumCollectives, g => Generator.Generate<Collective, TestCollective, SerializationParams>(p)))
                 .RuleFor(x => x.NextFreeCollectiveIndex, f => f.Random.Int())
-                .RuleFor(x => x.BuildingSwaps, f => Generator.Array(ScriptData.NumBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap>()))
-                .RuleFor(x => x.InvisibilitySettings, f => Generator.Array(ScriptData.NumInvisibilitySettings, g => Generator.Generate<InvisibleObject, TestInvisibleObject>()))
+                .RuleFor(x => x.BuildingSwaps, f => Generator.Array(ScriptData.NumBuildingSwaps, g => Generator.Generate<BuildingSwap, TestBuildingSwap, SerializationParams>(p)))
+                .RuleFor(x => x.InvisibilitySettings, f => Generator.Array(ScriptData.NumInvisibilitySettings, g => Generator.Generate<InvisibleObject, TestInvisibleObject, SerializationParams>(p)))
                 .RuleFor(x => x.UsingAMultiScriptFile, f => f.Random.Bool())
                 .RuleFor(x => x.PlayerHasMetDebbieHarry, f => f.Random.Bool())
                 .RuleFor(x => x.MainScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.LargestMissionScriptSize, f => f.Random.Int())
                 .RuleFor(x => x.NumberOfMissionScripts, f => f.Random.Short())
-                .RuleFor(x => x.Threads, f => Generator.Array(runningScripts, g => Generator.Generate<RunningScript, TestRunningScript>(format)));
+                .RuleFor(x => x.Threads, f => Generator.Array(runningScripts, g => Generator.Generate<RunningScript, TestRunningScript, LCSSaveParams>(p)));
 
             return model.Generate();
         }
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        public void RandomDataSerialization(LCSSaveParams p)
         {
-            ScriptData x0 = GenerateTestObject(format);
-            ScriptData x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            ScriptData x0 = GenerateTestObject(p);
+            ScriptData x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Globals, x1.Globals);
             Assert.Equal(x0.OnAMissionFlag, x1.OnAMissionFlag);
@@ -56,7 +57,7 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0.Threads, x1.Threads);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
         [Fact]
@@ -76,8 +77,8 @@ namespace GTASaveData.LCS.Tests
         public void GlobalVariables()
         {
             Faker f = new Faker();
-            string path = TestData.GetTestDataPath(TestFramework.Game.LCS, SaveFileLCS.FileFormats.PS2, "NEDS4");
-            SaveFileLCS x = SaveFile.Load<SaveFileLCS>(path, SaveFileLCS.FileFormats.PS2);
+            string path = TestData.GetTestDataPath(Game.LCS, LCSSave.FileTypes.PS2, "NEDS4");
+            LCSSave x = LCSSave.LoadFromFile(path, LCSSave.FileTypes.PS2);
 
             Assert.Equal(272.1489f, x.Scripts.GetGlobalAsFloat(7));
 

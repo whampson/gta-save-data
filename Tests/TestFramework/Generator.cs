@@ -35,9 +35,10 @@ namespace TestFramework
             return new Matrix(Vector3(f), Vector3(f), Vector3(f), Vector3(f));
         }
 
-        public static DateTime Date(Faker f)
+        public static DateTime DateTime(Faker f, bool allowMillis = false)
         {
-            return f.Date.Between(new DateTime(1970, 1, 1), DateTime.Now);
+            var dt = f.Date.Between(new DateTime(1970, 1, 1), System.DateTime.Now);
+            return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, (allowMillis) ? dt.Millisecond : 0);
         }
 
         public static string Words(Faker f, int maxLength)

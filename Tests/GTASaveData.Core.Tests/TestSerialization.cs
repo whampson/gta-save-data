@@ -499,7 +499,7 @@ namespace GTASaveData.Core.Tests
         [Fact]
         public void Struct()
         {
-            SystemTime x0 = new SystemTime(Generator.Date(new Faker()));
+            SystemTime x0 = new SystemTime(Generator.DateTime(new Faker()));
             byte[] data = Serializer.Write(x0);
             SystemTime x1 = Serializer.Read<SystemTime>(data);
 
@@ -513,7 +513,7 @@ namespace GTASaveData.Core.Tests
             Faker f = new Faker();
             int count = f.Random.Int(1, 10);
 
-            SystemTime[] x0 = Generator.Array(count, g => new SystemTime(Generator.Date(f)));
+            SystemTime[] x0 = Generator.Array(count, g => new SystemTime(Generator.DateTime(f)));
             byte[] data = ArrayToBytes(x0);
             SystemTime[] x1 = BytesToArray<SystemTime>(data, count);
 
@@ -530,7 +530,7 @@ namespace GTASaveData.Core.Tests
         {
             Faker f = new Faker();
 
-            SystemTime[] x0 = Generator.Array(initialCount, g => new SystemTime(Generator.Date(f)));
+            SystemTime[] x0 = Generator.Array(initialCount, g => new SystemTime(Generator.DateTime(f)));
             byte[] data = ArrayToBytes(x0, bufferCount);
             SystemTime[] x1 = BytesToArray<SystemTime>(data, bufferCount);
 

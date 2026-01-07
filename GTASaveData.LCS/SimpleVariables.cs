@@ -331,7 +331,7 @@ namespace GTASaveData.LCS
         public SimpleVariables()
         {
             LastMissionPassedName = "";
-            TimeStamp = DateTime.Now;
+            TimeStamp = DateTime.MinValue;
             CameraPosition = new Vector3();
             TargetPosition = new Vector2();
         }
@@ -582,7 +582,6 @@ namespace GTASaveData.LCS
                 buf.Write(TimeStamp.Day);
                 buf.Write(TimeStamp.Month);
                 buf.Write(TimeStamp.Year);
-                buf.Write(TimeStamp);
             }
 
             Debug.Assert(buf.Offset == GetSize(param));

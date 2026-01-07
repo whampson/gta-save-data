@@ -1252,8 +1252,7 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
                         pad[i] = seq[i % seq.Length];
                     }
 
-                    Write(pad);
-                    break;
+                    return Write(pad);
                 }
 
                 case PaddingScheme.Random:
@@ -1262,8 +1261,7 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
                     Random rand = new Random();
                     rand.NextBytes(pad);
 
-                    Write(pad);
-                    break;
+                    return Write(pad);
                 }
             }
 

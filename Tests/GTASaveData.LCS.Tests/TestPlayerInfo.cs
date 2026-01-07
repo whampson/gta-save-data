@@ -5,7 +5,7 @@ namespace GTASaveData.LCS.Tests
 {
     public class TestPlayerInfo : Base<PlayerInfo>
     {
-        public override PlayerInfo GenerateTestObject(FileType format)
+        public override PlayerInfo GenerateTestObject(LCSSaveParams p)
         {
             Faker<PlayerInfo> model = new Faker<PlayerInfo>()
                 .RuleFor(x => x.Money, f => f.Random.Int())
@@ -23,10 +23,10 @@ namespace GTASaveData.LCS.Tests
 
         [Theory]
         [MemberData(nameof(FileFormats))]
-        public void RandomDataSerialization(FileType format)
+        public void RandomDataSerialization(LCSSaveParams p)
         {
-            PlayerInfo x0 = GenerateTestObject(format);
-            PlayerInfo x1 = CreateSerializedCopy(x0, format, out byte[] data);
+            PlayerInfo x0 = GenerateTestObject(p);
+            PlayerInfo x1 = CreateSerializedCopy(x0, p, out byte[] data);
 
             Assert.Equal(x0.Money, x1.Money);
             Assert.Equal(x0.MoneyOnScreen, x1.MoneyOnScreen);
@@ -39,7 +39,7 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0.GetOutOfHospitalFree, x1.GetOutOfHospitalFree);
 
             Assert.Equal(x0, x1);
-            Assert.Equal(GetSizeOfTestObject(x0, format), data.Length);
+            Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
 
         [Fact]
