@@ -1,4 +1,5 @@
 ﻿using GTASaveData.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Linq;
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace GTASaveData.LCS
 {
+    [JsonObject]
     public class GarageData : SaveDataObject,
         IEquatable<GarageData>, IDeepClonable<GarageData>,
         IEnumerable<Garage>
