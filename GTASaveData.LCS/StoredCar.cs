@@ -6,14 +6,13 @@ using System.Numerics;
 
 namespace GTASaveData.LCS
 {
-    public class StoredCar : SaveDataObject, IStoredCar,
+    public class StoredCar : SaveDataObject,
         IEquatable<StoredCar>, IDeepClonable<StoredCar>
     {
         private int m_model;
         private Vector3 m_position;
-        private float m_heading;
-        private float m_pitch;
-        private float m_traction;
+        private Vector3 m_forward;
+        private float m_tractionMultiplier;
         private StoredCarFlags m_flags;
         private byte m_color1;
         private byte m_color2;
@@ -33,22 +32,16 @@ namespace GTASaveData.LCS
             set { m_position = value; OnPropertyChanged(); }
         }
 
-        public float Heading
+        public Vector3 Forward
         {
-            get { return m_heading; }
-            set { m_heading = value; OnPropertyChanged(); }
+            get { return m_forward; }
+            set { m_forward = value; OnPropertyChanged(); }
         }
 
-        public float Pitch
+        public float TractionMultiplier
         {
-            get { return m_pitch; }
-            set { m_pitch = value; OnPropertyChanged(); }
-        }
-
-        public float Traction
-        {
-            get { return m_traction; }
-            set { m_traction = value; OnPropertyChanged(); }
+            get { return m_tractionMultiplier; }
+            set { m_tractionMultiplier = value; OnPropertyChanged(); }
         }
 
         public StoredCarFlags Flags
@@ -87,42 +80,6 @@ namespace GTASaveData.LCS
             set { m_extra2 = value; OnPropertyChanged(); }
         }
 
-        int IStoredCar.Flags
-        {
-            get { return (int) Flags; }
-            set { Flags = (StoredCarFlags) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Color1
-        {
-            get { return Color1; }
-            set { Color1 = (byte) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Color2
-        {
-            get { return Color2; }
-            set { Color2 = (byte) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Radio
-        {
-            get { return (int) Radio; }
-            set { Radio = (RadioStation) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Extra1
-        {
-            get { return Extra1; }
-            set { Extra1 = (sbyte) value; OnPropertyChanged(); }
-        }
-
-        int IStoredCar.Extra2
-        {
-            get { return Extra2; }
-            set { Extra2 = (sbyte) value; OnPropertyChanged(); }
-        }
-
         public StoredCar()
         {
             Position = new Vector3();
@@ -132,9 +89,8 @@ namespace GTASaveData.LCS
         {
             Model = other.Model;
             Position = other.Position;
-            Heading = other.Heading;
-            Pitch = other.Pitch;
-            Traction = other.Traction;
+            Forward = other.Forward;
+            TractionMultiplier = other.TractionMultiplier;
             Flags = other.Flags;
             Color1 = other.Color1;
             Color2 = other.Color2;
@@ -143,17 +99,12 @@ namespace GTASaveData.LCS
             Extra2 = other.Extra2;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             Model = buf.ReadInt32();
             Position = buf.ReadStruct<Vector3>();
-            float headingX = buf.ReadFloat();
-            float headingY = buf.ReadFloat();
-            float heading = (float) RadToDeg(Math.Atan2(headingY, headingX)) - 90;
-            if (heading < 0) heading += 360;
-            Heading = heading;
-            Pitch = (float) RadToDeg(Math.Atan(buf.ReadFloat()));
-            Traction = buf.ReadFloat();
+            Forward = buf.ReadStruct<Vector3>();
+            TractionMultiplier = buf.ReadFloat();
             Flags = (StoredCarFlags) buf.ReadInt32();
             Color1 = buf.ReadByte();
             Color2 = buf.ReadByte();
@@ -165,14 +116,12 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             buf.Write(Model);
             buf.Write(Position);
-            buf.Write((float) Math.Cos(DegToRad(Heading + 90)));
-            buf.Write((float) Math.Sin(DegToRad(Heading + 90)));
-            buf.Write((float) Math.Tan(DegToRad(Pitch)));
-            buf.Write(Traction);
+            buf.Write(Forward);
+            buf.Write(TractionMultiplier);
             buf.Write((int) Flags);
             buf.Write(Color1);
             buf.Write(Color2);
@@ -184,7 +133,7 @@ namespace GTASaveData.LCS
             Debug.Assert(buf.Offset == SizeOf<StoredCar>());
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
             return 0x2C;
         }
@@ -202,10 +151,9 @@ namespace GTASaveData.LCS
             }
 
             return Model.Equals(other.Model)
-                && Position.Equals(other.Position)
-                && Math.Abs(Heading - other.Heading) < 0.001
-                && Math.Abs(Pitch - other.Pitch) < 0.001
-                && Traction.Equals(other.Traction)
+                && Vector3.Distance(Position, other.Position) < 0.001
+                && Vector3.Distance(Forward, other.Forward) < 0.001
+                && TractionMultiplier.Equals(other.TractionMultiplier)
                 && Flags.Equals(other.Flags)
                 && Color1.Equals(other.Color1)
                 && Color2.Equals(other.Color2)
@@ -217,16 +165,6 @@ namespace GTASaveData.LCS
         public StoredCar DeepClone()
         {
             return new StoredCar(this);
-        }
-
-        private static double RadToDeg(double r)
-        {
-            return r * (180 / Math.PI);
-        }
-
-        private static double DegToRad(double deg)
-        {
-            return deg * (Math.PI / 180);
         }
     }
 

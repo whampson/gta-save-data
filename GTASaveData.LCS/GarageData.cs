@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -176,8 +177,10 @@ namespace GTASaveData.LCS
             Garages = ArrayHelper.DeepClone(other.Garages);
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
+            LCSSaveParams param = p as LCSSaveParams;
+
             NumGarages = buf.ReadInt32();
             FreeBombs = buf.ReadBool(4);
             FreeResprays = buf.ReadBool(4);
@@ -190,14 +193,16 @@ namespace GTASaveData.LCS
             CarTypesCollected4 = buf.ReadInt32();
             TimeHelpMessageLastShown = buf.ReadUInt32();
             CarsInSafeHouse = buf.ReadArray<StoredCar>(NumStoredCars);
-            Garages = buf.ReadArray<Garage>(MaxNumGarages, fmt);
+            Garages = buf.ReadArray<Garage>(MaxNumGarages);
             buf.Skip(344);
 
-            Debug.Assert(buf.Offset == SizeOf<GarageData>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<GarageData>(param));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
+            LCSSaveParams param = p as LCSSaveParams;
+
             buf.Write(NumGarages);
             buf.Write(FreeBombs, 4);
             buf.Write(FreeResprays, 4);
@@ -210,19 +215,21 @@ namespace GTASaveData.LCS
             buf.Write(CarTypesCollected4);
             buf.Write(TimeHelpMessageLastShown);
             buf.Write(CarsInSafeHouse, NumStoredCars);
-            buf.Write(Garages, fmt, MaxNumGarages);
+            buf.Write(Garages, MaxNumGarages);
 
             // Game writes some garbage here due to incorrect size calculation
             buf.Skip(344);
 
-            Debug.Assert(buf.Offset == SizeOf<GarageData>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<GarageData>(param));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            if (fmt.IsPS2) return 0x29C4;
-            if (fmt.IsPSP || fmt.IsMobile) return 0x25C4;
-            throw SizeNotDefined(fmt);
+            LCSSaveParams param = p as LCSSaveParams;
+
+            if (param.FileType.IsPS2) return 0x29C4;
+            if (param.FileType.IsPSP || param.FileType.IsiOS || param.FileType.IsAndroid) return 0x25C4;
+            throw SizeNotDefined(param);
         }
 
         public override bool Equals(object obj)

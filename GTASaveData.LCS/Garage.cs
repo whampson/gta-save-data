@@ -1,8 +1,8 @@
-﻿using GTASaveData.Types;
+﻿using GTASaveData.Interfaces;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Numerics;
-using GTASaveData.Interfaces;
 
 namespace GTASaveData.LCS
 {
@@ -26,12 +26,12 @@ namespace GTASaveData.LCS
         private bool m_recreateDoorsOnNextRefresh;
         private bool m_rotatingDoor;
         private bool m_cameraFollowsPlayer;
-        private Vector2D m_corner1;
+        private Vector2 m_corner1;
         private float m_infZ;
-        private Vector2D m_dir1;
-        private Vector2D m_dir2;
+        private Vector2 m_dir1;
+        private Vector2 m_dir2;
         private float m_supZ;
-        private Vector3D m_scriptGaragePos;
+        private Vector3 m_scriptGaragePos;
         private float m_scriptGarageAngle;
         private int m_unknown1;
         private int m_unknown2;
@@ -166,7 +166,7 @@ namespace GTASaveData.LCS
             set { m_cameraFollowsPlayer = value; OnPropertyChanged(); }
         }
 
-        public Vector2D Corner1
+        public Vector2 Corner1
         {
             get { return m_corner1; }
             set { m_corner1 = value; OnPropertyChanged(); }
@@ -178,13 +178,13 @@ namespace GTASaveData.LCS
             set { m_infZ = value; OnPropertyChanged(); }
         }
 
-        public Vector2D Dir1
+        public Vector2 Dir1
         {
             get { return m_dir1; }
             set { m_dir1 = value; OnPropertyChanged(); }
         }
 
-        public Vector2D Dir2
+        public Vector2 Dir2
         {
             get { return m_dir2; }
             set { m_dir2 = value; OnPropertyChanged(); }
@@ -196,7 +196,7 @@ namespace GTASaveData.LCS
             set { m_supZ = value; OnPropertyChanged(); }
         }
 
-        public Vector3D ScriptGaragePos
+        public Vector3 ScriptGaragePos
         {
             get { return m_scriptGaragePos; }
             set { m_scriptGaragePos = value; OnPropertyChanged(); }
@@ -442,7 +442,7 @@ namespace GTASaveData.LCS
             m_timeToStartAction = other.m_timeToStartAction;
             m_collectedCarState = other.m_collectedCarState;
             m_targetCarPointer = other.m_targetCarPointer;
-            m_storedCar = other.m_storedCar;
+            m_storedCar = new StoredCar(other.m_storedCar);
             m_initialized = other.m_initialized;
             m_multiplayerCar = other.m_multiplayerCar;
             m_scriptGarageAcceptedCar = other.m_scriptGarageAcceptedCar;
@@ -451,9 +451,11 @@ namespace GTASaveData.LCS
             m_scriptGarageStateChanging = other.m_scriptGarageStateChanging;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
-            if (fmt.IsPS2)
+            LCSSaveParams param = p as LCSSaveParams;
+
+            if (param.FileType.IsPS2)
             {
                 m_type = (GarageType) buf.ReadByte();
                 m_state = (GarageState) buf.ReadByte();
@@ -475,12 +477,12 @@ namespace GTASaveData.LCS
                 m_recreateDoorsOnNextRefresh = buf.ReadBool(4);
                 m_rotatingDoor = buf.ReadBool(4);
                 m_cameraFollowsPlayer = buf.ReadBool(4);
-                m_corner1 = buf.Read<Vector2D>();
+                m_corner1 = buf.ReadStruct<Vector2>();
                 m_infZ = buf.ReadFloat();
-                m_dir1 = buf.Read<Vector2D>();
-                m_dir2 = buf.Read<Vector2D>();
+                m_dir1 = buf.ReadStruct<Vector2>();
+                m_dir2 = buf.ReadStruct<Vector2>();
                 m_supZ = buf.ReadFloat();
-                m_scriptGaragePos = buf.Read<Vector3D>();
+                m_scriptGaragePos = buf.ReadStruct<Vector3>();
                 m_scriptGarageAngle = buf.ReadFloat();
                 m_unknown1 = buf.ReadInt32();   // 0x68
                 m_unknown2 = buf.ReadInt32();   // 0x6C
@@ -504,7 +506,7 @@ namespace GTASaveData.LCS
                 m_timeToStartAction = buf.ReadInt32();
                 m_collectedCarState = buf.ReadInt32();
                 m_targetCarPointer = buf.ReadInt32();
-                m_storedCar = buf.Read<StoredCar>();
+                m_storedCar = buf.ReadObject<StoredCar>();
                 m_initialized = buf.ReadBool(4);
                 m_scriptGarageAcceptedCar = buf.ReadBool(4);
                 m_locked = buf.ReadBool(4);
@@ -513,7 +515,7 @@ namespace GTASaveData.LCS
 
                 Debug.Assert(buf.Offset == 0x100);
             }
-            else if (fmt.IsPSP)
+            else if (param.FileType.IsPSP)
             {
                 m_type = (GarageType) buf.ReadByte();
                 m_state = (GarageState) buf.ReadByte();
@@ -534,12 +536,12 @@ namespace GTASaveData.LCS
                 m_rotatingDoor = buf.ReadBool();
                 m_cameraFollowsPlayer = buf.ReadBool();
                 buf.ReadByte(); // align
-                m_corner1 = buf.Read<Vector2D>();
+                m_corner1 = buf.ReadStruct<Vector2>();
                 m_infZ = buf.ReadFloat();
-                m_dir1 = buf.Read<Vector2D>();
-                m_dir2 = buf.Read<Vector2D>();
+                m_dir1 = buf.ReadStruct<Vector2>();
+                m_dir2 = buf.ReadStruct<Vector2>();
                 m_supZ = buf.ReadFloat();
-                m_scriptGaragePos = buf.Read<Vector3D>();
+                m_scriptGaragePos = buf.ReadStruct<Vector3>();
                 m_scriptGarageAngle = buf.ReadFloat();
                 m_unknown1 = buf.ReadInt32();   // 0x4C
                 m_unknown2 = buf.ReadInt32();   // 0x50
@@ -565,12 +567,12 @@ namespace GTASaveData.LCS
                 buf.ReadByte(); // align
                 buf.ReadByte(); // align
                 m_targetCarPointer = buf.ReadInt32();
-                m_storedCar = buf.Read<StoredCar>();
+                m_storedCar = buf.ReadObject<StoredCar>();
                 m_initialized = buf.ReadBool();
                 buf.ReadByte(); // align
                 buf.ReadByte(); // align
                 buf.ReadByte(); // align
-                m_multiplayerCar = buf.ReadInt32();
+                m_multiplayerCar = buf.ReadInt32(); // extra on PSP
                 m_scriptGarageAcceptedCar = buf.ReadBool();
                 m_locked = buf.ReadBool();
                 m_scriptGarageState = buf.ReadByte();
@@ -580,22 +582,22 @@ namespace GTASaveData.LCS
 
                 Debug.Assert(buf.Offset == 0xE0);
             }
-            else if (fmt.IsMobile)
+            else if (param.FileType.IsAndroid || param.FileType.IsiOS)
             {
                 m_door1Pointer = buf.ReadInt64();
                 m_door2Pointer = buf.ReadInt64();
-                m_targetCarPointer = buf.ReadInt32();
-                m_storedCar = buf.Read<StoredCar>();    // 0x18, unconfirmed, not referenced in game
+                m_targetCarPointer = buf.ReadInt64();
+                m_storedCar = buf.ReadObject<StoredCar>();    // 0x18, unconfirmed, not referenced in game
                 m_unknown1 = buf.ReadInt32();           // 0x44, unconfirmed, not referenced in game
                 m_unknown2 = buf.ReadInt32();           // 0x48, unconfirmed, not referenced in game
                 m_unknown3 = buf.ReadInt32();           // 0x4C, unconfirmed, not referenced in game
-                m_scriptGaragePos = buf.Read<Vector3D>();
+                m_scriptGaragePos = buf.ReadStruct<Vector3>();
                 m_scriptGarageAngle = buf.ReadFloat();
                 m_targetModelIndex = buf.ReadInt32();
-                m_corner1 = buf.Read<Vector2D>();
+                m_corner1 = buf.ReadStruct<Vector2>();
                 m_infZ = buf.ReadFloat();
-                m_dir1 = buf.Read<Vector2D>();
-                m_dir2 = buf.Read<Vector2D>();
+                m_dir1 = buf.ReadStruct<Vector2>();
+                m_dir2 = buf.ReadStruct<Vector2>();
                 m_supZ = buf.ReadFloat();
                 m_unknown4 = buf.ReadInt32();   // 0x84
                 m_dir1Len = buf.ReadFloat();
@@ -605,7 +607,6 @@ namespace GTASaveData.LCS
                 m_infY = buf.ReadFloat();
                 m_supY = buf.ReadFloat();
                 m_timeCrusherCraneActivated = buf.ReadInt32();
-                m_scriptTargetCar = buf.ReadInt32();
                 m_doorPos = buf.ReadFloat();
                 m_doorHeight = buf.ReadFloat();
                 m_door1X = buf.ReadFloat();
@@ -640,12 +641,14 @@ namespace GTASaveData.LCS
                 Debug.Assert(buf.Offset == 0xE0);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<Garage>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Garage>(param));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
-            if (fmt.IsPS2)
+            LCSSaveParams param = p as LCSSaveParams;
+
+            if (param.FileType.IsPS2)
             {
                 buf.Write((byte) m_type);
                 buf.Write((byte) m_state);
@@ -704,7 +707,7 @@ namespace GTASaveData.LCS
 
                 Debug.Assert(buf.Offset == 0x100);
             }
-            else if (fmt.IsPSP)
+            else if (param.FileType.IsPSP)
             {
                 buf.Write((byte) m_type);
                 buf.Write((byte) m_state);
@@ -717,8 +720,8 @@ namespace GTASaveData.LCS
                 buf.Write(m_targetModelIndex);
                 buf.Write((int) m_door1Pointer);
                 buf.Write((int) m_door2Pointer);
-                buf.Write(m_door1PoolIndex);
-                buf.Write(m_door2PoolIndex);
+                buf.Write((byte) m_door1PoolIndex);
+                buf.Write((byte) m_door2PoolIndex);
                 buf.Write(m_door1IsDummy);
                 buf.Write(m_door2IsDummy);
                 buf.Write(m_recreateDoorsOnNextRefresh);
@@ -751,7 +754,7 @@ namespace GTASaveData.LCS
                 buf.Write(m_door1Z);
                 buf.Write(m_door2Z);
                 buf.Write(m_timeToStartAction);
-                buf.Write(m_collectedCarState);
+                buf.Write((byte) m_collectedCarState);
                 buf.Skip(3);    // align
                 buf.Write((int) m_targetCarPointer);
                 buf.Write(m_storedCar);
@@ -760,14 +763,14 @@ namespace GTASaveData.LCS
                 buf.Write(m_multiplayerCar);
                 buf.Write(m_scriptGarageAcceptedCar);
                 buf.Write(m_locked);
-                buf.Write(m_scriptGarageState);
+                buf.Write((byte) m_scriptGarageState);
                 buf.Write(m_scriptGarageStateChanging);
                 buf.Write(m_unknown3);
                 buf.Write(m_unknown4);
 
                 Debug.Assert(buf.Offset == 0xE0);
             }
-            else if (fmt.IsMobile)
+            else if (param.FileType.IsiOS || param.FileType.IsAndroid)
             {
                 buf.Write(m_door1Pointer);
                 buf.Write(m_door2Pointer);
@@ -792,7 +795,6 @@ namespace GTASaveData.LCS
                 buf.Write(m_infY);
                 buf.Write(m_supY);
                 buf.Write(m_timeCrusherCraneActivated);
-                buf.Write(m_scriptTargetCar);
                 buf.Write(m_doorPos);
                 buf.Write(m_doorHeight);
                 buf.Write(m_door1X);
@@ -809,33 +811,35 @@ namespace GTASaveData.LCS
                 buf.Write(m_closingWithoutTargetCar);
                 buf.Write(m_deactivated);
                 buf.Write(m_resprayHappened);
-                buf.Write(m_door1PoolIndex);
-                buf.Write(m_door2PoolIndex);
+                buf.Write((byte) m_door1PoolIndex);
+                buf.Write((byte) m_door2PoolIndex);
                 buf.Write(m_door1IsDummy);
                 buf.Write(m_door2IsDummy);
                 buf.Write(m_recreateDoorsOnNextRefresh);
                 buf.Write(m_rotatingDoor);
                 buf.Write(m_cameraFollowsPlayer);
-                buf.Write(m_collectedCarState);
+                buf.Write((byte) m_collectedCarState);
                 buf.Write(m_initialized);
                 buf.Write(m_scriptGarageAcceptedCar);
                 buf.Write(m_locked);
-                buf.Write(m_scriptGarageState);
+                buf.Write((byte) m_scriptGarageState);
                 buf.Write(m_scriptGarageStateChanging);
-                buf.Skip(4);    // align (8-byte alignment)
+                buf.Align(8);
 
                 Debug.Assert(buf.Offset == 0xE0);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<Garage>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<Garage>(param));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            if (fmt.IsPS2) return 0x100;
-            if (fmt.IsPSP) return 0xE0;
-            if (fmt.IsMobile) return 0xE0;
-            throw SizeNotDefined(fmt);
+            LCSSaveParams param = p as LCSSaveParams;
+
+            if (param.FileType.IsPS2) return 0x100;
+            if (param.FileType.IsPSP) return 0xE0;
+            if (param.FileType.IsiOS || param.FileType.IsAndroid) return 0xE0;
+            throw SizeNotDefined(param);
         }
 
         public override bool Equals(object obj)

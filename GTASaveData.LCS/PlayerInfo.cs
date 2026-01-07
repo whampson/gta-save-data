@@ -5,7 +5,7 @@ using GTASaveData.Interfaces;
 
 namespace GTASaveData.LCS
 {
-    public class PlayerInfo : SaveDataObject, IPlayerInfo,
+    public class PlayerInfo : SaveDataObject,
         IEquatable<PlayerInfo>, IDeepClonable<PlayerInfo>
     {
         private int m_money;
@@ -96,17 +96,19 @@ namespace GTASaveData.LCS
             GetOutOfHospitalFree = other.GetOutOfHospitalFree;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
-            if (fmt.IsMobile) buf.Skip(128);
+            LCSSaveParams param = p as LCSSaveParams;
+
+            if (param.FileType.IsiOS || param.FileType.IsAndroid) buf.Skip(128);
             Money = buf.ReadInt32();
             buf.ReadInt32();
-            if (fmt.IsPS2 || fmt.IsPSP) buf.Skip(3);        // weird
-            if (fmt.IsPS2 || fmt.IsPSP) buf.ReadFloat();
+            if (param.FileType.IsPS2 || param.FileType.IsPSP) buf.Skip(3);        // weird
+            if (param.FileType.IsPS2 || param.FileType.IsPSP) buf.ReadFloat();
             MoneyOnScreen = buf.ReadInt32();
             PackagesCollected = buf.ReadInt32();
             buf.ReadInt32();                                // total hidden packages? 3?
-            if (fmt.IsMobile)
+            if (param.FileType.IsiOS || param.FileType.IsAndroid)
             {
                 buf.ReadFloat();
                 buf.ReadInt32();
@@ -120,7 +122,7 @@ namespace GTASaveData.LCS
                 GetOutOfHospitalFree = buf.ReadBool();
                 buf.Skip(3);
             }
-            else if (fmt.IsPSP)
+            else if (param.FileType.IsPSP)
             {
                 InfiniteSprint = buf.ReadBool();
                 FastReload = buf.ReadBool();
@@ -132,7 +134,7 @@ namespace GTASaveData.LCS
                 buf.Skip(2);
                 buf.Skip(83 * sizeof(int));
             }
-            else if (fmt.IsPS2)
+            else if (param.FileType.IsPS2)
             {
                 InfiniteSprint = buf.ReadBool(4);
                 FastReload = buf.ReadBool(4);
@@ -145,20 +147,22 @@ namespace GTASaveData.LCS
                 buf.Skip(87 * sizeof(int));
             }
 
-            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(param));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
-            if (fmt.IsMobile) buf.Write(new byte[128]);
+            LCSSaveParams param = p as LCSSaveParams;
+
+            if (param.FileType.IsiOS || param.FileType.IsAndroid) buf.Write(new byte[128]);
             buf.Write(Money);
             buf.Write(0);
-            if (fmt.IsPS2 || fmt.IsPSP) buf.Skip(3);        // weird
-            if (fmt.IsPS2 || fmt.IsPSP) buf.Write(1.0f);
+            if (param.FileType.IsPS2 || param.FileType.IsPSP) buf.Skip(3);        // weird
+            if (param.FileType.IsPS2 || param.FileType.IsPSP) buf.Write(1.0f);
             buf.Write(MoneyOnScreen);
             buf.Write(PackagesCollected);
             buf.Write(3);
-            if (fmt.IsMobile)
+            if (param.FileType.IsiOS || param.FileType.IsAndroid)
             {
                 buf.Write(1.0f);
                 buf.Write(0);       // value read is nonzero but it seems useless
@@ -172,7 +176,7 @@ namespace GTASaveData.LCS
                 buf.Write(GetOutOfHospitalFree);
                 buf.Skip(3);
             }
-            else if (fmt.IsPSP)
+            else if (param.FileType.IsPSP)
             {
                 buf.Write(InfiniteSprint);
                 buf.Write(FastReload);
@@ -184,7 +188,7 @@ namespace GTASaveData.LCS
                 buf.Skip(2);
                 buf.Write(new byte[83 * sizeof(int)]);
             }
-            else if (fmt.IsPS2)
+            else if (param.FileType.IsPS2)
             {
                 buf.Write(InfiniteSprint, 4);
                 buf.Write(FastReload, 4);
@@ -197,15 +201,17 @@ namespace GTASaveData.LCS
                 buf.Write(new byte[87 * sizeof(int)]);
             }
 
-            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(fmt));
+            Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(param));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            if (fmt.IsPSP) return 0x170;
-            if (fmt.IsPS2) return 0x190;
-            if (fmt.IsMobile) return 0xA8;
-            throw SizeNotDefined(fmt);
+            LCSSaveParams param = p as LCSSaveParams;
+
+            if (param.FileType.IsPSP) return 0x170;
+            if (param.FileType.IsPS2) return 0x190;
+            if (param.FileType.IsiOS || param.FileType.IsAndroid) return 0xA8;
+            throw SizeNotDefined(param);
         }
 
         public override bool Equals(object obj)

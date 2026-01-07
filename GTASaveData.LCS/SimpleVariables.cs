@@ -1,12 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Numerics;
 using GTASaveData.Interfaces;
 
 namespace GTASaveData.LCS
 {
-    public class SimpleVariables : SaveDataObject, ISimpleVariables,
+    public class SimpleVariables : SaveDataObject,
         IEquatable<SimpleVariables>, IDeepClonable<SimpleVariables>
     {
         public const int MaxMissionPassedNameLength = 60;
@@ -55,7 +56,7 @@ namespace GTASaveData.LCS
         private bool m_allTaxisHaveNitro;
         private bool m_targetIsOn;
         private Vector2 m_targetPosition;
-        private Date m_timeStamp;
+        private DateTime m_timeStamp;
 
         public string LastMissionPassedName
         {
@@ -321,46 +322,16 @@ namespace GTASaveData.LCS
             set { m_targetPosition = value; OnPropertyChanged(); }
         }
 
-        public Date TimeStamp
+        public DateTime TimeStamp
         {
             get { return m_timeStamp; }
             set { m_timeStamp = value; OnPropertyChanged(); }
         }
 
-        int ISimpleVariables.GameClockHours
-        {
-            get { return GameClockHours; }
-            set { GameClockHours = (byte) value; OnPropertyChanged(); }
-        }
-
-        int ISimpleVariables.GameClockMinutes
-        {
-            get { return GameClockMinutes; }
-            set { GameClockMinutes = (byte) value; OnPropertyChanged(); }
-        }
-
-        int ISimpleVariables.OldWeatherType
-        {
-            get { return (int) OldWeatherType; }
-            set { OldWeatherType = (WeatherType) value; OnPropertyChanged(); }
-        }
-
-        int ISimpleVariables.NewWeatherType
-        {
-            get { return (int) NewWeatherType; }
-            set { NewWeatherType = (WeatherType) value; OnPropertyChanged(); }
-        }
-
-        int ISimpleVariables.ForcedWeatherType
-        {
-            get { return (int) ForcedWeatherType; }
-            set { ForcedWeatherType = (WeatherType) value; OnPropertyChanged(); }
-        }
-
         public SimpleVariables()
         {
             LastMissionPassedName = "";
-            TimeStamp = Date.MinValue;
+            TimeStamp = DateTime.Now;
             CameraPosition = new Vector3();
             TargetPosition = new Vector2();
         }
@@ -414,10 +385,12 @@ namespace GTASaveData.LCS
             TimeStamp = other.TimeStamp;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
+            LCSSaveParams param = p as LCSSaveParams;
+
             buf.Skip(8); // unused
-            if (fmt.IsMobile)
+            if (param.FileType.IsiOS || param.FileType.IsAndroid)
             {
                 buf.Skip(4); // unused
                 LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
@@ -453,7 +426,7 @@ namespace GTASaveData.LCS
             ShowSubtitles = buf.ReadBool();
             buf.Skip(2);
             RadarMode = (RadarMode) buf.ReadInt32();
-            if (fmt.IsPS2)
+            if (param.FileType.IsPS2)
             {
                 BlurOn = buf.ReadBool(4);
                 buf.Skip(8); // possibly 2 unused settings
@@ -470,9 +443,9 @@ namespace GTASaveData.LCS
             StereoOutput = buf.ReadBool();
             buf.Skip(2);
             buf.Skip(10 * 4); // unused
-            if (!fmt.IsPSP) buf.Skip(4); // unused
+            if (!param.FileType.IsPSP) buf.Skip(4); // unused
             PadMode = buf.ReadInt16();
-            if (fmt.IsPS2)
+            if (param.FileType.IsPS2)
             {
                 buf.Skip(2);
                 InvertLook = !buf.ReadBool(4);  // negated
@@ -486,7 +459,7 @@ namespace GTASaveData.LCS
             else
             {
                 InvertLook = buf.ReadBool();
-                if (fmt.IsPSP) InvertLook = !InvertLook;
+                if (param.FileType.IsPSP) InvertLook = !InvertLook;
                 SwapNippleAndDPad = buf.ReadBool();
                 HasPlayerCheated = buf.ReadBool();
                 AllTaxisHaveNitro = buf.ReadBool();
@@ -494,21 +467,35 @@ namespace GTASaveData.LCS
                 buf.Skip(1);
             }
             TargetPosition = buf.ReadStruct<Vector2>();
-            if (fmt.IsPS2)
+            if (param.FileType.IsPS2)
             {
                 buf.Skip(4);    // unused
-                TimeStamp = buf.ReadStruct<Date>();
+                int sec = buf.ReadInt32();
+                int min = buf.ReadInt32();
+                int hr = buf.ReadInt32();
+                int day = buf.ReadInt32();
+                int mon = buf.ReadInt32();
+                int yr = buf.ReadInt32();
+                bool dtValid = DateTime.TryParseExact(
+                    $"{yr:D4}-{mon:D2}-{day:D2} {hr:D2}:{min:D2}:{sec:D2}",
+                    "yyyy-MM-dd HH:mm:ss",
+                    CultureInfo.InvariantCulture, DateTimeStyles.None,
+                    out DateTime dt);
+                TimeStamp = (dtValid) ? dt : DateTime.MinValue;
+                
             }
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(param));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
+            LCSSaveParams param = p as LCSSaveParams;
+
             buf.Skip(4); // unused
-            if (fmt.IsPS2 || fmt.IsPSP) buf.Write(3);
+            if (param.FileType.IsPS2 || param.FileType.IsPSP) buf.Write(3);
             else buf.Write(8);
-            if (fmt.IsMobile)
+            if (param.FileType.IsiOS || param.FileType.IsAndroid)
             {
                 buf.Skip(4); // unused
                 buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
@@ -544,7 +531,7 @@ namespace GTASaveData.LCS
             buf.Write(ShowSubtitles);
             buf.Skip(2);
             buf.Write((int) RadarMode);
-            if (fmt.IsPS2)
+            if (param.FileType.IsPS2)
             {
                 buf.Write(BlurOn, 4);
                 buf.Skip(8); // possibly 2 unused settings
@@ -561,9 +548,9 @@ namespace GTASaveData.LCS
             buf.Write(StereoOutput);
             buf.Skip(2);
             buf.Skip(10 * 4); // unused
-            if (!fmt.IsPSP) buf.Skip(4); // unused
+            if (!param.FileType.IsPSP) buf.Skip(4); // unused
             buf.Write(PadMode);
-            if (fmt.IsPS2)
+            if (param.FileType.IsPS2)
             {
                 buf.Skip(2);
                 buf.Write(!InvertLook, 4);  // negated
@@ -577,7 +564,7 @@ namespace GTASaveData.LCS
             else
             {
                 bool invertLook = InvertLook;
-                if (fmt.IsPSP) invertLook = !invertLook;
+                if (param.FileType.IsPSP) invertLook = !invertLook;
                 buf.Write(invertLook);
                 buf.Write(SwapNippleAndDPad);
                 buf.Write(HasPlayerCheated);
@@ -586,21 +573,29 @@ namespace GTASaveData.LCS
                 buf.Skip(1);
             }
             buf.Write(TargetPosition);
-            if (fmt.IsPS2)
+            if (param.FileType.IsPS2)
             {
                 buf.Skip(4);    // unused
+                buf.Write(TimeStamp.Second);
+                buf.Write(TimeStamp.Minute);
+                buf.Write(TimeStamp.Hour);
+                buf.Write(TimeStamp.Day);
+                buf.Write(TimeStamp.Month);
+                buf.Write(TimeStamp.Year);
                 buf.Write(TimeStamp);
             }
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(param));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            if (fmt.IsPSP) return 0xBC;
-            if (fmt.IsPS2) return 0xF8;
-            if (fmt.IsMobile) return 0x13C;
-            throw SizeNotDefined(fmt);
+            LCSSaveParams param = p as LCSSaveParams;
+
+            if (param.FileType.IsPSP) return 0xBC;
+            if (param.FileType.IsPS2) return 0xF8;
+            if (param.FileType.IsiOS || param.FileType.IsAndroid) return 0x13C;
+            throw SizeNotDefined(param);
         }
 
         public override bool Equals(object obj)

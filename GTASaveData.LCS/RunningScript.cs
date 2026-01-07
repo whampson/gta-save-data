@@ -2,13 +2,12 @@
 using GTASaveData.JsonConverters;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace GTASaveData.LCS
 {
-    public class RunningScript : SaveDataObject, IRunningScript,
+    public class RunningScript : SaveDataObject,
         IEquatable<RunningScript>, IDeepClonable<RunningScript>
     {
         public const int MaxNameLength = 8;
@@ -164,10 +163,6 @@ namespace GTASaveData.LCS
             set { m_missionFlag = value; OnPropertyChanged(); }
         }
 
-        IEnumerable<int> IRunningScript.Stack => m_stack;
-
-        IEnumerable<int> IRunningScript.Locals => m_localVariables;
-
         public RunningScript()
         {
             m_name = "noname";
@@ -236,12 +231,14 @@ namespace GTASaveData.LCS
             Locals[index] = value;
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
+            LCSSaveParams param = p as LCSSaveParams;
+
             NextScriptPointer = buf.ReadUInt32();
-            if (fmt.IsiOS) buf.ReadInt32();
+            if (param.FileType.IsiOS) buf.ReadInt32();
             PrevScriptPointer = buf.ReadUInt32();
-            if (fmt.IsiOS) buf.ReadInt32();
+            if (param.FileType.IsiOS) buf.ReadInt32();
             Id = buf.ReadInt32();
             buf.ReadInt32();
             Name = buf.ReadString(MaxNameLength);
@@ -264,17 +261,19 @@ namespace GTASaveData.LCS
             WastedBustedCheckResult = buf.ReadBool();
             MissionFlag = buf.ReadBool();
             buf.Skip(2);
-            if (fmt.IsiOS) buf.ReadInt32();
+            if (param.FileType.IsiOS) buf.ReadInt32();
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(param));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
+            LCSSaveParams param = p as LCSSaveParams;
+
             buf.Write(NextScriptPointer);
-            if (fmt.IsiOS) buf.Write(0);
+            if (param.FileType.IsiOS) buf.Write(0);
             buf.Write(PrevScriptPointer);
-            if (fmt.IsiOS) buf.Write(0);
+            if (param.FileType.IsiOS) buf.Write(0);
             buf.Write(Id);
             buf.Write(0);
             buf.Write(Name, MaxNameLength);
@@ -297,14 +296,15 @@ namespace GTASaveData.LCS
             buf.Write(WastedBustedCheckResult);
             buf.Write(MissionFlag);
             buf.Skip(2);
-            if (fmt.IsiOS) buf.Write(0);
+            if (param.FileType.IsiOS) buf.Write(0);
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(param));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            return (fmt.IsiOS) ? 0x228 : 0x21C;
+            LCSSaveParams param = p as LCSSaveParams;
+            return (param.FileType.IsiOS) ? 0x228 : 0x21C;
         }
 
         public override bool Equals(object obj)

@@ -1,12 +1,40 @@
 ﻿using GTASaveData.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace GTASaveData.LCS
 {
-    public class LCSSave : SaveData,
+    public class LCSSaveParams : SerializationParams
+    {
+        public FileType FileType { get; set; }
+
+        public static LCSSaveParams GetDefaults(FileType t)
+        {
+            bool isValid = LCSSave.FileTypes.GetAll().Select(x => x == t).Any();
+            if (!isValid)
+                return null;
+
+            LCSSaveParams p = new LCSSaveParams() {
+                FileType = t,
+                PaddingType = PaddingScheme.Skip,
+                BigEndian = false,
+            };
+            return p;
+        }
+    }
+
+    public enum DataBlock
+    {
+        SimpleVars,
+        Scripts,
+        Garages,
+        PlayerInfo,
+        Stats
+    }
+
+    public class LCSSave : SaveFile<LCSSaveParams>,
         IEquatable<LCSSave>, IDeepClonable<LCSSave>
     {
         private const int SizeOfGameInBytes = 0x19000;
@@ -19,6 +47,12 @@ namespace GTASaveData.LCS
         private GarageData m_garages;
         private PlayerInfo m_playerInfo;
         private Stats m_stats;
+
+        public FileType FileType
+        {
+            get { return Params.FileType; }
+            set { Params.FileType = value; OnPropertyChanged(); }
+        }
 
         public SimpleVariables SimpleVars
         {
@@ -50,29 +84,59 @@ namespace GTASaveData.LCS
             set { m_stats = value; OnPropertyChanged(); }
         }
 
-        public override string Title
+        public string Title
         {
             get { return m_name; }
             set { m_name = value; OnPropertyChanged(); }
         }
 
-        public override DateTime TimeStamp
+        public DateTime TimeStamp
         {
-            get { return (DateTime) SimpleVars.TimeStamp; }
-            set { SimpleVars.TimeStamp = new Date(value); OnPropertyChanged(); }
+            get { return SimpleVars.TimeStamp; }
+            set { SimpleVars.TimeStamp = value; OnPropertyChanged(); }
         }
 
-        public static LCSSave Load(string path)
+        public static LCSSave LoadFromFile(string path, FileType t)
         {
-            return Load<SaveFileLCS>(path);
+            if (path == null) throw new ArgumentNullException(nameof(path));
+
+            if (t == FileType.Default)
+            {
+                if (!TryGetFileType<LCSSave>(path, out t))
+                {
+                    throw new InvalidDataException("Unable to detect file type!");
+                }
+            }
+
+            LCSSaveParams p = LCSSaveParams.GetDefaults(t)
+                ?? throw new InvalidDataException($"Invalid file type! ({t})");
+
+            return LoadFromFile<LCSSave>(path, p, out _);
         }
 
-        public static SaveFileLCS Load(string path, FileType fmt)
+        public static bool TryLoadFromFile(string path, FileType t, out LCSSave saveData)
         {
-            return Load<SaveFileLCS>(path, fmt);
+            if (t == FileType.Default)
+            {
+                if (!TryGetFileType<LCSSave>(path, out t))
+                {
+                    throw new InvalidDataException("Unable to detect file type!");
+                }
+            }
+
+            LCSSaveParams p = LCSSaveParams.GetDefaults(t)
+                ?? throw new InvalidDataException($"Invalid file type! ({t})");
+
+            return TryLoadFromFile(path, p, out saveData);
         }
 
-        public SaveFileLCS()
+        public static bool TryGetFileType(string path, out FileType t)
+        {
+            return TryGetFileType<LCSSave>(path, out t);
+        }
+
+        public LCSSave()
+            : base(Game.LCS)
         {
             SimpleVars = new SimpleVariables();
             Scripts = new ScriptData();
@@ -81,7 +145,8 @@ namespace GTASaveData.LCS
             Stats = new Stats();
         }
 
-        public SaveFileLCS(SaveFileLCS other)
+        public LCSSave(LCSSave other)
+            : base(Game.LCS)
         {
             SimpleVars = new SimpleVariables(other.SimpleVars);
             Scripts = new ScriptData(other.Scripts);
@@ -93,7 +158,7 @@ namespace GTASaveData.LCS
         private int ReadDataBlock<T>(DataBuffer file, string tag, out T obj)
             where T : SaveDataObject, new()
         {
-            file.Mark();
+            int oldMark = file.Mark();
 
             string savedTag = file.ReadString(4);
             Debug.Assert(savedTag == tag);
@@ -101,28 +166,35 @@ namespace GTASaveData.LCS
             int size = file.ReadInt32();
             Debug.Assert(file.Position + size < file.Length);
 
-            obj = file.ReadObject<T>(FileType);
-            file.Align4();
+            obj = file.ReadObject<T>();
 
-            return file.Offset;
+            file.Align4();
+            int totalSize = file.Offset;
+
+            file.MarkedPosition = oldMark;
+            return totalSize;
         }
 
         private int WriteDataBlock<T>(DataBuffer file, string tag, T obj)
             where T : SaveDataObject
         {
-            int size = SerializeData(obj, out byte[] data);
+            int size = Serializer.Write(obj, Params, out byte[] data);
             int sizeAligned = Align4(size);
 
-            file.Mark();
+            int oldMark = file.Mark();
+
             file.Write(tag, length: 4, zeroTerminate: false);
             file.Write(size);
             file.Write(data);
-            file.Align4();
 
-            Debug.Assert(file.Offset == sizeAligned + 8);
+            file.Align4();
+            int totalSize = file.Offset;
+
+            Debug.Assert(totalSize == sizeAligned + 8);
             m_checkSum += file.GetBytesFromMark().Sum(x => x);
 
-            return size + 8;
+            file.MarkedPosition = oldMark;
+            return totalSize;
         }
 
         protected override void Load(DataBuffer file)
@@ -144,8 +216,6 @@ namespace GTASaveData.LCS
             {
                 file.Skip(SizeOfGameInBytes - totalSize);
             }
-
-            Debug.WriteLine("Load successful!");
         }
 
         protected override void Save(DataBuffer file)
@@ -161,16 +231,16 @@ namespace GTASaveData.LCS
 
             if (FileType.IsPS2)
             {
-                file.Mark();
+                int oldMark = file.Mark();
+
                 totalSize += file.Pad(SizeOfGameInBytes - totalSize - 4);
 
                 m_checkSum += file.GetBytesFromMark().Sum(x => x);
                 totalSize += file.Write(m_checkSum);
-
                 Debug.Assert(totalSize == SizeOfGameInBytes);
-            }
 
-            Debug.WriteLine("Save successful!");
+                file.MarkedPosition = oldMark;
+            }
         }
 
         protected override bool DetectFileType(byte[] data, out FileType fmt)
@@ -206,22 +276,22 @@ namespace GTASaveData.LCS
 
                 if (simpSize == SimpSizePS2)
                 {
-                    fmt = FileFormats.PS2;
+                    fmt = FileTypes.PS2;
                     return true;
                 }
                 if (simpSize == SimpSizePSP)
                 {
-                    fmt = FileFormats.PSP;
+                    fmt = FileTypes.PSP;
                     return true;
                 }
                 if (runningScriptSize == RunningScriptSizeAndroid)
                 {
-                    fmt = FileFormats.Android;
+                    fmt = FileTypes.Android;
                     return true;
                 }
                 if (runningScriptSize == RunningScriptSizeiOS)
                 {
-                    fmt = FileFormats.iOS;
+                    fmt = FileTypes.iOS;
                     return true;
                 }
             }
@@ -231,31 +301,30 @@ namespace GTASaveData.LCS
             return false;
         }
 
-        private static int Align4(int addr)
+        protected override int GetSize(SerializationParams p)
         {
-            return (int) (addr + 3 & 0xFFFFFFFC);
-        }
+            if (p is LCSSaveParams param)
+            {
+                int size = 0;
+                size += Align4(SizeOf(SimpleVars, param)) + 8;
+                size += Align4(SizeOf(Scripts, param)) + 8;
+                size += Align4(SizeOf(Garages, param)) + 8;
+                size += Align4(SizeOf(PlayerInfo, param)) + 8;
+                size += Align4(SizeOf(Stats, param)) + 8;
 
-        protected override int GetSize(FileType fmt)
-        {
-            int size = 0;
-            size += Align4(SizeOf(SimpleVars, fmt)) + 8;
-            size += Align4(SizeOf(Scripts, fmt)) + 8;
-            size += Align4(SizeOf(Garages, fmt)) + 8;
-            size += Align4(SizeOf(PlayerInfo, fmt)) + 8;
-            size += Align4(SizeOf(Stats, fmt)) + 8;
+                if (param.FileType.IsPS2) size += (SizeOfGameInBytes - size);
 
-            if (fmt.IsPS2) size += (SizeOfGameInBytes - size);
-
-            return size;
+                return size;
+            }
+            throw new InvalidDataException($"The type of SerializationParameters ({p.GetType().Name}) is invalid for this type ({GetType().Name}).");
         }
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as SaveFileLCS);
+            return Equals(obj as LCSSave);
         }
 
-        public bool Equals(SaveFileLCS other)
+        public bool Equals(LCSSave other)
         {
             if (other == null)
             {
@@ -269,46 +338,45 @@ namespace GTASaveData.LCS
                 && Stats.Equals(other.Stats);
         }
 
-        public SaveFileLCS DeepClone()
+        public LCSSave DeepClone()
         {
-            return new SaveFileLCS(this);
+            return new LCSSave(this);
         }
 
-        public static class FileFormats
+        public static class FileTypes
         {
             public static readonly FileType Android = new FileType(
-                "Android", "Android", "Android OS",
-                GameSystem.Android
+                "Android", GameVersionId.Android
             );
 
             public static readonly FileType iOS = new FileType(
-                "iOS", "iOS", "Apple iOS",
-                GameSystem.iOS
+                "iOS", GameVersionId.iOS
             );
 
             public static readonly FileType PS2 = new FileType(
-                "PS2", "PS2", "PlayStation 2",
-                GameSystem.PS2
+                "PS2", GameVersionId.PS2
             );
 
             public static readonly FileType PSP = new FileType(
-                "PSP", "PSP", "PlayStation Portable",
-                GameSystem.PSP
+                "PSP", GameVersionId.PSP
             );
 
             public static FileType[] GetAll()
             {
                 return new FileType[] { Android, iOS, PS2, PSP };
             }
-        }
-    }
 
-    public enum DataBlock
-    {
-        SimpleVars,
-        Scripts,
-        Garages,
-        PlayerInfo,
-        Stats
+            public static FileType GetByGameConsole(GameVersionId console)
+            {
+                switch (console)
+                {
+                    case GameVersionId.Android: return Android;
+                    case GameVersionId.iOS: return iOS;
+                    case GameVersionId.PS2: return PS2;
+                    case GameVersionId.PSP: return PSP;
+                    default: return FileType.Default;
+                }
+            }
+        }
     }
 }

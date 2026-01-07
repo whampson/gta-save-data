@@ -5,7 +5,7 @@ using GTASaveData.Interfaces;
 
 namespace GTASaveData.LCS
 {
-    public class Stats : SaveDataObject, IStats,
+    public class Stats : SaveDataObject,
         IEquatable<Stats>, IDeepClonable<Stats>
     {
         public const int NumPedTypes = 23;
@@ -1057,8 +1057,10 @@ namespace GTASaveData.LCS
             FavoriteRadioStationList = ArrayHelper.DeepClone(other.FavoriteRadioStationList);
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
+            LCSSaveParams param = p as LCSSaveParams;
+
             PeopleKilledByPlayer = buf.ReadInt32();
             PeopleKilledByOthers = buf.ReadInt32();
             CarsExploded = buf.ReadInt32();
@@ -1185,13 +1187,16 @@ namespace GTASaveData.LCS
             FastestStreetRaceTimes = buf.ReadArray<int>(NumStreetRaces);
             FastestDirtBikeLapTimes = buf.ReadArray<int>(NumDirtBikeRaces);
             FastestDirtBikeTimes = buf.ReadArray<int>(NumDirtBikeRaces);
-            FavoriteRadioStationList = buf.ReadArray<float>((fmt.IsMobile) ? NumRadioStationsMobile : NumRadioStations);
+            FavoriteRadioStationList = buf.ReadArray<float>(
+                (param.FileType.IsiOS || param.FileType.IsAndroid) ? NumRadioStationsMobile : NumRadioStations);
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(param));
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
+            LCSSaveParams param = p as LCSSaveParams;
+
             buf.Write(PeopleKilledByPlayer);
             buf.Write(PeopleKilledByOthers);
             buf.Write(CarsExploded);
@@ -1318,16 +1323,19 @@ namespace GTASaveData.LCS
             buf.Write(FastestStreetRaceTimes, NumStreetRaces);
             buf.Write(FastestDirtBikeLapTimes, NumDirtBikeRaces);
             buf.Write(FastestDirtBikeTimes, NumDirtBikeRaces);
-            buf.Write(FavoriteRadioStationList, (fmt.IsMobile) ? NumRadioStationsMobile : NumRadioStations);
+            buf.Write(FavoriteRadioStationList,
+                (param.FileType.IsiOS || param.FileType.IsAndroid) ? NumRadioStationsMobile : NumRadioStations);
 
-            Debug.Assert(buf.Offset == GetSize(fmt));
+            Debug.Assert(buf.Offset == GetSize(param));
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            if (fmt.IsMobile) return 0x385;
-            if (fmt.IsPSP || fmt.IsPS2) return 0x381;
-            throw SizeNotDefined(fmt);
+            LCSSaveParams param = p as LCSSaveParams;
+
+            if (param.FileType.IsiOS || param.FileType.IsAndroid) return 0x385;
+            if (param.FileType.IsPSP || param.FileType.IsPS2) return 0x381;
+            throw SizeNotDefined(param);
         }
 
         public override bool Equals(object obj)

@@ -1,5 +1,7 @@
-﻿using GTASaveData.Interfaces;
+﻿using GTASaveData.Helpers;
+using GTASaveData.Interfaces;
 using GTASaveData.JsonConverters;
+using GTASaveData.Types;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Linq;
 
 namespace GTASaveData.LCS
 {
-    public class ScriptData : SaveDataObject, IScriptData,
+    public class ScriptData : SaveDataObject,
         IEquatable<ScriptData>, IDeepClonable<ScriptData>
     {
         public const int NumCollectives = 32;
@@ -112,11 +114,6 @@ namespace GTASaveData.LCS
             set { m_activeScripts = value; OnPropertyChanged(); }
         }
 
-        IEnumerable<int> IScriptData.Globals => m_globals;
-        IEnumerable<IBuildingSwap> IScriptData.BuildingSwaps => m_buildingSwapArray;
-        IEnumerable<IInvisibleObject> IScriptData.InvisibilitySettings => m_invisibilitySettingArray;
-        IEnumerable<IRunningScript> IScriptData.Threads => m_activeScripts;
-
         public ScriptData()
         {
             Globals = new ObservableArray<int>();
@@ -148,8 +145,6 @@ namespace GTASaveData.LCS
             return Threads.Where(x => x.Name == name).FirstOrDefault();
         }
 
-        IRunningScript IScriptData.GetThread(string name) => GetThread(name);
-
         public int GetGlobal(int index)
         {
             return Globals[index];
@@ -172,9 +167,12 @@ namespace GTASaveData.LCS
             Globals[index] = BitConverter.ToInt32(floatBits, 0);
         }
 
-        protected override void ReadData(DataBuffer buf, FileType fmt)
+        protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
-            int size = SaveFileGTA3VC.ReadBlockHeader(buf, "SCR");
+            LCSSaveParams param = p as LCSSaveParams;
+
+            int size = SaveHelper.ReadBlockHeader(buf, out string tag);
+            Debug.Assert(tag == "SCR");
 
             int varSpace = buf.ReadInt32();
             Globals = buf.ReadArray<int>(varSpace / sizeof(int));
@@ -195,16 +193,18 @@ namespace GTASaveData.LCS
             NumberOfMissionScripts = buf.ReadInt16();
             buf.ReadUInt16();
             int runningScripts = buf.ReadInt32();
-            Threads = buf.ReadArray<RunningScript>(runningScripts, fmt);
+            Threads = buf.ReadArray<RunningScript>(runningScripts);
 
-            Debug.Assert(buf.Offset == size + SaveFileGTA3VC.BlockHeaderSize);
-            Debug.Assert(size == SizeOf(this, fmt) - SaveFileGTA3VC.BlockHeaderSize);
+            Debug.Assert(buf.Offset == size + SaveHelper.BlockHeaderSize);
+            Debug.Assert(size == SizeOf(this, param) - SaveHelper.BlockHeaderSize);
         }
 
-        protected override void WriteData(DataBuffer buf, FileType fmt)
+        protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
-            int size = SizeOf(this, fmt);
-            SaveFileGTA3VC.WriteBlockHeader(buf, "SCR", size - SaveFileGTA3VC.BlockHeaderSize);
+            LCSSaveParams param = p as LCSSaveParams;
+
+            int size = SizeOf(this, param);
+            SaveHelper.WriteBlockHeader(buf, "SCR", size - SaveHelper.BlockHeaderSize); // why subtract header size???
 
             buf.Write(Globals.Count * sizeof(int));
             buf.Write(Globals);
@@ -224,17 +224,18 @@ namespace GTASaveData.LCS
             buf.Write(NumberOfMissionScripts);
             buf.Write((short) 0);
             buf.Write(Threads.Count);
-            buf.Write(Threads, fmt);
+            buf.Write(Threads);
 
             Debug.Assert(buf.Offset == size);
         }
 
-        protected override int GetSize(FileType fmt)
+        protected override int GetSize(SerializationParams p)
         {
-            return SizeOf<RunningScript>(fmt) * Threads.Count
+            LCSSaveParams param = p as LCSSaveParams;
+            return SizeOf<RunningScript>(p) * Threads.Count
                 + Globals.Count * sizeof(int)
                 + ScriptDataSize + 0x104
-                + SaveFileGTA3VC.BlockHeaderSize
+                + SaveHelper.BlockHeaderSize
                 + 3 * sizeof(int);
         }
 
