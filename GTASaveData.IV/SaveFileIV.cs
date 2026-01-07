@@ -57,6 +57,12 @@ namespace GTASaveData.IV
         private DateTime m_timestamp; // not saved in file
         private ObservableArray<Block> m_blockData;
 
+        public FileType FileType
+        {
+            get { return Params.FileType; }
+            set { Params.FileType = value; OnPropertyChanged(); }
+        }
+
         public SaveHeader Header
         {
             get { return m_header; }
@@ -101,7 +107,7 @@ namespace GTASaveData.IV
             GTA4SaveParams p = GTA4SaveParams.GetDefaults(t)
                 ?? throw new InvalidDataException($"Invalid file type! ({t})");
 
-            return LoadFromFile<GTA4Save>(path, Game.IV, p, out _);
+            return LoadFromFile<GTA4Save>(path, p, out _);
         }
 
         public static bool TryLoadFromFile(string path, FileType t, out GTA4Save saveData)
@@ -117,7 +123,7 @@ namespace GTASaveData.IV
             GTA4SaveParams p = GTA4SaveParams.GetDefaults(t)
                 ?? throw new InvalidDataException($"Invalid file type! ({t})");
 
-            return TryLoadFromFile(path, Game.IV, p, out saveData);
+            return TryLoadFromFile(path, p, out saveData);
         }
 
         public static bool TryGetFileType(string path, out FileType t)
@@ -154,7 +160,7 @@ namespace GTASaveData.IV
             string tag = file.ReadString(4);
             Debug.Assert(tag == "SAVE");
 
-            if (Params.FileType.IsWindows)
+            if (FileType.IsWindows)
             {
                 head.LastMissionPassedName = file.ReadString(128, unicode: true);
             }
