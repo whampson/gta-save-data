@@ -20,11 +20,7 @@ namespace GTASaveData
         /// <summary>
         /// The <i>Grand Theft Auto</i> game this save belongs to.
         /// </summary>
-        public Game Game
-        {
-            get { return m_game; }
-            set { m_game = value; OnPropertyChanged(); }
-        }
+        public Game Game => m_game;
 
         /// <summary>
         /// The serialization parameters used to read and write this save.
@@ -39,8 +35,8 @@ namespace GTASaveData
 
         protected SaveFile(Game game, P param)
         {
-            Game = game;
-            Params = param;
+            m_game = game;
+            m_params = param;
         }
 
         private static byte[] ReadBytesFromFile(string path)
@@ -74,11 +70,10 @@ namespace GTASaveData
             return bytesRead;
         }
 
-        protected static T LoadFromFile<T>(string path, Game game, P param, out int bytesRead) where T : SaveFile<P>, new()
+        protected static T LoadFromFile<T>(string path, P param, out int bytesRead) where T : SaveFile<P>, new()
         {
             T save = new T()
             {
-                Game = game,
                 Params = param ?? throw new ArgumentNullException(nameof(param))
             };
 
@@ -86,13 +81,13 @@ namespace GTASaveData
             return save;
         }
 
-        protected static bool TryLoadFromFile<T>(string path, Game game, P param, out T saveData) where T : SaveFile<P>, new()
+        protected static bool TryLoadFromFile<T>(string path, P param, out T saveData) where T : SaveFile<P>, new()
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
 
             try
             {
-                saveData = LoadFromFile<T>(path, game, param, out _);
+                saveData = LoadFromFile<T>(path, param, out _);
                 return true;
             }
             catch (Exception ex)

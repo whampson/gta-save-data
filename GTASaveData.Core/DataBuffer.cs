@@ -3,6 +3,7 @@ using GTASaveData.Helpers;
 using GTASaveData.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -85,7 +86,7 @@ namespace GTASaveData
         /// <remarks>
         /// The endianness of serialized structs is determined by the host CPU. If you need to control
         /// the endianness of a structure, consider implementing <see cref="ISaveDataObject"/> and using
-        /// <see cref="ReadObject{T}(SerializationParams)"/> and <see cref="Write(ISaveDataObject, SerializationParams)"/>
+        /// <see cref="ReadObject{T}()"/> and <see cref="Write(ISaveDataObject)"/>
         /// to serialize your struct.
         /// </remarks>
         public bool BigEndian
@@ -139,7 +140,6 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
         /// Reads a generic value.
         /// </summary>
         /// <typeparam name="T">The type of data to read.</typeparam>
-        /// <param name="p">The <see cref="SerializationParams"/>, if applicable.</param>
         /// <param name="obj">
         /// An object of type <typeparamref name="T"/> extracted from the
         /// buffer.
@@ -466,8 +466,14 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
             return s;
         }
 
-        private static void ReverseEndianness(Type type, byte[] data, int offset = 0)
+        private void CorrectEndianness(Type type, byte[] data, int offset = 0)
         {
+            if ((BitConverter.IsLittleEndian && !m_params.BigEndian) ||
+                (!BitConverter.IsLittleEndian && m_params.BigEndian))
+            {
+                return;
+            }
+
             if (type.IsPrimitive)
             {
                 Array.Reverse(data);
@@ -479,6 +485,7 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
                 var fieldType = field.FieldType;
                 if (fieldType == typeof(string) ||
                     fieldType == typeof(char[]) ||
+                    fieldType == typeof(byte[]) ||
                     field.IsStatic)
                 {
                     continue;
@@ -500,7 +507,7 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
                 }
                 else
                 {
-                    ReverseEndianness(fieldType, data, effectiveOffset);
+                    CorrectEndianness(fieldType, data, effectiveOffset);
                 }
             }
         }
@@ -511,7 +518,7 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
         /// <remarks>
         /// The endianness of serialized structs is determined by the host CPU. If you need to control
         /// the endianness of a structure, consider implementing <see cref="ISaveDataObject"/> and using
-        /// <see cref="ReadObject{T}(SerializationParams)"/> and <see cref="Write(ISaveDataObject, SerializationParams)"/>
+        /// <see cref="ReadObject{T}()"/> and <see cref="Write(ISaveDataObject)"/>
         /// to serialize your struct.
         /// </remarks>
         /// <typeparam name="T">The type of struct to read.</typeparam>
@@ -522,16 +529,20 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
             if (type.IsEnum)
                 type = type.GetEnumUnderlyingType();
 
-            var size = Marshal.SizeOf(type);
+            int size = Marshal.SizeOf(type);
+            var data = new byte[size];
+
+            int bytesRead = Read(data, 0, size);
+            Debug.Assert(bytesRead == size);
+
+            CorrectEndianness(type, data);
+
             var pObj = Marshal.AllocHGlobal(size);
-            var data = ReadBytes(size);
-            if (BigEndian)
-                ReverseEndianness(type, data);    // TODO: what if our machine is big-endian?
-            Marshal.Copy(data, 0, pObj, size);
-            T obj = (T) Marshal.PtrToStructure(pObj, type);
+            Marshal.Copy(data, 0, pObj, Math.Min(bytesRead, size));
+            T struc = (T) Marshal.PtrToStructure(pObj, type);
             Marshal.FreeHGlobal(pObj);
 
-            return obj;
+            return struc;
         }
 
         /// <summary>
@@ -1012,7 +1023,7 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
         /// <remarks>
         /// The endianness of serialized structs is determined by the host CPU. If you need to control
         /// the endianness of a structure, consider implementing <see cref="ISaveDataObject"/> and using
-        /// <see cref="ReadObject{T}(SerializationParams)"/> and <see cref="Write(ISaveDataObject, SerializationParams)"/>
+        /// <see cref="ReadObject{T}()"/> and <see cref="Write(ISaveDataObject)"/>
         /// to serialize your struct.
         /// </remarks>
         /// <typeparam name="T">The type of struct to write.</typeparam>
@@ -1024,23 +1035,21 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
             return Write(typeof(T), value);
         }
 
-        private int Write(Type t, object obj)
+        private int Write(Type type, object obj)
         {
-            if (t.IsEnum)
-                t = t.GetEnumUnderlyingType();
+            if (type.IsEnum)
+                type = type.GetEnumUnderlyingType();
 
-            var size = Marshal.SizeOf(t);
-            var pObj = Marshal.AllocHGlobal(size);
+            int size = Marshal.SizeOf(type);
             var data = new byte[size];
 
-            Marshal.StructureToPtr(obj, pObj, true);
+            var pObj = Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(obj, pObj, false);
             Marshal.Copy(pObj, data, 0, size);
             Marshal.FreeHGlobal(pObj);
 
-            if (BigEndian)
-                ReverseEndianness(t, data);    // TODO: what if our machine is big-endian?
-
-            return Write(data);
+            CorrectEndianness(type, data);
+            return Write(data, 0, size);
         }
 
         /// <summary>
@@ -1136,13 +1145,37 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
             }
         }
 
+        public static int Align(int addr, int size = 4)
+        {
+            if (((size - 1) & size) != 0)
+            {
+                throw new ArgumentException("must be a power of 2", nameof(size));
+            }
+
+            return (addr + size - 1) & ~(size - 1);
+        }
+
         /// <summary>
-        /// Sets the cursor to the next address that is a multiple of 4.
-        /// If the current address is a multiple of 4, the cursor is not moved.
+        /// Rounds an address up to the next multiple of 4.
+        /// </summary>
+        /// <param name="addr">The address to align.</param>
+        /// <returns>The aligned address.</returns>
+        public static int Align4(int addr)
+        {
+            return Align(addr, 4);
+        }
+
+        /// <summary>
+        /// Sets the cursor to the next multiple of 4.
         /// </summary>
         public void Align4()
         {
-            Pad(AddressHelper.Align4(Offset) - Offset);
+            Pad(Align4(Offset) - Offset);
+        }
+
+        public void Align(int size)
+        {
+            Pad(Align(Offset, size) - Offset);
         }
 
         /// <summary>
@@ -1160,11 +1193,13 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
         /// <returns>The marked position.</returns>
         public int Mark()
         {
-            return MarkedPosition = Position;
+            int oldMark = MarkedPosition;
+            MarkedPosition = Position;
+            return oldMark;
         }
 
         /// <summary>
-        /// Sets the cursor to the specified offset in the buffer.
+        /// Sets the cursor to the specified position in the buffer.
         /// </summary>
         /// <param name="pos">The new position in the buffer.</param>
         public void Seek(int pos)
@@ -1178,6 +1213,8 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
         /// <param name="count">The number of bytes to skip</param>
         public int Skip(int count)
         {
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+
             if (m_buffer.Position + count > m_buffer.Length)
             {
                 return Write(new byte[count]);
@@ -1215,7 +1252,8 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
                         pad[i] = seq[i % seq.Length];
                     }
 
-                    return Write(pad);
+                    Write(pad);
+                    break;
                 }
 
                 case PaddingScheme.Random:
@@ -1224,7 +1262,8 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
                     Random rand = new Random();
                     rand.NextBytes(pad);
 
-                    return Write(pad);
+                    Write(pad);
+                    break;
                 }
             }
 

@@ -1,6 +1,6 @@
 ﻿namespace GTASaveData
 {
-    public abstract class SerializationParamsGTA3VC : SerializationParams
+    public class SerializationParamsGTA3VC : SerializationParams
     {
         /// <summary>
         /// The size of the buffer used to load and store data blocks.

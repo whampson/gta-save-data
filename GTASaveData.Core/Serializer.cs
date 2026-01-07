@@ -1,5 +1,6 @@
 ﻿using GTASaveData.Extensions;
 using GTASaveData.Interfaces;
+using System;
 
 namespace GTASaveData
 {
@@ -155,6 +156,9 @@ namespace GTASaveData
         /// </exception>
         public static int Write<T>(T obj, SerializationParams p, out byte[] data)
         {
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (p == null) throw new ArgumentNullException(nameof(p));
+
             using (DataBuffer stream = CreateDataBufferStream(p))
             {
                 int bytesWritten = stream.GenericWrite(obj);
@@ -177,6 +181,10 @@ namespace GTASaveData
         public static int Write<T>(DataBuffer buf, T obj, SerializationParams p)
             where T : ISaveDataObject
         {
+            if (buf == null) throw new ArgumentNullException(nameof(buf));
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (p == null) throw new ArgumentNullException(nameof(p));
+
             return obj.WriteData(buf, p);
         }
 
@@ -229,6 +237,9 @@ namespace GTASaveData
         /// </exception>
         public static int SizeOf<T>(T obj, SerializationParams p)
         {
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (p == null) throw new ArgumentNullException(nameof(p));
+
             return typeof(T).Implements(typeof(ISaveDataObject))
                 ? ((ISaveDataObject) obj).GetSize(p)
                 : Write(obj, p, out byte[] _);

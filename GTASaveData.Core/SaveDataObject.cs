@@ -98,28 +98,30 @@ namespace GTASaveData
 
         int ISaveDataObject.ReadData(DataBuffer buf, SerializationParams p)
         {
-            int start, len;
+            int start, oldMark;
             start = buf.Position;
+            oldMark = buf.Mark();
 
             OnReading(p);
             ReadData(buf, p);
             OnRead(p);
 
-            len = buf.Position - start;
-            return len;
+            buf.MarkedPosition = oldMark;
+            return buf.Position - start;
         }
 
         int ISaveDataObject.WriteData(DataBuffer buf, SerializationParams p)
         {
-            int start, len;
+            int start, oldMark;
             start = buf.Position;
+            oldMark = buf.Mark();
 
             OnWriting(p);
             WriteData(buf, p);
             OnWrite(p);
 
-            len = buf.Position - start;
-            return len;
+            buf.MarkedPosition = oldMark;
+            return buf.Position - start;
         }
 
         int ISaveDataObject.GetSize(SerializationParams p)

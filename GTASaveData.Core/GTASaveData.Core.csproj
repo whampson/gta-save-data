@@ -9,9 +9,9 @@
     <Product>GTASaveData</Product>
     <Description>GTASaveData core framework library.</Description>
     <Copyright>(C) 2019-2026 Wes Hampson</Copyright>
-    <AssemblyVersion>2.1.0.1410</AssemblyVersion>
-    <FileVersion>2.1.0.1410</FileVersion>
-    <Version>2.1.0</Version>
+    <AssemblyVersion>2.2.0.1429</AssemblyVersion>
+    <FileVersion>2.2.0.1429</FileVersion>
+    <Version>2.2.0</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>gta grand theft auto save file data savefile savedata game gamesave</PackageTags>

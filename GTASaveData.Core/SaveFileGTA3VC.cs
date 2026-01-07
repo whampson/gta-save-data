@@ -36,37 +36,6 @@ namespace GTASaveData
         protected SaveFileGTA3VC(Game game) : base(game) { }
 
         /// <summary>
-        /// The size in bytes of a data block header.
-        /// </summary>
-        public const int BlockHeaderSize = 8;
-
-        /// <summary>
-        /// Reads a block header from the buffer.
-        /// </summary>
-        /// <param name="buf">The buffer to read.</param>
-        /// <param name="tag">The block tag extracted from the header.</param>
-        /// <returns>The size in bytes of the block excluding the header.</returns>
-        public static int ReadBlockHeader(DataBuffer buf, out string tag)
-        {
-            tag = buf.ReadString(4);
-            int size = buf.ReadInt32();
-
-            return size;
-        }
-
-        /// <summary>
-        /// Writes a block header to the buffer.
-        /// </summary>
-        /// <param name="buf">The buffer to write.</param>
-        /// <param name="tag">The block tag.</param>
-        /// <param name="size">The size in bytes of the block excluding the header.</param>
-        public static void WriteBlockHeader(DataBuffer buf, string tag, int size)
-        {
-            buf.Write(tag, 4, zeroTerminate: true);
-            buf.Write(size);
-        }
-
-        /// <summary>
         /// Reads a chunk of data from the source buffer into the work buffer.
         /// </summary>
         /// <remarks>
