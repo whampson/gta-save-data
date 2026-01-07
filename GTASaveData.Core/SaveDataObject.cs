@@ -19,7 +19,11 @@ namespace GTASaveData
         /// <returns>The deserialized object.</returns>
         public static T FromJsonString<T>(string json) where T : SaveDataObject
         {
-            return JsonConvert.DeserializeObject<T>(json);
+            JsonSerializerSettings settings = new JsonSerializerSettings()
+            {
+                ObjectCreationHandling = ObjectCreationHandling.Replace,
+            };
+            return JsonConvert.DeserializeObject<T>(json, settings);
         }
 
         /// <summary>
