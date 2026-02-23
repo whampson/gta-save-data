@@ -41,7 +41,6 @@ namespace GTASaveData.LCS
 
         private int m_checkSum;
 
-        private string m_name;
         private SimpleVariables m_simpleVars;
         private ScriptData m_scripts;
         private GarageData m_garages;
@@ -82,18 +81,6 @@ namespace GTASaveData.LCS
         {
             get { return m_stats; }
             set { m_stats = value; OnPropertyChanged(); }
-        }
-
-        public string Title
-        {
-            get { return m_name; }
-            set { m_name = value; OnPropertyChanged(); }
-        }
-
-        public DateTime TimeStamp
-        {
-            get { return SimpleVars.TimeStamp; }
-            set { SimpleVars.TimeStamp = value; OnPropertyChanged(); }
         }
 
         public static LCSSave LoadFromFile(string path, FileType t)

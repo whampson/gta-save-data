@@ -482,7 +482,6 @@ namespace GTASaveData.LCS
                     CultureInfo.InvariantCulture, DateTimeStyles.None,
                     out DateTime dt);
                 TimeStamp = (dtValid) ? dt : DateTime.MinValue;
-                
             }
 
             Debug.Assert(buf.Offset == GetSize(param));
