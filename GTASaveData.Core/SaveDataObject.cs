@@ -1,6 +1,7 @@
 ﻿using GTASaveData.Helpers;
 using GTASaveData.Interfaces;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using WpfEssentials;
 
@@ -42,7 +43,11 @@ namespace GTASaveData
         /// <returns>The object as a JSON string.</returns>
         public string ToJsonString(Formatting formatting)
         {
-            return JsonConvert.SerializeObject(this, formatting);
+            return JsonConvert.SerializeObject(this, formatting, new JsonSerializerSettings
+            {
+                Converters = { new StringEnumConverter() },
+                DateFormatString = "yyyy-MM-dd HH:mm:ss",
+            });
         }
 
         /// <summary>
@@ -66,7 +71,7 @@ namespace GTASaveData
         protected virtual void OnWrite(SerializationParams p) { }
 
         /// <summary>
-        /// Populates this object's fields by deserializing its data from a 
+        /// Populates this object's fields by deserializing its data from a
         /// <see cref="DataBuffer"/> using the specified <see cref="SerializationParams"/>
         /// to control how data is read.
         /// </summary>

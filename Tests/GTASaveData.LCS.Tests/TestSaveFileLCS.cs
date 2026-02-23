@@ -78,10 +78,10 @@ namespace GTASaveData.LCS.Tests
 
             LCSSaveParams p = LCSSaveParams.GetDefaults(fileType);
             LCSSave x0 = LCSSave.LoadFromFile(path, fileType);
-            LCSSave x1 = CreateSerializedJsonCopy(x0, out string json, Newtonsoft.Json.Formatting.None);
+            LCSSave x1 = CreateSerializedJsonCopy(x0, out string json, Newtonsoft.Json.Formatting.Indented);
 
             //// uncomment to update JSON files
-            //File.WriteAllText(path, json);
+            //File.WriteAllText($"{path}.json", json);
 
             AssertSavesAreEqual(x0, x1);
         }
