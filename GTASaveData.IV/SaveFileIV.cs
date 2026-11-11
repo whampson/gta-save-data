@@ -15,7 +15,7 @@ namespace GTASaveData.IV
 
         public static GTA4SaveParams GetDefaults(FileType t)
         {
-            bool isValid = GTA4Save.FileTypes.GetAll().Select(x => x == t).Any();
+            bool isValid = GTA4Save.FileTypes.GetAll().Any(x => x == t);
             if (!isValid)
             {
                 return null;

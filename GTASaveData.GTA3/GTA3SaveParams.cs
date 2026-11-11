@@ -139,7 +139,7 @@ namespace GTASaveData.GTA3
         /// </returns>
         public static GTA3SaveParams GetDefaults(FileType t)
         {
-            bool isValid = GTA3Save.FileTypes.GetAll().Select(x => x == t).Any();
+            bool isValid = GTA3Save.FileTypes.GetAll().Any(x => x == t);
             if (!isValid)
             {
                 return null;
