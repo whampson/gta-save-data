@@ -104,7 +104,7 @@ namespace GTASaveData
 
         public bool Equals(FileType other)
         {
-            return Id.Equals(Id)
+            return Id.Equals(other.Id)
                 && Flags.Equals(other.Flags)
                 && CompatibilityList.SequenceEqual(other.CompatibilityList);
         }

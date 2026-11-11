@@ -92,8 +92,8 @@ namespace GTASaveData
             }
             catch (Exception ex)
             {
-                if (!(ex is InvalidDataException &&
-                      ex is SerializationException &&
+                if (!(ex is InvalidDataException ||
+                      ex is SerializationException ||
                       ex is DirectoryNotFoundException))
                 {
                     throw;
@@ -115,8 +115,8 @@ namespace GTASaveData
             }
             catch (Exception ex)
             {
-                if (!(ex is InvalidDataException &&
-                      ex is SerializationException &&
+                if (!(ex is InvalidDataException ||
+                      ex is SerializationException ||
                       ex is DirectoryNotFoundException))
                 {
                     throw;
