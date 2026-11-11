@@ -40,6 +40,7 @@ namespace GTASaveData
 
         private readonly MemoryStream m_buffer;
         private readonly SerializationParams m_params;
+        private readonly HashSet<int> m_indeterminate;
         private bool m_disposed;
 
         /// <summary>
@@ -95,10 +96,11 @@ namespace GTASaveData
             set { m_params.BigEndian = value; }
         }
 
-private DataBuffer(MemoryStream buffer, SerializationParams p)
+        private DataBuffer(MemoryStream buffer, SerializationParams p)
         {
             m_buffer = buffer;
             m_params = p;
+            m_indeterminate = new HashSet<int>();
         }
 
         /// <summary>
@@ -108,6 +110,10 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
             : this(new MemoryStream(), new SerializationParams())
         { }
 
+        /// <summary>
+        /// Creates a new expandable <see cref="DataBuffer"/> using the specified serialization parameters.
+        /// </summary>
+        /// <param name="p">The serialization parameters to use.</param>
         public DataBuffer(SerializationParams p)
             : this(new MemoryStream(), p)
         { }
@@ -120,6 +126,11 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
             : this(new MemoryStream(data), new SerializationParams())
         { }
 
+        /// <summary>
+        /// Creates a new fixed-size <see cref="DataBuffer"/> with the specified data and serialization parameters.
+        /// </summary>
+        /// <param name="data">The data to contain within the buffer.</param>
+        /// <param name="p">The serialization parameters to use.</param>
         public DataBuffer(byte[] data, SerializationParams p)
             : this(new MemoryStream(data), p)
         { }
@@ -132,6 +143,11 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
             : this(new byte[size], new SerializationParams())
         { }
 
+        /// <summary>
+        /// Creates a new fixed-size <see cref="DataBuffer"/> using the specified serialization parameters.
+        /// </summary>
+        /// <param name="size">The buffer size.</param>
+        /// <param name="p">The serialization parameters to use.</param>
         public DataBuffer(int size, SerializationParams p)
             : this(new byte[size], p)
         { }
@@ -1145,6 +1161,13 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
             }
         }
 
+        /// <summary>
+        /// Rounds an address up to the next multiple of the specified size.
+        /// </summary>
+        /// <param name="addr">The address to align.</param>
+        /// <param name="size">The byte boundary to align to. Must be a power of 2.</param>
+        /// <returns>The aligned address.</returns>
+        /// <exception cref="ArgumentException"/>
         public static int Align(int addr, int size = 4)
         {
             if (((size - 1) & size) != 0)
@@ -1166,16 +1189,20 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
         }
 
         /// <summary>
-        /// Sets the cursor to the next multiple of 4.
+        /// Advances the cursor to the next 4-byte boundary and fills any skipped bytes with zeros.
         /// </summary>
         public void Align4()
         {
-            Pad(Align4(Offset) - Offset);
+            Write(new byte[Align4(Offset) - Offset]);
         }
 
+        /// <summary>
+        /// Advances the cursor to the next boundary of the specified size and fills any skipped bytes with zeros.
+        /// </summary>
+        /// <param name="size">The byte boundary to align to. Must be a power of 2.</param>
         public void Align(int size)
         {
-            Pad(Align(Offset, size) - Offset);
+            Write(new byte[Align(Offset, size) - Offset]);
         }
 
         /// <summary>
@@ -1217,11 +1244,65 @@ private DataBuffer(MemoryStream buffer, SerializationParams p)
 
             if (m_buffer.Position + count > m_buffer.Length)
             {
+                MarkIndeterminate(count);
                 return Write(new byte[count]);
             }
 
             m_buffer.Position += count;
             return (int) m_buffer.Position;
+        }
+
+        /// <summary>
+        /// Marks a number of the next bytes as indeterminate, indicating that their values are not
+        /// deterministic and cannot be reproduced byte-for-byte.
+        /// </summary>
+        /// <param name="count">The number of bytes to mark as volatile.</param>
+        public void MarkIndeterminate(int count)
+        {
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+
+            int start = Position;
+            for (int i = 0; i < count; i++)
+            {
+                m_indeterminate.Add(start + i);
+            }
+        }
+
+        /// <summary>
+        /// Marks a range of bytes as indeterminate based on an existing mask, offset into the
+        /// buffer. Positions where <paramref name="mask"/> is <c>true</c> are marked indeterminate.
+        /// </summary>
+        /// <param name="offset">The buffer position corresponding to index 0 of <paramref name="mask"/>.</param>
+        /// <param name="mask">A boolean array indicating which bytes are volatile.</param>
+        public void MarkIndeterminate(int offset, bool[] mask)
+        {
+            if (mask == null) throw new ArgumentNullException(nameof(mask));
+
+            for (int i = 0; i < mask.Length; i++)
+            {
+                if (mask[i])
+                {
+                    m_indeterminate.Add(offset + i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets a boolean array the same length as the buffer, where each element
+        /// indicates whether the corresponding byte is indeterminate.
+        /// </summary>
+        public bool[] GetIndeterminateMask()
+        {
+            bool[] mask = new bool[Length];
+            foreach (int i in m_indeterminate)
+            {
+                if (i >= 0 && i < mask.Length)
+                {
+                    mask[i] = true;
+                }
+            }
+
+            return mask;
         }
 
         /// <summary>
