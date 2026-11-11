@@ -44,6 +44,46 @@ namespace GTASaveData.Types
             return $"{Month:D2}/{Day:D2}/{Year:D4} {Hour:D2}:{Minute:D2}:{Second:D2}";
         }
 
+        public DateTime ToDateTime()
+        {
+            return (DateTime) this; // see explicit operator below
+        }
+
+        public bool TryToDateTime(out DateTime result)
+        {
+            if (Year == 0 || this == MinValue)
+            {
+                result = DateTime.MinValue;
+                return true;
+            }
+
+            if (this == MaxValue)
+            {
+                result = DateTime.MaxValue;
+                return true;
+            }
+
+            if (!IsValidDateTime())
+            {
+                result = default(DateTime);
+                return false;
+            }
+
+            result = new DateTime(Year, Month, Day, Hour, Minute, Second, DateTimeKind.Local);
+            return true;
+        }
+
+        private bool IsValidDateTime()
+        {
+            if (Year < 1 || Year > 9999) return false;
+            if (Month < 1 || Month > 12) return false;
+            if (Hour < 0 || Hour > 23) return false;
+            if (Minute < 0 || Minute > 59) return false;
+            if (Second < 0 || Second > 59) return false;
+            if (Day < 1 || Day > DateTime.DaysInMonth(Year, Month)) return false;
+            return true;
+        }
+
         public override int GetHashCode()
         {
             int hash = 17;
