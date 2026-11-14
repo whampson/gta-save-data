@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using System;
+using GTASaveData.Types;
 using TestFramework;
 using Xunit;
 
@@ -10,7 +11,7 @@ namespace GTASaveData.LCS.Tests
         public override SimpleVariables GenerateTestObject(LCSSaveParams p)
         {
             Faker<SimpleVariables> model = new Faker<SimpleVariables>()
-                .RuleFor(x => x.LastMissionPassedName, f => (p.FileType.IsiOS || p.FileType.IsAndroid) ? Generator.Words(f, SimpleVariables.MaxMissionPassedNameLength - 1) : "")
+                .RuleFor(x => x.LastMissionPassedName, f => (p.FileType.IsMobile64 || p.FileType.IsMobile32) ? Generator.Words(f, SimpleVariables.MaxMissionPassedNameLength - 1) : "")
                 .RuleFor(x => x.CurrentLevel, f => f.Random.Int())
                 .RuleFor(x => x.CurrentArea, f => f.Random.Int())
                 .RuleFor(x => x.Language, f => f.Random.Int())
@@ -54,11 +55,11 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.AllTaxisHaveNitro, f => f.Random.Bool())
                 .RuleFor(x => x.TargetIsOn, f => f.Random.Bool())
                 .RuleFor(x => x.TargetPosition, f => Generator.Vector2(f))
-                .RuleFor(x => x.TimeStamp, f => (p.FileType.IsPS2) ? Generator.DateTime(f) : DateTime.MinValue);
+                .RuleFor(x => x.TimeStamp, f => (p.FileType.IsPS2) ? new Date(Generator.DateTime(f)) : Date.MinValue)
+                .RuleFor(x => x.Unknown78hPS2, f => (p.FileType.IsPS2) ? f.Random.Int() : 0)
+                .RuleFor(x => x.Unknown7ChPS2, f => (p.FileType.IsPS2) ? f.Random.Int() : 0)
+                .RuleFor(x => x.Unknown90hPS2, f => (p.FileType.IsPS2) ? f.Random.Int() : 0);
 
-            var x = model.Generate();
-            var ts = x.TimeStamp;
-            x.TimeStamp = new DateTime(ts.Year, ts.Month, ts.Day, ts.Hour, ts.Minute, ts.Second);
             return model.Generate();
         }
 
@@ -114,6 +115,9 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0.TargetIsOn, x1.TargetIsOn);
             Assert.Equal(x0.TargetPosition, x1.TargetPosition);
             Assert.Equal(x0.TimeStamp, x1.TimeStamp);
+            Assert.Equal(x0.Unknown78hPS2, x1.Unknown78hPS2);
+            Assert.Equal(x0.Unknown7ChPS2, x1.Unknown7ChPS2);
+            Assert.Equal(x0.Unknown90hPS2, x1.Unknown90hPS2);
 
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);

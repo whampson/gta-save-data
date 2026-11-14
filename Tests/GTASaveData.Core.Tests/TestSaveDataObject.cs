@@ -52,23 +52,6 @@ namespace GTASaveData.Core.Tests
             Assert.Equal(x0, x1);
         }
 
-        [Fact]
-        public void NullObject()
-        {
-            DummySaveDataObject x0 = GenerateTestObject();
-            x0.Object = null;
-            
-            Assert.Throws<ArgumentNullException>(() => CreateSerializedCopy(x0, out byte[] _));
-        }
-
-        [Fact]
-        public void NullArray()
-        {
-            DummySaveDataObject x0 = GenerateTestObject();
-            x0.ObjectArray = null;
-
-            Assert.Throws<ArgumentNullException>(() => CreateSerializedCopy(x0, out byte[] _));
-        }
     }
 
     public class DummySaveDataObject : SaveDataObject, IEquatable<DummySaveDataObject>

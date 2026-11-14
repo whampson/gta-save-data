@@ -137,7 +137,7 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.FastestDirtBikeLapTimes, f => Generator.Array(Stats.NumDirtBikeRaces, g => f.Random.Int()))
                 .RuleFor(x => x.FastestDirtBikeTimes, f => Generator.Array(Stats.NumDirtBikeRaces, g => f.Random.Int()))
                 .RuleFor(x => x.FavoriteRadioStationList,
-                    f => Generator.Array((p.FileType.IsiOS || p.FileType.IsAndroid) ? Stats.NumRadioStationsMobile : Stats.NumRadioStations, g => f.Random.Float()));
+                    f => Generator.Array((p.FileType.IsMobile64 || p.FileType.IsMobile32) ? Stats.NumRadioStationsMobile : Stats.NumRadioStations, g => f.Random.Float()));
 
             return model.Generate();
         }
