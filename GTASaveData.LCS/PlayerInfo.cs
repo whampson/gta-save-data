@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using GTASaveData.Interfaces;
 
 namespace GTASaveData.LCS
@@ -8,7 +9,19 @@ namespace GTASaveData.LCS
     public class PlayerInfo : SaveDataObject,
         IEquatable<PlayerInfo>, IDeepClonable<PlayerInfo>
     {
+        public const int MaxPlayerNameLength = 35;
+
         private int m_money;
+        private byte m_wastedBustedState;
+        private uint m_wastedBustedTime;
+        private short m_trafficMultiplier;
+        private float m_roadDensity;
+        private short m_carDensity;
+        private int m_packagesTotal;
+        private byte[] m_unknownData;
+        private byte[] m_pspUnknownData;
+        private byte m_unknownState;
+        private byte m_unknownFlag;
         private int m_moneyOnScreen;
         private int m_packagesCollected;
         private byte m_maxHealth;
@@ -18,11 +31,72 @@ namespace GTASaveData.LCS
         private bool m_fireProof;
         private bool m_getOutOfJailFree;
         private bool m_getOutOfHospitalFree;
+        private string m_playerName;
 
         public int Money
         {
             get { return m_money; }
             set { m_money = value; OnPropertyChanged(); }
+        }
+
+        public byte WastedBustedState
+        {
+            get { return m_wastedBustedState; }
+            set { m_wastedBustedState = value; OnPropertyChanged(); }
+        }
+
+        public uint WastedBustedTime
+        {
+            get { return m_wastedBustedTime; }
+            set { m_wastedBustedTime = value; OnPropertyChanged(); }
+        }
+
+        public short TrafficMultiplier
+        {
+            get { return m_trafficMultiplier; }
+            set { m_trafficMultiplier = value; OnPropertyChanged(); }
+        }
+
+        public float RoadDensity
+        {
+            get { return m_roadDensity; }
+            set { m_roadDensity = value; OnPropertyChanged(); }
+        }
+
+        public short CarDensity
+        {
+            get { return m_carDensity; }
+            set { m_carDensity = value; OnPropertyChanged(); }
+        }
+
+        public int PackagesTotal
+        {
+            get { return m_packagesTotal; }
+            set { m_packagesTotal = value; OnPropertyChanged(); }
+        }
+
+        public byte[] UnknownData
+        {
+            get { return m_unknownData; }
+            set { m_unknownData = value; OnPropertyChanged(); }
+        }
+
+        public byte[] PspUnknownData
+        {
+            get { return m_pspUnknownData; }
+            set { m_pspUnknownData = value; OnPropertyChanged(); }
+        }
+
+        public byte UnknownState
+        {
+            get { return m_unknownState; }
+            set { m_unknownState = value; OnPropertyChanged(); }
+        }
+
+        public byte UnknownFlag
+        {
+            get { return m_unknownFlag; }
+            set { m_unknownFlag = value; OnPropertyChanged(); }
         }
 
         public int MoneyOnScreen
@@ -79,12 +153,32 @@ namespace GTASaveData.LCS
             set { m_getOutOfHospitalFree = value; OnPropertyChanged(); }
         }
 
+        public string PlayerName
+        {
+            get { return m_playerName; }
+            set { m_playerName = value; OnPropertyChanged(); }
+        }
+
         public PlayerInfo()
-        { }
+        {
+            PlayerName = "";
+            UnknownData = new byte[77];
+            PspUnknownData = new byte[74];
+        }
 
         public PlayerInfo(PlayerInfo other)
         {
             Money = other.Money;
+            WastedBustedState = other.WastedBustedState;
+            WastedBustedTime = other.WastedBustedTime;
+            TrafficMultiplier = other.TrafficMultiplier;
+            RoadDensity = other.RoadDensity;
+            CarDensity = other.CarDensity;
+            PackagesTotal = other.PackagesTotal;
+            UnknownData = other.UnknownData.ToArray();
+            PspUnknownData = other.PspUnknownData.ToArray();
+            UnknownState = other.UnknownState;
+            UnknownFlag = other.UnknownFlag;
             MoneyOnScreen = other.MoneyOnScreen;
             PackagesCollected = other.PackagesCollected;
             MaxHealth = other.MaxHealth;
@@ -94,33 +188,49 @@ namespace GTASaveData.LCS
             FireProof = other.FireProof;
             GetOutOfJailFree = other.GetOutOfJailFree;
             GetOutOfHospitalFree = other.GetOutOfHospitalFree;
+            PlayerName = other.PlayerName;
         }
 
         protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             LCSSaveParams param = p as LCSSaveParams;
 
-            if (param.FileType.IsiOS || param.FileType.IsAndroid) buf.Skip(128);
+            if (param.FileType.IsMobile)
+            {
+                PlayerName = buf.ReadString(MaxPlayerNameLength, unicode: true);
+                buf.Skip(58);
+            }
             Money = buf.ReadInt32();
-            buf.ReadInt32();
-            if (param.FileType.IsPS2 || param.FileType.IsPSP) buf.Skip(3);        // weird
-            if (param.FileType.IsPS2 || param.FileType.IsPSP) buf.ReadFloat();
+            if (param.FileType.IsPS2 || param.FileType.IsPSP)
+            {
+                WastedBustedState = buf.ReadByte();
+                WastedBustedTime = buf.ReadUInt32();
+                TrafficMultiplier = buf.ReadInt16();
+                RoadDensity = buf.ReadFloat();
+            }
+            else
+            {
+                WastedBustedTime = buf.ReadUInt32();
+            }
             MoneyOnScreen = buf.ReadInt32();
             PackagesCollected = buf.ReadInt32();
-            buf.ReadInt32();                                // total hidden packages? 3?
-            if (param.FileType.IsiOS || param.FileType.IsAndroid)
+            PackagesTotal = buf.ReadInt32();
+            if (param.FileType.IsMobile)
             {
-                buf.ReadFloat();
-                buf.ReadInt32();
+                RoadDensity = buf.ReadFloat();
+                TrafficMultiplier = buf.ReadInt16();
+                CarDensity = buf.ReadInt16();
                 MaxHealth = buf.ReadByte();
                 MaxArmor = buf.ReadByte();
-                buf.Skip(2);
+                WastedBustedState = buf.ReadByte();
+                UnknownState = buf.ReadByte();
                 InfiniteSprint = buf.ReadBool();
                 FastReload = buf.ReadBool();
                 FireProof = buf.ReadBool();
                 GetOutOfJailFree = buf.ReadBool();
                 GetOutOfHospitalFree = buf.ReadBool();
-                buf.Skip(3);
+                UnknownFlag = buf.ReadByte();
+                buf.Skip(2);
             }
             else if (param.FileType.IsPSP)
             {
@@ -131,8 +241,8 @@ namespace GTASaveData.LCS
                 MaxArmor = buf.ReadByte();
                 GetOutOfJailFree = buf.ReadBool();
                 GetOutOfHospitalFree = buf.ReadBool();
-                buf.Skip(2);
-                buf.Skip(83 * sizeof(int));
+                PspUnknownData = buf.ReadBytes(74);
+                buf.Skip(260);
             }
             else if (param.FileType.IsPS2)
             {
@@ -143,8 +253,8 @@ namespace GTASaveData.LCS
                 MaxArmor = buf.ReadByte();
                 GetOutOfJailFree = buf.ReadBool(4);
                 GetOutOfHospitalFree = buf.ReadBool(4);
-                buf.Skip(3);
-                buf.Skip(87 * sizeof(int));
+                UnknownData = buf.ReadBytes(77);
+                buf.Skip(274);
             }
 
             Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(param));
@@ -154,27 +264,42 @@ namespace GTASaveData.LCS
         {
             LCSSaveParams param = p as LCSSaveParams;
 
-            if (param.FileType.IsiOS || param.FileType.IsAndroid) buf.Write(new byte[128]);
+            if (param.FileType.IsMobile)
+            {
+                buf.Write(PlayerName, MaxPlayerNameLength, unicode: true);
+                buf.Skip(58);
+            }
             buf.Write(Money);
-            buf.Write(0);
-            if (param.FileType.IsPS2 || param.FileType.IsPSP) buf.Skip(3);        // weird
-            if (param.FileType.IsPS2 || param.FileType.IsPSP) buf.Write(1.0f);
+            if (param.FileType.IsPS2 || param.FileType.IsPSP)
+            {
+                buf.Write(WastedBustedState);
+                buf.Write(WastedBustedTime);
+                buf.Write(TrafficMultiplier);
+                buf.Write(RoadDensity);
+            }
+            else
+            {
+                buf.Write(WastedBustedTime);
+            }
             buf.Write(MoneyOnScreen);
             buf.Write(PackagesCollected);
-            buf.Write(3);
-            if (param.FileType.IsiOS || param.FileType.IsAndroid)
+            buf.Write(PackagesTotal);
+            if (param.FileType.IsMobile)
             {
-                buf.Write(1.0f);
-                buf.Write(0);       // value read is nonzero but it seems useless
+                buf.Write(RoadDensity);
+                buf.Write(TrafficMultiplier);
+                buf.Write(CarDensity);
                 buf.Write(MaxHealth);
                 buf.Write(MaxArmor);
-                buf.Skip(2);
+                buf.Write(WastedBustedState);
+                buf.Write(UnknownState);
                 buf.Write(InfiniteSprint);
                 buf.Write(FastReload);
                 buf.Write(FireProof);
                 buf.Write(GetOutOfJailFree);
                 buf.Write(GetOutOfHospitalFree);
-                buf.Skip(3);
+                buf.Write(UnknownFlag);
+                buf.Skip(2);
             }
             else if (param.FileType.IsPSP)
             {
@@ -185,8 +310,8 @@ namespace GTASaveData.LCS
                 buf.Write(MaxArmor);
                 buf.Write(GetOutOfJailFree);
                 buf.Write(GetOutOfHospitalFree);
-                buf.Skip(2);
-                buf.Write(new byte[83 * sizeof(int)]);
+                buf.Write(PspUnknownData);
+                buf.Skip(260);
             }
             else if (param.FileType.IsPS2)
             {
@@ -197,8 +322,8 @@ namespace GTASaveData.LCS
                 buf.Write(MaxArmor);
                 buf.Write(GetOutOfJailFree, 4);
                 buf.Write(GetOutOfHospitalFree, 4);
-                buf.Skip(3);
-                buf.Write(new byte[87 * sizeof(int)]);
+                buf.Write(UnknownData);
+                buf.Skip(274);
             }
 
             Debug.Assert(buf.Offset == SizeOf<PlayerInfo>(param));
@@ -210,7 +335,7 @@ namespace GTASaveData.LCS
 
             if (param.FileType.IsPSP) return 0x170;
             if (param.FileType.IsPS2) return 0x190;
-            if (param.FileType.IsiOS || param.FileType.IsAndroid) return 0xA8;
+            if (param.FileType.IsMobile) return 0xA8;
             throw SizeNotDefined(param);
         }
 
@@ -227,6 +352,16 @@ namespace GTASaveData.LCS
             }
 
             return Money.Equals(other.Money)
+                && WastedBustedState.Equals(other.WastedBustedState)
+                && WastedBustedTime.Equals(other.WastedBustedTime)
+                && TrafficMultiplier.Equals(other.TrafficMultiplier)
+                && RoadDensity.Equals(other.RoadDensity)
+                && CarDensity.Equals(other.CarDensity)
+                && PackagesTotal.Equals(other.PackagesTotal)
+                && UnknownData.SequenceEqual(other.UnknownData)
+                && PspUnknownData.SequenceEqual(other.PspUnknownData)
+                && UnknownState.Equals(other.UnknownState)
+                && UnknownFlag.Equals(other.UnknownFlag)
                 && MoneyOnScreen.Equals(other.MoneyOnScreen)
                 && PackagesCollected.Equals(other.PackagesCollected)
                 && MaxHealth.Equals(other.MaxHealth)
@@ -235,7 +370,8 @@ namespace GTASaveData.LCS
                 && FastReload.Equals(other.FastReload)
                 && FireProof.Equals(other.FireProof)
                 && GetOutOfJailFree.Equals(other.GetOutOfJailFree)
-                && GetOutOfHospitalFree.Equals(other.GetOutOfHospitalFree);
+                && GetOutOfHospitalFree.Equals(other.GetOutOfHospitalFree)
+                && PlayerName.Equals(other.PlayerName);
         }
 
         public PlayerInfo DeepClone()

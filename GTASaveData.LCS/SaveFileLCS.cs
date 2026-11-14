@@ -1,4 +1,5 @@
 ﻿using GTASaveData.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -12,7 +13,7 @@ namespace GTASaveData.LCS
 
         public static LCSSaveParams GetDefaults(FileType t)
         {
-            bool isValid = LCSSave.FileTypes.GetAll().Select(x => x == t).Any();
+            bool isValid = LCSSave.FileTypes.GetAll().Any(x => x == t);
             if (!isValid)
                 return null;
 
@@ -148,10 +149,12 @@ namespace GTASaveData.LCS
             int oldMark = file.Mark();
 
             string savedTag = file.ReadString(4);
-            Debug.Assert(savedTag == tag);
+            if (savedTag != tag)
+                throw new InvalidDataException($"Invalid block tag: expected '{tag}', got '{savedTag}'.");
 
             int size = file.ReadInt32();
-            Debug.Assert(file.Position + size < file.Length);
+            if (file.Position + size >= file.Length)
+                throw new EndOfStreamException("Unexpected end of file.");
 
             obj = file.ReadObject<T>();
 
@@ -165,14 +168,16 @@ namespace GTASaveData.LCS
         private int WriteDataBlock<T>(DataBuffer file, string tag, T obj)
             where T : SaveDataObject
         {
-            int size = Serializer.Write(obj, Params, out byte[] data);
+            int size = Serializer.Write(obj, Params, out byte[] data, out bool[] indeterminateMask);
             int sizeAligned = Align4(size);
 
             int oldMark = file.Mark();
+            int dataOffset = file.Position + 8;
 
             file.Write(tag, length: 4, zeroTerminate: false);
             file.Write(size);
             file.Write(data);
+            file.MarkNotSaved(dataOffset, indeterminateMask);
 
             file.Align4();
             int totalSize = file.Offset;
@@ -223,6 +228,7 @@ namespace GTASaveData.LCS
                 totalSize += file.Pad(SizeOfGameInBytes - totalSize - 4);
 
                 m_checkSum += file.GetBytesFromMark().Sum(x => x);
+                file.MarkNotSaved(sizeof(uint));
                 totalSize += file.Write(m_checkSum);
                 Debug.Assert(totalSize == SizeOfGameInBytes);
 
@@ -234,8 +240,6 @@ namespace GTASaveData.LCS
         {
             const int SimpSizePS2 = 0xF8;
             const int SimpSizePSP = 0xBC;
-            const int RunningScriptSizeAndroid = 0x21C;
-            const int RunningScriptSizeiOS = 0x228;
 
             using (DataBuffer buf = new DataBuffer(data))
             {
@@ -253,6 +257,7 @@ namespace GTASaveData.LCS
                 buf.Skip(8);
 
                 int globalsSize = buf.ReadInt32();
+
                 skip = globalsSize + 0x7C0;
                 if (skip < 0 || buf.Position + skip + 4 > buf.Length) goto DetectionFailed;
                 buf.Skip(skip);
@@ -271,14 +276,14 @@ namespace GTASaveData.LCS
                     fmt = FileTypes.PSP;
                     return true;
                 }
-                if (runningScriptSize == RunningScriptSizeAndroid)
+                if (runningScriptSize == RunningScript.Size32)
                 {
-                    fmt = FileTypes.Android;
+                    fmt = FileTypes.Mobile32;
                     return true;
                 }
-                if (runningScriptSize == RunningScriptSizeiOS)
+                if (runningScriptSize == RunningScript.Size64)
                 {
-                    fmt = FileTypes.iOS;
+                    fmt = FileTypes.Mobile64;
                     return true;
                 }
             }
@@ -332,37 +337,48 @@ namespace GTASaveData.LCS
 
         public static class FileTypes
         {
-            public static readonly FileType Android = new FileType(
-                "Android", GameVersionId.Android
+            public static readonly FileType Mobile32 = new FileType(
+                "Mobile32", FileTypeFlags.Mobile32
             );
 
-            public static readonly FileType iOS = new FileType(
-                "iOS", GameVersionId.iOS
+            public static readonly FileType Mobile64 = new FileType(
+                "Mobile64", FileTypeFlags.Mobile64
             );
 
             public static readonly FileType PS2 = new FileType(
-                "PS2", GameVersionId.PS2
+                "PS2", FileTypeFlags.PS2
             );
 
             public static readonly FileType PSP = new FileType(
-                "PSP", GameVersionId.PSP
+                "PSP", FileTypeFlags.PSP
             );
 
             public static FileType[] GetAll()
             {
-                return new FileType[] { Android, iOS, PS2, PSP };
+                return new FileType[] { Mobile32, Mobile64, PS2, PSP };
             }
 
-            public static FileType GetByGameConsole(GameVersionId console)
+            /// <summary>
+            /// Gets the set of <see cref="Platform"/>s that can produce the given file type.
+            /// </summary>
+            /// <remarks>
+            /// The mobile save layouts (<see cref="Mobile32"/> and <see cref="Mobile64"/>) are
+            /// shared by Android and iOS, so both report as compatible with both platforms.
+            /// </remarks>
+            public static Platform[] GetCompatiblePlatforms(FileType fileType)
             {
-                switch (console)
-                {
-                    case GameVersionId.Android: return Android;
-                    case GameVersionId.iOS: return iOS;
-                    case GameVersionId.PS2: return PS2;
-                    case GameVersionId.PSP: return PSP;
-                    default: return FileType.Default;
-                }
+                if (fileType == Mobile32 || fileType == Mobile64) return new[] { Platform.Android, Platform.iOS };
+                if (fileType == PS2) return new[] { Platform.PS2 };
+                if (fileType == PSP) return new[] { Platform.PSP };
+                return new Platform[0];
+            }
+
+            /// <summary>
+            /// Gets a value indicating whether the given file type is compatible with the given platform.
+            /// </summary>
+            public static bool IsCompatibleWith(FileType fileType, Platform platform)
+            {
+                return GetCompatiblePlatforms(fileType).Any(p => p == platform);
             }
         }
     }

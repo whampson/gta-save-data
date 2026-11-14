@@ -1188,7 +1188,7 @@ namespace GTASaveData.LCS
             FastestDirtBikeLapTimes = buf.ReadArray<int>(NumDirtBikeRaces);
             FastestDirtBikeTimes = buf.ReadArray<int>(NumDirtBikeRaces);
             FavoriteRadioStationList = buf.ReadArray<float>(
-                (param.FileType.IsiOS || param.FileType.IsAndroid) ? NumRadioStationsMobile : NumRadioStations);
+                (param.FileType.IsMobile) ? NumRadioStationsMobile : NumRadioStations);
 
             Debug.Assert(buf.Offset == GetSize(param));
         }
@@ -1324,7 +1324,7 @@ namespace GTASaveData.LCS
             buf.Write(FastestDirtBikeLapTimes, NumDirtBikeRaces);
             buf.Write(FastestDirtBikeTimes, NumDirtBikeRaces);
             buf.Write(FavoriteRadioStationList,
-                (param.FileType.IsiOS || param.FileType.IsAndroid) ? NumRadioStationsMobile : NumRadioStations);
+                (param.FileType.IsMobile) ? NumRadioStationsMobile : NumRadioStations);
 
             Debug.Assert(buf.Offset == GetSize(param));
         }
@@ -1333,7 +1333,7 @@ namespace GTASaveData.LCS
         {
             LCSSaveParams param = p as LCSSaveParams;
 
-            if (param.FileType.IsiOS || param.FileType.IsAndroid) return 0x385;
+            if (param.FileType.IsMobile) return 0x385;
             if (param.FileType.IsPSP || param.FileType.IsPS2) return 0x381;
             throw SizeNotDefined(param);
         }

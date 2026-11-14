@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
 using GTASaveData.Interfaces;
+using GTASaveData.Types;
 
 namespace GTASaveData.LCS
 {
@@ -56,7 +57,10 @@ namespace GTASaveData.LCS
         private bool m_allTaxisHaveNitro;
         private bool m_targetIsOn;
         private Vector2 m_targetPosition;
-        private DateTime m_timeStamp;
+        private Date m_timeStamp;
+        private int m_unknown78hPS2;
+        private int m_unknown7ChPS2;
+        private int m_unknown90hPS2;
 
         public string LastMissionPassedName
         {
@@ -322,16 +326,34 @@ namespace GTASaveData.LCS
             set { m_targetPosition = value; OnPropertyChanged(); }
         }
 
-        public DateTime TimeStamp
+        public Date TimeStamp
         {
             get { return m_timeStamp; }
             set { m_timeStamp = value; OnPropertyChanged(); }
         }
 
+        public int Unknown78hPS2
+        {
+            get { return m_unknown78hPS2; }
+            set { m_unknown78hPS2 = value; OnPropertyChanged(); }
+        }
+
+        public int Unknown7ChPS2
+        {
+            get { return m_unknown7ChPS2; }
+            set { m_unknown7ChPS2 = value; OnPropertyChanged(); }
+        }
+
+        public int Unknown90hPS2
+        {
+            get { return m_unknown90hPS2; }
+            set { m_unknown90hPS2 = value; OnPropertyChanged(); }
+        }
+
         public SimpleVariables()
         {
             LastMissionPassedName = "";
-            TimeStamp = DateTime.MinValue;
+            TimeStamp = Date.MinValue;
             CameraPosition = new Vector3();
             TargetPosition = new Vector2();
         }
@@ -383,6 +405,9 @@ namespace GTASaveData.LCS
             TargetIsOn = other.TargetIsOn;
             TargetPosition = other.TargetPosition;
             TimeStamp = other.TimeStamp;
+            Unknown78hPS2 = other.Unknown78hPS2;
+            Unknown7ChPS2 = other.Unknown7ChPS2;
+            Unknown90hPS2 = other.Unknown90hPS2;
         }
 
         protected override void ReadData(DataBuffer buf, SerializationParams p)
@@ -390,7 +415,7 @@ namespace GTASaveData.LCS
             LCSSaveParams param = p as LCSSaveParams;
 
             buf.Skip(8); // unused
-            if (param.FileType.IsiOS || param.FileType.IsAndroid)
+            if (param.FileType.IsMobile)
             {
                 buf.Skip(4); // unused
                 LastMissionPassedName = buf.ReadString(MaxMissionPassedNameLength, unicode: true);
@@ -429,7 +454,8 @@ namespace GTASaveData.LCS
             if (param.FileType.IsPS2)
             {
                 BlurOn = buf.ReadBool(4);
-                buf.Skip(8); // possibly 2 unused settings
+                Unknown78hPS2 = buf.ReadInt32();    // possibly unused setting
+                Unknown7ChPS2 = buf.ReadInt32();    // possibly unused setting
                 UseWideScreen = buf.ReadBool(4);
             }
             else
@@ -442,7 +468,15 @@ namespace GTASaveData.LCS
             RadioStation = (RadioStation) buf.ReadByte();
             StereoOutput = buf.ReadBool();
             buf.Skip(2);
-            buf.Skip(10 * 4); // unused
+            if (param.FileType.IsPS2)
+            {
+                Unknown90hPS2 = buf.ReadInt32();
+                buf.Skip(9 * 4);    // unused
+            }
+            else
+            {
+                buf.Skip(10 * 4); // unused
+            }
             if (!param.FileType.IsPSP) buf.Skip(4); // unused
             PadMode = buf.ReadInt16();
             if (param.FileType.IsPS2)
@@ -470,18 +504,7 @@ namespace GTASaveData.LCS
             if (param.FileType.IsPS2)
             {
                 buf.Skip(4);    // unused
-                int sec = buf.ReadInt32();
-                int min = buf.ReadInt32();
-                int hr = buf.ReadInt32();
-                int day = buf.ReadInt32();
-                int mon = buf.ReadInt32();
-                int yr = buf.ReadInt32();
-                bool dtValid = DateTime.TryParseExact(
-                    $"{yr:D4}-{mon:D2}-{day:D2} {hr:D2}:{min:D2}:{sec:D2}",
-                    "yyyy-MM-dd HH:mm:ss",
-                    CultureInfo.InvariantCulture, DateTimeStyles.None,
-                    out DateTime dt);
-                TimeStamp = (dtValid) ? dt : DateTime.MinValue;
+                TimeStamp = buf.ReadStruct<Date>();
             }
 
             Debug.Assert(buf.Offset == GetSize(param));
@@ -494,7 +517,7 @@ namespace GTASaveData.LCS
             buf.Skip(4); // unused
             if (param.FileType.IsPS2 || param.FileType.IsPSP) buf.Write(3);
             else buf.Write(8);
-            if (param.FileType.IsiOS || param.FileType.IsAndroid)
+            if (param.FileType.IsMobile64 || param.FileType.IsMobile32)
             {
                 buf.Skip(4); // unused
                 buf.Write(LastMissionPassedName, MaxMissionPassedNameLength, unicode: true);
@@ -533,7 +556,8 @@ namespace GTASaveData.LCS
             if (param.FileType.IsPS2)
             {
                 buf.Write(BlurOn, 4);
-                buf.Skip(8); // possibly 2 unused settings
+                buf.Write(Unknown78hPS2);
+                buf.Write(Unknown7ChPS2);
                 buf.Write(UseWideScreen, 4);
             }
             else
@@ -546,7 +570,15 @@ namespace GTASaveData.LCS
             buf.Write((byte) RadioStation);
             buf.Write(StereoOutput);
             buf.Skip(2);
-            buf.Skip(10 * 4); // unused
+            if (param.FileType.IsPS2)
+            {
+                buf.Write(Unknown90hPS2);
+                buf.Skip(9 * 4);    // unused
+            }
+            else
+            {
+                buf.Skip(10 * 4); // unused
+            }
             if (!param.FileType.IsPSP) buf.Skip(4); // unused
             buf.Write(PadMode);
             if (param.FileType.IsPS2)
@@ -575,12 +607,7 @@ namespace GTASaveData.LCS
             if (param.FileType.IsPS2)
             {
                 buf.Skip(4);    // unused
-                buf.Write(TimeStamp.Second);
-                buf.Write(TimeStamp.Minute);
-                buf.Write(TimeStamp.Hour);
-                buf.Write(TimeStamp.Day);
-                buf.Write(TimeStamp.Month);
-                buf.Write(TimeStamp.Year);
+                buf.Write(TimeStamp);
             }
 
             Debug.Assert(buf.Offset == GetSize(param));
@@ -592,7 +619,7 @@ namespace GTASaveData.LCS
 
             if (param.FileType.IsPSP) return 0xBC;
             if (param.FileType.IsPS2) return 0xF8;
-            if (param.FileType.IsiOS || param.FileType.IsAndroid) return 0x13C;
+            if (param.FileType.IsMobile64 || param.FileType.IsMobile32) return 0x13C;
             throw SizeNotDefined(param);
         }
 
@@ -652,7 +679,10 @@ namespace GTASaveData.LCS
                 && AllTaxisHaveNitro.Equals(other.AllTaxisHaveNitro)
                 && TargetIsOn.Equals(other.TargetIsOn)
                 && TargetPosition.Equals(other.TargetPosition)
-                && TimeStamp.Equals(other.TimeStamp);
+                && TimeStamp.Equals(other.TimeStamp)
+                && Unknown78hPS2.Equals(other.Unknown78hPS2)
+                && Unknown7ChPS2.Equals(other.Unknown7ChPS2)
+                && Unknown90hPS2.Equals(other.Unknown90hPS2);
         }
 
         public SimpleVariables DeepClone()
