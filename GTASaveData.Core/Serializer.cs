@@ -166,13 +166,13 @@ namespace GTASaveData
         /// <param name="obj">The object to write.</param>
         /// <param name="p">A <see cref="SerializationParams"/> descriptor controlling how data is written.</param>
         /// <param name="data">The serialized object.</param>
-        /// <param name="indeterminateMask">A boolean array the same length as <paramref name="data"/>, marking
+        /// <param name="notSavedMask">A boolean array the same length as <paramref name="data"/>, marking
         /// bytes whose values are non-deterministic and cannot be reproduced byte-for-byte.</param>
         /// <returns>The number of bytes written.</returns>
         /// <exception cref="SerializationException">
         /// Thrown if the type is not serializable.
         /// </exception>
-        public static int Write<T>(T obj, SerializationParams p, out byte[] data, out bool[] indeterminateMask)
+        public static int Write<T>(T obj, SerializationParams p, out byte[] data, out bool[] notSavedMask)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             if (p == null) throw new ArgumentNullException(nameof(p));
@@ -181,7 +181,7 @@ namespace GTASaveData
             {
                 int bytesWritten = stream.GenericWrite(obj);
                 data = stream.GetBuffer();
-                indeterminateMask = stream.GetIndeterminateMask();
+                notSavedMask = stream.GetNotSavedMask();
                 return bytesWritten;
             }
         }

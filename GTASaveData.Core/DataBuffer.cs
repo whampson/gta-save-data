@@ -40,7 +40,7 @@ namespace GTASaveData
 
         private readonly MemoryStream m_buffer;
         private readonly SerializationParams m_params;
-        private readonly HashSet<int> m_indeterminate;
+        private readonly HashSet<int> m_notSaved;
         private bool m_disposed;
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace GTASaveData
         {
             m_buffer = buffer;
             m_params = p;
-            m_indeterminate = new HashSet<int>();
+            m_notSaved = new HashSet<int>();
         }
 
         /// <summary>
@@ -1244,7 +1244,7 @@ namespace GTASaveData
 
             if (m_buffer.Position + count > m_buffer.Length)
             {
-                MarkIndeterminate(count);
+                MarkNotSaved(count);
                 return Write(new byte[count]);
             }
 
@@ -1253,28 +1253,28 @@ namespace GTASaveData
         }
 
         /// <summary>
-        /// Marks a number of the next bytes as indeterminate, indicating that their values are not
+        /// Marks a number of the next bytes as not saved, indicating that their values are not
         /// deterministic and cannot be reproduced byte-for-byte.
         /// </summary>
         /// <param name="count">The number of bytes to mark as volatile.</param>
-        public void MarkIndeterminate(int count)
+        public void MarkNotSaved(int count)
         {
             if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
 
             int start = Position;
             for (int i = 0; i < count; i++)
             {
-                m_indeterminate.Add(start + i);
+                m_notSaved.Add(start + i);
             }
         }
 
         /// <summary>
-        /// Marks a range of bytes as indeterminate based on an existing mask, offset into the
-        /// buffer. Positions where <paramref name="mask"/> is <c>true</c> are marked indeterminate.
+        /// Marks a range of bytes as not saved based on an existing mask, offset into the
+        /// buffer. Positions where <paramref name="mask"/> is <c>true</c> are marked not saved.
         /// </summary>
         /// <param name="offset">The buffer position corresponding to index 0 of <paramref name="mask"/>.</param>
         /// <param name="mask">A boolean array indicating which bytes are volatile.</param>
-        public void MarkIndeterminate(int offset, bool[] mask)
+        public void MarkNotSaved(int offset, bool[] mask)
         {
             if (mask == null) throw new ArgumentNullException(nameof(mask));
 
@@ -1282,19 +1282,19 @@ namespace GTASaveData
             {
                 if (mask[i])
                 {
-                    m_indeterminate.Add(offset + i);
+                    m_notSaved.Add(offset + i);
                 }
             }
         }
 
         /// <summary>
         /// Gets a boolean array the same length as the buffer, where each element
-        /// indicates whether the corresponding byte is indeterminate.
+        /// indicates whether the corresponding byte is not saved.
         /// </summary>
-        public bool[] GetIndeterminateMask()
+        public bool[] GetNotSavedMask()
         {
             bool[] mask = new bool[Length];
-            foreach (int i in m_indeterminate)
+            foreach (int i in m_notSaved)
             {
                 if (i >= 0 && i < mask.Length)
                 {
