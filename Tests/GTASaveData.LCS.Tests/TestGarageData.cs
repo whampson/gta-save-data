@@ -19,6 +19,7 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.CarTypesCollected, f => f.PickRandom<LoveMediaCars>())
                 .RuleFor(x => x.CarTypesCollected2, f => f.Random.Int())
                 .RuleFor(x => x.CarTypesCollected3, f => f.Random.Int())
+                .RuleFor(x => x.CarTypesCollected4, f => f.Random.Int())
                 .RuleFor(x => x.TimeHelpMessageLastShown, f => f.Random.UInt())
                 .RuleFor(x => x.CarsInSafeHouse, f => Generator.Array(GarageData.NumStoredCars, g => Generator.Generate<StoredCar, TestStoredCar, LCSSaveParams>(p)))
                 .RuleFor(x => x.Garages, f => Generator.Array(GarageData.MaxNumGarages, g => Generator.Generate<Garage, TestGarage, LCSSaveParams>(p)));
@@ -42,6 +43,7 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0.CarTypesCollected, x1.CarTypesCollected);
             Assert.Equal(x0.CarTypesCollected2, x1.CarTypesCollected2);
             Assert.Equal(x0.CarTypesCollected3, x1.CarTypesCollected3);
+            Assert.Equal(x0.CarTypesCollected4, x1.CarTypesCollected4);
             Assert.Equal(x0.TimeHelpMessageLastShown, x1.TimeHelpMessageLastShown);
             Assert.Equal(x0.CarsInSafeHouse, x1.CarsInSafeHouse);
             Assert.Equal(x0.Garages, x1.Garages);

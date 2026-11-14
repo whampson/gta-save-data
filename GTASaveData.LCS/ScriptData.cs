@@ -231,7 +231,6 @@ namespace GTASaveData.LCS
 
         protected override int GetSize(SerializationParams p)
         {
-            LCSSaveParams param = p as LCSSaveParams;
             return SizeOf<RunningScript>(p) * Threads.Count
                 + Globals.Count * sizeof(int)
                 + ScriptDataSize + 0x104

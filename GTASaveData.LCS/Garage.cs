@@ -17,8 +17,8 @@ namespace GTASaveData.LCS
         private bool m_deactivated;
         private bool m_resprayHappened;
         private int m_targetModelIndex;
-        private long m_door1Pointer;
-        private long m_door2Pointer;
+        private ulong m_door1Pointer;
+        private ulong m_door2Pointer;
         private int m_door1PoolIndex;
         private int m_door2PoolIndex;
         private bool m_door1IsDummy;
@@ -55,7 +55,7 @@ namespace GTASaveData.LCS
         private float m_door2Z;
         private int m_timeToStartAction;
         private int m_collectedCarState;
-        private long m_targetCarPointer;
+        private ulong m_targetCarPointer;
         private StoredCar m_storedCar;
         private bool m_initialized;
         private int m_multiplayerCar;
@@ -112,13 +112,13 @@ namespace GTASaveData.LCS
             set { m_targetModelIndex = value; OnPropertyChanged(); }
         }
 
-        public long Door1Pointer
+        public ulong Door1Pointer
         {
             get { return m_door1Pointer; }
             set { m_door1Pointer = value; OnPropertyChanged(); }
         }
 
-        public long Door2Pointer
+        public ulong Door2Pointer
         {
             get { return m_door2Pointer; }
             set { m_door2Pointer = value; OnPropertyChanged(); }
@@ -340,7 +340,7 @@ namespace GTASaveData.LCS
             set { m_collectedCarState = value; OnPropertyChanged(); }
         }
 
-        public long TargetCarPointer
+        public ulong TargetCarPointer
         {
             get { return m_targetCarPointer; }
             set { m_targetCarPointer = value; OnPropertyChanged(); }
@@ -466,8 +466,8 @@ namespace GTASaveData.LCS
                 m_deactivated = buf.ReadBool(4);
                 m_resprayHappened = buf.ReadBool(4);
                 m_targetModelIndex = buf.ReadInt32();
-                m_door1Pointer = buf.ReadInt32();
-                m_door2Pointer = buf.ReadInt32();
+                m_door1Pointer = buf.ReadUInt32();
+                m_door2Pointer = buf.ReadUInt32();
                 m_door1PoolIndex = buf.ReadByte();
                 m_door2PoolIndex = buf.ReadByte();
                 buf.ReadByte(); // align
@@ -505,7 +505,7 @@ namespace GTASaveData.LCS
                 m_door2Z = buf.ReadFloat();
                 m_timeToStartAction = buf.ReadInt32();
                 m_collectedCarState = buf.ReadInt32();
-                m_targetCarPointer = buf.ReadInt32();
+                m_targetCarPointer = buf.ReadUInt32();
                 m_storedCar = buf.ReadObject<StoredCar>();
                 m_initialized = buf.ReadBool(4);
                 m_scriptGarageAcceptedCar = buf.ReadBool(4);
@@ -526,8 +526,8 @@ namespace GTASaveData.LCS
                 m_resprayHappened = buf.ReadBool();
                 buf.ReadByte(); // align
                 m_targetModelIndex = buf.ReadInt32();
-                m_door1Pointer = buf.ReadInt32();
-                m_door2Pointer = buf.ReadInt32();
+                m_door1Pointer = buf.ReadUInt32();
+                m_door2Pointer = buf.ReadUInt32();
                 m_door1PoolIndex = buf.ReadByte();
                 m_door2PoolIndex = buf.ReadByte();
                 m_door1IsDummy = buf.ReadBool();
@@ -566,7 +566,7 @@ namespace GTASaveData.LCS
                 buf.ReadByte(); // align
                 buf.ReadByte(); // align
                 buf.ReadByte(); // align
-                m_targetCarPointer = buf.ReadInt32();
+                m_targetCarPointer = buf.ReadUInt32();
                 m_storedCar = buf.ReadObject<StoredCar>();
                 m_initialized = buf.ReadBool();
                 buf.ReadByte(); // align
@@ -582,11 +582,11 @@ namespace GTASaveData.LCS
 
                 Debug.Assert(buf.Offset == 0xE0);
             }
-            else if (param.FileType.IsAndroid || param.FileType.IsiOS)
+            else if (param.FileType.IsMobile)
             {
-                m_door1Pointer = buf.ReadInt64();
-                m_door2Pointer = buf.ReadInt64();
-                m_targetCarPointer = buf.ReadInt64();
+                m_door1Pointer = buf.ReadUInt64();
+                m_door2Pointer = buf.ReadUInt64();
+                m_targetCarPointer = buf.ReadUInt64();
                 m_storedCar = buf.ReadObject<StoredCar>();    // 0x18, unconfirmed, not referenced in game
                 m_unknown1 = buf.ReadInt32();           // 0x44, unconfirmed, not referenced in game
                 m_unknown2 = buf.ReadInt32();           // 0x48, unconfirmed, not referenced in game
@@ -659,8 +659,8 @@ namespace GTASaveData.LCS
                 buf.Write(m_deactivated, 4);
                 buf.Write(m_resprayHappened, 4);
                 buf.Write(m_targetModelIndex);
-                buf.Write((int) m_door1Pointer);
-                buf.Write((int) m_door2Pointer);
+                buf.Write((uint) m_door1Pointer);
+                buf.Write((uint) m_door2Pointer);
                 buf.Write((byte) m_door1PoolIndex);
                 buf.Write((byte) m_door2PoolIndex);
                 buf.Skip(2);    // align
@@ -697,7 +697,7 @@ namespace GTASaveData.LCS
                 buf.Write(m_door2Z);
                 buf.Write(m_timeToStartAction);
                 buf.Write(m_collectedCarState);
-                buf.Write((int) m_targetCarPointer);
+                buf.Write((uint) m_targetCarPointer);
                 buf.Write(m_storedCar);
                 buf.Write(m_initialized, 4);
                 buf.Write(m_scriptGarageAcceptedCar, 4);
@@ -718,8 +718,8 @@ namespace GTASaveData.LCS
                 buf.Write(m_resprayHappened);
                 buf.Skip(1);    // align
                 buf.Write(m_targetModelIndex);
-                buf.Write((int) m_door1Pointer);
-                buf.Write((int) m_door2Pointer);
+                buf.Write((uint) m_door1Pointer);
+                buf.Write((uint) m_door2Pointer);
                 buf.Write((byte) m_door1PoolIndex);
                 buf.Write((byte) m_door2PoolIndex);
                 buf.Write(m_door1IsDummy);
@@ -756,7 +756,7 @@ namespace GTASaveData.LCS
                 buf.Write(m_timeToStartAction);
                 buf.Write((byte) m_collectedCarState);
                 buf.Skip(3);    // align
-                buf.Write((int) m_targetCarPointer);
+                buf.Write((uint) m_targetCarPointer);
                 buf.Write(m_storedCar);
                 buf.Write(m_initialized);
                 buf.Skip(3);    // align
@@ -770,7 +770,7 @@ namespace GTASaveData.LCS
 
                 Debug.Assert(buf.Offset == 0xE0);
             }
-            else if (param.FileType.IsiOS || param.FileType.IsAndroid)
+            else if (param.FileType.IsMobile)
             {
                 buf.Write(m_door1Pointer);
                 buf.Write(m_door2Pointer);
@@ -837,8 +837,7 @@ namespace GTASaveData.LCS
             LCSSaveParams param = p as LCSSaveParams;
 
             if (param.FileType.IsPS2) return 0x100;
-            if (param.FileType.IsPSP) return 0xE0;
-            if (param.FileType.IsiOS || param.FileType.IsAndroid) return 0xE0;
+            if (param.FileType.IsPSP || param.FileType.IsMobile) return 0xE0;
             throw SizeNotDefined(param);
         }
 

@@ -123,7 +123,7 @@ namespace GTASaveData.LCS
             set { Garages[i] = value; OnPropertyChanged(); }
         }
 
-        public IEnumerable<StoredCar> StoredCarsPortland 
+        public IEnumerable<StoredCar> StoredCarsPortland
         {
             get
             {
@@ -230,7 +230,7 @@ namespace GTASaveData.LCS
             LCSSaveParams param = p as LCSSaveParams;
 
             if (param.FileType.IsPS2) return 0x29C4;
-            if (param.FileType.IsPSP || param.FileType.IsiOS || param.FileType.IsAndroid) return 0x25C4;
+            if (param.FileType.IsPSP || param.FileType.IsMobile) return 0x25C4;
             throw SizeNotDefined(param);
         }
 

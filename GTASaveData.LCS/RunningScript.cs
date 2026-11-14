@@ -13,9 +13,11 @@ namespace GTASaveData.LCS
         public const int MaxNameLength = 8;
         public const int MaxStackDepth = 16;
         public const int NumLocalVariables = 104;
+        public const int Size32 = 0x21C;
+        public const int Size64 = 0x228;
 
-        private uint m_pNextScript; // not loaded
-        private uint m_pPrevScript; // not loaded
+        private ulong m_pNextScript; // not loaded
+        private ulong m_pPrevScript; // not loaded
         private int m_id;
         private string m_name;
         private int m_ip;
@@ -36,13 +38,13 @@ namespace GTASaveData.LCS
         private bool m_deathArrestExecuted;
         private bool m_missionFlag;
 
-        public uint NextScriptPointer
+        public ulong NextScriptPointer
         {
             get { return m_pNextScript; }
             set { m_pNextScript = value; OnPropertyChanged(); }
         }
 
-        public uint PrevScriptPointer
+        public ulong PrevScriptPointer
         {
             get { return m_pPrevScript; }
             set { m_pPrevScript = value; OnPropertyChanged(); }
@@ -234,11 +236,10 @@ namespace GTASaveData.LCS
         protected override void ReadData(DataBuffer buf, SerializationParams p)
         {
             LCSSaveParams param = p as LCSSaveParams;
+            bool is64 = param.FileType.IsMobile64;
 
-            NextScriptPointer = buf.ReadUInt32();
-            if (param.FileType.IsiOS) buf.ReadInt32();
-            PrevScriptPointer = buf.ReadUInt32();
-            if (param.FileType.IsiOS) buf.ReadInt32();
+            NextScriptPointer = is64 ? buf.ReadUInt64() : buf.ReadUInt32();
+            PrevScriptPointer = is64 ? buf.ReadUInt64() : buf.ReadUInt32();
             Id = buf.ReadInt32();
             buf.ReadInt32();
             Name = buf.ReadString(MaxNameLength);
@@ -261,7 +262,7 @@ namespace GTASaveData.LCS
             WastedBustedCheckResult = buf.ReadBool();
             MissionFlag = buf.ReadBool();
             buf.Skip(2);
-            if (param.FileType.IsiOS) buf.ReadInt32();
+            if (is64) buf.ReadInt32();
 
             Debug.Assert(buf.Offset == GetSize(param));
         }
@@ -269,11 +270,18 @@ namespace GTASaveData.LCS
         protected override void WriteData(DataBuffer buf, SerializationParams p)
         {
             LCSSaveParams param = p as LCSSaveParams;
+            bool is64 = param.FileType.IsMobile64;
 
-            buf.Write(NextScriptPointer);
-            if (param.FileType.IsiOS) buf.Write(0);
-            buf.Write(PrevScriptPointer);
-            if (param.FileType.IsiOS) buf.Write(0);
+            if (is64)
+            {
+                buf.Write(NextScriptPointer);
+                buf.Write(PrevScriptPointer);
+            }
+            else
+            {
+                buf.Write((uint) NextScriptPointer);
+                buf.Write((uint) PrevScriptPointer);
+            }
             buf.Write(Id);
             buf.Write(0);
             buf.Write(Name, MaxNameLength);
@@ -296,15 +304,17 @@ namespace GTASaveData.LCS
             buf.Write(WastedBustedCheckResult);
             buf.Write(MissionFlag);
             buf.Skip(2);
-            if (param.FileType.IsiOS) buf.Write(0);
+            if (is64) buf.Write(0);
 
             Debug.Assert(buf.Offset == GetSize(param));
         }
 
         protected override int GetSize(SerializationParams p)
         {
-            LCSSaveParams param = p as LCSSaveParams;
-            return (param.FileType.IsiOS) ? 0x228 : 0x21C;
+            Debug.Assert(Size64 == Size32 + (3 * sizeof(int)));
+
+            return ((p as LCSSaveParams).FileType.IsMobile64)
+                ? Size64 : Size32; 
         }
 
         public override bool Equals(object obj)

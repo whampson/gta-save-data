@@ -9,9 +9,10 @@ namespace GTASaveData.LCS.Tests
     {
         public override RunningScript GenerateTestObject(LCSSaveParams p)
         {
+            bool is64 = p.FileType.IsMobile64;
             Faker<RunningScript> model = new Faker<RunningScript>()
-                .RuleFor(x => x.NextScriptPointer, f => f.Random.UInt())
-                .RuleFor(x => x.PrevScriptPointer, f => f.Random.UInt())
+                .RuleFor(x => x.NextScriptPointer, f => is64 ? f.Random.ULong() : f.Random.UInt())
+                .RuleFor(x => x.PrevScriptPointer, f => is64 ? f.Random.ULong() : f.Random.UInt())
                 .RuleFor(x => x.Id, f => f.Random.Int())
                 .RuleFor(x => x.Name, f => Generator.Words(f, RunningScript.MaxNameLength - 1))
                 .RuleFor(x => x.InstructionPointer, f => f.Random.Int())
@@ -44,6 +45,7 @@ namespace GTASaveData.LCS.Tests
 
             Assert.Equal(x0.NextScriptPointer, x1.NextScriptPointer);
             Assert.Equal(x0.PrevScriptPointer, x1.PrevScriptPointer);
+            Assert.Equal(x0.Id, x1.Id);
             Assert.Equal(x0.Name, x1.Name);
             Assert.Equal(x0.InstructionPointer, x1.InstructionPointer);
             Assert.Equal(x0.Stack, x1.Stack);
@@ -51,6 +53,8 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0.Locals, x1.Locals);
             Assert.Equal(x0.TimerA, x1.TimerA);
             Assert.Equal(x0.TimerB, x1.TimerB);
+            Assert.Equal(x0.Field210h, x1.Field210h);
+            Assert.Equal(x0.Field214h, x1.Field214h);
             Assert.Equal(x0.ConditionResult, x1.ConditionResult);
             Assert.Equal(x0.IsMissionScript, x1.IsMissionScript);
             Assert.Equal(x0.ClearMessages, x1.ClearMessages);
@@ -64,7 +68,6 @@ namespace GTASaveData.LCS.Tests
             Assert.Equal(x0, x1);
             Assert.Equal(GetSizeOfTestObject(x0, p), data.Length);
         }
-
 
         [Fact]
         public void CopyConstructor()

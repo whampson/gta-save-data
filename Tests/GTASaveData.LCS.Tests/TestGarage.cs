@@ -9,6 +9,7 @@ namespace GTASaveData.LCS.Tests
     {
         public override Garage GenerateTestObject(LCSSaveParams p)
         {
+            bool is64 = p.FileType.IsMobile;
             Faker<Garage> model = new Faker<Garage>()
                 .RuleFor(x => x.Type, f => f.PickRandom<GarageType>())
                 .RuleFor(x => x.State, f => f.PickRandom<GarageState>())
@@ -18,8 +19,8 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.Deactivated, f => f.Random.Bool())
                 .RuleFor(x => x.ResprayHappened, f => f.Random.Bool())
                 .RuleFor(x => x.TargetModelIndex, f => f.Random.Int())
-                .RuleFor(x => x.Door1Pointer, f => (p.FileType.IsiOS || p.FileType.IsAndroid) ? f.Random.Long() : f.Random.Int())
-                .RuleFor(x => x.Door2Pointer, f => (p.FileType.IsiOS || p.FileType.IsAndroid) ? f.Random.Long() : f.Random.Int())
+                .RuleFor(x => x.Door1Pointer, f => is64 ? f.Random.ULong() : f.Random.UInt())
+                .RuleFor(x => x.Door2Pointer, f => is64 ? f.Random.ULong() : f.Random.UInt())
                 .RuleFor(x => x.Door1PoolIndex, f => f.Random.Byte())
                 .RuleFor(x => x.Door2PoolIndex, f => f.Random.Byte())
                 .RuleFor(x => x.Door1IsDummy, f => f.Random.Bool())
@@ -45,7 +46,7 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.InfY, f => f.Random.Float())
                 .RuleFor(x => x.SupY, f => f.Random.Float())
                 .RuleFor(x => x.TimeCrusherCraneActivated, f => f.Random.Int())
-                .RuleFor(x => x.ScriptTargetCar, f => (!p.FileType.IsiOS && !p.FileType.IsAndroid) ? f.Random.Int() : 0)
+                .RuleFor(x => x.ScriptTargetCar, f => (!p.FileType.IsMobile) ? f.Random.Int() : 0)
                 .RuleFor(x => x.DoorPos, f => f.Random.Float())
                 .RuleFor(x => x.DoorHeight, f => f.Random.Float())
                 .RuleFor(x => x.Door1X, f => f.Random.Float())
@@ -56,7 +57,7 @@ namespace GTASaveData.LCS.Tests
                 .RuleFor(x => x.Door2Z, f => f.Random.Float())
                 .RuleFor(x => x.TimeToStartAction, f => f.Random.Int())
                 .RuleFor(x => x.CollectedCarState, f => (p.FileType.IsPS2) ? f.Random.Int() : f.Random.Byte())
-                .RuleFor(x => x.TargetCarPointer, f => (p.FileType.IsiOS || p.FileType.IsAndroid) ? f.Random.Long() : f.Random.Int())
+                .RuleFor(x => x.TargetCarPointer, f => is64 ? f.Random.ULong() : f.Random.UInt())
                 .RuleFor(x => x.StoredCar, f => Generator.Generate<StoredCar, TestStoredCar, LCSSaveParams>(p))
                 .RuleFor(x => x.Initialized, f => f.Random.Bool())
                 .RuleFor(x => x.MultiplayerCar, f => (p.FileType.IsPSP) ? f.Random.Int() : 0)
